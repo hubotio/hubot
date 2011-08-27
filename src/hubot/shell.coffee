@@ -10,6 +10,8 @@ class Shell extends Robot
       @send user, "#{user.name}: #{str}"
 
   run: ->
+    console.log "Hubot: the Shell."
+
     user = new Robot.User 1, 'shell'
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
