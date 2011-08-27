@@ -1,3 +1,8 @@
+# Mustaches make every photo funnier.
+#
+# mustache me <url>   - Adds a mustache to the specified URL.
+# mustache me <query> - Searches Google Images for the specified query and
+#                       mustaches it.
 module.exports = (robot) ->
   robot.hear /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (response) ->
     imagery    = response.match[1]

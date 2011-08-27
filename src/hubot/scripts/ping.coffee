@@ -1,3 +1,4 @@
+# Utility commands surrounding Hubot uptime.
 module.exports = (robot) ->
   robot.hear /PING$/i, (response) ->
     response.send "PONG"

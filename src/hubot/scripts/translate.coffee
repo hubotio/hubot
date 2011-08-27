@@ -1,3 +1,7 @@
+# Allows Hubot to know many languages.
+#
+# translate me <phrase> - Searches for a translation for the <phrase> and then
+#                         prints that bad boy out.
 module.exports = (robot) ->
   robot.hear /(translate)( me)? (.*)/i, (response) ->
     term   = "\"#{response.match[3]}\""

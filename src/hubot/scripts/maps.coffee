@@ -1,3 +1,6 @@
+# Interacts with the Google Maps API.
+#
+# map me <query> - Returns a map view of the area returned by `query`.
 module.exports = (robot) ->
   robot.hear /(?:(satellite|terrain|hybrid)[- ])?map me (.+)/i, (response) ->
     mapType  = response.match[1] || "roadmap"

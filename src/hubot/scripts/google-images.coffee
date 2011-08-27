@@ -1,3 +1,9 @@
+# A way to interact with the Google Images API.
+#
+# image me <query>   - The Original™. Queries Google Images for <query> and
+#                      returns a random top result.
+# animate me <query> - The same thing as `image me`, except adds a few
+#                      parameters to try to return an animated GIF instead.
 module.exports = (robot) ->
   robot.hear /(image|img)( me)? (.*)/i, (response) ->
     imagery = response.match[3]
