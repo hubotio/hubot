@@ -89,6 +89,7 @@ class CampfireStreaming extends EventEmitter
         "Authorization" : self.authorization
 
       options =
+        "agent"  : false
         "host"   : "streaming.campfirenow.com"
         "port"   : 443
         "path"   : "/room/#{id}/live.json"
