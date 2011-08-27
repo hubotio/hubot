@@ -35,6 +35,17 @@ class Robot
   # Extend this.
   run: () ->
 
+class Robot.User
+  constructor: (@id, @name, options) ->
+    for key, value of (options or {})
+      this[key] = value
+
+class Robot.Message
+  constructor: (@author, @text) ->
+
+  match: (regex) ->
+    @text.match regex
+
 # Listeners receive every message from the chat source and decide if they want
 # to act on it.
 class Listener
@@ -43,9 +54,8 @@ class Listener
   # Determines if the listener likes the content of the message.  If so, a
   # Response built from the given Message is passed to the Listener callback.
   call: (message) ->
-    match = message.text.match @regex
-    return if not match
-    @callback new Response(@robot, message, match)
+    if match = message.match @regex
+      @callback new Response(@robot, message, match)
 
 # Responses are sent to matching listeners.  Messages know about the content
 # and user that made the original message, and how to reply back to them.
@@ -59,7 +69,7 @@ class Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.send @message.user, strings...
+    @robot.send @message.author, strings...
 
   # Posts a message mentioning the current user.
   #
@@ -68,7 +78,7 @@ class Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.reply @message.user, strings...
+    @robot.reply @message.author, strings...
 
   random: (items) ->
     items[ Math.floor(Math.random() * items.length) ]

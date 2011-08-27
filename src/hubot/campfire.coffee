@@ -26,10 +26,8 @@ class Campfire extends Robot
     bot.on "TextMessage", (id, created, room, user, body) ->
       if body.match new RegExp "^#{bot.info.name}", "i"
         bot.User user, (err, userData) ->
-          self.receive(
-            text: body
-            user: { id: user, name: userData.user.name, room: room }
-          )
+          author = new Robot.User user, userData.user.name, room: room
+          self.receive new Robot.Message(author, body)
 
     bot.Me (err, data) ->
       console.log data

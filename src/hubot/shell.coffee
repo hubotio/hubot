@@ -10,13 +10,11 @@ class Shell extends Robot
       @send user, "#{user.name}: #{str}"
 
   run: ->
+    user = new Robot.User 1, 'shell'
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
       txt.toString().split("\n").forEach (line) =>
         return if line.length == 0
-        @receive(
-          text: line
-          user: { name: 'shell', id: 0 }
-        )
+        @receive new Robot.Message user, line
 
 exports.Shell = Shell
