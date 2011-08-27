@@ -31,7 +31,7 @@ class Robot
   # Extend this.
   reply: (user, strings...) ->
 
-	# Raw method for invoking the bot to run
+  # Raw method for invoking the bot to run
   # Extend this.
   run: () ->
 

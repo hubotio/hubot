@@ -3,13 +3,13 @@ HTTPS        = require "https"
 EventEmitter = require("events").EventEmitter
 
 class Campfire extends Robot
-	send: (user, strings...) ->
-		strings.forEach (str) =>
+  send: (user, strings...) ->
+    strings.forEach (str) =>
       @bot.Room(user.room).speak str, (err, data) ->
         console.log "#{user}: #{str}"
 
-	reply: (user, strings...) ->
-		strings.forEach (str) =>
+  reply: (user, strings...) ->
+    strings.forEach (str) =>
       @send user, "#{user.name}: #{str}"
 
  run: ->
