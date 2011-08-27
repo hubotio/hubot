@@ -44,7 +44,7 @@ server = HTTP.createServer( (req, res) ->
   res.end 'Hello from Hubot\n'
 ).listen PortNumber
 
-setInterval(( ->
+setInterval ->
   httpOpts =
     host: process.env.HUBOT_WEB_HOST
 
@@ -52,6 +52,6 @@ setInterval(( ->
     console.log "Got response: #{res}" unless res.statusCode == 200
   ).on 'error', (e) ->
     console.log "Got error: #{e.message}"
-), 60000)
+, 60000
 
 # vim:ft=coffee
