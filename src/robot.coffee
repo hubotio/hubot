@@ -2,21 +2,38 @@ Fs   = require 'fs'
 Url  = require 'url'
 Path = require 'path'
 
-# Robots receive messages from a chat source (Campfire, irc, etc), and
-# dispatch them to matching listeners.
 class Robot
+  # Robots receive messages from a chat source (Campfire, irc, etc), and
+  # dispatch them to matching listeners.
+  #
+  # path - String directory full of Hubot scripts to load.
   constructor: (path) ->
     @listeners = []
     if path then @load path
 
-  # Adds a Listener that attempts to match incoming messages based on a Regex.
+  # Public: Adds a Listener that attempts to match incoming messages based on
+  # a Regex.
+  #
+  # regex    - A Regex that determines if the callback should be called.
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
   hear: (regex, callback) ->
     @listeners.push new Listener(@, regex, callback)
 
-  # Passes the given message to any interested Listeners.
+  # Public: Passes the given message to any interested Listeners.
+  #
+  # message - A Robot.Message instance.
+  #
+  # Returns nothing.
   receive: (message) ->
     @listeners.forEach (lst) -> lst.call message
 
+  # Public: Loads every script in the given path.
+  #
+  # path - A String path on the filesystem.
+  #
+  # Returns nothing.
   load: (path) ->
     Fs.readdirSync(path).forEach (file) =>
       ext  = Path.extname file
@@ -24,66 +41,106 @@ class Robot
       if ext == '.coffee' or ext == '.js'
         require(full) @
 
-  # Raw method for sending data back to the chat source.  Extend this.
+  # Public: Raw method for sending data back to the chat source.  Extend this.
+  #
+  # user    - A Robot.User instance.
+  # strings - One or more Strings for each message to send.
   send: (user, strings...) ->
 
-  # Raw method for building a reply and sending it back to the chat source.
-  # Extend this.
+  # Public: Raw method for building a reply and sending it back to the chat
+  # source. Extend this.
+  #
+  # user    - A Robot.User instance.
+  # strings - One or more Strings for each reply to send.
   reply: (user, strings...) ->
 
-  # Raw method for invoking the bot to run
+  # Public: Raw method for invoking the bot to run
   # Extend this.
-  run: () ->
+  run: ->
 
 class Robot.User
+  # Represents a participating user in the chat.
+  #
+  # id      - A unique ID for the user.
+  # name    - A String name of the user.
+  # options - An optional Hash of key, value pairs for this user.
   constructor: (@id, @name, options) ->
     for key, value of (options or {})
       this[key] = value
 
 class Robot.Message
-  constructor: (@author, @text) ->
+  # Represents an incoming message from the chat.
+  #
+  # user - A Robot.User instance that sent the message.
+  # text - The String message contents.
+  constructor: (@user, @text) ->
 
+  # Determines if the message matches the given regex.
+  #
+  # regex - The Regex to check.
+  #
+  # Returns a Match object or null.
   match: (regex) ->
     @text.match regex
 
-# Listeners receive every message from the chat source and decide if they want
-# to act on it.
 class Listener
+  # Listeners receive every message from the chat source and decide if they want
+  # to act on it.
+  #
+  # robot    - The current Robot instance.
+  # regex    - The Regex that determines if this listener should trigger the
+  #            callback.
+  # callback - The Function that is triggered if the incoming message matches.
   constructor: (@robot, @regex, @callback) ->
 
-  # Determines if the listener likes the content of the message.  If so, a
-  # Response built from the given Message is passed to the Listener callback.
+  # Public: Determines if the listener likes the content of the message.  If
+  # so, a Response built from the given Message is passed to the Listener
+  # callback.
+  #
+  # message - a Robot.Message instance.
+  #
+  # Returns nothing.
   call: (message) ->
     if match = message.match @regex
       @callback new Response(@robot, message, match)
 
-# Responses are sent to matching listeners.  Messages know about the content
-# and user that made the original message, and how to reply back to them.
 class Response
+  # Public: Responses are sent to matching listeners.  Messages know about the
+  # content and user that made the original message, and how to reply back to
+  # them.
+  #
+  # robot   - The current Robot instance.
+  # message - The current Robot.Message instance.
+  # match   - The Match object from the successful Regex match.
   constructor: (@robot, @message, @match) ->
 
-  # Posts a message back to the chat source
+  # Public: Posts a message back to the chat source
   #
   # strings - One or more strings to be posted.  The order of these strings
   #           should be kept intact.
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.send @message.author, strings...
+    @robot.send @message.user, strings...
 
-  # Posts a message mentioning the current user.
+  # Public: Posts a message mentioning the current user.
   #
   # strings - One or more strings to be posted.  The order of these strings
   #           should be kept intact.
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.reply @message.author, strings...
+    @robot.reply @message.user, strings...
 
+  # Public: Picks a random item from the given items.
+  #
+  # items - An Array of items (usually Strings).
+  #
+  # Returns a random item.
   random: (items) ->
     items[ Math.floor(Math.random() * items.length) ]
 
-  # helper for making quick HTTP GET requests.
+  # Public: Helper for making quick HTTP GET requests.
   # otherwise, use @http for the rad Node 0.4 HTTP Client.
   fetch: (url, cb) ->
     uri = Url.parse url
