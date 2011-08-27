@@ -12,7 +12,7 @@ class Campfire extends Robot
     strings.forEach (str) =>
       @send user, "#{user.name}: #{str}"
 
- run: ->
+  run: ->
     self = @
     options =
       token:   process.env.HUBOT_CAMPFIRE_TOKEN

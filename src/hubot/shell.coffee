@@ -9,12 +9,12 @@ class Shell extends Robot
     strings.forEach (str) =>
       @send user, "#{user.name}: #{str}"
 
- run: ->
-    self = @
-    process.openStdin().on 'data', (txt) ->
-      txt.toString().split("\n").forEach (line) ->
+  run: ->
+    process.stdin.resume()
+    process.stdin.on 'data', (txt) =>
+      txt.toString().split("\n").forEach (line) =>
         return if line.length == 0
-        self.receive(
+        @receive(
           text: line
           user: { name: 'shell', id: 0 }
         )
