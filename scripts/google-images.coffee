@@ -9,10 +9,12 @@
 #                       mustaches it.
 module.exports = (robot) ->
   robot.hear /(image|img)( me)? (.*)/i, (msg) ->
-    imageMe msg, msg.match[3]
+    imageMe msg, msg.match[3], (url) ->
+      msg.send url
 
   robot.hear /animate me (.*)/i, (msg) ->
-    imageMe msg, "animated #{msg.match[1]}"
+    imageMe msg, "animated #{msg.match[1]}", (url) ->
+      msg.send url
 
   robot.hear /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
     imagery    = msg.match[1]
@@ -20,7 +22,7 @@ module.exports = (robot) ->
       msg.send "#{mustachify}#{imagery}"
     else
       imageMe msg, imagery, (url) ->
-        msg.send "#{mustachify}#{url}#.png"
+        msg.send "#{mustachify}#{url}"
 
 mustachify = "http://mustachify.me/?src="
 
@@ -31,5 +33,5 @@ imageMe = (msg, query, cb) ->
       images = JSON.parse(body)
       images = images.responseData.results
       image  = msg.random images
-      (cb || msg.send) "#{image.unescapedUrl}#.png"
+      cb "#{image.unescapedUrl}#.png"
 
