@@ -142,6 +142,11 @@ class Response
 
   # Public: Helper for making quick HTTP GET requests.
   # otherwise, use @http for the rad Node 0.4 HTTP Client.
+  #
+  # url - String URL to GET.
+  # cb  - Function callback that is triggered with the HTTP response.
+  #
+  # Returns nothing.
   fetch: (url, cb) ->
     uri = Url.parse url
     body = ''
