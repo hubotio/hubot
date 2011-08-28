@@ -56,5 +56,5 @@ Local Testing
 
 It's easy to test scripts locally with the shell:
 
-    % bin/hubot -a stdio
+    % bin/hubot
 
