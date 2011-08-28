@@ -151,7 +151,7 @@ class Response
     uri = Url.parse url
     body = ''
     @http.get({
-      host: uri.host
+      host: uri.hostname
       port: uri.port or 80
       path: "#{uri.pathname}?#{uri.query}"
     }, (res) ->
