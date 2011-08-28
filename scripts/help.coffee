@@ -10,18 +10,21 @@ Fs = require 'fs'
 # body - The body of text to search through (usually file contents).
 #
 # Returns an Array of commands and their help text.
-commands = (body) ->
-  cmds = []
+parseCommands = (body) ->
   for i, line of body.split("\n")
     break    if line[0] != '#'
     continue if !line.match('-')
-    cmds.push   line[2..line.length]
-  cmds if cmds.length > 0
+    commands.push line[2..line.length]
+
+# Array of all the commands found in Hubot script sources
+commands = [ ]
+
+# Parse the files into the commands array at script load time
+Fs.readdirSync('scripts').forEach (file) =>
+  Fs.readFile "scripts/#{file}", "utf-8", (error, body) ->
+    throw error if error
+    parseCommands(body)
 
 module.exports = (robot) ->
   robot.hear /help$/i, (msg) ->
-    Fs.readdirSync('scripts').forEach (file) =>
-      Fs.readFile "scripts/#{file}", "utf-8", (error, body) ->
-        throw error if error
-        cmd = commands(body)
-        msg.send cmd if cmd
+    msg.send commands.sort().join("\n")

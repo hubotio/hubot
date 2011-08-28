@@ -26,8 +26,9 @@ class Campfire extends Robot
     bot.on "TextMessage", (id, created, room, user, body) ->
       if body.match new RegExp "^#{bot.info.name}", "i"
         bot.User user, (err, userData) ->
-          author = new Robot.User user, userData.user.name, room: room
-          self.receive new Robot.Message(author, body)
+          if userData.user
+            author = new Robot.User user, userData.user.name, room: room
+            self.receive new Robot.Message(author, body)
 
     bot.Me (err, data) ->
       console.log data
@@ -77,7 +78,8 @@ class CampfireStreaming extends EventEmitter
     sound: (text, callback) ->
       @message text, "SoundMessage", callback
     speak: (text, callback) ->
-      @message text, "TextMessage", callback
+      body = { message: { "body":text } }
+      self.post "/room/#{id}/speak", body, callback
     message: (text, type, callback) ->
       body = { message: { "body":text, "type":type } }
       self.post "/room/#{id}/speak", body, callback
