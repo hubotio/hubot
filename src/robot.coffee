@@ -140,7 +140,38 @@ class Response
   random: (items) ->
     items[ Math.floor(Math.random() * items.length) ]
 
-  # Public: Helper for making quick HTTP GET requests.
+  # Public: Creates a scoped http client with chainable methods for
+  # modifying the request.  This doesn't actually make a request though.
+  # Once your request is assembled, you can call `get()`/`post()`/etc to
+  # send the request.
+  #
+  # url - String URL to access.
+  #
+  # Examples:
+  # 
+  #     res.http("http://example.com")
+  #       # set a single header
+  #       .header('Authorization', 'bearer abcdef')
+  #
+  #       # set multiple headers
+  #       .headers(Authorization: 'bearer abcdef', Accept: 'application/json')
+  #
+  #       # add URI query parameters
+  #       .query(a: 1, b: 'foo & bar')
+  #
+  #       # make the actual request
+  #       .get() (err, res, body) ->
+  #         console.log body
+  #
+  #       # or, you can POST data
+  #       .post(data) (err, res, body) ->
+  #         console.log body
+  #
+  # Returns a ScopedClient instance.
+  http: (url) ->
+    @httpClient.create(url)
+
+  # Deprecated: Helper for making quick HTTP GET requests.
   # otherwise, use @http for the rad Node 0.4 HTTP Client.
   #
   # url - String URL to GET.
@@ -148,19 +179,10 @@ class Response
   #
   # Returns nothing.
   fetch: (url, cb) ->
-    uri = Url.parse url
-    body = ''
-    @http.get({
-      host: uri.hostname
-      port: uri.port or 80
-      path: "#{uri.pathname}?#{uri.query}"
-    }, (res) ->
-      res.on 'data', (chunk) -> body += chunk.toString()
-      res.on 'end', ->
-        res.body = body
-        cb res
-    )
+    @http(url).get() (err, res, body) ->
+      res.body = body
+      cb res
 
-Response.prototype.http = require('http')
+Response.prototype.httpClient = require 'scoped-http-client'
 
 module.exports = Robot

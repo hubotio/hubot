@@ -28,8 +28,6 @@ Parser.on "adapter", (opt, value) ->
 
 Parser.parse process.ARGV
 
-Options.adapter
-
 switch Options.adapter
   when "campfire"
     Hubot = require("hubot/campfire").Campfire
