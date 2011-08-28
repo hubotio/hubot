@@ -5,7 +5,6 @@ This is a version of GitHub's Campfire bot, hubot.  He's pretty cool.
 
 This version is designed to be deployed on heroku.
 
-
 Deployment
 ==========
 
@@ -45,7 +44,6 @@ Web URL.  Be sure to remove the `http://` prefix from it.
 
     % heroku config:add HUBOT_WEB_HOST="galaxy324.herokuapp.com"
 
-
 Restart the bot
 ---------------
 You may want to get comfortable with `heroku logs` and `heroku restart`
@@ -57,4 +55,8 @@ Local Testing
 It's easy to test scripts locally with the shell:
 
     % bin/hubot
+
+Run tests:
+
+    % make test
 
