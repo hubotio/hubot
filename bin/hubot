@@ -36,12 +36,12 @@ switch Options.adapter
   else
     Hubot = require("hubot/shell").Shell
 
-robot = new Hubot Path.resolve(__dirname, "..", "src", "hubot", "scripts")
+robot = new Hubot Path.resolve(__dirname, "..", "scripts")
 robot.run()
 
 if webHost = process.env.HUBOT_WEB_HOST
   server = HTTP.createServer( (req, res) ->
-    res.writeHead 200, {'Content-Type': 'text/plain'}
+    res.writeHead 200, 'Content-Type': 'text/plain'
     res.end 'Hello from Hubot\n'
   ).listen PortNumber
 
