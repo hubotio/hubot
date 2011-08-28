@@ -98,15 +98,32 @@ class CampfireStreaming extends EventEmitter
 
       request = HTTPS.request options, (response) ->
         response.setEncoding("utf8")
-        response.on "data", (chunk) ->
-          if chunk.match(/^\S+/)
-            console.log "#{new Date}: Received #{id} \"#{chunk}\""
-            try
-              chunk.split("\r").forEach (part) ->
-                data = JSON.parse part
 
-                self.emit data.type, data.id, data.created_at, data.room_id, data.user_id, data.body
-                data
+        buf = ''
+        response.on "data", (chunk) ->
+          if chunk == ' '
+            # campfire api sends a ' ' heartbeat every 3s
+
+          else if chunk.match(/^\s*Access Denied/)
+            # errors are not json formatted
+            console.log "Error", chunk
+            process.exit(1)
+
+          else
+            # api uses newline terminated json payloads
+            # buffer across tcp packets and parse out lines
+            buf += chunk
+
+            while (offset = buf.indexOf("\r")) > -1
+              part = buf.substr(0, offset)
+              buf = buf.substr(offset + 1)
+
+              if part
+                try
+                  data = JSON.parse part
+                  self.emit data.type, data.id, data.created_at, data.room_id, data.user_id, data.body
+                catch err
+                  console.log(err)
 
         response.on "end", ->
           console.log "Streaming Connection closed. :("
