@@ -3,17 +3,20 @@
 # youtube me <query> - Searches YouTube for the query and returns the video
 #                      embed link.
 module.exports = (robot) ->
-  robot.hear /(youtube|yt)( me)? (.*)/i, (response) ->
-    query = response.match[3]
-    url   = "http://gdata.youtube.com/feeds/api/videos?" +
-            "orderBy=relevance&max-results=15&alt=json&q=" +
-            escape(query)
+  robot.hear /(youtube|yt)( me)? (.*)/i, (msg) ->
+    query = msg.match[3]
+    msg.http("http://gdata.youtube.com/feeds/api/videos")
+      .query({
+        orderBy: "relevance"
+        'max-results': 15
+        alt: 'json'
+        q: query
+      })
+      .get() (err, res, body) ->
+        videos = JSON.parse(body)
+        videos = videos.feed.entry
+        video  = msg.random videos
 
-    response.fetch url, (res) ->
-      videos = JSON.parse(res.body)
-      videos = videos.feed.entry
-      video  = response.random videos
-
-      video.link.forEach (link) ->
-        if link.rel == "alternate" && link.type == "text/html"
-          response.send link.href
+        video.link.forEach (link) ->
+          if link.rel == "alternate" && link.type == "text/html"
+            msg.send link.href

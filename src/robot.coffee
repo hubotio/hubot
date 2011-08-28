@@ -171,18 +171,6 @@ class Response
   http: (url) ->
     @httpClient.create(url)
 
-  # Deprecated: Helper for making quick HTTP GET requests.
-  # otherwise, use @http for the rad Node 0.4 HTTP Client.
-  #
-  # url - String URL to GET.
-  # cb  - Function callback that is triggered with the HTTP response.
-  #
-  # Returns nothing.
-  fetch: (url, cb) ->
-    @http(url).get() (err, res, body) ->
-      res.body = body
-      cb res
-
 Response.prototype.httpClient = require 'scoped-http-client'
 
 module.exports = Robot

@@ -26,5 +26,5 @@ server.listen 9001, ->
     assert.equal 'fetched', helper.sent[3]
     server.close()
     
-  helper.receive 'fetch'
+  helper.receive 'http'
 
