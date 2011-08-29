@@ -7,6 +7,7 @@
 require.paths.unshift __dirname + "/../node_modules"
 require.paths.unshift __dirname + "/../src"
 
+Fs         = require 'fs'
 Path       = require 'path'
 HTTP       = require 'http'
 OptParse   = require 'optparse'
@@ -14,10 +15,13 @@ PortNumber = parseInt(process.env.PORT) || 8080
 
 Switches = [
   [ "-h", "--help",              "Display the help information"],
-  [ "-a", "--adapter ADAPTER",   "The Adapter to use"]
+  [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
+  [ "-c", "--create PATH",       "Create a deployable hubot"]
 ]
 
 Options =
+  path: "."
+  create: false
   adapter: "stdio"
 
 Parser = new OptParse.OptionParser(Switches)
@@ -26,32 +30,51 @@ Parser.banner = "Usage hubot [options]"
 Parser.on "adapter", (opt, value) ->
   Options.adapter = value
 
+Parser.on "create", (opt, value) ->
+  Options.path = value
+  Options.create = true
+
 Parser.parse process.ARGV
 
-switch Options.adapter
-  when "irc"
-    Hubot = require("hubot/irc").IrcBot
-  when "campfire"
-    Hubot = require("hubot/campfire").Campfire
-  else
-    Hubot = require("hubot/shell").Shell
+if Options.create
+  console.log "Creating a hubot install at #{Options.path}"
+  Fs.mkdir Options.path, 0755, (err) ->
+    throw err if err
+    Fs.mkdir "#{Options.path}/scripts", 0755, (err) ->
+      throw err if err
+      templateDir = "#{__dirname}/../src/templates"
 
-robot = new Hubot Path.resolve(__dirname, "..", "scripts")
-robot.run()
+      ["Procfile", "package.json", "README.md"].forEach (file) ->
+        console.log "Copying #{templateDir}/#{file} -> #{Options.path}/#{file}"
+        Fs.readFile "#{templateDir}/#{file}", "utf8", (err, data) ->
+          console.log "#{Options.path}/#{file}"
+          Fs.writeFileSync "#{Options.path}/#{file}", data, "utf8"
 
-if webHost = process.env.HUBOT_WEB_HOST
-  server = HTTP.createServer( (req, res) ->
-    res.writeHead 200, 'Content-Type': 'text/plain'
-    res.end 'Hello from Hubot\n'
-  ).listen PortNumber
+else
+  switch Options.adapter
+    when "irc"
+      Hubot = require("hubot/irc").IrcBot
+    when "campfire"
+      Hubot = require("hubot/campfire").Campfire
+    else
+      Hubot = require("hubot/shell").Shell
 
-  setInterval ->
-    httpOpts = host: webHost
+  robot = new Hubot Path.resolve(__dirname, "..", "scripts")
+  robot.run()
 
-    HTTP.get( httpOpts, (res) ->
-      console.log "Got response: #{res}" unless res.statusCode == 200
-    ).on 'error', (e) ->
-      console.log "Got error: #{e.message}"
-  , 60000
+  if webHost = process.env.HUBOT_WEB_HOST
+    server = HTTP.createServer( (req, res) ->
+      res.writeHead 200, 'Content-Type': 'text/plain'
+      res.end 'Hello from Hubot\n'
+    ).listen PortNumber
+
+    setInterval ->
+      httpOpts = host: webHost
+
+      HTTP.get( httpOpts, (res) ->
+        console.log "Got response: #{res}" unless res.statusCode == 200
+      ).on 'error', (e) ->
+        console.log "Got error: #{e.message}"
+    , 60000
 
 # vim:ft=coffee ts=2 sw=2 et :

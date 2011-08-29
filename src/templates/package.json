@@ -1,0 +1,20 @@
+{
+  "name":        "hosted-hubot",
+  "version":     "0.1.0",
+  "author":      "GitHub Inc.",
+  "keywords":    "github hubot campfire bot",
+  "description": "A simple helpful Robot for your Company",
+  "licenses":     [{
+    "type":       "MIT",
+    "url":        "http://github.com/github/hubot/raw/master/LICENSE"
+  }],
+
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/github/hubot.git"
+  },
+
+  "dependencies": {
+    "hubot": "0.1.0"
+  }
+}
