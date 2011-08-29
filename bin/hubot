@@ -49,9 +49,14 @@ else
     else
       Hubot = require("hubot/shell").Shell
 
-  robot = new Hubot Path.resolve __dirname, "..", "scripts"
+  scriptsPath = Path.resolve "./scripts"
+
   Path.exists "./scripts", (exists) ->
-    robot.load "./scripts" if exists
+    unless exists
+      scriptsPath = Path.resolve __dirname, "..", "scripts"
+
+  console.log "Using paths at #{scriptsPath}"
+  robot = new Hubot scriptsPath
   robot.run()
 
   if webHost = process.env.HUBOT_WEB_HOST
