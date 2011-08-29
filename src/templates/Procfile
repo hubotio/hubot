@@ -1,1 +1,1 @@
-web: node_modules/coffee-script/bin/coffee bin/hubot -a campfire
+web: node_modules/hubot/bin/hubot -a campfire
