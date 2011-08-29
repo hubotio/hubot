@@ -9,6 +9,7 @@ class Robot
   # path - String directory full of Hubot scripts to load.
   constructor: (path) ->
     @listeners = []
+    @Response  = Robot.Response
     if path then @load path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -102,9 +103,9 @@ class Listener
   # Returns nothing.
   call: (message) ->
     if match = message.match @regex
-      @callback new Response(@robot, message, match)
+      @callback new @robot.Response(@robot, message, match)
 
-class Response
+class Robot.Response
   # Public: Responses are sent to matching listeners.  Messages know about the
   # content and user that made the original message, and how to reply back to
   # them.
@@ -171,6 +172,6 @@ class Response
   http: (url) ->
     @httpClient.create(url)
 
-Response.prototype.httpClient = require 'scoped-http-client'
+Robot.Response.prototype.httpClient = require 'scoped-http-client'
 
 module.exports = Robot

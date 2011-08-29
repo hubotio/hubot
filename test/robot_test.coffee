@@ -1,5 +1,5 @@
 assert = require 'assert'
-helper = require('./helper')()
+helper = require('./tests').helper()
 server = require('http').createServer (req, res) ->
   res.writeHead 200
   res.end "fetched"
@@ -21,9 +21,9 @@ server.listen 9001, ->
   assert.ok helper.sent[2].match(/^(1|2)$/)
 
   # set a callback for when the next message is replied to
-  helper.cb = ->
+  helper.cb = (msg) ->
     assert.equal 4, helper.sent.length
-    assert.equal 'fetched', helper.sent[3]
+    assert.equal 'fetched', msg
     server.close()
 
   helper.receive 'http'
