@@ -10,6 +10,7 @@ require.paths.unshift __dirname + "/../src"
 Fs         = require 'fs'
 Path       = require 'path'
 HTTP       = require 'http'
+Creator    = require 'creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
@@ -37,19 +38,8 @@ Parser.on "create", (opt, value) ->
 Parser.parse process.ARGV
 
 if Options.create
-  console.log "Creating a hubot install at #{Options.path}"
-  Fs.mkdir Options.path, 0755, (err) ->
-    throw err if err
-    Fs.mkdir "#{Options.path}/scripts", 0755, (err) ->
-      throw err if err
-      templateDir = "#{__dirname}/../src/templates"
-
-      ["Procfile", "package.json", "README.md"].forEach (file) ->
-        console.log "Copying #{templateDir}/#{file} -> #{Options.path}/#{file}"
-        Fs.readFile "#{templateDir}/#{file}", "utf8", (err, data) ->
-          console.log "#{Options.path}/#{file}"
-          Fs.writeFileSync "#{Options.path}/#{file}", data, "utf8"
-
+  creator = new Creator.Creator(Options.path)
+  creator.run()
 else
   switch Options.adapter
     when "irc"
@@ -59,7 +49,9 @@ else
     else
       Hubot = require("hubot/shell").Shell
 
-  robot = new Hubot Path.resolve(__dirname, "..", "scripts")
+  robot = new Hubot Path.resolve __dirname, "..", "scripts"
+  Path.exists "./scripts", (exists) ->
+    robot.load "./scripts" if exists
   robot.run()
 
   if webHost = process.env.HUBOT_WEB_HOST
