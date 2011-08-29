@@ -54,4 +54,4 @@ if webHost = process.env.HUBOT_WEB_HOST
       console.log "Got error: #{e.message}"
   , 60000
 
-# vim:ft=coffee
+# vim:ft=coffee ts=2 sw=2 et :
