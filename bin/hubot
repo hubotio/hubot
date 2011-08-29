@@ -29,6 +29,8 @@ Parser.on "adapter", (opt, value) ->
 Parser.parse process.ARGV
 
 switch Options.adapter
+  when "irc"
+    Hubot = require("hubot/irc").IrcBot
   when "campfire"
     Hubot = require("hubot/campfire").Campfire
   else
