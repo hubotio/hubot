@@ -7,12 +7,17 @@
 module.exports = (robot) ->
   robot.hear /(speak)( me)? (.*)/i, (msg) ->
     term   = "\"#{msg.match[3]}\""
-    apiKey = "8E94679989E7F3717D0B412E53BEAA73794369B2"
+    apiKey = process.env.HUBOT_MSTRANSLATE_APIKEY
     langs = ["en"]
 
     getLanguagesForSpeak = "http://api.microsofttranslator.com/V2/Ajax.svc/GetLanguagesForSpeak"
     detect = "http://api.microsofttranslator.com/V2/Ajax.svc/Detect"
     speak = "http://api.microsofttranslator.com/V2/Ajax.svc/Speak"
+
+    unless apiKey
+      msg.send "MS Translate API key isn't set, get a key at http://www.bing.com/developers/appids.aspx"
+      msg.send "Then, set the HUBOT_MSTRANSLATE_APIKEY environment variable"
+      return
 
     msg.http(getLanguagesForSpeak)
       .query({ appId: apiKey })
