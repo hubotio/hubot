@@ -50,13 +50,24 @@ else
       Hubot = require("hubot/shell").Shell
 
   scriptsPath = Path.resolve "./scripts"
-
-  Path.exists "./scripts", (exists) ->
-    unless exists
-      scriptsPath = Path.resolve __dirname, "..", "scripts"
-
-  console.log "Using paths at #{scriptsPath}"
+  console.log "Loading deploy-local scripts at #{scriptsPath}"
   robot = new Hubot scriptsPath
+
+  scriptsPath = Path.resolve "src", "hubot", "scripts"
+  console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
+  robot.load scriptsPath
+
+  Path.exists "plugins.json", (exists) =>
+    if exists
+      console.log "Loading hubot-scripts from plugins.json"
+      Fs.readFile "plugins.json", (err, data) =>
+        JSON.parse(data).forEach (plugin) =>
+          robot.loadFile "hubot-scripts/src/scripts/#{plugin}"
+    else
+      scriptsPath = Path.resolve "src", "scripts"
+      console.log "Loading hubot-scripts plugins at #{scriptsPath}"
+      robot.load scriptsPath
+
   robot.run()
 
   if webHost = process.env.HUBOT_WEB_HOST

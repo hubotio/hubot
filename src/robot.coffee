@@ -7,8 +7,10 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path) ->
+  constructor: (path, name = "Hubot") ->
+    @name      = name
     @listeners = []
+    @loadPaths = []
     @Response  = Robot.Response
     if path then @load path
 
@@ -36,11 +38,23 @@ class Robot
   #
   # Returns nothing.
   load: (path) ->
-    Fs.readdirSync(path).forEach (file) =>
-      ext  = Path.extname file
-      full = Path.join path, Path.basename(file, ext)
-      if ext == '.coffee' or ext == '.js'
-        require(full) @
+    Path.exists path, (exists) =>
+      if exists
+        @loadPaths.push path
+        Fs.readdirSync(path).forEach (file) =>
+          @loadFile path, file
+
+  # Public: Loads a file in path
+  #
+  # path - A String path on the filesystem.
+  # file - A String filename in path on the filesystem.
+  #
+  # Returns nothing.
+  loadFile: (path, file) ->
+    ext  = Path.extname file
+    full = Path.join path, Path.basename(file, ext)
+    if ext == '.coffee' or ext == '.js'
+      require(full) @
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
