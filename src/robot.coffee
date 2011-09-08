@@ -9,6 +9,7 @@ class Robot
   # path - String directory full of Hubot scripts to load.
   constructor: (path, name = "Hubot") ->
     @name      = name
+    @commands  = []
     @listeners = []
     @loadPaths = []
     @Response  = Robot.Response
@@ -55,6 +56,27 @@ class Robot
     full = Path.join path, Path.basename(file, ext)
     if ext == '.coffee' or ext == '.js'
       require(full) @
+      @parseHelp "#{path}/#{file}"
+
+  # Public: Help Commands for Running Scripts
+  #
+  # Returns an array of help commands for running scripts
+  #
+  helpCommands: () ->
+    @commands.sort()
+
+  # Private: load help info from a loaded script
+  #
+  # path - The path to the file on disk
+  #
+  # Returns nothing
+  parseHelp: (path) ->
+    Fs.readFile path, "utf-8", (err, body) =>
+      throw err if err
+      for i, line of body.split("\n")
+        break    if line[0] != '#'
+        continue if !line.match('-')
+        @commands.push line[2..line.length]
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
