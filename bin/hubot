@@ -57,10 +57,11 @@ else
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
   robot.load scriptsPath
 
-  Path.exists "plugins.json", (exists) =>
+  scriptsFile = Path.resolve "hubot-scripts.json"
+  Path.exists scriptsFile, (exists) =>
     if exists
-      console.log "Loading hubot-scripts from plugins.json"
-      Fs.readFile "plugins.json", (err, data) =>
+      console.log "Loading hubot-scripts from #{scriptsFile}"
+      Fs.readFile scriptsFile, (err, data) =>
         JSON.parse(data).forEach (plugin) =>
           robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
     else
