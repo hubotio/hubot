@@ -33,6 +33,7 @@ class Campfire extends Robot
     bot.Me (err, data) ->
       console.log data
       bot.info = data.user
+      bot.name = bot.info.name
       bot.rooms.forEach (room_id) ->
         bot.Room(room_id).join (err, callback) ->
           bot.Room(room_id).listen()

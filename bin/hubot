@@ -62,7 +62,7 @@ else
       console.log "Loading hubot-scripts from plugins.json"
       Fs.readFile "plugins.json", (err, data) =>
         JSON.parse(data).forEach (plugin) =>
-          robot.loadFile "hubot-scripts/src/scripts/#{plugin}"
+          robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
     else
       scriptsPath = Path.resolve "src", "scripts"
       console.log "Loading hubot-scripts plugins at #{scriptsPath}"
