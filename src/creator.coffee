@@ -9,7 +9,7 @@ class Creator
   constructor: (path) ->
     @path = path
     @templateDir = "#{__dirname}/templates"
-    @scriptsDir  = "#{__dirname}/../scripts"
+    @scriptsDir  = "#{__dirname}/hubot/scripts"
 
   # Create a folder if it doesn't already exist
   #
