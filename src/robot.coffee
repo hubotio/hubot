@@ -25,6 +25,18 @@ class Robot
   hear: (regex, callback) ->
     @listeners.push new Listener(@, regex, callback)
 
+  # Public: Adds a Listener that attempts to match incoming messages directed at the robot
+  # based on a Regex.
+  #
+  # regex    - A Regex that determines if the callback should be called.
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  respond: (regex, callback) ->
+    re = regex.toString().split("/")
+    newRegex = new RegExp("#{@name}:?\\s*#{re[1]}", re[2])
+    @listeners.push new Listener(@, newRegex, callback)
+
   # Public: Passes the given message to any interested Listeners.
   #
   # message - A Robot.Message instance.

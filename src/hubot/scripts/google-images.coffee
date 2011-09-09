@@ -8,15 +8,15 @@
 # mustache me <query> - Searches Google Images for the specified query and
 #                       mustaches it.
 module.exports = (robot) ->
-  robot.hear /(image|img)( me)? (.*)/i, (msg) ->
+  robot.respond /(image|img)( me)? (.*)/i, (msg) ->
     imageMe msg, msg.match[3], (url) ->
       msg.send url
 
-  robot.hear /animate me (.*)/i, (msg) ->
+  robot.respond /animate me (.*)/i, (msg) ->
     imageMe msg, "animated #{msg.match[1]}", (url) ->
       msg.send url
 
-  robot.hear /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
+  robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
     imagery    = msg.match[1]
     if imagery.match /^https?:\/\//i
       msg.send "#{mustachify}#{imagery}"

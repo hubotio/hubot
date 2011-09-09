@@ -3,7 +3,7 @@
 # translate me <phrase> - Searches for a translation for the <phrase> and then
 #                         prints that bad boy out.
 module.exports = (robot) ->
-  robot.hear /(translate)( me)? (.*)/i, (msg) ->
+  robot.respond /(translate)( me)? (.*)/i, (msg) ->
     term   = "\"#{msg.match[3]}\""
 
     msg.http("http://translate.google.com/translate_a/t")
