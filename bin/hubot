@@ -17,11 +17,13 @@ PortNumber = parseInt(process.env.PORT) || 8080
 Switches = [
   [ "-h", "--help",              "Display the help information"],
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
-  [ "-c", "--create PATH",       "Create a deployable hubot"]
+  [ "-c", "--create PATH",       "Create a deployable hubot"],
+  [ "-n", "--name NAME",         "The name of the robot in chat" ]
 ]
 
 Options =
   path: "."
+  name: "Hubot"
   create: false
   adapter: "stdio"
 
@@ -30,6 +32,9 @@ Parser.banner = "Usage hubot [options]"
 
 Parser.on "adapter", (opt, value) ->
   Options.adapter = value
+
+Parser.on "name", (opt, value) ->
+  Options.name = value
 
 Parser.on "create", (opt, value) ->
   Options.path = value
@@ -51,7 +56,7 @@ else
 
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = new Hubot scriptsPath
+  robot = new Hubot scriptsPath, Options.name
 
   scriptsPath = Path.resolve "src", "hubot", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
