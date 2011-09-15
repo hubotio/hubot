@@ -3,6 +3,8 @@ ImapConnection  = require('imap').ImapConnection
 EventEmitter    = require("events").EventEmitter
 util            = require('util')
 
+CRLF = "\r\n"
+
 class Email extends Robot
   run: ->
     self = @
@@ -75,13 +77,67 @@ class ImapBot extends EventEmitter
         body:     true
 
     fetch.on 'message', (bodyMsg) ->
+      message = new Message headerMsg, bodyMsg
+
       bodyMsg.on 'data', (chunk) ->
-        console.log("Got message chunk of size #{chunk.length}")
-        console.log(chunk.toString('ascii'))
+        message.recieveData(chunk)
 
       bodyMsg.on 'end', ->
-        console.log("Finished message: #{util.inspect(bodyMsg, false, 5)}")
+        message.endData ->
+          console.log(util.inspect(message))
 
   listen: (callback) ->
     @imap.on 'Email', (mail...) ->
       console.log(mail)
+
+class Message
+  constructor: (headerMsg, bodyMsg) ->
+    @headerMsg  = headerMsg
+    @bodyMsg    = bodyMsg
+
+    @rawBody  = ''
+    @buffer   = ''
+    @state    = 'INIT'
+
+  recieveData: (buff) -> @buffer += buff.toString('ascii')
+
+  endData: (callback) ->
+    @rawBody = @buffer.toString()
+    @parse(callback)
+
+  parse: (callback) ->
+    while @buffer
+      switch @state
+        when 'INIT'     then @readBoundry()
+        when 'HEADERS'  then @readHeaders()
+        when 'BODY'     then @readBody()
+        when 'FIN'      then @readFinish(callback)
+
+  readBoundry: () ->
+    throw "Boundary Missing" if @buffer.indexOf(CRLF) == -1
+
+    lines     = @buffer.split(CRLF)
+    @boundary = lines.shift()
+    @buffer   = lines.join(CRLF)
+
+    @state = 'HEADERS'
+
+  readHeaders: () ->
+    throw "Header(s) Missing" if @buffer.indexOf(CRLF + CRLF) == -1
+
+    # throw away the body headers for now
+    [_, parts...] = @buffer.split(CRLF + CRLF)
+    @buffer = parts.join(CRLF + CRLF)
+
+    @state = 'BODY'
+
+  readBody: () ->
+    throw "Plain Body Missing" if @buffer.indexOf(@boundary) == -1
+
+    @body = @buffer.split(@boundary, 1)[0]
+
+    @state = 'FIN'
+
+  readFinish: (callback) ->
+    @buffer = ''
+    callback()
