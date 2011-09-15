@@ -6,6 +6,9 @@ This is a version of GitHub's Campfire bot, hubot.  He's pretty cool.
 Getting Your Own
 ================
 
+Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/) installed. Clone this repository, and run these commands:
+
+    % npm install
     % hubot -c ~/eptics
 
 Then follow the instructions in the ~/eptics folder
