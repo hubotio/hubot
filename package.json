@@ -18,7 +18,8 @@
     "coffee-script": "1.1.1",
     "optparse": "1.0.1",
     "scoped-http-client": "0.9.0",
-    "irc": "0.2"
+    "irc": "0.2",
+    "imap": "0.2.5"
   },
 
   "directories":  {
