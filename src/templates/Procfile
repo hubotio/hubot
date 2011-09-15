@@ -1,1 +1,1 @@
-web: node_modules/coffee-script/bin/coffee node_modules/hubot/bin/hubot -a campfire -n BOT_NAME_HERE
+web: node_modules/coffee-script/bin/coffee node_modules/hubot/bin/hubot -a campfire -n Hubot
