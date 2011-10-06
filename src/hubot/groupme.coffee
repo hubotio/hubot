@@ -39,7 +39,7 @@ class GroupMe extends Robot
 
       host: uri.hostname
       port: uri.port || 80
-      path: uri.pathname
+      path: uri.pathname + (uri.search || '')
 
     request = (if uri.protocol == 'http:' then HTTP else HTTPS).request options, (response) =>
       response.setEncoding('binary')
