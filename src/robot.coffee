@@ -1,6 +1,7 @@
-Fs   = require 'fs'
-Url  = require 'url'
-Path = require 'path'
+Fs    = require 'fs'
+Url   = require 'url'
+Path  = require 'path'
+Redis = require 'redis'
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -13,6 +14,7 @@ class Robot
     @listeners = []
     @loadPaths = []
     @Response  = Robot.Response
+    @brain     = new Robot.Brain()
     if path then @load path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -107,15 +109,69 @@ class Robot
   # Extend this.
   run: ->
 
+  users: () ->
+    @brain.data.users
+
+  # Public: Get a User object given a unique identifier
+  #
+  userForId: (id, options) ->
+    user = @brain.data.users[id]
+    unless user
+      user = new Robot.User id, options
+      @brain.data.users[id] = user
+
+    user
+
+  # Public: Get a User object given a name
+  #
+  userForName: (name) ->
+    result = null
+    lowerName = name.toLowerCase()
+    for k of (@brain.data.users or { })
+      if @brain.data.users[k]['name'].toLowerCase() == lowerName
+        result = @brain.data.users[k]
+
+    result
+    # (user for id in @brain.data.users when @users[id]['name'].toLowerCase() == lowerName)
+
 class Robot.User
   # Represents a participating user in the chat.
   #
   # id      - A unique ID for the user.
   # name    - A String name of the user.
   # options - An optional Hash of key, value pairs for this user.
-  constructor: (@id, @name, options) ->
-    for key, value of (options or {})
-      this[key] = value
+  constructor: (@id, options = { }) ->
+    for k of (options or { })
+      @[k] = options[k]
+
+class Robot.Brain
+  # Represents somewhat persistent storage for the robot.
+  #
+  constructor: () ->
+    @data =
+      users: { }
+
+    @client = Redis.createClient()
+
+    @client.on "error", (err) ->
+      console.log "Error #{err}"
+    @client.on "connect", () =>
+      console.log "BOOM: Connected to Redis"
+      @client.get "hubot:storage", (err, reply) =>
+        throw err if err
+        if reply
+          @mergeData JSON.parse reply.toString()
+
+      setInterval =>
+        # console.log JSON.stringify @data
+        data = JSON.stringify @data
+        @client.set "hubot:storage", data, (err, reply) ->
+          # console.log "Saved #{reply.toString()}"
+      , 5000
+
+  mergeData: (data) ->
+    for k of (data or { })
+      @data[k] = data[k]
 
 class Robot.Message
   # Represents an incoming message from the chat.
