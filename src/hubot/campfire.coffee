@@ -26,7 +26,8 @@ class Campfire extends Robot
     bot.on "TextMessage", (id, created, room, user, body) ->
       bot.User user, (err, userData) ->
         if userData.user
-          author = new Robot.User user, userData.user.name, room: room
+          userData.user.room = room
+          author = self.userForId(userData.user.id, userData.user)
           self.receive new Robot.Message(author, body)
 
     bot.Me (err, data) ->
