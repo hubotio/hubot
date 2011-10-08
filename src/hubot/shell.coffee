@@ -12,11 +12,19 @@ class Shell extends Robot
   run: ->
     console.log "Hubot: the Shell."
 
-    user = new Robot.User 1, 'shell'
+    user = @userForId('1', {name: "Shell"})
+    console.log user
+
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
       txt.toString().split("\n").forEach (line) =>
         return if line.length == 0
         @receive new Robot.Message user, line
+
+    setTimeout =>
+      user   = @userForId('1', {name: "Shell"})
+      atmos  = @userForId('2', {name: "atmos"})
+      holman = @userForId('3', {name: "holman"})
+    , 3000
 
 exports.Shell = Shell
