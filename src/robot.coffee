@@ -151,7 +151,11 @@ class Robot.Brain
     @data =
       users: { }
 
-    @client = Redis.createClient()
+    info = Url.parse process.env.REDISTOGO_URL || 'localhost'
+    @client = Redis.createClient(info.port, info.hostname)
+
+    if info.auth
+      @client.auth info.auth.split(":")[1]
 
     @client.on "error", (err) ->
       console.log "Error #{err}"
