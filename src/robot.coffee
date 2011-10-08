@@ -116,12 +116,9 @@ class Robot
   # Public: Get a User object given a unique identifier
   #
   userForId: (id, options) ->
-    console.log "Trying to find #{id}"
     user = @brain.data.users[id]
     unless user
-      console.log "Couldn't find #{id}"
       user = new Robot.User id, options
-      console.log "Found user #{JSON.stringify(user)}"
       @brain.data.users[id] = user
 
     user
@@ -131,7 +128,6 @@ class Robot
   userForName: (name) ->
     result = null
     lowerName = name.toLowerCase()
-    console.log "Trying to find #{name}"
     for k of (@brain.data.users or { })
       if @brain.data.users[k]['name'].toLowerCase() == lowerName
         result = @brain.data.users[k]
@@ -168,10 +164,10 @@ class Robot.Brain
           @mergeData JSON.parse reply.toString()
 
       setInterval =>
-        console.log JSON.stringify @data
+        # console.log JSON.stringify @data
         data = JSON.stringify @data
         @client.set "hubot:storage", data, (err, reply) ->
-          console.log "Saved #{reply.toString()}"
+          # console.log "Saved #{reply.toString()}"
       , 5000
 
   mergeData: (data) ->
