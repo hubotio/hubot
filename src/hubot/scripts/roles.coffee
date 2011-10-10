@@ -1,7 +1,8 @@
 # Assign roles to people you're chatting with
 #
-# hubot <user> is a extraordinary role
-# hubot <user> is not a extraordinary role
+# hubot <user> is a extraordinary role - assign a role to a user
+# hubot <user> is not a extraordinary role - remove a role from a user
+# hubot who is <user> - see what roles a user has
 
 # hubot holman is an ego surfer
 # hubot holman is not an ego surfer
@@ -37,7 +38,7 @@ module.exports = (robot) ->
             msg.send "I know"
           else
             user.roles.push(newRole)
-            if name.toLowerCase() == "hubot"
+            if name.toLowerCase() == robot.name
               msg.send "Ok, I am #{newRole}."
             else
               msg.send "Ok, #{name} is #{newRole}."
