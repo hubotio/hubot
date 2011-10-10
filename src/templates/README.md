@@ -11,8 +11,11 @@ Deployment
     % heroku create --stack cedar
     % git push heroku master
     % heroku ps:scale web=1
+    % heroku addons:add redistogo:nano
 
-You'll need to edit the `Procfile` to say what the bot's name is. Hubot also needs four environmental variables set to run and to keep him
+You'll need to edit the `Procfile` to say what the bot's name is.
+
+Hubot also needs four environmental variables set to run and to keep him
 running on heroku.
 
 Campfire Variables
