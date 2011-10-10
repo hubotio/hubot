@@ -24,7 +24,7 @@ class Shell extends Robot
     setTimeout =>
       user   = @userForId('1', {name: "Shell"})
       atmos  = @userForId('2', {name: "atmos"})
-      holman = @userForId('3', {name: "holman"})
+      holman = @userForId('3', {name: "Zach Holman"})
     , 3000
 
 exports.Shell = Shell
