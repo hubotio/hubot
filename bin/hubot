@@ -18,6 +18,7 @@ Switches = [
   [ "-h", "--help",              "Display the help information"],
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
   [ "-c", "--create PATH",       "Create a deployable hubot"],
+  [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
   [ "-n", "--name NAME",         "The name of the robot in chat" ]
 ]
 
@@ -40,6 +41,9 @@ Parser.on "create", (opt, value) ->
   Options.path = value
   Options.create = true
 
+Parser.on "enable-slash", (opt) ->
+  Options.enableSlash = true
+
 Parser.parse process.ARGV
 
 if Options.create
@@ -59,6 +63,7 @@ else
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
   robot = new Hubot scriptsPath, Options.name
+  robot.enableSlash = Options.enableSlash
 
   scriptsPath = Path.resolve "src", "hubot", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"

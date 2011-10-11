@@ -1,6 +1,7 @@
-Fs   = require 'fs'
-Url  = require 'url'
-Path = require 'path'
+Fs    = require 'fs'
+Url   = require 'url'
+Path  = require 'path'
+Redis = require 'redis'
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -8,11 +9,13 @@ class Robot
   #
   # path - String directory full of Hubot scripts to load.
   constructor: (path, name = "Hubot") ->
-    @name      = name
-    @commands  = []
-    @listeners = []
-    @loadPaths = []
-    @Response  = Robot.Response
+    @name        = name
+    @brain       = new Robot.Brain()
+    @commands    = []
+    @Response    = Robot.Response
+    @listeners   = []
+    @loadPaths   = []
+    @enableSlash = false
     if path then @load path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -26,7 +29,7 @@ class Robot
     @listeners.push new Listener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed at the robot
-  # based on a Regex.
+  # based on a Regex.  All regexes treat patterns like they begin with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
@@ -34,7 +37,10 @@ class Robot
   # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split("/")
-    newRegex = new RegExp("#{@name}:?\\s*#{re[1]}", re[2])
+    if @enableSlash
+      newRegex = new RegExp("(\/|#{@name}:?)\\s*#{re[1]}", re[2])
+    else
+      newRegex = new RegExp("#{@name}:?\\s*#{re[1]}", re[2])
     @listeners.push new Listener(@, newRegex, callback)
 
   # Public: Passes the given message to any interested Listeners.
@@ -107,15 +113,83 @@ class Robot
   # Extend this.
   run: ->
 
+  users: () ->
+    @brain.data.users
+
+  # Public: Get a User object given a unique identifier
+  #
+  userForId: (id, options) ->
+    user = @brain.data.users[id]
+    unless user
+      user = new Robot.User id, options
+      @brain.data.users[id] = user
+
+    user
+
+  # Public: Get a User object given a name
+  #
+  userForName: (name) ->
+    result = null
+    lowerName = name.toLowerCase()
+    for k of (@brain.data.users or { })
+      if @brain.data.users[k]['name'].toLowerCase() == lowerName
+        result = @brain.data.users[k]
+
+    result
+    # (user for id in @brain.data.users when @users[id]['name'].toLowerCase() == lowerName)
+
 class Robot.User
   # Represents a participating user in the chat.
   #
   # id      - A unique ID for the user.
-  # name    - A String name of the user.
   # options - An optional Hash of key, value pairs for this user.
-  constructor: (@id, @name, options) ->
-    for key, value of (options or {})
-      this[key] = value
+  constructor: (@id, options = { }) ->
+    for k of (options or { })
+      @[k] = options[k]
+
+class Robot.Brain
+  # Represents somewhat persistent storage for the robot.
+  #
+  # Returns a new Brain that's trying to connect to redis
+  #
+  # Previously persisted data is loaded on a successful connection
+  #
+  # Redis connects to a environmental variable REDISTOGO_URL or
+  # fallsback to localhost
+  constructor: () ->
+    @data =
+      users: { }
+
+    info = Url.parse process.env.REDISTOGO_URL || 'localhost'
+    @client = Redis.createClient(info.port, info.hostname)
+
+    if info.auth
+      @client.auth info.auth.split(":")[1]
+
+    @client.on "error", (err) ->
+      console.log "Error #{err}"
+    @client.on "connect", () =>
+      console.log "BOOM: Connected to Redis"
+      @client.get "hubot:storage", (err, reply) =>
+        throw err if err
+        if reply
+          @mergeData JSON.parse reply.toString()
+
+      setInterval =>
+        # console.log JSON.stringify @data
+        data = JSON.stringify @data
+        @client.set "hubot:storage", data, (err, reply) ->
+          # console.log "Saved #{reply.toString()}"
+      , 5000
+
+  # Merge keys loaded from redis against the in memory representation
+  #
+  # Returns nothing
+  #
+  # Caveats: Deeply nested structures don't merge well
+  mergeData: (data) ->
+    for k of (data or { })
+      @data[k] = data[k]
 
 class Robot.Message
   # Represents an incoming message from the chat.
@@ -197,7 +271,7 @@ class Robot.Response
   # url - String URL to access.
   #
   # Examples:
-  # 
+  #
   #     res.http("http://example.com")
   #       # set a single header
   #       .header('Authorization', 'bearer abcdef')
