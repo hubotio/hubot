@@ -29,7 +29,7 @@ class Robot
     @listeners.push new Listener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed at the robot
-  # based on a Regex.
+  # based on a Regex.  All regexes treat patterns like they begin with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
