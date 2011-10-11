@@ -9,12 +9,13 @@ class Robot
   #
   # path - String directory full of Hubot scripts to load.
   constructor: (path, name = "Hubot") ->
-    @name      = name
-    @commands  = []
-    @listeners = []
-    @loadPaths = []
-    @Response  = Robot.Response
-    @brain     = new Robot.Brain()
+    @name        = name
+    @brain       = new Robot.Brain()
+    @commands    = []
+    @Response    = Robot.Response
+    @listeners   = []
+    @loadPaths   = []
+    @enableSlash = false
     if path then @load path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -36,7 +37,10 @@ class Robot
   # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split("/")
-    newRegex = new RegExp("#{@name}:?\\s*#{re[1]}", re[2])
+    if @enableSlash
+      newRegex = new RegExp("(\/|#{@name}:?)\\s*#{re[1]}", re[2])
+    else
+      newRegex = new RegExp("#{@name}:?\\s*#{re[1]}", re[2])
     @listeners.push new Listener(@, newRegex, callback)
 
   # Public: Passes the given message to any interested Listeners.
