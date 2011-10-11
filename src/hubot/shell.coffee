@@ -13,7 +13,6 @@ class Shell extends Robot
     console.log "Hubot: the Shell."
 
     user = @userForId('1', {name: "Shell"})
-    console.log user
 
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
