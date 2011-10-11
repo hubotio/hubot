@@ -173,7 +173,7 @@ class Robot.Brain
     @client.on "error", (err) ->
       console.log "Error #{err}"
     @client.on "connect", () =>
-      console.log "BOOM: Connected to Redis"
+      console.log "Successfully connected to Redis"
       @client.get "hubot:storage", (err, reply) =>
         throw err if err
         if reply

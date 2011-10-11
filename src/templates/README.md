@@ -8,18 +8,20 @@ This version is designed to be deployed on heroku.
 Playing with Hubot
 ==================
 
-You'll need to install the necessary dependencies for hubot
+You'll need to install the necessary dependencies for hubot.  All of
+those dependencies are provided by [npm](http://npmjs.org).
+
     % npm install -g hubot
     % hubot
 
 You'll see some startup output about where your scripts come from.
 
-    Loading deploy-local scripts at /Users/atmos/nubot/scripts
-    Loading hubot core scripts for relative scripts at /Users/atmos/nubot/src/hubot/scripts
+    Loading deploy-local scripts at /Users/me/nubot/scripts
+    Loading hubot core scripts for relative scripts at /Users/me/nubot/src/hubot/scripts
     Hubot: the Shell.
     { id: '1', name: 'Shell' }
-    Loading hubot-scripts from /Users/atmos/nubot/hubot-scripts.json
-    BOOM: Connected to Redis
+    Loading hubot-scripts from /Users/me/nubot/hubot-scripts.json
+    Successfully connected to Redis
 
 Then you can interact with Hubot by typing `hubot help`.
 
