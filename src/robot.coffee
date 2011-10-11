@@ -142,7 +142,6 @@ class Robot.User
   # Represents a participating user in the chat.
   #
   # id      - A unique ID for the user.
-  # name    - A String name of the user.
   # options - An optional Hash of key, value pairs for this user.
   constructor: (@id, options = { }) ->
     for k of (options or { })
@@ -151,6 +150,12 @@ class Robot.User
 class Robot.Brain
   # Represents somewhat persistent storage for the robot.
   #
+  # Returns a new Brain that's trying to connect to redis
+  #
+  # Previously persisted data is loaded on a successful connection
+  #
+  # Redis connects to a environmental variable REDISTOGO_URL or
+  # fallsback to localhost
   constructor: () ->
     @data =
       users: { }
@@ -177,6 +182,11 @@ class Robot.Brain
           # console.log "Saved #{reply.toString()}"
       , 5000
 
+  # Merge keys loaded from redis against the in memory representation
+  #
+  # Returns nothing
+  #
+  # Caveats: Deeply nested structures don't merge well
   mergeData: (data) ->
     for k of (data or { })
       @data[k] = data[k]
@@ -261,7 +271,7 @@ class Robot.Response
   # url - String URL to access.
   #
   # Examples:
-  # 
+  #
   #     res.http("http://example.com")
   #       # set a single header
   #       .header('Authorization', 'bearer abcdef')

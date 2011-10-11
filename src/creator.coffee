@@ -34,30 +34,24 @@ class Creator
   # they want.  It also provides them with a few examples and a top
   # level scripts folder
   #
-  # path - The destination 
+  # path - The destination
   copyDefaultScripts: (path) ->
-    copy = @copy
-    scriptsDir = @scriptsDir
-    Fs.readdirSync(scriptsDir).forEach (file) ->
-      copy "#{scriptsDir}/#{file}", "#{path}/#{file}"
+    Fs.readdirSync(@scriptsDir).forEach (file) =>
+      @copy "#{@scriptsDir}/#{file}", "#{path}/#{file}"
 
   # Run the creator process
   #
   # Setup a ready to deploy folder that uses the hubot npm package
   # Overwriting basic hubot files if they exist
   run: ->
-    path = @path
-    copy = @copy
-    templates = @templateDir
+    console.log "Creating a hubot install at #{@path}"
 
-    console.log "Creating a hubot install at #{path}"
+    @mkdirDashP(@path)
+    @mkdirDashP("#{@path}/scripts")
 
-    @mkdirDashP(path)
-    @mkdirDashP("#{path}/scripts")
+    @copyDefaultScripts("#{@path}/scripts")
 
-    @copyDefaultScripts("#{path}/scripts")
-
-    ["Procfile", "package.json", "README.md"].forEach (file) ->
-      copy "#{templates}/#{file}", "#{path}/#{file}"
+    ["Procfile", "package.json", "README.md"].forEach (file) =>
+      @copy "#{@templateDir}/#{file}", "#{@path}/#{file}"
 
 exports.Creator = Creator
