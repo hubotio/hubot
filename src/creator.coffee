@@ -51,7 +51,7 @@ class Creator
 
     @copyDefaultScripts("#{@path}/scripts")
 
-    ["Procfile", "package.json", "README.md"].forEach (file) =>
+    ["Procfile", "package.json", "README.md", ".gitignore"].forEach (file) =>
       @copy "#{@templateDir}/#{file}", "#{@path}/#{file}"
 
 exports.Creator = Creator
