@@ -164,7 +164,7 @@ class Robot.Brain
     @data =
       users: { }
 
-    info = Url.parse process.env.REDISTOGO_URL || 'localhost'
+    info = Url.parse process.env.REDISTOGO_URL || 'redis://localhost:6379'
     @client = Redis.createClient(info.port, info.hostname)
 
     if info.auth

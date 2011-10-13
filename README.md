@@ -2,6 +2,12 @@
 
 This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
+You'll probably never have to hack on this repo directly.  Instead this
+repo provides a library that's distributed by npm that you simply
+require in your project.
+
+We provide a generator to help you a hubot going very quickly.
+
 ## Getting Your Own
 
 Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/)
@@ -10,7 +16,7 @@ installed. Clone this repository, and run these commands:
     % npm install -g
     % hubot -c ~/my_bot
 
-Then follow the instructions in the `~/my_bot` directory.
+Then follow the instructions in the README in the `~/my_bot` directory.
 
 ## Scripts
 
