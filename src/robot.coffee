@@ -37,14 +37,19 @@ class Robot
   # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split("/")
-    if re[1] and re[1][0] == "^"
+    re.shift()           # remove empty first item
+    modifiers = re.pop() # pop off modifiers
+
+    if re[0] and re[0][0] == "^"
       console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
       console.log "WARNING: The regex in question was #{regex.toString()}\n"
 
+    pattern = re.join("/") # combine the pattern back again
     if @enableSlash
-      newRegex = new RegExp("^(\/|#{@name}:?)\\s*#{re[1]}", re[2])
+      newRegex = new RegExp("^(\/|#{@name}:?)\\s*#{pattern}", modifiers)
     else
-      newRegex = new RegExp("^#{@name}:?\\s*#{re[1]}", re[2])
+      newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
+
     @listeners.push new Listener(@, newRegex, callback)
 
   # Public: Passes the given message to any interested Listeners.
