@@ -44,6 +44,10 @@ Parser.on "create", (opt, value) ->
 Parser.on "enable-slash", (opt) ->
   Options.enableSlash = true
 
+Parser.on "help", (opt, value) ->
+  console.log Parser.toString()
+  process.exit 0
+
 Parser.parse process.ARGV
 
 if Options.create
