@@ -46,7 +46,7 @@ class Robot
 
     pattern = re.join("/") # combine the pattern back again
     if @enableSlash
-      newRegex = new RegExp("^(\/|#{@name}:?)\\s*#{pattern}", modifiers)
+      newRegex = new RegExp("^(?:\/|#{@name}:?)\\s*#{pattern}", modifiers)
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
