@@ -6,7 +6,7 @@ You'll probably never have to hack on this repo directly.  Instead this
 repo provides a library that's distributed by npm that you simply
 require in your project.
 
-We provide a generator to help you a hubot going very quickly.
+We provide a generator to help you get a hubot going very quickly.
 
 ## Getting Your Own
 
