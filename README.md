@@ -10,8 +10,8 @@ We provide a generator to help you get a hubot going very quickly.
 
 ## Getting Your Own
 
-Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/)
-installed. Clone this repository, and run these commands:
+Make sure you have [node.js](http://nodejs.org/), [npm](http://npmjs.org/), [redis](http://redis.io/), 
+and [coffee-script](http://jashkenas.github.com/coffee-script/#installation) installed. Clone this repository, and run these commands:
 
     % npm install -g
     % hubot -c ~/my_bot
