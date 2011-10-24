@@ -1,5 +1,6 @@
 #!/bin/sh
 
 npm install
+PATH="node_modules/.bin:$PATH"; export PATH
 
 node_modules/.bin/hubot
