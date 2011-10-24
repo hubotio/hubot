@@ -11,8 +11,7 @@ Playing with Hubot
 You'll need to install the necessary dependencies for hubot.  All of
 those dependencies are provided by [npm](http://npmjs.org).
 
-    % npm install -g hubot
-    % hubot
+    % bin/hubot
 
 You'll see some startup output about where your scripts come from.
 

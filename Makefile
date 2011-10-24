@@ -7,6 +7,10 @@ dev: generate-js
 generate-js:
 	@find src -name '*.coffee' | xargs coffee -c -o lib
 
+package:
+	@bin/hubot -c hubot
+	@chmod 0755 hubot/bin/hubot
+
 remove-js:
 	@rm -fr lib/
 

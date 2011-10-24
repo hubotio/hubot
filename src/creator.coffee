@@ -47,11 +47,12 @@ class Creator
     console.log "Creating a hubot install at #{@path}"
 
     @mkdirDashP(@path)
+    @mkdirDashP("#{@path}/bin")
     @mkdirDashP("#{@path}/scripts")
 
     @copyDefaultScripts("#{@path}/scripts")
 
-    ["Procfile", "package.json", "README.md", ".gitignore"].forEach (file) =>
+    ["Procfile", "package.json", "README.md", ".gitignore", "bin/hubot"].forEach (file) =>
       @copy "#{@templateDir}/#{file}", "#{@path}/#{file}"
 
 exports.Creator = Creator
