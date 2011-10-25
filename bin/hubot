@@ -85,19 +85,4 @@ else
 
   robot.run()
 
-  if webHost = process.env.HUBOT_WEB_HOST
-    server = HTTP.createServer( (req, res) ->
-      res.writeHead 200, 'Content-Type': 'text/plain'
-      res.end 'Hello from Hubot\n'
-    ).listen PortNumber
-
-    setInterval ->
-      httpOpts = host: webHost
-
-      HTTP.get( httpOpts, (res) ->
-        console.log "Got response: #{res}" unless res.statusCode == 200
-      ).on 'error', (e) ->
-        console.log "Got error: #{e.message}"
-    , 60000
-
 # vim:ft=coffee ts=2 sw=2 et :
