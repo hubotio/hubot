@@ -1,7 +1,6 @@
 Tests  = require('./tests')
 assert = require 'assert'
 helper = Tests.helper()
-mu     = "http://mustachify.me/?src="
 
 require('../src/hubot/scripts/google-images') helper
 
@@ -15,6 +14,7 @@ danger = Tests.danger helper, (req, res, url) ->
   )
 
 # callbacks for when hubot sends messages
+mu    = "http://mustachify.me/?src="
 tests = [
   (msg) -> assert.equal "#{mu}(foo)#.png", msg
   (msg) -> assert.equal "#{mu}(foo)#.png", msg
@@ -36,3 +36,4 @@ danger.start tests, ->
   helper.receive 'helper: image me foo'
   helper.receive 'helper: image foo'
   helper.receive 'helper: animate me foo'
+
