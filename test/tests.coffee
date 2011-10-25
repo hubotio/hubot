@@ -31,7 +31,7 @@ exports.danger = (helper, cb) ->
 
 class Helper extends Robot
   constructor: (path) ->
-    super path, 'helper'
+    super path, 'helper', Robot.Brain
     @sent = []
     @Response = Helper.Response
 
