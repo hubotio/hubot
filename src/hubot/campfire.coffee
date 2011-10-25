@@ -154,6 +154,7 @@ class CampfireStreaming extends EventEmitter
       "Content-Type"  : "application/json"
 
     options =
+      "agent"  : false
       "host"   : @domain
       "port"   : 443
       "path"   : path
@@ -170,6 +171,9 @@ class CampfireStreaming extends EventEmitter
       response.on "data", (chunk) ->
         data += chunk
       response.on "end", ->
+        if response.statusCode >= 400
+          console.log "campfire error: #{response.statusCode}"
+
         try
           callback null, JSON.parse(data)
         catch err
@@ -178,7 +182,7 @@ class CampfireStreaming extends EventEmitter
         callback err, { }
 
     if method == "POST"
-      request.end(body)
+      request.end(body, 'binary')
     else
       request.end()
 
