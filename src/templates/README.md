@@ -75,6 +75,15 @@ Add the subdomain hubot should connect to. If you web URL looks like
 
     % heroku config:add HUBOT_CAMPFIRE_ACCOUNT="mysubdomain"
 
+IRC Variables
+------------------
+
+    % heroku config:add HUBOT_IRC_SERVER="irc.freenode.net"
+    
+    % heroku config:add HUBOT_IRC_ROOMS="#github,#node.js"
+    
+    % heroku config:add HUBOT_IRC_NICK="MICCHECK1212"
+
 Restart the bot
 ---------------
 You may want to get comfortable with `heroku logs` and `heroku restart`
