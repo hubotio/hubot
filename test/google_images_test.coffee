@@ -3,7 +3,7 @@ assert = require 'assert'
 helper = Tests.helper()
 mu     = "http://mustachify.me/?src="
 
-require('../scripts/google-images') helper
+require('../src/hubot/scripts/google-images') helper
 
 # start up a danger room for google images
 danger = Tests.danger helper, (req, res, url) ->
@@ -28,11 +28,11 @@ tests = [
 
 # run the async tests
 danger.start tests, ->
-  helper.receive 'stache me foo'
-  helper.receive 'stache foo'
-  helper.receive 'mustache me foo'
-  helper.receive 'mustache foo'
-  helper.receive 'img foo'
-  helper.receive 'image me foo'
-  helper.receive 'image foo'
-  helper.receive 'animate me foo'
+  helper.receive 'helper: stache me foo'
+  helper.receive 'helper: stache foo'
+  helper.receive 'helper: mustache me foo'
+  helper.receive 'helper: mustache foo'
+  helper.receive 'helper: img foo'
+  helper.receive 'helper: image me foo'
+  helper.receive 'helper: image foo'
+  helper.receive 'helper: animate me foo'

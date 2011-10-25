@@ -123,6 +123,11 @@ class Robot
   # Extend this.
   run: ->
 
+  # Public: Raw method for shutting the bot down.
+  # Extend this.
+  close: ->
+    @brain.close()
+
   users: () ->
     @brain.data.users
 
@@ -157,6 +162,7 @@ class Robot.User
     for k of (options or { })
       @[k] = options[k]
 
+# http://www.the-isb.com/images/Nextwave-Aaron01.jpg
 class Robot.Brain
   # Represents somewhat persistent storage for the robot.
   #
@@ -178,19 +184,25 @@ class Robot.Brain
 
     @client.on "error", (err) ->
       console.log "Error #{err}"
-    @client.on "connect", () =>
+    @client.on "connect", =>
       console.log "Successfully connected to Redis"
       @client.get "hubot:storage", (err, reply) =>
         throw err if err
         if reply
           @mergeData JSON.parse reply.toString()
 
-      setInterval =>
-        # console.log JSON.stringify @data
-        data = JSON.stringify @data
-        @client.set "hubot:storage", data, (err, reply) ->
-          # console.log "Saved #{reply.toString()}"
+      @saveInterval = setInterval =>
+        @save()
       , 5000
+
+  save: (cb) ->
+    data = JSON.stringify @data
+    cb or= (err, reply) ->
+    @client.set "hubot:storage", data, cb
+
+  close: ->
+    clearInterval @saveInterval
+    @save => @client.quit()
 
   # Merge keys loaded from redis against the in memory representation
   #

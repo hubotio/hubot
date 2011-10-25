@@ -25,11 +25,13 @@ exports.danger = (helper, cb) ->
 
       cb()
 
+  server.on 'close', -> helper.close()
+
   server
 
 class Helper extends Robot
   constructor: (path) ->
-    super path
+    super path, 'helper'
     @sent = []
     @Response = Helper.Response
 
@@ -40,7 +42,7 @@ class Helper extends Robot
 
   reply: (user, strings...) ->
     strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+      @send user, "#{@name}: #{str}"
 
   # modified to accept a string and pass the Robot.Message to super()
   receive: (text) ->
