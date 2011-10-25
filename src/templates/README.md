@@ -42,8 +42,8 @@ hubot-scripts
 There will inevitably be functionality that everyone will want.  Instead
 of adding it to hubot itself, you can submit pull requests to
 [hubot-scripts](https://github.com/github/hubot-scripts).  To enable
-scripts from the hubot-scripts package, add the script name with extension to
-the hubot-scripts.json file in this repo.
+scripts from the hubot-scripts package, add the script name with extension as a
+double quoted string to the hubot-scripts.json file in this repo.
 
 Deployment
 ==========
