@@ -2,6 +2,8 @@
 
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
 
+trap "exit" TERM
+
 until node_modules/.bin/hubot "$@"; do
   echo "Hubot crashed with exit code $?. Respawning..."
 done
