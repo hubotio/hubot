@@ -84,6 +84,19 @@ IRC Variables
     
     % heroku config:add HUBOT_IRC_NICK="MICCHECK1212"
 
+Twilio Variables
+------------------
+
+You must have a Twilio account with credit and a number that can send and
+receive SMS messages.
+
+    % heroku config:add HUBOT_SMS_FROM="+14156662671"
+
+    % heroku config:add HUBOT_SMS_SID="AC5d10e5624da757326d12f8d31c08c20b"
+
+    % heroku config:add HUBOT_SMS_TOKEN="4ada63e18146a204e468fb6289030231"
+
+
 Restart the bot
 ---------------
 You may want to get comfortable with `heroku logs` and `heroku restart`
