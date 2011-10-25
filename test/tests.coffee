@@ -50,6 +50,7 @@ class Helper extends Robot
     super new Robot.Message(user, text)
 
 class Helper.Response extends Robot.Response
+  # This changes ever HTTP request to hit the danger server above
   http: (url) ->
     super(url).host('127.0.0.1').port(9001)
 
