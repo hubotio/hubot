@@ -164,6 +164,8 @@ class CampfireStreaming extends EventEmitter
     if method == "POST"
       if typeof(body) != "string"
         body = JSON.stringify body
+
+      body = new Buffer(body)
       options.headers["Content-Length"] = body.length
 
     request = HTTPS.request options, (response) ->
