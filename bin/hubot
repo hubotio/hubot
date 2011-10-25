@@ -59,6 +59,8 @@ else
       Hubot = require("hubot/irc").IrcBot
     when "campfire"
       Hubot = require("hubot/campfire").Campfire
+    when "twilio"
+      Hubot = require("hubot/twilio").Twilio
     else
       Hubot = require("hubot/shell").Shell
 
