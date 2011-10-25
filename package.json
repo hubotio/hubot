@@ -30,5 +30,5 @@
   "bin": {
     "hubot": "./bin/hubot"
   },
-  "engine": "node >= 0.4.1"
+  "engine": "node >= 0.4.1 < 0.5.0"
 }
