@@ -6,7 +6,8 @@ class Campfire extends Robot
   send: (user, strings...) ->
     strings.forEach (str) =>
       @bot.Room(user.room).speak str, (err, data) ->
-        console.log "#{user}: #{str}"
+        if err
+          console.log "campfire error: #{err}"
 
   reply: (user, strings...) ->
     strings.forEach (str) =>
@@ -180,6 +181,7 @@ class CampfireStreaming extends EventEmitter
       request.end(body)
     else
       request.end()
+
     request.on "error", (err) ->
       console.log err
       console.log err.stack
