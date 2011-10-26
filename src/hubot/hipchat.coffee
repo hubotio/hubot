@@ -42,11 +42,11 @@ class HipChat extends Robot
           console.log "Can't list rooms: #{err}"
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
-    bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
+    bot.onMessage /^\s*@hubot[\s|,]/i, (channel, from, message)->
       console.log from
       author = self.userForName(from)
       author.room = channel
-      self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
+      self.receive new Robot.Message(author, message.replace(/^\s*@hubot[\s+|,]/, "Hubot: "))
     bot.onPrivateMessage (from, message)=>
       author = self.userForId(from.match(/_(\d+)@/)[1])
       author.jid = from
