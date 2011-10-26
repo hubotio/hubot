@@ -7,7 +7,7 @@ class HipChat extends Robot
   send: (user, strings...) ->
     console.log "Sending"
     strings.forEach (str) =>
-      @bot.message user.room || user.jid, str
+      @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
     console.log "Replying"
@@ -19,21 +19,30 @@ class HipChat extends Robot
     @options =
       token:    process.env.HUBOT_HIPCHAT_TOKEN
       jid:      process.env.HUBOT_HIPCHAT_JID
-      name:     process.env.HUBOT_HIPCHAT_NAME || "Hubot, I"
+      name:     process.env.HUBOT_HIPCHAT_NAME || "#{self.name} Bot"
       password: process.env.HUBOT_HIPCHAT_PASSWORD
-
+      rooms:    process.env.HUBOT_HIPCHAT_ROOMS || "@All"
+    
+    console.log process.env.HUBOT_HIPCHAT_NAME_TEST
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
+    mention = '@'+@options.name.split(' ')[0]
     console.log "Bot:", bot
 
     bot.onConnect =>
       console.log "Connected to HipChat"
-      @get "/v1/rooms/list", (err, response)->
-        if response
-          response.rooms.forEach (room)->
-            bot.join room.xmpp_jid
-        else
-          console.log "Can't list rooms: #{err}"
+      if @options.rooms == "@All"
+        @get "/v1/rooms/list", (err, response)->
+          if response
+            response.rooms.forEach (room)->
+              console.log "Joining #{room.xmpp_jid}"
+              bot.join room.xmpp_jid
+          else
+            console.log "Can't list rooms: #{err}"
+      else
+        @options.rooms.split(',').forEach (room_id)->
+          console.log "Joining #{room_id}"
+          bot.join room_id
       @get "/v1/users/list", (err, response)->
         if response
           response.users.forEach (user)->
@@ -42,15 +51,15 @@ class HipChat extends Robot
           console.log "Can't list rooms: #{err}"
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
-    bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
-      console.log from
-      author = self.userForName(from)
-      author.room = channel
-      self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
+    bot.onMessage RegExp(mention,'i'), (channel, from, message)->    
+      #console.log "#{from}@#{channel}: #{message}"
+      author = { name: from, reply_to: channel }
+      hubot_msg = message.replace(RegExp(mention,'i'), "#{self.name}: ")
+      self.receive new Robot.Message(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
-      author = self.userForId(from.match(/_(\d+)@/)[1])
-      author.jid = from
-      self.receive new Robot.Message(author, "Hubot: #{message}")
+      user = self.userForId(from.match(/_(\d+)@/)[1])
+      author = { name: user.name, reply_to: from }
+      self.receive new Robot.Message(author, "#{self.name}: #{message}")
     bot.connect()
 
     @bot = bot
