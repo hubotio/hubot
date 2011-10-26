@@ -18,7 +18,7 @@ class Shell extends Robot
     process.stdin.on 'data', (txt) =>
       txt.toString().split("\n").forEach (line) =>
         return if line.length == 0
-        @receive new Robot.Message user, line
+        @receive new Robot.TextMessage user, line
 
     setTimeout =>
       user   = @userForId('1', {name: "Shell"})

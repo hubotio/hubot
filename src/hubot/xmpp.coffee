@@ -62,7 +62,7 @@ class XmppBot extends Robot
       room: room
     }
     
-    @receive new Robot.Message user, message
+    @receive new Robot.TextMessage user, message
 
   send: (user, strings...) ->
     strings.forEach (str) =>
