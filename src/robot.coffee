@@ -1,16 +1,17 @@
-Fs    = require 'fs'
-Url   = require 'url'
-Path  = require 'path'
-Redis = require 'redis'
+Fs           = require 'fs'
+Url          = require 'url'
+Path         = require 'path'
+Redis        = require 'redis'
+EventEmitter = require('events').EventEmitter
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot", brain = Robot.RedisBrain) ->
+  constructor: (path, name = "Hubot") ->
     @name        = name
-    @brain       = new brain()
+    @brain       = new Robot.Brain
     @commands    = []
     @Response    = Robot.Response
     @listeners   = []
@@ -181,7 +182,7 @@ class Robot.User
       @[k] = options[k]
 
 # http://www.the-isb.com/images/Nextwave-Aaron01.jpg
-class Robot.Brain
+class Robot.Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot.
   #
   # Returns a new Brain with no external storage.  Extend this!
@@ -189,8 +190,17 @@ class Robot.Brain
     @data =
       users: { }
 
-  save: (cb) ->
+    @saveInterval = setInterval =>
+      @save()
+    , 5000
+
+  save: ->
+    @emit 'save', @data
+
   close: ->
+    clearInterval @saveInterval
+    @save()
+    @emit 'close'
 
   # Merge keys loaded from a DB against the in memory representation
   #
@@ -200,45 +210,6 @@ class Robot.Brain
   mergeData: (data) ->
     for k of (data or { })
       @data[k] = data[k]
-
-class Robot.RedisBrain extends Robot.Brain
-  # Represents somewhat persistent storage for the robot.
-  #
-  # Returns a new Brain that's trying to connect to redis
-  #
-  # Previously persisted data is loaded on a successful connection
-  #
-  # Redis connects to a environmental variable REDISTOGO_URL or
-  # fallsback to localhost
-  constructor: () ->
-    super()
-
-    info = Url.parse process.env.REDISTOGO_URL || 'redis://localhost:6379'
-    @client = Redis.createClient(info.port, info.hostname)
-
-    if info.auth
-      @client.auth info.auth.split(":")[1]
-
-    @client.on "error", (err) ->
-      console.log "Error #{err}"
-    @client.on "connect", =>
-      console.log "Successfully connected to Redis"
-      @client.get "hubot:storage", (err, reply) =>
-        throw err if err
-        @mergeData JSON.parse reply.toString() if reply
-
-      @saveInterval = setInterval =>
-        @save()
-      , 5000
-
-  save: (cb) ->
-    data = JSON.stringify @data
-    cb or= (err, reply) ->
-    @client.set "hubot:storage", data, cb
-
-  close: ->
-    clearInterval @saveInterval
-    @save => @client.quit()
 
 class Robot.Message
   # Represents an incoming message from the chat.
