@@ -25,6 +25,7 @@ class HipChat extends Robot
 
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
+    mention='@'+@options.name.split(' ')[0]
     console.log "Bot:", bot
 
     bot.onConnect =>
@@ -49,11 +50,11 @@ class HipChat extends Robot
           console.log "Can't list rooms: #{err}"
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
-    bot.onMessage RegExp('@'+@name,'i'), (channel, from, message)->
+    bot.onMessage RegExp(mention,'i'), (channel, from, message)->
       author = self.userForName(from)
       author.room = channel
       console.log "#{from}@#{channel}: #{message}"
-      hubot_msg=message.replace(RegExp("@#{self.name}",'i'),"#{self.name}: ")
+      hubot_msg=message.replace(RegExp(mention,'i'),"#{self.name}: ")
       self.receive new Robot.Message(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
       author = self.userForId(from.match(/_(\d+)@/)[1])
