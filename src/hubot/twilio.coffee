@@ -23,6 +23,9 @@ class Twilio extends Robot
     strings.forEach (str) =>
       @send user, "#{user.name}: #{str}"
 
+  respond: (regex, callback) ->
+    @hear regex, callback
+
   run: ->
     console.log "Hubot: the SMS reader."
 
