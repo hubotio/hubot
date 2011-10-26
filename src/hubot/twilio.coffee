@@ -86,7 +86,6 @@ class Twilio extends Robot
           callback body.message
 
     request.write params
-
     request.end()
 
 exports.Twilio = Twilio

@@ -28,8 +28,9 @@ class Robot
   hear: (regex, callback) ->
     @listeners.push new Listener(@, regex, callback)
 
-  # Public: Adds a Listener that attempts to match incoming messages directed at the robot
-  # based on a Regex.  All regexes treat patterns like they begin with a '^'
+  # Public: Adds a Listener that attempts to match incoming messages directed
+  # at the robot based on a Regex.  All regexes treat patterns like they begin
+  # with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
@@ -133,7 +134,6 @@ class Robot
     unless user
       user = new Robot.User id, options
       @brain.data.users[id] = user
-
     user
 
   # Public: Get a User object given a name
@@ -213,8 +213,8 @@ class Robot.Message
     @text.match regex
 
 class Listener
-  # Listeners receive every message from the chat source and decide if they want
-  # to act on it.
+  # Listeners receive every message from the chat source and decide if they
+  # want to act on it.
   #
   # robot    - The current Robot instance.
   # regex    - The Regex that determines if this listener should trigger the
