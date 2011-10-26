@@ -23,12 +23,16 @@ class IrcBot extends Robot
 
     console.log options
 
-    bot = new Irc.Client options.server, options.nick, {
-      password: options.password,
-      debug: true,
-      channels: options.rooms,
-      port: options.port
-    }
+    client_options = {
+          password: options.password,
+          debug: true,
+          port: options.port,
+        }
+
+    unless options.nickpass
+        client_options['channels'] = options.rooms
+
+    bot = new Irc.Client options.server, options.nick, client_options
 
     next_id = 1
     user_id = {}
@@ -37,6 +41,10 @@ class IrcBot extends Robot
       bot.addListener 'notice', (from, to, text) ->
         if from == 'NickServ' and text.indexOf('registered') != -1
           bot.say 'NickServ', "identify #{options.nickpass}"
+        else if options.nickpass and from == 'NickServ' and text.indexOf('now identified') != -1
+            for room in options.rooms
+                bot.join room, () ->
+                    console.log('%s has joined %s', options.nick, room)
 
     bot.addListener 'message', (from, toRoom, message) ->
       console.log "From #{from} to #{toRoom}: #{message}"
