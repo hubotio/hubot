@@ -190,9 +190,7 @@ class Robot.Brain extends EventEmitter
     @data =
       users: { }
 
-    @saveInterval = setInterval =>
-      @save()
-    , 5000
+    @resetSaveInterval 5
 
   save: ->
     @emit 'save', @data
@@ -201,6 +199,12 @@ class Robot.Brain extends EventEmitter
     clearInterval @saveInterval
     @save()
     @emit 'close'
+
+  resetSaveInterval: (seconds) ->
+    clearInterval @saveInterval if @saveInterval
+    @saveInterval = setInterval =>
+      @save()
+    , seconds * 1000
 
   # Merge keys loaded from a DB against the in memory representation
   #
