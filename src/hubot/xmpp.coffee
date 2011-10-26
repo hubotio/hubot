@@ -8,9 +8,9 @@ class XmppBot extends Robot
       password: process.env.HUBOT_XMPP_PASSWORD
       rooms:    process.env.HUBOT_XMPP_ROOMS.split(',')
       keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
-      
+
     console.log options
-    
+
     @client = new Xmpp.Client
       jid: options.username
       password: options.password
@@ -22,7 +22,7 @@ class XmppBot extends Robot
 
   online: =>
     console.log 'Hubot XMPP client online'
-    
+
     @client.send new Xmpp.Element('presence', type: 'available' )
       .c('show').t('chat')
 
@@ -34,8 +34,8 @@ class XmppBot extends Robot
         .c('history', seconds: 1 )) # prevent the server from confusing us with old messages
                                     # and it seems that servers don't reliably support maxchars
                                     # or zero values
-      
-    # send raw whitespace for keepalive 
+
+    # send raw whitespace for keepalive
     setInterval =>
       @client.send ' '
     , @options.keepaliveInterval
@@ -50,19 +50,19 @@ class XmppBot extends Robot
 
     # ignore our own messages
     return if @options.username in stanza.attrs.from
-      
+
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
     body = stanza.getChild 'body'
     return unless body
-    
+
     message = body.getText()
-    
+
     [room, from] = stanza.attrs.from.split '/'
     user = new Robot.User from, {
       room: room
       type: stanza.attrs.type
     }
-    
+
     @receive new Robot.TextMessage user, message
 
   send: (user, strings...) ->
@@ -71,13 +71,13 @@ class XmppBot extends Robot
 
       to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
 
-      message = new Xmpp.Element('message', 
+      message = new Xmpp.Element('message',
                   from: @options.username
                   to: to
                   type: user.type
                 ).
                 c('body').t(str)
-      
+
       @client.send message
 
   reply: (user, strings...) ->
