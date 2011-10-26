@@ -60,6 +60,7 @@ class XmppBot extends Robot
     [room, from] = stanza.attrs.from.split '/'
     user = new Robot.User from, {
       room: room
+      type: stanza.attrs.type
     }
     
     @receive new Robot.TextMessage user, message
@@ -67,11 +68,13 @@ class XmppBot extends Robot
   send: (user, strings...) ->
     strings.forEach (str) =>
       console.log "Sending to #{user.room}: #{str}"
-      
+
+      to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
+
       message = new Xmpp.Element('message', 
                   from: @options.username
-                  to: user.room
-                  type: 'groupchat'
+                  to: to
+                  type: user.type
                 ).
                 c('body').t(str)
       
