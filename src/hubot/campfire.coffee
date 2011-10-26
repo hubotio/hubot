@@ -9,7 +9,7 @@ class Campfire extends Robot
         console.log "campfire error: #{err}" if err
 
   reply: (user, strings...) ->
-      @send user, "#{user.name}: #{str}" for str in strings
+    @send user, "#{user.name}: #{str}" for str in strings
 
   run: ->
     self = @
