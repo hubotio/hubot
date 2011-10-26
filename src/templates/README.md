@@ -53,6 +53,8 @@ Deployment
     % heroku ps:scale app=1
     % heroku addons:add redistogo:nano
 
+If you run into any problems, checkout heroku's [docs](http://devcenter.heroku.com/articles/node-js).
+
 You'll need to edit the `Procfile` to say what the bot's name is.
 
 Hubot also needs three environmental variables set to run and to keep him
