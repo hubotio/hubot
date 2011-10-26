@@ -15,6 +15,7 @@ class IrcBot extends Robot
     self = @
     options =
       nick:     process.env.HUBOT_IRC_NICK
+      port:     process.env.HUBOT_IRC_PORT
       rooms:    process.env.HUBOT_IRC_ROOMS.split(",")
       server:   process.env.HUBOT_IRC_SERVER
       password: process.env.HUBOT_IRC_PASSWORD
@@ -26,6 +27,7 @@ class IrcBot extends Robot
       password: options.password,
       debug: true,
       channels: options.rooms,
+      port: options.port
     }
 
     next_id = 1
