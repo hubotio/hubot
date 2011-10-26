@@ -18,7 +18,7 @@ class IrcBot extends Robot
       rooms:   process.env.HUBOT_IRC_ROOMS.split(",")
       nick: process.env.HUBOT_IRC_NICK
       password: process.env.HUBOT_IRC_PASSWORD
-      nickpass: process.env.HUBOT_IRC_NICKSERV_PASS
+      nickpass: process.env.HUBOT_IRC_NICKSERV_PASSWORD
 
     console.log options
 
