@@ -3,12 +3,12 @@ Irc   = require "irc"
 
 class IrcBot extends Robot
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       console.log "#{user.name}: #{str}"
       @bot.say(user.room, str)
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   run: ->

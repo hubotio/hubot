@@ -18,7 +18,7 @@ Then follow the instructions in the README in the `hubot` directory.
 
 Hubot ships with a couple of default scripts, but there's a growing
 number of extras in the [hubot-scripts](https://github.com/github/hubot-scripts)
-repository.  `hubot-scripts` is a way to share scripts with the entire
+repository. `hubot-scripts` is a way to share scripts with the entire
 community.  Check out the [README](https://github.com/github/hubot-scripts#readme)
 for more help on installing individual scripts.
 

@@ -87,7 +87,7 @@ class HipChat extends Robot
       "method" : method
       "headers": headers
 
-    if method == "POST"
+    if method is "POST"
       body.auth_token = @options.token
       body = JSON.stringify(body)
       headers["Content-Type"] = "application/json"
@@ -112,7 +112,7 @@ class HipChat extends Robot
       response.on "error", (err) ->
         callback err, { }
 
-    if method == "POST"
+    if method is "POST"
       request.end(body, 'binary')
     else
       request.end()
