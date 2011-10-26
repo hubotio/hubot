@@ -6,8 +6,7 @@ class Campfire extends Robot
   send: (user, strings...) ->
     for str in strings
       @bot.Room(user.room).speak str, (err, data) ->
-        if err
-          console.log "campfire error: #{err}"
+        console.log "campfire error: #{err}" if err
 
   reply: (user, strings...) ->
       @send user, "#{user.name}: #{str}" for str in strings

@@ -182,8 +182,7 @@ class Robot.Brain
       console.log "Successfully connected to Redis"
       @client.get "hubot:storage", (err, reply) =>
         throw err if err
-        if reply
-          @mergeData JSON.parse reply.toString()
+        @mergeData JSON.parse reply.toString() if reply
 
       setInterval =>
         # console.log JSON.stringify @data
