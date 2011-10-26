@@ -19,7 +19,8 @@ Switches = [
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
   [ "-c", "--create PATH",       "Create a deployable hubot"],
   [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
-  [ "-n", "--name NAME",         "The name of the robot in chat" ]
+  [ "-n", "--name NAME",         "The name of the robot in chat" ],
+  [ "-v", "--version",           "Displays the version of hubot installed"]
 ]
 
 Options =
@@ -48,6 +49,9 @@ Parser.on "help", (opt, value) ->
   console.log Parser.toString()
   process.exit 0
 
+Parser.on "version", (opt, value) ->
+  Options.version = true
+
 Parser.parse process.ARGV
 
 process.on 'SIGTERM', -> process.exit(0)
@@ -55,6 +59,20 @@ process.on 'SIGTERM', -> process.exit(0)
 if Options.create
   creator = new Creator.Creator(Options.path)
   creator.run()
+
+else if Options.version
+  package_path = __dirname + "/../package.json"
+
+  Fs.readFile package_path, (err,data) ->
+    if err
+      console.error "Could not open package file : %s", err
+      process.exit 1
+
+    content = JSON.parse(data.toString('ascii'))
+    console.log content['version']
+
+    process.exit 0
+
 else
   switch Options.adapter
     when "irc"
