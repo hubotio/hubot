@@ -96,6 +96,8 @@ receive SMS messages.
 
     % heroku config:add HUBOT_SMS_TOKEN="4ada63e18146a204e468fb6289030231"
 
+After getting Hubot up and running, update the "SMS Request URL" for your
+Twilio number to point to your Hubot instance.
 
 Restart the bot
 ---------------
