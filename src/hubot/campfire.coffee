@@ -4,14 +4,13 @@ EventEmitter = require("events").EventEmitter
 
 class Campfire extends Robot
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @bot.Room(user.room).speak str, (err, data) ->
         if err
           console.log "campfire error: #{err}"
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+      @send user, "#{user.name}: #{str}" for str in strings
 
   run: ->
     self = @

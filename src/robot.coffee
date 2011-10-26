@@ -59,7 +59,7 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    @listeners.forEach (lst) -> lst.call message
+    listener.call message for listener in @listeners
 
   # Public: Loads every script in the given path.
   #
@@ -70,7 +70,7 @@ class Robot
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
-        Fs.readdirSync(path).forEach (file) =>
+        for file in Fs.readdirSync(path)
           @loadFile path, file
 
   # Public: Loads a file in path

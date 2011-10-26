@@ -2,11 +2,11 @@ Robot = require 'robot'
 
 class Shell extends Robot
   send: (user, strings...) ->
-    strings.forEach (str) ->
+    for str in strings
       console.log str
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   run: ->
