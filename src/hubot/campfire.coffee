@@ -4,14 +4,12 @@ EventEmitter = require("events").EventEmitter
 
 class Campfire extends Robot
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @bot.Room(user.room).speak str, (err, data) ->
-        if err
-          console.log "campfire error: #{err}"
+        console.log "campfire error: #{err}" if err
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+    @send user, "#{user.name}: #{str}" for str in strings
 
   run: ->
     self = @
@@ -20,9 +18,7 @@ class Campfire extends Robot
       rooms:   process.env.HUBOT_CAMPFIRE_ROOMS
       account: process.env.HUBOT_CAMPFIRE_ACCOUNT
 
-    console.log options
     bot = new CampfireStreaming(options)
-    console.log bot
 
     bot.on "TextMessage", (id, created, room, user, body) ->
       bot.User user, (err, userData) ->
@@ -32,7 +28,6 @@ class Campfire extends Robot
           self.receive new Robot.Message(author, body)
 
     bot.Me (err, data) ->
-      console.log data
       bot.info = data.user
       bot.name = bot.info.name
       bot.rooms.forEach (room_id) ->
@@ -108,7 +103,7 @@ class CampfireStreaming extends EventEmitter
 
         buf = ''
         response.on "data", (chunk) ->
-          if chunk == ' '
+          if chunk is ' '
             # campfire api sends a ' ' heartbeat every 3s
 
           else if chunk.match(/^\s*Access Denied/)
@@ -164,7 +159,7 @@ class CampfireStreaming extends EventEmitter
       "method" : method
       "headers": headers
 
-    if method == "POST"
+    if method is "POST"
       if typeof(body) != "string"
         body = JSON.stringify body
 
@@ -189,7 +184,7 @@ class CampfireStreaming extends EventEmitter
       response.on "error", (err) ->
         callback err, { }
 
-    if method == "POST"
+    if method is "POST"
       request.end(body, 'binary')
     else
       request.end()

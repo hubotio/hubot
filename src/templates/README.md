@@ -1,14 +1,14 @@
 Hubot
 =====
 
-This is a version of GitHub's Campfire bot, hubot.  He's pretty cool.
+This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
 This version is designed to be deployed on heroku.
 
 Playing with Hubot
 ==================
 
-You'll need to install the necessary dependencies for hubot.  All of
+You'll need to install the necessary dependencies for hubot. All of
 those dependencies are provided by [npm](http://npmjs.org).
 
     % bin/hubot
@@ -26,7 +26,7 @@ Then you can interact with Hubot by typing `hubot help`.
 
     hubot help
 
-    animate me <query>  - The same thing as `image me`, except adds a few
+    animate me <query> - The same thing as `image me`, except adds a few
     convert me <expression> to <units> - Convert expression to given units.
     help - Displays all of the help commands that Hubot knows about.
     ...
@@ -39,9 +39,9 @@ want hubot to have.
 hubot-scripts
 =============
 
-There will inevitably be functionality that everyone will want.  Instead
+There will inevitably be functionality that everyone will want. Instead
 of adding it to hubot itself, you can submit pull requests to
-[hubot-scripts](https://github.com/github/hubot-scripts).  To enable
+[hubot-scripts](https://github.com/github/hubot-scripts). To enable
 scripts from the hubot-scripts package, add the script name with extension as a
 double quoted string to the hubot-scripts.json file in this repo.
 
@@ -80,9 +80,9 @@ IRC Variables
 ------------------
 
     % heroku config:add HUBOT_IRC_SERVER="irc.freenode.net"
-    
+
     % heroku config:add HUBOT_IRC_ROOMS="#github,#node.js"
-    
+
     % heroku config:add HUBOT_IRC_NICK="MICCHECK1212"
 
 Twilio Variables

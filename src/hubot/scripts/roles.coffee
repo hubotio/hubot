@@ -12,9 +12,9 @@ module.exports = (robot) ->
   robot.respond /who is ([\w .-]+)\?*$/i, (msg) ->
     name = msg.match[1]
 
-    if name == "you"
+    if name is "you"
       msg.send "Who ain't I?"
-    else if name == robot.name
+    else if name is robot.name
       msg.send "The best."
     else if user = robot.userForName name
       user.roles = user.roles or [ ]
@@ -38,7 +38,7 @@ module.exports = (robot) ->
             msg.send "I know"
           else
             user.roles.push(newRole)
-            if name.toLowerCase() == robot.name
+            if name.toLowerCase() is robot.name
               msg.send "Ok, I am #{newRole}."
             else
               msg.send "Ok, #{name} is #{newRole}."

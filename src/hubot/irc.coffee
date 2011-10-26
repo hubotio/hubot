@@ -3,22 +3,20 @@ Irc   = require "irc"
 
 class IrcBot extends Robot
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       console.log "#{user.name}: #{str}"
       @bot.say(user.room, str)
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   run: ->
     self = @
     options =
-      server:   process.env.HUBOT_IRC_SERVER
-      rooms:   process.env.HUBOT_IRC_ROOMS.split(",")
-      nick: process.env.HUBOT_IRC_NICK
-
-    console.log options
+      server: process.env.HUBOT_IRC_SERVER
+      rooms:  process.env.HUBOT_IRC_ROOMS.split(",")
+      nick:   process.env.HUBOT_IRC_NICK
 
     bot = new Irc.Client options.server, options.nick, {
       debug: true,

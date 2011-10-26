@@ -28,8 +28,9 @@ class Robot
   hear: (regex, callback) ->
     @listeners.push new Listener(@, regex, callback)
 
-  # Public: Adds a Listener that attempts to match incoming messages directed at the robot
-  # based on a Regex.  All regexes treat patterns like they begin with a '^'
+  # Public: Adds a Listener that attempts to match incoming messages directed
+  # at the robot based on a Regex.  All regexes treat patterns like they begin
+  # with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
@@ -40,7 +41,7 @@ class Robot
     re.shift()           # remove empty first item
     modifiers = re.pop() # pop off modifiers
 
-    if re[0] and re[0][0] == "^"
+    if re[0] and re[0][0] is "^"
       console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
       console.log "WARNING: The regex in question was #{regex.toString()}\n"
 
@@ -50,7 +51,6 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
-    console.log newRegex.toString()
     @listeners.push new Listener(@, newRegex, callback)
 
   # Public: Passes the given message to any interested Listeners.
@@ -59,7 +59,7 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    @listeners.forEach (lst) -> lst.call message
+    listener.call message for listener in @listeners
 
   # Public: Loads every script in the given path.
   #
@@ -70,7 +70,7 @@ class Robot
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
-        Fs.readdirSync(path).forEach (file) =>
+        for file in Fs.readdirSync(path)
           @loadFile path, file
 
   # Public: Loads a file in path
@@ -82,7 +82,7 @@ class Robot
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
-    if ext == '.coffee' or ext == '.js'
+    if ext is '.coffee' or ext is '.js'
       require(full) @
       @parseHelp "#{path}/#{file}"
 
@@ -133,7 +133,6 @@ class Robot
     unless user
       user = new Robot.User id, options
       @brain.data.users[id] = user
-
     user
 
   # Public: Get a User object given a name
@@ -142,11 +141,9 @@ class Robot
     result = null
     lowerName = name.toLowerCase()
     for k of (@brain.data.users or { })
-      if @brain.data.users[k]['name'].toLowerCase() == lowerName
+      if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
-
     result
-    # (user for id in @brain.data.users when @users[id]['name'].toLowerCase() == lowerName)
 
 class Robot.User
   # Represents a participating user in the chat.
@@ -182,11 +179,9 @@ class Robot.Brain
       console.log "Successfully connected to Redis"
       @client.get "hubot:storage", (err, reply) =>
         throw err if err
-        if reply
-          @mergeData JSON.parse reply.toString()
+        @mergeData JSON.parse reply.toString() if reply
 
       setInterval =>
-        # console.log JSON.stringify @data
         data = JSON.stringify @data
         @client.set "hubot:storage", data, (err, reply) ->
           # console.log "Saved #{reply.toString()}"
@@ -217,8 +212,8 @@ class Robot.Message
     @text.match regex
 
 class Listener
-  # Listeners receive every message from the chat source and decide if they want
-  # to act on it.
+  # Listeners receive every message from the chat source and decide if they
+  # want to act on it.
   #
   # robot    - The current Robot instance.
   # regex    - The Regex that determines if this listener should trigger the

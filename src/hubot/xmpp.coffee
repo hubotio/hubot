@@ -3,7 +3,7 @@ Xmpp  = require 'node-xmpp'
 
 class XmppBot extends Robot
   run: ->
-    options = 
+    options =
       username: process.env.HUBOT_XMPP_USERNAME
       password: process.env.HUBOT_XMPP_PASSWORD
       rooms:    process.env.HUBOT_XMPP_ROOMS.split(',')
@@ -36,7 +36,7 @@ class XmppBot extends Robot
                                     # or zero values
       
     # send raw whitespace for keepalive 
-    setInterval => 
+    setInterval =>
       @client.send ' '
     , @options.keepaliveInterval
 
@@ -68,7 +68,7 @@ class XmppBot extends Robot
     strings.forEach (str) =>
       console.log "Sending to #{user.room}: #{str}"
       
-      message = new Xmpp.Element('message', 
+      message = new Xmpp.Element('message',
                   from: @options.username
                   to: user.room
                   type: 'groupchat'
