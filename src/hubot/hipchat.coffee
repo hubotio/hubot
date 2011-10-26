@@ -1,6 +1,5 @@
 Robot        = require "robot"
 HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
 Wobot        = require("wobot").Bot
 
 class HipChat extends Robot
@@ -23,10 +22,10 @@ class HipChat extends Robot
       password: process.env.HUBOT_HIPCHAT_PASSWORD
       rooms:    process.env.HUBOT_HIPCHAT_ROOMS || "@All"
     
-    console.log process.env.HUBOT_HIPCHAT_NAME_TEST
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
-    mention = '@'+@options.name.split(' ')[0]
+    mention = new RegExp("@#{@options.name.split(' ')[0]}\\b", "i")
+    console.log mention
     console.log "Bot:", bot
 
     bot.onConnect =>
@@ -49,13 +48,17 @@ class HipChat extends Robot
             self.userForId user.user_id, user
         else
           console.log "Can't list rooms: #{err}"
-    bot.onError (message, stanza)->
-      console.log "Received error from HipChat:", message, stanza
-    bot.onMessage RegExp(mention,'i'), (channel, from, message)->    
-      #console.log "#{from}@#{channel}: #{message}"
+    bot.onError (message)->
+      # If HipChat sends an error, we get the error message from XMPP.
+      # Otherwise, we get an Error object from the Node connection.
+      if message.message
+        console.log "Error talking to HipChat:", message.message
+      else
+        console.log "Received error from HipChat:", message
+    bot.onMessage (channel, from, message)->
       author = { name: from, reply_to: channel }
-      hubot_msg = message.replace(RegExp(mention,'i'), "#{self.name}: ")
-      self.receive new Robot.TextMessage(author, hubot_msg)
+      hubot_msg = message.replace(mention, "#{self.name}: ")
+      self.receive new Robot.Message(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
       user = self.userForId(from.match(/_(\d+)@/)[1])
       author = { name: user.name, reply_to: from }
