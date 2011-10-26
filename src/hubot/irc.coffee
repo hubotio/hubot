@@ -17,16 +17,24 @@ class IrcBot extends Robot
       server:   process.env.HUBOT_IRC_SERVER
       rooms:   process.env.HUBOT_IRC_ROOMS.split(",")
       nick: process.env.HUBOT_IRC_NICK
+      password: process.env.HUBOT_IRC_PASSWORD
+      nickpass: process.env.HUBOT_IRC_NICKSERV_PASS
 
     console.log options
 
     bot = new Irc.Client options.server, options.nick, {
+      password: options.password,
       debug: true,
       channels: options.rooms,
     }
 
     next_id = 1
     user_id = {}
+
+    if options.nickpass != 'undefined'
+      bot.addListener 'notice', (from, to, text) ->
+        if from == 'NickServ' and text.match new RegExp "^This nickname is registered"
+          bot.say 'NickServ', "identify #{options.nickpass}"
 
     bot.addListener 'message', (from, toRoom, message) ->
       console.log "From #{from} to #{toRoom}: #{message}"
