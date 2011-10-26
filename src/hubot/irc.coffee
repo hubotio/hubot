@@ -31,9 +31,9 @@ class IrcBot extends Robot
     next_id = 1
     user_id = {}
 
-    if options.nickpass != 'undefined'
+    if options.nickpass?
       bot.addListener 'notice', (from, to, text) ->
-        if from == 'NickServ' and text.match new RegExp "^This nickname is registered"
+        if from == 'NickServ' and text.indexOf('registered') != -1
           bot.say 'NickServ', "identify #{options.nickpass}"
 
     bot.addListener 'message', (from, toRoom, message) ->
