@@ -45,11 +45,14 @@ exports.Campfire = Campfire
 
 class CampfireStreaming extends EventEmitter
   constructor: (options) ->
-    @token         = options.token
-    @rooms         = options.rooms.split(",")
-    @account       = options.account
-    @domain        = @account + ".campfirenow.com"
-    @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    if options.token? && options.rooms? && options.account?
+      @token         = options.token
+      @rooms         = options.rooms.split(",")
+      @account       = options.account
+      @domain        = @account + ".campfirenow.com"
+      @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    else
+      throw new Error("Not enough parameters provided. I need a token, rooms and account")
 
   Rooms: (callback) ->
     @get "/rooms", callback
@@ -174,7 +177,10 @@ class CampfireStreaming extends EventEmitter
         data += chunk
       response.on "end", ->
         if response.statusCode >= 400
-          console.log "campfire error: #{response.statusCode}"
+          switch response.statusCode
+            when 401 then throw new Error("Invalid access token provided, campfire refused the authentication")
+            else console.log "campfire error: #{err}"
+
 
         try
           callback null, JSON.parse(data)
