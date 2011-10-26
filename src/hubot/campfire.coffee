@@ -177,7 +177,10 @@ class CampfireStreaming extends EventEmitter
         data += chunk
       response.on "end", ->
         if response.statusCode >= 400
-          console.log "campfire error: #{response.statusCode}"
+          switch response.statusCode
+            when 401 then throw new Error("Invalid access token provided, campfire refused the authentication")
+            else console.log "campfire error: #{err}"
+
 
         try
           callback null, JSON.parse(data)
