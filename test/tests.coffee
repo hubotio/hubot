@@ -25,11 +25,13 @@ exports.danger = (helper, cb) ->
 
       cb()
 
+  server.on 'close', -> helper.close()
+
   server
 
 class Helper extends Robot
   constructor: (path) ->
-    super path
+    super path, 'helper', Robot.Brain
     @sent = []
     @Response = Helper.Response
 
@@ -40,7 +42,7 @@ class Helper extends Robot
 
   reply: (user, strings...) ->
     strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+      @send user, "#{@name}: #{str}"
 
   # modified to accept a string and pass the Robot.TextMessage to super()
   receive: (text) ->
@@ -48,6 +50,7 @@ class Helper extends Robot
     super new Robot.TextMessage(user, text)
 
 class Helper.Response extends Robot.Response
+  # This changes ever HTTP request to hit the danger server above
   http: (url) ->
     super(url).host('127.0.0.1').port(9001)
 

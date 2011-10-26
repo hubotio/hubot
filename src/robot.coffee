@@ -8,9 +8,9 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot") ->
+  constructor: (path, name = "Hubot", brain = Robot.RedisBrain) ->
     @name        = name
-    @brain       = new Robot.Brain()
+    @brain       = new brain()
     @commands    = []
     @Response    = Robot.Response
     @listeners   = []
@@ -144,6 +144,11 @@ class Robot
   # Extend this.
   run: ->
 
+  # Public: Raw method for shutting the bot down.
+  # Extend this.
+  close: ->
+    @brain.close()
+
   users: () ->
     @brain.data.users
 
@@ -175,7 +180,28 @@ class Robot.User
     for k of (options or { })
       @[k] = options[k]
 
+# http://www.the-isb.com/images/Nextwave-Aaron01.jpg
 class Robot.Brain
+  # Represents somewhat persistent storage for the robot.
+  #
+  # Returns a new Brain with no external storage.  Extend this!
+  constructor: () ->
+    @data =
+      users: { }
+
+  save: (cb) ->
+  close: ->
+
+  # Merge keys loaded from a DB against the in memory representation
+  #
+  # Returns nothing
+  #
+  # Caveats: Deeply nested structures don't merge well
+  mergeData: (data) ->
+    for k of (data or { })
+      @data[k] = data[k]
+
+class Robot.RedisBrain extends Robot.Brain
   # Represents somewhat persistent storage for the robot.
   #
   # Returns a new Brain that's trying to connect to redis
@@ -185,8 +211,7 @@ class Robot.Brain
   # Redis connects to a environmental variable REDISTOGO_URL or
   # fallsback to localhost
   constructor: () ->
-    @data =
-      users: { }
+    super()
 
     info = Url.parse process.env.REDISTOGO_URL || 'redis://localhost:6379'
     @client = Redis.createClient(info.port, info.hostname)
@@ -196,26 +221,24 @@ class Robot.Brain
 
     @client.on "error", (err) ->
       console.log "Error #{err}"
-    @client.on "connect", () =>
+    @client.on "connect", =>
       console.log "Successfully connected to Redis"
       @client.get "hubot:storage", (err, reply) =>
         throw err if err
         @mergeData JSON.parse reply.toString() if reply
 
-      setInterval =>
-        data = JSON.stringify @data
-        @client.set "hubot:storage", data, (err, reply) ->
-          # console.log "Saved #{reply.toString()}"
+      @saveInterval = setInterval =>
+        @save()
       , 5000
 
-  # Merge keys loaded from redis against the in memory representation
-  #
-  # Returns nothing
-  #
-  # Caveats: Deeply nested structures don't merge well
-  mergeData: (data) ->
-    for k of (data or { })
-      @data[k] = data[k]
+  save: (cb) ->
+    data = JSON.stringify @data
+    cb or= (err, reply) ->
+    @client.set "hubot:storage", data, cb
+
+  close: ->
+    clearInterval @saveInterval
+    @save => @client.quit()
 
 class Robot.Message
   # Represents an incoming message from the chat.

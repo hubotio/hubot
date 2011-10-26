@@ -24,6 +24,7 @@ server.listen 9001, ->
   helper.cb = (msg) ->
     assert.equal 4, helper.sent.length
     assert.equal 'fetched', msg
+    helper.close()
     server.close()
 
   helper.receive 'http'
