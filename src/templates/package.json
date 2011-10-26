@@ -16,6 +16,6 @@
 
   "dependencies": {
     "hubot": ">= 1.0.3",
-    "hubot-scripts": ">= 1.0.0"
+    "hubot-scripts": ">= 1.0.3"
   }
 }
