@@ -1,6 +1,5 @@
 Robot        = require "robot"
 HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
 Wobot        = require("wobot").Bot
 
 class HipChat extends Robot
