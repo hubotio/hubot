@@ -8,7 +8,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot", brain = Robot.RedisBrain) ->
+  constructor: (path, name = "Hubot", brain = Robot.Brain) ->
     @name        = name
     @brain       = new brain()
     @commands    = []
