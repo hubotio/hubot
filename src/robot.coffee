@@ -59,7 +59,11 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    @listeners.forEach (lst) -> lst.call message
+    @listeners.forEach (lst) ->
+      try
+        lst.call message
+      catch ex
+        console.log "error while calling listener: #{ex}"
 
   # Public: Loads every script in the given path.
   #
