@@ -29,7 +29,7 @@ class XmppBot extends Robot
     # join each room
     # http://xmpp.org/extensions/xep-0045.html for XMPP chat standard
     for room in @options.rooms
-      @client.send(new Xmpp.Element('presence', to: "#{room}/#{@options.username}" )
+      @client.send(new Xmpp.Element('presence', to: "#{room}/#{@name}" )
         .c('x', xmlns: 'http://jabber.org/protocol/muc' )
         .c('history', seconds: 1 )) # prevent the server from confusing us with old messages
                                     # and it seems that servers don't reliably support maxchars
@@ -60,6 +60,7 @@ class XmppBot extends Robot
     [room, from] = stanza.attrs.from.split '/'
     user = new Robot.User from, {
       room: room
+      type: stanza.attrs.type
     }
     
     @receive new Robot.TextMessage user, message
@@ -67,11 +68,13 @@ class XmppBot extends Robot
   send: (user, strings...) ->
     strings.forEach (str) =>
       console.log "Sending to #{user.room}: #{str}"
-      
+
+      to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
+
       message = new Xmpp.Element('message', 
                   from: @options.username
-                  to: user.room
-                  type: 'groupchat'
+                  to: to
+                  type: user.type
                 ).
                 c('body').t(str)
       
