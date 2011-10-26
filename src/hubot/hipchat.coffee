@@ -48,8 +48,13 @@ class HipChat extends Robot
             self.userForId user.user_id, user
         else
           console.log "Can't list rooms: #{err}"
-    bot.onError (message, stanza)->
-      console.log "Received error from HipChat:", message, stanza
+    bot.onError (message)->
+      # If HipChat sends an error, we get the error message from XMPP.
+      # Otherwise, we get an Error object from the Node connection.
+      if message.message
+        console.log "Error talking to HipChat:", message.message
+      else
+        console.log "Received error from HipChat:", message
     bot.onMessage (channel, from, message)->
       author = { name: from, reply_to: channel }
       hubot_msg = message.replace(mention, "#{self.name}: ")
