@@ -7,7 +7,7 @@ class HipChat extends Robot
   send: (user, strings...) ->
     console.log "Sending"
     strings.forEach (str) =>
-      @bot.message user.room || user.jid, str
+      @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
     console.log "Replying"
@@ -43,13 +43,14 @@ class HipChat extends Robot
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
     bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
-      console.log from
-      author = self.userForName(from)
-      author.room = channel
+      # We get full name in from, but replies are sent back to room.
+      author = { name: from, reply_to: channel }
       self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
     bot.onPrivateMessage (from, message)=>
-      author = self.userForId(from.match(/_(\d+)@/)[1])
-      author.jid = from
+      # We get JID in from, and have to sent replies back to it. We need to
+      # resolve user from user list to figure out name.
+      user = self.userForId(from.match(/_(\d+)@/)[1], name: from)
+      author = { name: user.name, reply_to: from }
       self.receive new Robot.Message(author, "Hubot: #{message}")
     bot.connect()
 
