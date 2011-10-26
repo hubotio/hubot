@@ -52,7 +52,7 @@ class Creator
 
     @copyDefaultScripts("#{@path}/scripts")
 
-    ["Procfile", "package.json", "README.md", ".gitignore", "bin/hubot"].forEach (file) =>
+    ["Procfile", "package.json", "README.md", ".gitignore", "bin/hubot", "hubot-scripts.json"].forEach (file) =>
       @copy "#{@templateDir}/#{file}", "#{@path}/#{file}"
 
 exports.Creator = Creator

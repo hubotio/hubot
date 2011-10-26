@@ -44,10 +44,10 @@ class Helper extends Robot
     strings.forEach (str) =>
       @send user, "#{@name}: #{str}"
 
-  # modified to accept a string and pass the Robot.Message to super()
+  # modified to accept a string and pass the Robot.TextMessage to super()
   receive: (text) ->
     user = new Robot.User 1, 'helper'
-    super new Robot.Message(user, text)
+    super new Robot.TextMessage(user, text)
 
 class Helper.Response extends Robot.Response
   # This changes ever HTTP request to hit the danger server above
