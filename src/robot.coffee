@@ -40,7 +40,7 @@ class Robot
     re.shift()           # remove empty first item
     modifiers = re.pop() # pop off modifiers
 
-    if re[0] and re[0][0] == "^"
+    if re[0] and re[0][0] is "^"
       console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
       console.log "WARNING: The regex in question was #{regex.toString()}\n"
 
@@ -82,7 +82,7 @@ class Robot
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
-    if ext == '.coffee' or ext == '.js'
+    if ext is '.coffee' or ext is '.js'
       require(full) @
       @parseHelp "#{path}/#{file}"
 
@@ -142,7 +142,7 @@ class Robot
     result = null
     lowerName = name.toLowerCase()
     for k of (@brain.data.users or { })
-      if @brain.data.users[k]['name'].toLowerCase() == lowerName
+      if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
 
     result

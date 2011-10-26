@@ -108,7 +108,7 @@ class CampfireStreaming extends EventEmitter
 
         buf = ''
         response.on "data", (chunk) ->
-          if chunk == ' '
+          if chunk is ' '
             # campfire api sends a ' ' heartbeat every 3s
 
           else if chunk.match(/^\s*Access Denied/)
@@ -164,7 +164,7 @@ class CampfireStreaming extends EventEmitter
       "method" : method
       "headers": headers
 
-    if method == "POST"
+    if method is "POST"
       if typeof(body) != "string"
         body = JSON.stringify body
 
@@ -189,7 +189,7 @@ class CampfireStreaming extends EventEmitter
       response.on "error", (err) ->
         callback err, { }
 
-    if method == "POST"
+    if method is "POST"
       request.end(body, 'binary')
     else
       request.end()

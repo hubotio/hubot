@@ -17,7 +17,7 @@ class Shell extends Robot
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
       txt.toString().split("\n").forEach (line) =>
-        return if line.length == 0
+        return if line.length is 0
         @receive new Robot.Message user, line
 
     setTimeout =>

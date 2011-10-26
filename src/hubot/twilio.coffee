@@ -40,7 +40,7 @@ class Twilio extends Robot
     server.listen (parseInt(process.env.HUBOT_SMS_PORT) || 8080), "0.0.0.0"
 
   handle: (body, from) ->
-    return if body.length == 0
+    return if body.length is 0
     user = @userForId from
     @receive new Robot.Message user, body
 

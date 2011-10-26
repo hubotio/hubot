@@ -12,9 +12,9 @@ module.exports = (robot) ->
   robot.respond /who is ([\w .-]+)\?*$/i, (msg) ->
     name = msg.match[1]
 
-    if name == "you"
+    if name is "you"
       msg.send "Who ain't I?"
-    else if name == robot.name
+    else if name is robot.name
       msg.send "The best."
     else if user = robot.userForName name
       user.roles = user.roles or [ ]
