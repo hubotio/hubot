@@ -7,12 +7,12 @@ class HipChat extends Robot
   send: (user, strings...) ->
     console.log "Sending"
     strings.forEach (str) =>
-      @bot.message user.room || user.id, str
+      @bot.message user.room || user.jid, str
 
   reply: (user, strings...) ->
     console.log "Replying"
     strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+      @send user, "@#{user.name} #{str}"
 
   run: ->
     self = @
@@ -29,16 +29,26 @@ class HipChat extends Robot
     bot.onConnect =>
       console.log "Connected to HipChat"
       @get "/v1/rooms/list", (err, response)->
-        response.rooms.forEach (room)->
-          bot.join room.xmpp_jid
+        if response
+          response.rooms.forEach (room)->
+            bot.join room.xmpp_jid
+        else
+          console.log "Can't list rooms: #{err}"
+      @get "/v1/users/list", (err, response)->
+        if response
+          response.users.forEach (user)->
+            self.userForId user.user_id, user
+        else
+          console.log "Can't list rooms: #{err}"
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
     bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
-      author = self.userForId(from)
+      author = self.userForId(from.match(/_(\d+)@/)[1])
       author.room = channel
       self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
     bot.onPrivateMessage (from, message)=>
-      author = self.userForId(from)
+      author = self.userForId(from.match(/_(\d+)@/)[1])
+      author.jid = from
       self.receive new Robot.Message(author, "Hubot: #{message}")
     bot.connect()
 
