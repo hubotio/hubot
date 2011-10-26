@@ -55,7 +55,7 @@ Deployment
 
 You'll need to edit the `Procfile` to say what the bot's name is.
 
-Hubot also needs four environmental variables set to run and to keep him
+Hubot also needs three environmental variables set to run and to keep him
 running on heroku.
 
 Campfire Variables
@@ -66,12 +66,13 @@ Create a separate user for your bot and get their token from the web UI.
     % heroku config:add HUBOT_CAMPFIRE_TOKEN="..."
 
 Get the numeric ids of the rooms you want the bot to join, comma
-delimited.
+delimited. If you want the bot to connect to `https://mysubdomain.campfirenow.com/room/42` 
+and `https://mysubdomain.campfirenow.com/room/1024` then you'd add it like this:
 
     % heroku config:add HUBOT_CAMPFIRE_ROOMS="42,1024"
 
 Add the subdomain hubot should connect to. If you web URL looks like
-`http://mysubdomain.campfirenow.com` then you'd add it like this.
+`http://mysubdomain.campfirenow.com` then you'd add it like this:
 
     % heroku config:add HUBOT_CAMPFIRE_ACCOUNT="mysubdomain"
 
