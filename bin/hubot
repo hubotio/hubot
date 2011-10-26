@@ -61,6 +61,8 @@ else
       Hubot = require("hubot/campfire").Campfire
     when "twilio"
       Hubot = require("hubot/twilio").Twilio
+    when "xmpp"
+      Hubot = require("hubot/xmpp").XmppBot
     else
       Hubot = require("hubot/shell").Shell
 
