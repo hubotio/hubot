@@ -39,7 +39,7 @@ class HipChat extends Robot
       self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
     bot.onPrivateMessage (from, message)=>
       author = self.userForId(from)
-      self.receive new Robot.Message(author, message)
+      self.receive new Robot.Message(author, "Hubot: #{message}")
     bot.connect()
 
     @bot = bot
