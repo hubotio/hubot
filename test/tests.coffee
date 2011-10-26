@@ -44,7 +44,9 @@ class Helper extends Robot
 
   # modified to accept a string and pass the Robot.Message to super()
   receive: (text) ->
-    user = new Robot.User 1, 'helper'
+    user = new Robot.User 1, {
+        name: 'helper'
+    }
     super new Robot.Message(user, text)
 
 class Helper.Response extends Robot.Response
