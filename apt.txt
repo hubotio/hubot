@@ -1,0 +1,4 @@
+nodejs
+nodejs-dev
+libexpat1-dev
+redis-server
