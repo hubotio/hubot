@@ -19,13 +19,14 @@ class HipChat extends Robot
     @options =
       token:    process.env.HUBOT_HIPCHAT_TOKEN
       jid:      process.env.HUBOT_HIPCHAT_JID
-      name:     process.env.HUBOT_HIPCHAT_NAME || "#{self.name}, I"
+      name:     process.env.HUBOT_HIPCHAT_NAME || "#{self.name} Bot"
       password: process.env.HUBOT_HIPCHAT_PASSWORD
       rooms:    process.env.HUBOT_HIPCHAT_ROOMS || "@All"
-
+    
+    console.log process.env.HUBOT_HIPCHAT_NAME_TEST
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
-    mention='@'+@options.name.split(' ')[0]
+    mention = '@'+@options.name.split(' ')[0]
     console.log "Bot:", bot
 
     bot.onConnect =>
@@ -53,7 +54,7 @@ class HipChat extends Robot
     bot.onMessage RegExp(mention,'i'), (channel, from, message)->    
       #console.log "#{from}@#{channel}: #{message}"
       author = { name: from, reply_to: channel }
-      hubot_msg=message.replace(RegExp(mention,'i'),"#{self.name}: ")
+      hubot_msg = message.replace(RegExp(mention,'i'), "#{self.name}: ")
       self.receive new Robot.Message(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
       user = self.userForId(from.match(/_(\d+)@/)[1])
