@@ -43,7 +43,8 @@ class HipChat extends Robot
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
     bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
-      author = self.userForId(from.match(/_(\d+)@/)[1])
+      console.log from
+      author = self.userForName(from)
       author.room = channel
       self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
     bot.onPrivateMessage (from, message)=>
