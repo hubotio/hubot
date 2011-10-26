@@ -1,5 +1,4 @@
 Fs    = require 'fs'
-Url   = require 'url'
 Path  = require 'path'
 
 class Robot
