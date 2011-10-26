@@ -1,4 +1,4 @@
-Tests  = require('./tests')
+Tests  = require './tests'
 assert = require 'assert'
 helper = Tests.helper()
 
