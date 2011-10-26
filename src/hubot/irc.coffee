@@ -18,8 +18,6 @@ class IrcBot extends Robot
       rooms:  process.env.HUBOT_IRC_ROOMS.split(",")
       nick:   process.env.HUBOT_IRC_NICK
 
-    console.log options
-
     bot = new Irc.Client options.server, options.nick, {
       debug: true,
       channels: options.rooms,

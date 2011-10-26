@@ -18,9 +18,7 @@ class Campfire extends Robot
       rooms:   process.env.HUBOT_CAMPFIRE_ROOMS
       account: process.env.HUBOT_CAMPFIRE_ACCOUNT
 
-    console.log options
     bot = new CampfireStreaming(options)
-    console.log bot
 
     bot.on "TextMessage", (id, created, room, user, body) ->
       bot.User user, (err, userData) ->
@@ -30,7 +28,6 @@ class Campfire extends Robot
           self.receive new Robot.Message(author, body)
 
     bot.Me (err, data) ->
-      console.log data
       bot.info = data.user
       bot.name = bot.info.name
       bot.rooms.forEach (room_id) ->

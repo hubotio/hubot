@@ -51,7 +51,6 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
-    console.log newRegex.toString()
     @listeners.push new Listener(@, newRegex, callback)
 
   # Public: Passes the given message to any interested Listeners.
