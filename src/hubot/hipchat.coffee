@@ -7,7 +7,7 @@ class HipChat extends Robot
   send: (user, strings...) ->
     console.log "Sending"
     strings.forEach (str) =>
-      @bot.message user.room || user.jid, str
+      @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
     console.log "Replying"
@@ -50,15 +50,14 @@ class HipChat extends Robot
           console.log "Can't list rooms: #{err}"
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
-    bot.onMessage RegExp(mention,'i'), (channel, from, message)->
-      author = self.userForName(from)
-      author.room = channel
-      console.log "#{from}@#{channel}: #{message}"
+    bot.onMessage RegExp(mention,'i'), (channel, from, message)->    
+      #console.log "#{from}@#{channel}: #{message}"
+      author = { name: from, reply_to: channel }
       hubot_msg=message.replace(RegExp(mention,'i'),"#{self.name}: ")
       self.receive new Robot.Message(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
-      author = self.userForId(from.match(/_(\d+)@/)[1])
-      author.jid = from
+      user = self.userForId(from.match(/_(\d+)@/)[1])
+      author = { name: user.name, reply_to: from }
       self.receive new Robot.Message(author, "#{self.name}: #{message}")
     bot.connect()
 
