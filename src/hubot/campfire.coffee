@@ -45,11 +45,14 @@ exports.Campfire = Campfire
 
 class CampfireStreaming extends EventEmitter
   constructor: (options) ->
-    @token         = options.token
-    @rooms         = options.rooms.split(",")
-    @account       = options.account
-    @domain        = @account + ".campfirenow.com"
-    @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    if options.token? && options.rooms? && options.account?
+      @token         = options.token
+      @rooms         = options.rooms.split(",")
+      @account       = options.account
+      @domain        = @account + ".campfirenow.com"
+      @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    else
+      throw new Error("Not enough parameters provided. I need a token, rooms and account")
 
   Rooms: (callback) ->
     @get "/rooms", callback
