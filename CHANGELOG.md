@@ -1,3 +1,8 @@
+v1.0.5
+======
+
+* Remove infinite loop script to keep things alive - atmos
+
 v1.0.4
 ======
 
