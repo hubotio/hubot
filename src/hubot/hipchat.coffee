@@ -33,10 +33,10 @@ class HipChat extends Robot
           bot.join room.xmpp_jid
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
-    bot.onMessage /^@hubot\s/i, (channel, from, message)->
+    bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
       author = self.userForId(from)
       author.room = channel
-      self.receive new Robot.Message(author, message.match(/@hubot (.*)/)[1])
+      self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
     bot.onPrivateMessage (from, message)=>
       author = self.userForId(from)
       self.receive new Robot.Message(author, message)
