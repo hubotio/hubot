@@ -34,7 +34,7 @@ class Twilio extends Robot
       response.writeHead 200, 'Content-Type': 'text/plain'
       response.end()
 
-    server.listen process.env.HUBOT_SMS_PORT, "0.0.0.0"
+    server.listen (parseInt(process.env.HUBOT_SMS_PORT) || 8080), "0.0.0.0"
 
   handle: (body, from) ->
     return if body.length == 0
