@@ -29,7 +29,7 @@ class XmppBot extends Robot
     # join each room
     # http://xmpp.org/extensions/xep-0045.html for XMPP chat standard
     for room in @options.rooms
-      @client.send(new Xmpp.Element('presence', to: "#{room}/#{@options.username}" )
+      @client.send(new Xmpp.Element('presence', to: "#{room}/#{@name}" )
         .c('x', xmlns: 'http://jabber.org/protocol/muc' )
         .c('history', seconds: 1 )) # prevent the server from confusing us with old messages
                                     # and it seems that servers don't reliably support maxchars
