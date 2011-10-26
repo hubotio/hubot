@@ -42,7 +42,7 @@ class Twilio extends Robot
   handle: (body, from) ->
     return if body.length == 0
     user = @userForId from
-    @receive new Robot.Message user, body
+    @receive new Robot.TextMessage user, body
 
   post: (message, to, callback) ->
     host = "api.twilio.com"

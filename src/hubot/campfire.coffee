@@ -24,12 +24,21 @@ class Campfire extends Robot
     bot = new CampfireStreaming(options)
     console.log bot
 
-    bot.on "TextMessage", (id, created, room, user, body) ->
+    withAuthor = (callback) -> (id, created, room, user, body) ->
       bot.User user, (err, userData) ->
         if userData.user
           author = self.userForId(userData.user.id, userData.user)
           author.room = room
-          self.receive new Robot.Message(author, body)
+          callback id, created, room, user, body, author
+
+    bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
+      self.receive new Robot.TextMessage(author, body)
+
+    bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
+      self.receive new Robot.EnterMessage(author)
+
+    bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
+      self.receive new Robot.LeaveMessage(author)
 
     bot.Me (err, data) ->
       console.log data
