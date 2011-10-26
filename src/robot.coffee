@@ -144,9 +144,7 @@ class Robot
     for k of (@brain.data.users or { })
       if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
-
     result
-    # (user for id in @brain.data.users when @users[id]['name'].toLowerCase() == lowerName)
 
 class Robot.User
   # Represents a participating user in the chat.
@@ -185,7 +183,6 @@ class Robot.Brain
         @mergeData JSON.parse reply.toString() if reply
 
       setInterval =>
-        # console.log JSON.stringify @data
         data = JSON.stringify @data
         @client.set "hubot:storage", data, (err, reply) ->
           # console.log "Saved #{reply.toString()}"

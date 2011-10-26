@@ -69,8 +69,6 @@ class Twilio extends Robot
       path: path
       headers: headers
 
-    console.log opts
-
     request = Https.request opts, (response) ->
       data = ""
 
