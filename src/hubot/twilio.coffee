@@ -37,12 +37,12 @@ class Twilio extends Robot
       response.writeHead 200, 'Content-Type': 'text/plain'
       response.end()
 
-    server.listen (parseInt(process.env.HUBOT_SMS_PORT) || 8080), "0.0.0.0"
+    server.listen (parseInt(process.env.PORT) || 8080), "0.0.0.0"
 
   handle: (body, from) ->
     return if body.length is 0
     user = @userForId from
-    @receive new Robot.Message user, body
+    @receive new Robot.TextMessage user, body
 
   post: (message, to, callback) ->
     host = "api.twilio.com"

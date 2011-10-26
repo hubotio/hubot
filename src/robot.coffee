@@ -26,7 +26,7 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    @listeners.push new Listener(@, regex, callback)
+    @listeners.push new TextListener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex.  All regexes treat patterns like they begin
@@ -51,7 +51,24 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
-    @listeners.push new Listener(@, newRegex, callback)
+    console.log newRegex.toString()
+    @listeners.push new TextListener(@, newRegex, callback)
+
+  # Public: Adds a Listener that triggers when anyone enters the room.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  enter: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.EnterMessage), callback)
+
+  # Public: Adds a Listener that triggers when anyone leaves the room.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  leave: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -59,7 +76,11 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    listener.call message for listener in @listeners
+    @listeners.forEach (lst) ->
+      try
+        lst.call message
+      catch ex
+        console.log "error while calling listener: #{ex}"
 
   # Public: Loads every script in the given path.
   #
@@ -200,8 +221,15 @@ class Robot.Message
   # Represents an incoming message from the chat.
   #
   # user - A Robot.User instance that sent the message.
+  constructor: (@user) ->
+
+class Robot.TextMessage extends Robot.Message
+  # Represents an incoming message from the chat.
+  #
+  # user - A Robot.User instance that sent the message.
   # text - The String message contents.
   constructor: (@user, @text) ->
+    super @user
 
   # Determines if the message matches the given regex.
   #
@@ -211,15 +239,26 @@ class Robot.Message
   match: (regex) ->
     @text.match regex
 
+# Represents an incoming user entrance notification.
+#
+# user - A Robot.User instance for the user who entered.
+class Robot.EnterMessage extends Robot.Message
+
+# Represents an incoming user exit notification.
+#
+# user - A Robot.User instance for the user who left.
+class Robot.LeaveMessage extends Robot.Message
+
+
 class Listener
   # Listeners receive every message from the chat source and decide if they
   # want to act on it.
   #
   # robot    - The current Robot instance.
-  # regex    - The Regex that determines if this listener should trigger the
+  # matcher  - The Function that determines if this listener should trigger the
   #            callback.
   # callback - The Function that is triggered if the incoming message matches.
-  constructor: (@robot, @regex, @callback) ->
+  constructor: (@robot, @matcher, @callback) ->
 
   # Public: Determines if the listener likes the content of the message.  If
   # so, a Response built from the given Message is passed to the Listener
@@ -229,8 +268,21 @@ class Listener
   #
   # Returns nothing.
   call: (message) ->
-    if match = message.match @regex
+    if match = @matcher message
       @callback new @robot.Response(@robot, message, match)
+
+class TextListener extends Listener
+  # TextListeners receive every message from the chat source and decide if they want
+  # to act on it.
+  #
+  # robot    - The current Robot instance.
+  # regex    - The Regex that determines if this listener should trigger the
+  #            callback.
+  # callback - The Function that is triggered if the incoming message matches.
+  constructor: (@robot, @regex, @callback) ->
+    @matcher = (message) =>
+      if message instanceof Robot.TextMessage
+        message.match @regex
 
 class Robot.Response
   # Public: Responses are sent to matching listeners.  Messages know about the

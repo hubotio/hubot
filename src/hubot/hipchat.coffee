@@ -1,13 +1,12 @@
 Robot        = require "robot"
 HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
 Wobot        = require("wobot").Bot
 
 class HipChat extends Robot
   send: (user, strings...) ->
     console.log "Sending"
     strings.forEach (str) =>
-      @bot.message user.room || user.jid, str
+      @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
     console.log "Replying"
@@ -19,38 +18,51 @@ class HipChat extends Robot
     @options =
       token:    process.env.HUBOT_HIPCHAT_TOKEN
       jid:      process.env.HUBOT_HIPCHAT_JID
-      name:     process.env.HUBOT_HIPCHAT_NAME || "Hubot, I"
+      name:     process.env.HUBOT_HIPCHAT_NAME || "#{self.name} Bot"
       password: process.env.HUBOT_HIPCHAT_PASSWORD
-
+      rooms:    process.env.HUBOT_HIPCHAT_ROOMS || "@All"
+    
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
+    mention = new RegExp("@#{@options.name.split(' ')[0]}\\b", "i")
+    console.log mention
     console.log "Bot:", bot
 
     bot.onConnect =>
       console.log "Connected to HipChat"
-      @get "/v1/rooms/list", (err, response)->
-        if response
-          response.rooms.forEach (room)->
-            bot.join room.xmpp_jid
-        else
-          console.log "Can't list rooms: #{err}"
+      if @options.rooms == "@All"
+        @get "/v1/rooms/list", (err, response)->
+          if response
+            response.rooms.forEach (room)->
+              console.log "Joining #{room.xmpp_jid}"
+              bot.join room.xmpp_jid
+          else
+            console.log "Can't list rooms: #{err}"
+      else
+        @options.rooms.split(',').forEach (room_id)->
+          console.log "Joining #{room_id}"
+          bot.join room_id
       @get "/v1/users/list", (err, response)->
         if response
           response.users.forEach (user)->
             self.userForId user.user_id, user
         else
           console.log "Can't list rooms: #{err}"
-    bot.onError (message, stanza)->
-      console.log "Received error from HipChat:", message, stanza
-    bot.onMessage /^\s*@hubot\s/i, (channel, from, message)->
-      console.log from
-      author = self.userForName(from)
-      author.room = channel
-      self.receive new Robot.Message(author, message.replace(/^\s*@hubot\s+/, "Hubot: "))
+    bot.onError (message)->
+      # If HipChat sends an error, we get the error message from XMPP.
+      # Otherwise, we get an Error object from the Node connection.
+      if message.message
+        console.log "Error talking to HipChat:", message.message
+      else
+        console.log "Received error from HipChat:", message
+    bot.onMessage (channel, from, message)->
+      author = { name: from, reply_to: channel }
+      hubot_msg = message.replace(mention, "#{self.name}: ")
+      self.receive new Robot.Message(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
-      author = self.userForId(from.match(/_(\d+)@/)[1])
-      author.jid = from
-      self.receive new Robot.Message(author, "Hubot: #{message}")
+      user = self.userForId(from.match(/_(\d+)@/)[1])
+      author = { name: user.name, reply_to: from }
+      self.receive new Robot.TextMessage(author, "#{self.name}: #{message}")
     bot.connect()
 
     @bot = bot
