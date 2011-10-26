@@ -19,8 +19,8 @@ Switches = [
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
   [ "-c", "--create PATH",       "Create a deployable hubot"],
   [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
-  [ "-n", "--name NAME",         "The name of the robot in chat" ]
-  [ "-r", "--redis",             "Store the robot's brain in Redis" ]
+  [ "-n", "--name NAME",         "The name of the robot in chat"],
+  [ "-b", "--brain BRAIN",       "The brain to use"]
 ]
 
 Options =
@@ -28,7 +28,7 @@ Options =
   name: "Hubot"
   create: false
   adapter: "stdio"
-  redis: false
+  brain: "default"
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -46,8 +46,8 @@ Parser.on "create", (opt, value) ->
 Parser.on "enable-slash", (opt) ->
   Options.enableSlash = true
 
-Parser.on "redis", (opt) ->
-  Options.redis = true
+Parser.on "brain", (opt, value) ->
+  Options.brain = value
 
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
@@ -67,14 +67,16 @@ else
     else
       Hubot = require("hubot/shell").Shell
 
+  switch Options.brain
+    when "redis"
+      Brain = require("hubot/brains/redis_brain").RedisBrain
+    else
+      Brain = Hubot.Brain
+
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
 
-  # possibly abstract the brain into an external file similar to how the
-  # adaptars work.
-  brain = if Options.redis then Hubot.RedisBrain else Hubot.Brain
-
-  robot = new Hubot scriptsPath, Options.name, brain
+  robot = new Hubot scriptsPath, Options.name, Brain
   robot.enableSlash = Options.enableSlash
 
   scriptsPath = Path.resolve "src", "hubot", "scripts"
