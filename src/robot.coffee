@@ -43,8 +43,8 @@ class Robot
     modifiers = re.pop() # pop off modifiers
 
     if re[0] and re[0][0] is "^"
-      console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
-      console.log "WARNING: The regex in question was #{regex.toString()}\n"
+      console.warn "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
+      console.warn "WARNING: The regex in question was #{regex.toString()}\n"
 
     pattern = re.join("/") # combine the pattern back again
     if @enableSlash
@@ -52,7 +52,7 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
-    console.log newRegex.toString()
+    console.info newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
@@ -81,7 +81,7 @@ class Robot
       try
         lst.call message
       catch ex
-        console.log "error while calling listener: #{ex}"
+        console.error "error while calling listener: #{ex}"
 
   # Public: Loads every script in the given path.
   #
