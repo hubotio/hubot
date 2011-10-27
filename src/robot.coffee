@@ -16,7 +16,8 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-    if path then @load path
+
+    @load path if path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
