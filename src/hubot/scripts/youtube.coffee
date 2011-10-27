@@ -18,5 +18,5 @@ module.exports = (robot) ->
         video  = msg.random videos
 
         video.link.forEach (link) ->
-          if link.rel == "alternate" && link.type == "text/html"
+          if link.rel is "alternate" and link.type is "text/html"
             msg.send link.href

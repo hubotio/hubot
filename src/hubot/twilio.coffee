@@ -20,7 +20,7 @@ class Twilio extends Robot
         console.log "successful sending #{body}"
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   respond: (regex, callback) ->
@@ -37,7 +37,7 @@ class Twilio extends Robot
       response.writeHead 200, 'Content-Type': 'text/plain'
       response.end()
 
-    server.listen (parseInt(process.env.PORT) || 8080), "0.0.0.0"
+    server.listen (parseInt(process.env.PORT) or 8080), "0.0.0.0"
 
   handle: (body, from) ->
     return if body.length is 0

@@ -56,7 +56,7 @@ module.exports = (robot) ->
         if newRole not in user.roles
           msg.send "I know."
         else
-          user.roles = (role for role in user.roles when role != newRole)
+          user.roles = (role for role in user.roles when role isnt newRole)
           msg.send "Ok, #{name} is no longer #{newRole}."
 
       else
