@@ -34,9 +34,6 @@ class IrcBot extends Robot
 
     bot = new Irc.Client options.server, options.nick, client_options
 
-    next_id = 1
-    user_id = {}
-
     if options.nickpass?
       bot.addListener 'notice', (from, to, text) ->
         if from == 'NickServ' and text.indexOf('registered') != -1
@@ -48,11 +45,6 @@ class IrcBot extends Robot
 
     bot.addListener 'message', (from, toRoom, message) ->
       console.log "From #{from} to #{toRoom}: #{message}"
-
-      if message.match new RegExp "^#{options.nick}", "i"
-        unless user_id[from]
-          user_id[from] = next_id
-          next_id = next_id + 1
 
       user = self.userForId(from.toLowerCase(), {name: from})
       user.room = toRoom
