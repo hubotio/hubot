@@ -58,7 +58,7 @@ class HipChat extends Robot
     bot.onMessage (channel, from, message)->
       author = { name: from, reply_to: channel }
       hubot_msg = message.replace(mention, "#{self.name}: ")
-      self.receive new Robot.Message(author, hubot_msg)
+      self.receive new Robot.TextMessage(author, hubot_msg)
     bot.onPrivateMessage (from, message)=>
       user = self.userForId(from.match(/_(\d+)@/)[1])
       author = { name: user.name, reply_to: from }
