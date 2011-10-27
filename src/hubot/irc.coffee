@@ -14,15 +14,17 @@ class IrcBot extends Robot
   run: ->
     self = @
     options =
-      server:   process.env.HUBOT_IRC_SERVER
+      server:  process.env.HUBOT_IRC_SERVER
+      port:    process.env.HUBOT_IRC_PORT
       rooms:   process.env.HUBOT_IRC_ROOMS.split(",")
-      nick: process.env.HUBOT_IRC_NICK
+      nick:    process.env.HUBOT_IRC_NICK
 
     console.log options
 
     bot = new Irc.Client options.server, options.nick, {
       debug: true,
       channels: options.rooms,
+      port: options.port || 6667
     }
 
     next_id = 1
