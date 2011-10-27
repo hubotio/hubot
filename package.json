@@ -1,7 +1,7 @@
 {
   "name":        "hubot",
   "version":     "1.1.0",
-  "author":      "GitHub Inc.",
+  "author":      "hubot",
   "keywords":    "github hubot campfire bot",
   "description": "A simple helpful Robot for your Company",
   "licenses":     [{
