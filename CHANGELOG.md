@@ -1,3 +1,24 @@
+v1.1.0
+======
+
+* Explicity errors for misconfigured campfire setup - Damien Mathieu <damien.mathieu@shazino.com>
+* Support '-v' as a CLI opt to display version - Damien Mathieu <damien.mathieu@shazino.com>
+* Tons of fixups to the hipchat adapter - Codafoo <cesar@webzense.net>, Assaf Arkin <assaf@labnotes.org>
+* Various IRC adapter fixups - Mark Paschal <markpasc@markpasc.org>, Jesse Szwedko
+* Enter/Leave events for adapters - Brian Donovan <me@brian-donovan.com>
+* XMPP adapter fixups - codec <codec@fnord.cx>,
+* Break out persistence layer to make it easier to have multiple backends - technoweenie
+* Various refactorings/cleanups - Tom Bell <tomb@tombell.org.uk>
+* translation script enhancements - OiNutter <willmckenzie@oinutter.co.uk>
+* XMPP user persistence fixups - Andy Fowler <andy@andyfowler.com>
+
+Upgrading
+---------
+If you're using the redis persistence you're going to need to enable
+'redis-brain.coffee' in your hubot-scripts.json file.  It was moved
+there and the brain now supports events allowing you to use any
+persistence backend you want.
+
 v1.0.5
 ======
 
