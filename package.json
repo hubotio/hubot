@@ -23,12 +23,11 @@
     "wobot": "0.3.0"
   },
 
-  "directories":  {
-    "lib": "./src"
-  },
-  "main": "./src/hubot",
+  "main": "./index",
+
   "bin": {
     "hubot": "./bin/hubot"
   },
+
   "engine": "node >= 0.4.1 < 0.5.0"
 }
