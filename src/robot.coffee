@@ -76,11 +76,17 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
+    someMatched = false
     for lst in @listeners
       try
-        lst.call message
+        someMatched = true if lst.call message
       catch ex
         console.error "error while calling listener: #{ex}"
+
+    @noMatch message unless someMatched
+
+  # Called when no listener matched a message passed to `receive`
+  noMatch: (message) ->
 
   # Public: Loads every script in the given path.
   #
@@ -266,6 +272,7 @@ class Listener
   call: (message) ->
     if match = @matcher message
       @callback new @robot.Response(@robot, message, match)
+      return true
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
