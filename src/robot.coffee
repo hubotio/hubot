@@ -52,7 +52,6 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
-    console.info newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
