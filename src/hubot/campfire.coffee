@@ -49,7 +49,7 @@ module.exports = Campfire
 
 class CampfireStreaming extends EventEmitter
   constructor: (options) ->
-    if options.token? && options.rooms? && options.account?
+    if options.token? and options.rooms? and options.account?
       @token         = options.token
       @rooms         = options.rooms.split(",")
       @account       = options.account
@@ -169,7 +169,7 @@ class CampfireStreaming extends EventEmitter
       "headers": headers
 
     if method is "POST"
-      if typeof(body) != "string"
+      if typeof(body) isnt "string"
         body = JSON.stringify body
 
       body = new Buffer(body)
@@ -189,7 +189,7 @@ class CampfireStreaming extends EventEmitter
         try
           callback null, JSON.parse(data)
         catch err
-          callback null, data || { }
+          callback null, data or { }
       response.on "error", (err) ->
         callback err, { }
 

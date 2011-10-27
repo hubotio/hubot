@@ -18,9 +18,9 @@ class HipChat extends Robot
     @options =
       token:    process.env.HUBOT_HIPCHAT_TOKEN
       jid:      process.env.HUBOT_HIPCHAT_JID
-      name:     process.env.HUBOT_HIPCHAT_NAME || "#{self.name} Bot"
+      name:     process.env.HUBOT_HIPCHAT_NAME or "#{self.name} Bot"
       password: process.env.HUBOT_HIPCHAT_PASSWORD
-      rooms:    process.env.HUBOT_HIPCHAT_ROOMS || "@All"
+      rooms:    process.env.HUBOT_HIPCHAT_ROOMS or "@All"
     
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
@@ -30,8 +30,8 @@ class HipChat extends Robot
 
     bot.onConnect =>
       console.log "Connected to HipChat"
-      if @options.rooms == "@All"
-        @get "/v1/rooms/list", (err, response)->
+      if @options.rooms is "@All"
+        @get "/v1/rooms/list", (err, response) ->
           if response
             response.rooms.forEach (room)->
               console.log "Joining #{room.xmpp_jid}"
@@ -108,7 +108,7 @@ class HipChat extends Robot
         try
           callback null, JSON.parse(data)
         catch err
-          callback null, data || { }
+          callback null, data or { }
       response.on "error", (err) ->
         callback err, { }
 

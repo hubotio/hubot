@@ -46,7 +46,7 @@ class XmppBot extends Robot
       return
 
     # ignore non-messages
-    return if !stanza.is 'message' || stanza.attrs.type not in ['groupchat', 'direct', 'chat']
+    return if !stanza.is 'message' or stanza.attrs.type not in ['groupchat', 'direct', 'chat']
 
     # ignore our own messages
     return if @options.username in stanza.attrs.from
