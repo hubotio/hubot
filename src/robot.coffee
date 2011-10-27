@@ -64,7 +64,12 @@ class Robot
   #
   # Returns nothing.
   eatOneResponse: (user, callback) ->  
-    @eatListeners[user.id] = new TextListener(@, /\s*(.*?)\s*/, callback)
+    if @enableSlash
+      newRegex = new RegExp("^(?:\/|#{@name}:?)\\s*(.*?)\\s*$", "i")
+    else
+      newRegex = new RegExp("^#{@name}:?\\s*(.*?)\\s*$", "i")
+    
+    @eatListeners[user.id] = new TextListener(@, newRegex, callback)
   
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
@@ -88,11 +93,15 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    if message.user.id in @eatListeners
+    if @eatListeners[message.user.id]?
       lst = @eatListeners[message.user.id]
       delete @eatListeners[message.user.id]
-      lst.call message
-      return
+      
+      if lst.call message
+        return
+      else
+        # Put back to try again next time
+        @eatListeners[message.user.id] = lst
     
     @listeners.forEach (lst) ->
       try
@@ -281,10 +290,13 @@ class Listener
   #
   # message - a Robot.Message instance.
   #
-  # Returns nothing.
+  # Returns true if it was used, false if ignored.
   call: (message) ->
     if match = @matcher message
       @callback new @robot.Response(@robot, message, match)
+      return true
+    else
+      return false
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
