@@ -1,4 +1,4 @@
-Robot        = require "robot"
+Robot        = require "../robot"
 HTTPS        = require "https"
 Wobot        = require("wobot").Bot
 

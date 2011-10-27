@@ -1,4 +1,4 @@
-Robot = require 'robot'
+Robot = require '../robot'
 Http  = require 'http'
 Https = require 'https'
 Qs    = require 'querystring'

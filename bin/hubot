@@ -4,14 +4,12 @@
 #
 # Launch an interactive hubot
 #
-require.paths.unshift __dirname + "/../node_modules"
-require.paths.unshift __dirname + "/../src"
 
 Hubot      = require '..'
 Fs         = require 'fs'
 Path       = require 'path'
 HTTP       = require 'http'
-Creator    = require 'creator'
+Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 

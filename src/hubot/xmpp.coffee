@@ -1,4 +1,4 @@
-Robot = require 'robot'
+Robot = require '../robot'
 Xmpp  = require 'node-xmpp'
 
 class XmppBot extends Robot

@@ -1,4 +1,4 @@
-Robot = require "robot"
+Robot = require "../robot"
 Irc   = require "irc"
 
 class IrcBot extends Robot

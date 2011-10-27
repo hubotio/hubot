@@ -1,4 +1,4 @@
-Robot = require 'robot'
+Robot = require '../robot'
 
 class Shell extends Robot
   send: (user, strings...) ->
