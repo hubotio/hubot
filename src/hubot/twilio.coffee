@@ -20,7 +20,7 @@ class Twilio extends Robot
         console.log "successful sending #{body}"
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   respond: (regex, callback) ->

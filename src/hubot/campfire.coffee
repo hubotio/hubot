@@ -39,7 +39,7 @@ class Campfire extends Robot
     bot.Me (err, data) ->
       bot.info = data.user
       bot.name = bot.info.name
-      bot.rooms.forEach (room_id) ->
+      for room_id in bot.rooms
         bot.Room(room_id).join (err, callback) ->
           bot.Room(room_id).listen()
 

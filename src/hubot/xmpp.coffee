@@ -66,7 +66,7 @@ class XmppBot extends Robot
     @receive new Robot.TextMessage user, message
 
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       console.log "Sending to #{user.room}: #{str}"
 
       to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
@@ -81,7 +81,7 @@ class XmppBot extends Robot
       @client.send message
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
 module.exports = XmppBot

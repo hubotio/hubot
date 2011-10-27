@@ -5,12 +5,12 @@ Wobot        = require("wobot").Bot
 class HipChat extends Robot
   send: (user, strings...) ->
     console.log "Sending"
-    strings.forEach (str) =>
+    for str in strings
       @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
     console.log "Replying"
-    strings.forEach (str) =>
+    for str in strings
       @send user, "@#{user.name} #{str}"
 
   run: ->

@@ -76,7 +76,7 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    @listeners.forEach (lst) ->
+    for lst in @listeners
       try
         lst.call message
       catch ex
