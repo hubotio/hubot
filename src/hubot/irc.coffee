@@ -11,6 +11,12 @@ class IrcBot extends Robot
     for str in strings
       @send user, "#{user.name}: #{str}"
 
+  userForName: (name) ->
+    lowerName = name.toLowerCase()
+    if lowerName of (@brain.data.users or { })
+      return @brain.data.users[lowerName]
+    null
+
   run: ->
     self = @
     options =
