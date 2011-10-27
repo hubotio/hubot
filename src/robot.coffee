@@ -1,7 +1,6 @@
 Fs           = require 'fs'
 Url          = require 'url'
 Path         = require 'path'
-Redis        = require 'redis'
 EventEmitter = require('events').EventEmitter
 
 class Robot
