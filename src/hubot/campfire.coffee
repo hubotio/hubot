@@ -45,7 +45,7 @@ class Campfire extends Robot
 
     @bot = bot
 
-exports.Campfire = Campfire
+module.exports = Campfire
 
 class CampfireStreaming extends EventEmitter
   constructor: (options) ->

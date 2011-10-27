@@ -84,5 +84,5 @@ class XmppBot extends Robot
     strings.forEach (str) =>
       @send user, "#{user.name}: #{str}"
 
+module.exports = XmppBot
 
-exports.XmppBot = XmppBot

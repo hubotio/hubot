@@ -7,6 +7,7 @@
 require.paths.unshift __dirname + "/../node_modules"
 require.paths.unshift __dirname + "/../src"
 
+Hubot      = require '..'
 Fs         = require 'fs'
 Path       = require 'path'
 HTTP       = require 'http'
@@ -14,6 +15,7 @@ Creator    = require 'creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
+Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp"]
 Switches = [
   [ "-h", "--help",              "Display the help information"],
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
@@ -74,23 +76,14 @@ else if Options.version
     process.exit 0
 
 else
-  switch Options.adapter
-    when "irc"
-      Hubot = require("hubot/irc").IrcBot
-    when "campfire"
-      Hubot = require("hubot/campfire").Campfire
-    when "hipchat"
-      Hubot = require("hubot/hipchat").HipChat
-    when "twilio"
-      Hubot = require("hubot/twilio").Twilio
-    when "xmpp"
-      Hubot = require("hubot/xmpp").XmppBot
-    else
-      Hubot = require("hubot/shell").Shell
+  adapter = if Options.adapter in Adapters
+    Options.adapter
+  else
+    'shell'
 
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = new Hubot scriptsPath, Options.name
+  robot = Hubot.robot adapter, scriptsPath, Options.name
   robot.enableSlash = Options.enableSlash
 
   scriptsPath = Path.resolve __dirname, "..", "src", "hubot", "scripts"

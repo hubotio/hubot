@@ -88,4 +88,5 @@ class Twilio extends Robot
     request.write params
     request.end()
 
-exports.Twilio = Twilio
+module.exports = Twilio
+

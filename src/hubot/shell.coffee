@@ -26,4 +26,5 @@ class Shell extends Robot
       holman = @userForId('3', {name: "Zach Holman"})
     , 3000
 
-exports.Shell = Shell
+module.exports = Shell
+

@@ -77,6 +77,5 @@ class IrcBot extends Robot
 
     @bot = bot
 
-exports.IrcBot = IrcBot
+module.exports = IrcBot
 
-# vim: ts=2 sw=2 et :

@@ -122,4 +122,5 @@ class HipChat extends Robot
       console.log err.stack
       callback err
 
-exports.HipChat = HipChat
+module.exports = HipChat
+
