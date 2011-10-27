@@ -2,6 +2,10 @@
 #
 # translate me <phrase> - Searches for a translation for the <phrase> and then
 #                         prints that bad boy out.
+#
+# translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
+#
+
 languages =
   "af":"Afrikaans",
   "sq":"Albanian",
@@ -55,20 +59,26 @@ languages =
   "vi":"Vietnamese",
   "cy":"Welsh",
   "yi":"Yiddish"
+  
+getCode = (language,languages) ->
+  for code, lang of languages
+      return code if lang.toLowerCase() is language.toLowerCase()
 
 module.exports = (robot) ->
-  robot.respond /(translate)( me)? (.*)/i, (msg) ->
-    term   = "\"#{msg.match[3]}\""
-
+  robot.respond /(translate)( me)?(( from) ([a-z]*))?(( (in)?to) ([a-z]*))? (.*)/i, (msg) ->
+    term   = "\"#{msg.match[10]}\""
+    origin = if msg.match[5] isnt undefined then getCode(msg.match[5], languages) else 'auto'
+    target = if msg.match[9] isnt undefined then getCode(msg.match[9], languages) else 'en'
+    
     msg.http("http://translate.google.com/translate_a/t")
       .query({
         client: 't'
         hl: 'en'
         multires: 1
         sc: 1
-        sl: 'auto'
+        sl: origin
         ssel: 0
-        tl: 'en'
+        tl: target
         tsel: 0
         uptl: "en"
         text: term
@@ -77,8 +87,11 @@ module.exports = (robot) ->
         data   = body
         if data.length > 4 && data[0] == '['
           parsed = eval(data)
-          language = languages[parsed[2]]
+          language =languages[parsed[2]]
           parsed = parsed[0] && parsed[0][0] && parsed[0][0][0]
           if parsed
-            msg.send "#{term} means #{parsed} in #{language}"
+            if msg.match[9] is undefined
+              msg.send "#{term} is #{language} for #{parsed}"
+            else
+              msg.send "The #{language} #{term} translates as #{parsed} in #{languages[target]}"
 
