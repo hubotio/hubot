@@ -15,10 +15,14 @@ class XmppBot extends Robot
       jid: options.username
       password: options.password
 
+    @client.on 'error', @.error
     @client.on 'online', @.online
     @client.on 'stanza', @.read
 
     @options = options
+
+  error: (error) =>
+    console.error error
 
   online: =>
     console.log 'Hubot XMPP client online'
