@@ -57,6 +57,16 @@ class IrcBot extends Robot
 
       self.receive new Robot.TextMessage(user, message)
 
+    bot.addListener 'names', (channel, names) ->
+      for name of names
+        self.userForId(name.toLowerCase(), {name: name})
+
+    bot.addListener 'join', (channel, name) ->
+      self.userForId(name.toLowerCase(), {name: name})
+
+    bot.addListener 'nick', (oldName, newName, channel) ->
+      self.userForId(newName.toLowerCase(), {name: newName})
+
     bot.addListener 'error', (message) ->
         console.error('ERROR: %s: %s', message.command, message.args.join(' '))
 
