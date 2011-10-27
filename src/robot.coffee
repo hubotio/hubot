@@ -16,7 +16,8 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-    if path then @load path
+
+    @load path if path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -76,7 +77,7 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    @listeners.forEach (lst) ->
+    for lst in @listeners
       try
         lst.call message
       catch ex
@@ -245,7 +246,6 @@ class Robot.EnterMessage extends Robot.Message
 #
 # user - A Robot.User instance for the user who left.
 class Robot.LeaveMessage extends Robot.Message
-
 
 class Listener
   # Listeners receive every message from the chat source and decide if they

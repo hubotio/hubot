@@ -46,7 +46,7 @@ class XmppBot extends Robot
       return
 
     # ignore non-messages
-    return if !stanza.is 'message' || stanza.attrs.type not in ['groupchat', 'direct', 'chat']
+    return if !stanza.is 'message' or stanza.attrs.type not in ['groupchat', 'direct', 'chat']
 
     # ignore our own messages
     return if @options.username in stanza.attrs.from
@@ -66,7 +66,7 @@ class XmppBot extends Robot
     @receive new Robot.TextMessage user, message
 
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       console.log "Sending to #{user.room}: #{str}"
 
       to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
@@ -81,7 +81,7 @@ class XmppBot extends Robot
       @client.send message
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
 module.exports = XmppBot
