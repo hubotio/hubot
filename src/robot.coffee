@@ -91,27 +91,33 @@ class Robot
   # Public: Loads every script in the given path.
   #
   # path - A String path on the filesystem.
+  # callback - A Function called once loading is complete
   #
   # Returns nothing.
-  load: (path) ->
+  load: (path, callback) ->
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
-        for file in Fs.readdirSync(path)
-          @loadFile path, file
+        files = Fs.readdirSync(path)
+        remaining = files.length
+        cb = -> callback exists if --remaining is 0 and callback
+        @loadFile path, file, cb for file in files
+      else
+        callback? exists
 
   # Public: Loads a file in path
   #
   # path - A String path on the filesystem.
   # file - A String filename in path on the filesystem.
+  # callback - A Function called once loading is complete
   #
   # Returns nothing.
-  loadFile: (path, file) ->
+  loadFile: (path, file, callback) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
     if ext is '.coffee' or ext is '.js'
       require(full) @
-      @parseHelp "#{path}/#{file}"
+      @parseHelp "#{full}#{ext}", callback
 
   # Public: Help Commands for Running Scripts
   #
@@ -123,15 +129,17 @@ class Robot
   # Private: load help info from a loaded script
   #
   # path - The path to the file on disk
+  # callback - A Function called once parsing is complete
   #
   # Returns nothing
-  parseHelp: (path) ->
+  parseHelp: (path, callback) ->
     Fs.readFile path, "utf-8", (err, body) =>
       throw err if err
       for i, line of body.split("\n")
         break    if line[0] != '#'
         continue if !line.match('-')
         @commands.push line[2..line.length]
+      callback?()
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
