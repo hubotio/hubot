@@ -42,31 +42,35 @@ class HipChat extends Robot
         for room_id in @options.rooms.split(',')
           console.log "Joining #{room_id}"
           bot.join room_id
-      @get "/v1/users/list", (err, response)->
+
+      @get "/v1/users/list", (err, response) ->
         if response
           for user in response.users
             self.userForId user.user_id, user
         else
           console.log "Can't list rooms: #{err}"
-    bot.onError (message)->
+
+    bot.onError (message) ->
       # If HipChat sends an error, we get the error message from XMPP.
       # Otherwise, we get an Error object from the Node connection.
       if message.message
         console.log "Error talking to HipChat:", message.message
       else
         console.log "Received error from HipChat:", message
-    bot.onMessage (channel, from, message)->
-      author = { name: from, reply_to: channel }
+
+    bot.onMessage (channel, from, message) ->
+      author = name: from, reply_to: channel
       hubot_msg = message.replace(mention, "#{self.name}: ")
       self.receive new Robot.TextMessage(author, hubot_msg)
-    bot.onPrivateMessage (from, message)=>
+
+    bot.onPrivateMessage (from, message) =>
       user = self.userForId(from.match(/_(\d+)@/)[1])
-      author = { name: user.name, reply_to: from }
+      author = name: user.name, reply_to: from
       self.receive new Robot.TextMessage(author, "#{self.name}: #{message}")
+
     bot.connect()
 
     @bot = bot
-
 
   # Convenience HTTP Methods for posting on behalf of the token"d user
   get: (path, callback) ->
@@ -77,7 +81,7 @@ class HipChat extends Robot
 
   request: (method, path, body, callback) ->
     console.log method, path, body
-    headers = { "Host": "api.hipchat.com" }
+    headers = "Host": "api.hipchat.com"
 
     options =
       "agent"  : false
