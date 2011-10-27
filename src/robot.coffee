@@ -141,6 +141,12 @@ class Robot
   # strings - One or more Strings for each reply to send.
   reply: (user, strings...) ->
 
+  # Public: Raw method for setting a topic on the chat source. Extend this.
+  #
+  # user    - A Robot.User instance
+  # strings - One more more Strings to set as the topic.
+  topic: (user, strings...) ->
+
   # Public: Raw method for invoking the bot to run
   # Extend this.
   run: ->
@@ -299,6 +305,15 @@ class Robot.Response
   # Returns nothing.
   send: (strings...) ->
     @robot.send @message.user, strings...
+
+  # Public: Posts a topic changing message
+  #
+  # strings - One or more strings to set as the topic of the 
+  #           room the bot is in.
+  #
+  # Returns nothing.
+  topic: (strings...) ->
+    @robot.topic @message.user, strings...
 
   # Public: Posts a message mentioning the current user.
   #
