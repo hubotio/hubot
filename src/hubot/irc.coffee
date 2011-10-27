@@ -54,7 +54,7 @@ class IrcBot extends Robot
           user_id[from] = next_id
           next_id = next_id + 1
 
-      user = self.userForId(from, {name: from})
+      user = self.userForId(from.toLowerCase(), {name: from})
       user.room = toRoom
 
       self.receive new Robot.TextMessage(user, message)
