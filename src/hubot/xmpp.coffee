@@ -131,7 +131,7 @@ class XmppBot extends Robot
     for str in strings
       console.log "Sending to #{user.room}: #{str}"
 
-      to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
+      to = if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
 
       message = new Xmpp.Element('message',
                   from: @options.username
