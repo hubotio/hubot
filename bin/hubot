@@ -81,7 +81,7 @@ else
 
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = Hubot.robot adapter, scriptsPath, Options.name
+  robot = Hubot.loadBot adapter, scriptsPath, Options.name
   robot.enableSlash = Options.enableSlash
 
   scriptsPath = Path.resolve __dirname, "..", "src", "hubot", "scripts"
