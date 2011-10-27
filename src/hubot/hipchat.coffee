@@ -33,18 +33,18 @@ class HipChat extends Robot
       if @options.rooms is "@All"
         @get "/v1/rooms/list", (err, response) ->
           if response
-            response.rooms.forEach (room)->
+            for room in response.rooms
               console.log "Joining #{room.xmpp_jid}"
               bot.join room.xmpp_jid
           else
             console.log "Can't list rooms: #{err}"
       else
-        @options.rooms.split(',').forEach (room_id)->
+        for room_id in @options.rooms.split(',')
           console.log "Joining #{room_id}"
           bot.join room_id
       @get "/v1/users/list", (err, response)->
         if response
-          response.users.forEach (user)->
+          for user in response.users
             self.userForId user.user_id, user
         else
           console.log "Can't list rooms: #{err}"
