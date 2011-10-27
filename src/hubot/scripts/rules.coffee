@@ -18,7 +18,7 @@ otherRules = [
 module.exports = (robot) ->
   robot.respond /(the rules|the laws)/i, (msg) ->
     text = msg.message.text
-    if text.match(/apple/i) || text.match(/dev/i)
+    if text.match(/apple/i) or text.match(/dev/i)
       msg.send otherRules.join('\n')
     else
       msg.send rules.join('\n')
