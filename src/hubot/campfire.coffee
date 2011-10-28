@@ -28,20 +28,24 @@ class Campfire extends Robot
           callback id, created, room, user, body, author
 
     bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.TextMessage(author, body)
+      unless bot.info.id == author.id
+        self.receive new Robot.TextMessage(author, body)
 
     bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.EnterMessage(author)
+      unless bot.info.id == author.id
+        self.receive new Robot.EnterMessage(author)
 
     bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.LeaveMessage(author)
+      unless bot.info.id == author.id
+        self.receive new Robot.LeaveMessage(author)
 
     bot.Me (err, data) ->
       bot.info = data.user
       bot.name = bot.info.name
-      for room_id in bot.rooms
-        bot.Room(room_id).join (err, callback) ->
-          bot.Room(room_id).listen()
+      for roomId in bot.rooms
+        do (roomId) ->
+          bot.Room(roomId).join (err, callback) ->
+            bot.Room(roomId).listen()
 
     @bot = bot
 

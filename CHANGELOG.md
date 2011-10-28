@@ -1,3 +1,11 @@
+v1.1.2
+======
+* Fix the optparse npm install anomaly
+
+v1.1.1
+======
+* Fix campfire adapter getting duplicate messages - atmos
+
 v1.1.0
 ======
 
