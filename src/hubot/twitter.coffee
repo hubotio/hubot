@@ -3,10 +3,11 @@ HTTPS        = require "https"
 EventEmitter = require("events").EventEmitter
 oauth       = require('oauth');
 
-key = process.env.TWITTER_KEY
-secret=process.env.TWITTER_SECRET
-token=process.env.TWITTER_TOKEN
-tokensecret=process.env.TWITTER_TOKEN_SECRET
+key = process.env.HUBOT_TWITTER_KEY
+secret=process.env.HUBOT_TWITTER_SECRET
+token=process.env.HUBOT_TWITTER_TOKEN
+tokensecret=process.env.HUBOT_TWITTER_TOKEN_SECRET
+
 
 consumer = new oauth.OAuth("https://twitter.com/oauth/request_token", "https://twitter.com/oauth/access_token",key, secret, "1.0", "", "HMAC-SHA1");
 
@@ -31,13 +32,9 @@ class Twitter extends Robot
          console.log "twitter send error: #{error} #{data}"
         console.log "Status #{response.statusCode}"
 
-
   run: ->
     self = @
-    options =
-
-    console.log options
-    bot = new TwitterStreaming(options)
+    bot = new TwitterStreaming()
 
     bot.Tweet self.name, (err, data) ->
         reg = new RegExp('@'+self.name,'i')
@@ -52,7 +49,7 @@ module.exports = Twitter
 
 class TwitterStreaming extends EventEmitter
   self=@
-  constructor: (options) ->
+  constructor: () ->
     @domain        = 'stream.twitter.com'
 
   Tweet: (track,callback) ->
@@ -67,10 +64,11 @@ class TwitterStreaming extends EventEmitter
     @request "POST", path, body, callback
 
   request: (method, path, body, callback) ->
-    request = consumer.get "https://stream.twitter.com"+path, token,tokensecret, null
+    console.log @domain
+    request = consumer.get 'https://'+@domain+path, token,tokensecret, null
     request.on "response",(response)->
           response.on "data", (chunk) ->
-              parseResponse chunk+'',callback
+             parseResponse chunk+'',callback
           response.on "end", (data) ->
              console.log 'end request'
           response.on "error", (data) ->
