@@ -30,7 +30,7 @@ class IrcBot extends Robot
     self = @
 
     options =
-      nick:     process.env.HUBOT_IRC_NICK
+      nick:     process.env.HUBOT_IRC_NICK or @name
       port:     process.env.HUBOT_IRC_PORT
       rooms:    process.env.HUBOT_IRC_ROOMS.split(",")
       server:   process.env.HUBOT_IRC_SERVER
