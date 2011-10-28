@@ -8,16 +8,17 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot") ->
-    @name        = name
+  constructor: (options = { }) ->
+    @name        = options.name || "Hubot"
     @brain       = new Robot.Brain
     @commands    = []
     @Response    = Robot.Response
     @listeners   = []
     @loadPaths   = []
-    @enableSlash = false
-
-    @load path if path
+    @enableSlash = !!options.enableSlash
+    @debugStream = options.debugStream
+    @errStream   = options.errStream
+    @errStream   = process.stderr if @errStream is undefined
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -43,8 +44,8 @@ class Robot
     modifiers = re.pop() # pop off modifiers
 
     if re[0] and re[0][0] is "^"
-      console.warn "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
-      console.warn "WARNING: The regex in question was #{regex.toString()}\n"
+      @warn "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
+      @warn "WARNING: The regex in question was #{regex.toString()}\n"
 
     pattern = re.join("/") # combine the pattern back again
     if @enableSlash
@@ -81,7 +82,7 @@ class Robot
       try
         someMatched = true if lst.call message
       catch ex
-        console.error "error while calling listener: #{ex}"
+        @warn "error while calling listener: #{ex}"
 
     @noMatch message unless someMatched
 
@@ -162,6 +163,12 @@ class Robot
   # Extend this.
   close: ->
     @brain.close()
+
+  debug: (msg) ->
+    @debugStream.write msg.toString() + "\n", 'utf8' if @debugStream
+
+  warn: (msg) ->
+    @errStream.write msg.toString() + "\n", 'utf8' if @errStream
 
   users: () ->
     @brain.data.users

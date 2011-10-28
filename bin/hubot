@@ -20,6 +20,7 @@ Switches = [
   [ "-c", "--create PATH",       "Create a deployable hubot"],
   [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
   [ "-n", "--name NAME",         "The name of the robot in chat" ],
+  [ "-q", "--quiet",             "Silence verbosity on STDOUT" ],
   [ "-v", "--version",           "Displays the version of hubot installed"]
 ]
 
@@ -28,6 +29,7 @@ Options =
   name: "Hubot"
   create: false
   adapter: "stdio"
+  verbose: true
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -49,6 +51,9 @@ Parser.on "help", (opt, value) ->
   console.log Parser.toString()
   process.exit 0
 
+Parser.on "quiet", (opt) ->
+  Options.verbose = false
+
 Parser.on "version", (opt, value) ->
   Options.version = true
 
@@ -62,6 +67,9 @@ Args = Parser.parse argv
 Args.push extra... if extra
 
 process.on 'SIGTERM', -> process.exit(0)
+
+debug = (msg) ->
+  console.log msg if Options.verbose
 
 if Options.create
   creator = new Creator.Creator(Options.path)
@@ -86,25 +94,30 @@ else
   else
     'shell'
 
+  robot = Hubot.loadBot adapter,
+    name:        Options.name
+    enableSlash: Options.enableSlash
+    debugStream: if Options.verbose then process.stdout else null
+    errStream:   process.stderr
+
   scriptsPath = Path.resolve "./scripts"
-  console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = Hubot.loadBot adapter, scriptsPath, Options.name
-  robot.enableSlash = Options.enableSlash
+  debug "Loading deploy-local scripts at #{scriptsPath}"
+  robot.load scriptsPath
 
   scriptsPath = Path.resolve "src", "hubot", "scripts"
-  console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
+  debug "Loading hubot core scripts for relative scripts at #{scriptsPath}"
   robot.load scriptsPath
 
   scriptsFile = Path.resolve "hubot-scripts.json"
   Path.exists scriptsFile, (exists) =>
     if exists
-      console.log "Loading hubot-scripts from #{scriptsFile}"
+      debug "Loading hubot-scripts from #{scriptsFile}"
       Fs.readFile scriptsFile, (err, data) =>
         JSON.parse(data).forEach (plugin) =>
           robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
     else
       scriptsPath = Path.resolve "src", "scripts"
-      console.log "Loading hubot-scripts plugins at #{scriptsPath}"
+      debug "Loading hubot-scripts plugins at #{scriptsPath}"
       robot.load scriptsPath
 
   robot.run Args
