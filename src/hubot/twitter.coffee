@@ -8,7 +8,6 @@ secret=process.env.HUBOT_TWITTER_SECRET
 token=process.env.HUBOT_TWITTER_TOKEN
 tokensecret=process.env.HUBOT_TWITTER_TOKEN_SECRET
 
-
 consumer = new oauth.OAuth("https://twitter.com/oauth/request_token", "https://twitter.com/oauth/access_token",key, secret, "1.0", "", "HMAC-SHA1");
 
 
@@ -16,11 +15,14 @@ class Twitter extends Robot
   send: (user, strings...) ->
     strings.forEach (str) =>
         text= str
-        console.log "send twitt to #{user} with text #{text}"
-        consumer.post "https://api.twitter.com/1/statuses/update.json", token,tokensecret,{status:'@'+user+' '+text},'UTF-8',  (error, data, response) ->
-          if error
-           console.log "twitter send error: #{error} #{data}"
-          console.log "Status #{response.statusCode}"
+        console.log text
+        tweetsText = str.split('\n')
+        tweetsText.forEach (tweetText) =>
+            console.log "send twitt to #{user} with text #{tweetText}"
+            consumer.post "https://api.twitter.com/1/statuses/update.json", token,tokensecret,{status:'@'+user+' '+tweetText},'UTF-8',  (error, data, response) ->
+              if error
+               console.log "twitter send error: #{error} #{data}"
+              console.log "Status #{response.statusCode}"
 
 
   reply: (user, strings...) ->
