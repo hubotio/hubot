@@ -6,7 +6,7 @@ class XmppBot extends Robot
     options =
       username: process.env.HUBOT_XMPP_USERNAME
       password: process.env.HUBOT_XMPP_PASSWORD
-      rooms:    process.env.HUBOT_XMPP_ROOMS.split(',')
+      rooms:    process.env.HUBOT_XMPP_ROOMS.split(',') or []
       host:     process.env.HUBOT_XMPP_HOST or null
       port:     process.env.HUBOT_XMPP_PORT or null
       keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
