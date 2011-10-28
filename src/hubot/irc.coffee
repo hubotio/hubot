@@ -15,8 +15,18 @@ class IrcBot extends Robot
     for str in strings
       @send user, "#{user.name}: #{str}"
 
+  join: (channel) ->
+    self = @
+    @bot.join channel, () ->
+      console.log('joined %s', channel)
+
+  part: (channel) ->
+    @bot.part channel, () ->
+      console.log('left %s', channel)
+
   run: ->
     self = @
+
     options =
       nick:     process.env.HUBOT_IRC_NICK
       port:     process.env.HUBOT_IRC_PORT
@@ -47,8 +57,7 @@ class IrcBot extends Robot
           bot.say 'NickServ', "identify #{options.nickpass}"
         else if options.nickpass and from is 'NickServ' and text.indexOf('now identified') isnt -1
           for room in options.rooms
-            bot.join room, ->
-              console.log('%s has joined %s', options.nick, room)
+            @join room
 
     bot.addListener 'message', (from, to, message) ->
       console.log "From #{from} to #{to}: #{message}"
