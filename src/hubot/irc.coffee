@@ -4,16 +4,18 @@ Irc   = require "irc"
 class IrcBot extends Robot
   send: (user, strings...) ->
     for str in strings
-      if user.room
-        console.log "#{user.room} #{str}"
-        @bot.say(user.room, str)
-      else
-        console.log "#{user.name} #{str}"
-        @bot.say(user.name, str)
+      do (str) ->
+        if user.room
+          console.log "#{user.room} #{str}"
+          @bot.say(user.room, str)
+        else
+          console.log "#{user.name} #{str}"
+          @bot.say(user.name, str)
 
   reply: (user, strings...) ->
     for str in strings
-      @send user, "#{user.name}: #{str}"
+      do (str) ->
+        @send user, "#{user.name}: #{str}"
 
   join: (channel) ->
     self = @
@@ -58,7 +60,8 @@ class IrcBot extends Robot
           bot.say 'NickServ', "identify #{options.nickpass}"
         else if options.nickpass and from is 'NickServ' and text.indexOf('now identified') isnt -1
           for room in options.rooms
-            @join room
+            do (room) ->
+              @join room
 
     bot.addListener 'message', (from, to, message) ->
       console.log "From #{from} to #{to}: #{message}"
