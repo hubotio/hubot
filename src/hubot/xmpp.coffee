@@ -7,6 +7,8 @@ class XmppBot extends Robot
       username: process.env.HUBOT_XMPP_USERNAME
       password: process.env.HUBOT_XMPP_PASSWORD
       rooms:    process.env.HUBOT_XMPP_ROOMS.split(',')
+      host:     process.env.HUBOT_XMPP_HOST or null
+      port:     process.env.HUBOT_XMPP_PORT or null
       keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
 
     console.log options
@@ -14,6 +16,8 @@ class XmppBot extends Robot
     @client = new Xmpp.Client
       jid: options.username
       password: options.password
+      host: options.host
+      port: options.port
 
     @client.on 'error', @.error
     @client.on 'online', @.online
@@ -27,7 +31,7 @@ class XmppBot extends Robot
   online: =>
     console.log 'Hubot XMPP client online'
 
-    @client.send new Xmpp.Element('presence', type: 'available' )
+    @client.send new Xmpp.Element('presence')
       .c('show').t('chat')
 
     # join each room
@@ -56,7 +60,7 @@ class XmppBot extends Robot
         @readPresence stanza
 
   readMessage: (stanza) =>
-     # ignore non-messages
+      # ignore non-messages
       return if stanza.attrs.type not in ['groupchat', 'direct', 'chat']
 
       # ignore our own messages
@@ -134,7 +138,7 @@ class XmppBot extends Robot
       to = if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
 
       message = new Xmpp.Element('message',
-                  from: @options.username
+                  from: @client.jid.toString()
                   to: to
                   type: user.type
                 ).
