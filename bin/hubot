@@ -13,7 +13,7 @@ Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
-Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp"]
+Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp", "groupme"]
 Switches = [
   [ "-h", "--help",              "Display the help information"],
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
