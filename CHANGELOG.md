@@ -1,3 +1,7 @@
+v1.1.1
+======
+* Fix campfire adapter getting duplicate messages - atmos
+
 v1.1.0
 ======
 
