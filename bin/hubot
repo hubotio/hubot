@@ -100,26 +100,31 @@ else
     debugStream: if Options.verbose then process.stdout else null
     errStream:   process.stderr
 
-  scriptsPath = Path.resolve "./scripts"
-  debug "Loading deploy-local scripts at #{scriptsPath}"
-  robot.load scriptsPath
+  expectedLoads = 3
+  callback = ->
+    if --expectedLoads is 0
+      # run hubot after scripts have finished loading
+      robot.run Args
 
-  scriptsPath = Path.resolve "src", "hubot", "scripts"
-  debug "Loading hubot core scripts for relative scripts at #{scriptsPath}"
-  robot.load scriptsPath
+  loadScripts = (name, path, cb) ->
+    scriptsPath = Path.resolve path...
+    debug "Loading #{name} at #{scriptsPath}"
+    robot.load scriptsPath, cb
+
+  loadScripts "deploy-local scripts", [ "./scripts" ], callback
+  loadScripts "hubot core scripts",   [ "src", "hubot", "scripts" ], callback
 
   scriptsFile = Path.resolve "hubot-scripts.json"
   Path.exists scriptsFile, (exists) =>
     if exists
-      debug "Loading hubot-scripts from #{scriptsFile}"
-      Fs.readFile scriptsFile, (err, data) =>
-        JSON.parse(data).forEach (plugin) =>
-          robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
+      debug "Loading hubot-scripts listed in #{scriptsFile}"
+      Fs.readFile scriptsFile, (err, data) ->
+        throw err if err
+        scriptsPath = Path.resolve("node_modules", "hubot-scripts", "src", "scripts")
+        plugins = JSON.parse(data)
+        plugins.forEach (plugin, idx) -> robot.loadFile scriptsPath, plugin, ->
+          callback?() if idx is plugins.length - 1
     else
-      scriptsPath = Path.resolve "src", "scripts"
-      debug "Loading hubot-scripts plugins at #{scriptsPath}"
-      robot.load scriptsPath
-
-  robot.run Args
+      loadScripts "hubot-scripts plugins", [ "src", "scripts" ], callback
 
 # vim:ft=coffee ts=2 sw=2 et :
