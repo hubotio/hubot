@@ -52,7 +52,14 @@ Parser.on "help", (opt, value) ->
 Parser.on "version", (opt, value) ->
   Options.version = true
 
-Parser.parse process.ARGV
+argv = process.argv.slice 2
+# don't process arguments after "--"
+if (idx = argv.indexOf '--') >= 0
+  extra = argv.slice idx + 1
+  argv = argv.slice 0, idx
+
+Args = Parser.parse argv
+Args.push extra... if extra
 
 process.on 'SIGTERM', -> process.exit(0)
 
@@ -100,6 +107,6 @@ else
       console.log "Loading hubot-scripts plugins at #{scriptsPath}"
       robot.load scriptsPath
 
-  robot.run()
+  robot.run Args
 
 # vim:ft=coffee ts=2 sw=2 et :
