@@ -11,6 +11,12 @@ class IrcBot extends Robot
     for str in strings
       @send user, "#{user.name}: #{str}"
 
+  userForName: (name) ->
+    lowerName = name.toLowerCase()
+    if lowerName of (@brain.data.users or { })
+      return @brain.data.users[lowerName]
+    null
+
   run: ->
     self = @
     options =
@@ -34,9 +40,6 @@ class IrcBot extends Robot
 
     bot = new Irc.Client options.server, options.nick, client_options
 
-    next_id = 1
-    user_id = {}
-
     if options.nickpass?
       bot.addListener 'notice', (from, to, text) ->
         if from is 'NickServ' and text.indexOf('registered') isnt -1
@@ -49,16 +52,20 @@ class IrcBot extends Robot
     bot.addListener 'message', (from, toRoom, message) ->
       console.log "From #{from} to #{toRoom}: #{message}"
 
-      if message.match new RegExp "^#{options.nick}", "i"
-        unless user_id[from]
-          user_id[from] = next_id
-          next_id = next_id + 1
-
-      user = new Robot.User user_id[from], {
-        room: toRoom,
-      }
+      user = self.userForId(from.toLowerCase(), {name: from})
+      user.room = toRoom
 
       self.receive new Robot.TextMessage(user, message)
+
+    bot.addListener 'names', (channel, names) ->
+      for name of names
+        self.userForId(name.toLowerCase(), {name: name})
+
+    bot.addListener 'join', (channel, name) ->
+      self.userForId(name.toLowerCase(), {name: name})
+
+    bot.addListener 'nick', (oldName, newName, channel) ->
+      self.userForId(newName.toLowerCase(), {name: newName})
 
     bot.addListener 'error', (message) ->
         console.error('ERROR: %s: %s', message.command, message.args.join(' '))
