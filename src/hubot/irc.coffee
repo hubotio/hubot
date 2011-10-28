@@ -41,6 +41,7 @@ class IrcBot extends Robot
           password: options.password,
           debug: true,
           port: options.port,
+          stripColors: true,
         }
 
     unless options.nickpass
