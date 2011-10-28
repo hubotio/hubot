@@ -2,6 +2,10 @@ Fs    = require 'fs'
 Url   = require 'url'
 Path  = require 'path'
 Redis = require 'redis'
+Inotify = require('inotify').Inotify
+
+watchs = {}
+robot = null
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -16,6 +20,8 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
+    @inotify     = new Inotify()
+    robot        = this
     if path then @load path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -35,10 +41,14 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  respond: (regex, callback) ->
+  respond: (regex, filename = null, callback) ->
     re = regex.toString().split("/")
     re.shift()           # remove empty first item
     modifiers = re.pop() # pop off modifiers
+
+    if not callback?
+      callback = filename
+      filename = null
 
     if re[0] and re[0][0] == "^"
       console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
@@ -51,7 +61,7 @@ class Robot
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
     console.log newRegex.toString()
-    @listeners.push new Listener(@, newRegex, callback)
+    @listeners.push new Listener(@, newRegex, callback, filename)
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -85,6 +95,33 @@ class Robot
     if ext == '.coffee' or ext == '.js'
       require(full) @
       @parseHelp "#{path}/#{file}"
+      console.log('set inotify for ' + "#{path}/#{file}")
+      watch_id = @inotify.addWatch({
+        path: "#{path}/#{file}",
+        watch_for: Inotify.IN_MODIFY,
+        name: "#{path}/#{file}",
+        callback: (event) ->
+          file = watchs[event.watch]
+          if file
+            console.log('reload file '+ file)
+
+            # Filter out listeners
+            new_listeners = robot.listeners.filter (element) ->
+              console.log('element '+element.filename)
+              console.log('target  '+file)
+              element.filename != file
+            robot.listeners = new_listeners
+
+            # Avoid nodejs cache
+            delete require.cache[file]
+            ext  = Path.extname file
+            path = Path.dirname(file)
+            name = Path.basename(file, ext)
+
+            # Let's reload
+            robot.loadFile(path, name+ext)
+        })
+      watchs[watch_id] = "#{path}/#{file}"
 
   # Public: Help Commands for Running Scripts
   #
@@ -224,7 +261,7 @@ class Listener
   # regex    - The Regex that determines if this listener should trigger the
   #            callback.
   # callback - The Function that is triggered if the incoming message matches.
-  constructor: (@robot, @regex, @callback) ->
+  constructor: (@robot, @regex, @callback, @filename) ->
 
   # Public: Determines if the listener likes the content of the message.  If
   # so, a Response built from the given Message is passed to the Listener

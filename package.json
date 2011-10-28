@@ -22,7 +22,8 @@
     "hiredis": "0.1.12",
     "redis": "0.6.7",
     "node-xmpp": ">=0.2.6",
-    "wobot": "0.3.0"
+    "wobot": "0.3.0",
+    "inotify": "0.1.8"
   },
 
   "directories":  {
