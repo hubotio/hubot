@@ -15,10 +15,8 @@
   },
 
   "dependencies": {
-    "hubot": "http://cl.ly/1U2K0Q1d3L0G360n3s0u/hubot.tar.gz",
-    "hubot-scripts": "http://cl.ly/1g1l3h2p0E0k3O3P3N1R/hubot-scripts.tar.gz",
-    "coffee-script": "1.1.1",
-    "optparse": "1.0.1",
-    "scoped-http-client": "0.9.0"
+    "hubot": ">= 1.1.3",
+    "hubot-scripts": ">= 1.1.1",
+    "optparse": "1.0.1"
   }
 }

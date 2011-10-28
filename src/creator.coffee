@@ -36,7 +36,7 @@ class Creator
   #
   # path - The destination
   copyDefaultScripts: (path) ->
-    Fs.readdirSync(@scriptsDir).forEach (file) =>
+    for file in Fs.readdirSync(@scriptsDir)
       @copy "#{@scriptsDir}/#{file}", "#{path}/#{file}"
 
   # Run the creator process
@@ -47,11 +47,20 @@ class Creator
     console.log "Creating a hubot install at #{@path}"
 
     @mkdirDashP(@path)
+    @mkdirDashP("#{@path}/bin")
     @mkdirDashP("#{@path}/scripts")
 
     @copyDefaultScripts("#{@path}/scripts")
 
-    ["Procfile", "package.json", "README.md"].forEach (file) =>
-      @copy "#{@templateDir}/#{file}", "#{@path}/#{file}"
+    files = [
+      "Procfile",
+      "package.json",
+      "README.md",
+      ".gitignore",
+      "bin/hubot",
+      "hubot-scripts.json"
+    ]
+
+    @copy "#{@templateDir}/#{file}", "#{@path}/#{file}" for file in files
 
 exports.Creator = Creator
