@@ -17,7 +17,8 @@ module.exports = (robot) ->
       msg.send url
 
   robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
-    imagery    = msg.match[1]
+    imagery = msg.match[1]
+
     if imagery.match /^https?:\/\//i
       msg.send "#{mustachify}#{imagery}"
     else

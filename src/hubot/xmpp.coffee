@@ -1,4 +1,4 @@
-Robot = require 'robot'
+Robot = require '../robot'
 Xmpp  = require 'node-xmpp'
 
 class XmppBot extends Robot
@@ -15,10 +15,14 @@ class XmppBot extends Robot
       jid: options.username
       password: options.password
 
+    @client.on 'error', @.error
     @client.on 'online', @.online
     @client.on 'stanza', @.read
 
     @options = options
+
+  error: (error) =>
+    console.error error
 
   online: =>
     console.log 'Hubot XMPP client online'
@@ -45,31 +49,89 @@ class XmppBot extends Robot
       console.error '[xmpp error]' + stanza
       return
 
-    # ignore non-messages
-    return if !stanza.is 'message' || stanza.attrs.type not in ['groupchat', 'direct', 'chat']
+    switch stanza.name
+      when 'message'
+        @readMessage stanza
+      when 'presence'
+        @readPresence stanza
 
-    # ignore our own messages
-    return if @options.username in stanza.attrs.from
+  readMessage: (stanza) =>
+     # ignore non-messages
+      return if stanza.attrs.type not in ['groupchat', 'direct', 'chat']
 
-    # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
-    body = stanza.getChild 'body'
-    return unless body
+      # ignore our own messages
+      return if @options.username in stanza.attrs.from
 
-    message = body.getText()
+      # ignore messages from the server. on Openfire, this includes "This room is not anonymous"
+      return if stanza.attrs.from in @options.rooms
 
-    [room, from] = stanza.attrs.from.split '/'
-    user = new Robot.User from, {
-      room: room
-      type: stanza.attrs.type
-    }
+      # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
+      body = stanza.getChild 'body'
+      return unless body
 
-    @receive new Robot.TextMessage user, message
+      message = body.getText()
+
+      [room, from] = stanza.attrs.from.split '/'
+
+      # note that 'from' isn't a full JID, just the local user part
+      user = @userForId from
+      user.room = room
+      user.type = stanza.attrs.type
+
+      @receive new Robot.TextMessage user, message
+
+  readPresence: (stanza) =>
+    jid = new Xmpp.JID(stanza.attrs.from)
+    bareJid = jid.bare().toString()
+
+    # xmpp doesn't add types for standard available mesages
+    # note that upon joining a room, server will send available
+    # presences for all members
+    # http://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.1
+    stanza.attrs.type ?= 'available'
+
+    switch stanza.attrs.type
+      when 'subscribe'
+        console.log "#{stanza.attrs.from} subscribed to us"
+
+        @client.send new Xmpp.Element('presence',
+            from: stanza.attrs.to
+            to:   stanza.attrs.from
+            id:   stanza.attrs.id
+            type: 'subscribed'
+        )
+      when 'probe'
+        @client.send new Xmpp.Element('presence',
+            from: stanza.attrs.to
+            to:   stanza.attrs.from
+            id:   stanza.attrs.id
+        )
+      when 'available'
+        if bareJid not in @options.rooms
+          from = stanza.attrs.from
+        else
+          # room presence is stupid, and optional for some anonymous rooms
+          # http://xmpp.org/extensions/xep-0045.html#enter-nonanon
+          from = stanza.getChild('x', 'http://jabber.org/protocol/muc#user')?.getChild('item')?.attrs?.jid
+
+        return if not from?
+
+        # for now, user IDs and user names are the same. we don't
+        # use full JIDs as user ID, since we don't get them in
+        # standard groupchat messages
+        jid = new Xmpp.JID(from)
+        userId = userName = jid.user
+
+        console.log "Availability received for #{userId}"
+
+        user = @userForId userId, name: userName
+        user.jid = jid.toString()
 
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       console.log "Sending to #{user.room}: #{str}"
 
-      to = if user.type in ['direct', 'chat'] then user.room + '/' + user.id else user.room
+      to = if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
 
       message = new Xmpp.Element('message',
                   from: @options.username
@@ -81,8 +143,8 @@ class XmppBot extends Robot
       @client.send message
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
+module.exports = XmppBot
 
-exports.XmppBot = XmppBot

@@ -1,7 +1,7 @@
 {
   "name":        "hubot",
-  "version":     "1.1.0",
-  "author":      "GitHub Inc.",
+  "version":     "1.1.4",
+  "author":      "hubot",
   "keywords":    "github hubot campfire bot",
   "description": "A simple helpful Robot for your Company",
   "licenses":     [{
@@ -17,18 +17,20 @@
   "dependencies": {
     "coffee-script": "1.1.1",
     "optparse": "1.0.1",
+    "scoped-http-client": "0.9.0",
+    "irc": "0.2",
     "scoped-http-client": "0.9.4",
     "irc": "0.2",
     "node-xmpp": ">=0.2.6",
-    "wobot": "0.3.0"
+    "wobot": "0.3.0",
+    "imap": "0.2.5"
   },
 
-  "directories":  {
-    "lib": "./src"
-  },
-  "main": "./src/hubot",
+  "main": "./index",
+
   "bin": {
     "hubot": "./bin/hubot"
   },
+
   "engine": "node >= 0.4.1 < 0.5.0"
 }

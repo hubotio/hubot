@@ -1,4 +1,4 @@
-Robot        = require "robot"
+Robot        = require "../robot"
 HTTPS        = require "https"
 EventEmitter = require("events").EventEmitter
 
@@ -28,28 +28,32 @@ class Campfire extends Robot
           callback id, created, room, user, body, author
 
     bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.TextMessage(author, body)
+      unless bot.info.id == author.id
+        self.receive new Robot.TextMessage(author, body)
 
     bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.EnterMessage(author)
+      unless bot.info.id == author.id
+        self.receive new Robot.EnterMessage(author)
 
     bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.LeaveMessage(author)
+      unless bot.info.id == author.id
+        self.receive new Robot.LeaveMessage(author)
 
     bot.Me (err, data) ->
       bot.info = data.user
       bot.name = bot.info.name
-      bot.rooms.forEach (room_id) ->
-        bot.Room(room_id).join (err, callback) ->
-          bot.Room(room_id).listen()
+      for roomId in bot.rooms
+        do (roomId) ->
+          bot.Room(roomId).join (err, callback) ->
+            bot.Room(roomId).listen()
 
     @bot = bot
 
-exports.Campfire = Campfire
+module.exports = Campfire
 
 class CampfireStreaming extends EventEmitter
   constructor: (options) ->
-    if options.token? && options.rooms? && options.account?
+    if options.token? and options.rooms? and options.account?
       @token         = options.token
       @rooms         = options.rooms.split(",")
       @account       = options.account
@@ -169,7 +173,7 @@ class CampfireStreaming extends EventEmitter
       "headers": headers
 
     if method is "POST"
-      if typeof(body) != "string"
+      if typeof(body) isnt "string"
         body = JSON.stringify body
 
       body = new Buffer(body)
@@ -189,7 +193,7 @@ class CampfireStreaming extends EventEmitter
         try
           callback null, JSON.parse(data)
         catch err
-          callback null, data || { }
+          callback null, data or { }
       response.on "error", (err) ->
         callback err, { }
 

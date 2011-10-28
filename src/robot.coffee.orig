@@ -94,6 +94,7 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
+<<<<<<< HEAD
     if @eatListeners[message.user.id]?
       lst = @eatListeners[message.user.id]
       delete @eatListeners[message.user.id]
@@ -104,7 +105,10 @@ class Robot
         # Put back to try again next time
         @eatListeners[message.user.id] = lst
     
+    @listeners.forEach (lst) ->
+=======
     for lst in @listeners
+>>>>>>> upstream/master
       try
         lst.call message
       catch ex
