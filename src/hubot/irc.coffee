@@ -4,8 +4,12 @@ Irc   = require "irc"
 class IrcBot extends Robot
   send: (user, strings...) ->
     for str in strings
-      console.log "#{user.name}: #{str}"
-      @bot.say(user.room, str)
+      if user.room
+        console.log "#{user.room} #{str}"
+        @bot.say(user.room, str)
+      else
+        console.log "#{user.name} #{str}"
+        @bot.say(user.name, str)
 
   reply: (user, strings...) ->
     for str in strings
@@ -46,17 +50,21 @@ class IrcBot extends Robot
             bot.join room, ->
               console.log('%s has joined %s', options.nick, room)
 
-    bot.addListener 'message', (from, toRoom, message) ->
-      console.log "From #{from} to #{toRoom}: #{message}"
+    bot.addListener 'message', (from, to, message) ->
+      console.log "From #{from} to #{to}: #{message}"
 
       if message.match new RegExp "^#{options.nick}", "i"
         unless user_id[from]
           user_id[from] = next_id
           next_id = next_id + 1
 
-      user = new Robot.User user_id[from], {
-        room: toRoom,
-      }
+      user = new Robot.User user_id[from]
+      user.name = from
+      if to.match(/^[&#]/)
+        user.room = to
+        console.log "#{to} <#{from}> #{message}"
+      else
+        console.log "msg <#{from}> #{message}"
 
       self.receive new Robot.TextMessage(user, message)
 
