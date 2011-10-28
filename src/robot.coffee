@@ -1,6 +1,7 @@
-Fs   = require 'fs'
-Url  = require 'url'
-Path = require 'path'
+Fs           = require 'fs'
+Url          = require 'url'
+Path         = require 'path'
+EventEmitter = require('events').EventEmitter
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -8,12 +9,15 @@ class Robot
   #
   # path - String directory full of Hubot scripts to load.
   constructor: (path, name = "Hubot") ->
-    @name      = name
-    @commands  = []
-    @listeners = []
-    @loadPaths = []
-    @Response  = Robot.Response
-    if path then @load path
+    @name        = name
+    @brain       = new Robot.Brain
+    @commands    = []
+    @Response    = Robot.Response
+    @listeners   = []
+    @loadPaths   = []
+    @enableSlash = false
+
+    @load path if path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -23,10 +27,11 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    @listeners.push new Listener(@, regex, callback)
+    @listeners.push new TextListener(@, regex, callback)
 
-  # Public: Adds a Listener that attempts to match incoming messages directed at the robot
-  # based on a Regex.
+  # Public: Adds a Listener that attempts to match incoming messages directed
+  # at the robot based on a Regex.  All regexes treat patterns like they begin
+  # with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
@@ -34,8 +39,37 @@ class Robot
   # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split("/")
-    newRegex = new RegExp("#{@name}:?\\s*#{re[1]}", re[2])
-    @listeners.push new Listener(@, newRegex, callback)
+    re.shift()           # remove empty first item
+    modifiers = re.pop() # pop off modifiers
+
+    if re[0] and re[0][0] is "^"
+      console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
+      console.log "WARNING: The regex in question was #{regex.toString()}\n"
+
+    pattern = re.join("/") # combine the pattern back again
+    if @enableSlash
+      newRegex = new RegExp("^(?:\/|#{@name}:?)\\s*#{pattern}", modifiers)
+    else
+      newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
+
+    console.log newRegex.toString()
+    @listeners.push new TextListener(@, newRegex, callback)
+
+  # Public: Adds a Listener that triggers when anyone enters the room.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  enter: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.EnterMessage), callback)
+
+  # Public: Adds a Listener that triggers when anyone leaves the room.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  leave: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -43,7 +77,11 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    @listeners.forEach (lst) -> lst.call message
+    for lst in @listeners
+      try
+        lst.call message
+      catch ex
+        console.log "error while calling listener: #{ex}"
 
   # Public: Loads every script in the given path.
   #
@@ -54,7 +92,7 @@ class Robot
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
-        Fs.readdirSync(path).forEach (file) =>
+        for file in Fs.readdirSync(path)
           @loadFile path, file
 
   # Public: Loads a file in path
@@ -66,7 +104,7 @@ class Robot
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
-    if ext == '.coffee' or ext == '.js'
+    if ext is '.coffee' or ext is '.js'
       require(full) @
       @parseHelp "#{path}/#{file}"
 
@@ -107,22 +145,89 @@ class Robot
   # Extend this.
   run: ->
 
+  # Public: Raw method for shutting the bot down.
+  # Extend this.
+  close: ->
+    @brain.close()
+
+  users: () ->
+    @brain.data.users
+
+  # Public: Get a User object given a unique identifier
+  #
+  userForId: (id, options) ->
+    user = @brain.data.users[id]
+    unless user
+      user = new Robot.User id, options
+      @brain.data.users[id] = user
+    user
+
+  # Public: Get a User object given a name
+  #
+  userForName: (name) ->
+    result = null
+    lowerName = name.toLowerCase()
+    for k of (@brain.data.users or { })
+      if @brain.data.users[k]['name'].toLowerCase() is lowerName
+        result = @brain.data.users[k]
+    result
+
 class Robot.User
   # Represents a participating user in the chat.
   #
   # id      - A unique ID for the user.
-  # name    - A String name of the user.
   # options - An optional Hash of key, value pairs for this user.
-  constructor: (@id, @name, options) ->
-    for key, value of (options or {})
-      this[key] = value
+  constructor: (@id, options = { }) ->
+    for k of (options or { })
+      @[k] = options[k]
+
+# http://www.the-isb.com/images/Nextwave-Aaron01.jpg
+class Robot.Brain extends EventEmitter
+  # Represents somewhat persistent storage for the robot.
+  #
+  # Returns a new Brain with no external storage.  Extend this!
+  constructor: () ->
+    @data =
+      users: { }
+
+    @resetSaveInterval 5
+
+  save: ->
+    @emit 'save', @data
+
+  close: ->
+    clearInterval @saveInterval
+    @save()
+    @emit 'close'
+
+  resetSaveInterval: (seconds) ->
+    clearInterval @saveInterval if @saveInterval
+    @saveInterval = setInterval =>
+      @save()
+    , seconds * 1000
+
+  # Merge keys loaded from a DB against the in memory representation
+  #
+  # Returns nothing
+  #
+  # Caveats: Deeply nested structures don't merge well
+  mergeData: (data) ->
+    for k of (data or { })
+      @data[k] = data[k]
 
 class Robot.Message
   # Represents an incoming message from the chat.
   #
   # user - A Robot.User instance that sent the message.
+  constructor: (@user) ->
+
+class Robot.TextMessage extends Robot.Message
+  # Represents an incoming message from the chat.
+  #
+  # user - A Robot.User instance that sent the message.
   # text - The String message contents.
   constructor: (@user, @text) ->
+    super @user
 
   # Determines if the message matches the given regex.
   #
@@ -132,15 +237,25 @@ class Robot.Message
   match: (regex) ->
     @text.match regex
 
+# Represents an incoming user entrance notification.
+#
+# user - A Robot.User instance for the user who entered.
+class Robot.EnterMessage extends Robot.Message
+
+# Represents an incoming user exit notification.
+#
+# user - A Robot.User instance for the user who left.
+class Robot.LeaveMessage extends Robot.Message
+
 class Listener
-  # Listeners receive every message from the chat source and decide if they want
-  # to act on it.
+  # Listeners receive every message from the chat source and decide if they
+  # want to act on it.
   #
   # robot    - The current Robot instance.
-  # regex    - The Regex that determines if this listener should trigger the
+  # matcher  - The Function that determines if this listener should trigger the
   #            callback.
   # callback - The Function that is triggered if the incoming message matches.
-  constructor: (@robot, @regex, @callback) ->
+  constructor: (@robot, @matcher, @callback) ->
 
   # Public: Determines if the listener likes the content of the message.  If
   # so, a Response built from the given Message is passed to the Listener
@@ -150,8 +265,21 @@ class Listener
   #
   # Returns nothing.
   call: (message) ->
-    if match = message.match @regex
+    if match = @matcher message
       @callback new @robot.Response(@robot, message, match)
+
+class TextListener extends Listener
+  # TextListeners receive every message from the chat source and decide if they want
+  # to act on it.
+  #
+  # robot    - The current Robot instance.
+  # regex    - The Regex that determines if this listener should trigger the
+  #            callback.
+  # callback - The Function that is triggered if the incoming message matches.
+  constructor: (@robot, @regex, @callback) ->
+    @matcher = (message) =>
+      if message instanceof Robot.TextMessage
+        message.match @regex
 
 class Robot.Response
   # Public: Responses are sent to matching listeners.  Messages know about the
@@ -197,7 +325,7 @@ class Robot.Response
   # url - String URL to access.
   #
   # Examples:
-  # 
+  #
   #     res.http("http://example.com")
   #       # set a single header
   #       .header('Authorization', 'bearer abcdef')

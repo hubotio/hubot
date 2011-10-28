@@ -1,22 +1,30 @@
-Robot = require 'robot'
+Robot = require '../robot'
 
 class Shell extends Robot
   send: (user, strings...) ->
-    strings.forEach (str) ->
+    for str in strings
       console.log str
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   run: ->
     console.log "Hubot: the Shell."
 
-    user = new Robot.User 1, 'shell'
+    user = @userForId('1', {name: "Shell"})
+
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
       txt.toString().split("\n").forEach (line) =>
-        return if line.length == 0
-        @receive new Robot.Message user, line
+        return if line.length is 0
+        @receive new Robot.TextMessage user, line
 
-exports.Shell = Shell
+    setTimeout =>
+      user   = @userForId('1', {name: "Shell"})
+      atmos  = @userForId('2', {name: "atmos"})
+      holman = @userForId('3', {name: "Zach Holman"})
+    , 3000
+
+module.exports = Shell
+
