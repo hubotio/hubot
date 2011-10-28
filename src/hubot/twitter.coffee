@@ -39,7 +39,7 @@ class Twitter extends Robot
     bot.Tweet self.name, (err, data) ->
         reg = new RegExp('@'+self.name,'i')
         console.log "received #{data.text} from #{data.user.screen_name}"
-        self.receive new Robot.Message data.user.screen_name,data.text.replace reg, self.name
+        self.receive new Robot.TextMessage data.user.screen_name,data.text.replace reg, self.name
         if err
           console.log "received error: #{err}"
 
