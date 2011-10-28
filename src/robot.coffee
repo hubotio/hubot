@@ -28,7 +28,7 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    @listeners.push new TextListener(@, regex, callback)
+    @addListener TextListener, regex, callback
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex.  All regexes treat patterns like they begin
@@ -53,7 +53,7 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}:?\\s*#{pattern}", modifiers)
 
-    @listeners.push new TextListener(@, newRegex, callback)
+    @addListener TextListener, newRegex, callback
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
@@ -61,7 +61,7 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.EnterMessage), callback)
+    @addListener Listener, ((msg) -> msg instanceof Robot.EnterMessage), callback
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
@@ -69,7 +69,15 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
+    @addListener Listener, ((msg) -> msg instanceof Robot.LeaveMessage), callback
+
+  # Private: Instantiates and adds a Listener by type
+  #
+  # type - A Listener class
+  addListener: (type, args...) ->
+    listener = new type(@, args...)
+    @debug "matching #{listener.regex}" if listener.regex
+    @listeners.push listener
 
   # Public: Passes the given message to any interested Listeners.
   #
