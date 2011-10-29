@@ -28,6 +28,7 @@ Install all of the required dependencies by running `npm install`.
 
 It's easy to test scripts locally with an interactive shell:
 
+    % export PATH="node_modules/.bin:$PATH"
     % bin/hubot
 
 ...and to run tests:
