@@ -14,6 +14,7 @@ class Robot
     @commands    = []
     @Response    = Robot.Response
     @listeners   = []
+    @eatListeners= {}
     @loadPaths   = []
     @enableSlash = false
 
@@ -55,6 +56,22 @@ class Robot
     console.log newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
+  # Public: Adds a Listener that receives the next message from the user and avoid
+  # further processing of it.
+  #
+  # user     - The user name.
+  # callback - A Function that is called with a Response object. msg.match[1] will 
+  #            contain the message text without the bot name
+  #
+  # Returns nothing.
+  eatOneResponse: (user, callback) ->  
+    if @enableSlash
+      newRegex = new RegExp("^(?:\/|#{@name}:?)\\s*(.*?)\\s*$", "i")
+    else
+      newRegex = new RegExp("^#{@name}:?\\s*(.*?)\\s*$", "i")
+    
+    @eatListeners[user.id] = new TextListener(@, newRegex, callback)
+  
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
   # callback - A Function that is called with a Response object.
@@ -77,6 +94,16 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
+    if @eatListeners[message.user.id]?
+      lst = @eatListeners[message.user.id]
+      delete @eatListeners[message.user.id]
+      
+      if lst.call message
+        return
+      else
+        # Put back to try again next time
+        @eatListeners[message.user.id] = lst
+    
     for lst in @listeners
       try
         lst.call message
@@ -271,10 +298,13 @@ class Listener
   #
   # message - a Robot.Message instance.
   #
-  # Returns nothing.
+  # Returns true if it was used, false if ignored.
   call: (message) ->
     if match = @matcher message
       @callback new @robot.Response(@robot, message, match)
+      return true
+    else
+      return false
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
@@ -325,7 +355,15 @@ class Robot.Response
   # Returns nothing.
   reply: (strings...) ->
     @robot.reply @message.user, strings...
-
+  
+  # Public: Waits for the next message from the current user.
+  #
+  # callback - Called with the user response
+  #
+  # Returns nothing.
+  waitResponse: (callback) ->
+    @robot.eatOneResponse @message.user, callback
+    
   # Public: Picks a random item from the given items.
   #
   # items - An Array of items (usually Strings).
