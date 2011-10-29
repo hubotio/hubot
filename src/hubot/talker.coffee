@@ -72,10 +72,10 @@ class TalkerClient extends EventEmitter
     @socket.addListener 'data', (data) ->
       console.log data
       
-      if data.indexOf('{"type":"users"') == 0
-        message = JSON.parse(data)
-      else
+      if data.indexOf('"type":"users"') > 0
         message = {"type": "none"}
+      else
+        message = JSON.parse(data)
         
       if message.type == "connected"
         console.log "Succesfully connected, listing users:"
