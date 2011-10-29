@@ -35,7 +35,7 @@ class Talker extends Robot
     bot.on "Message", (message)->
       console.log message
       author = self.userForId(message.user.id)
-      self.receive new Robot.Message(author, message.content.replace(/^\s*@hubot\s+/, "Hubot: "))
+      self.receive new Robot.TextMessage(author, message.content.replace(/^\s*@hubot\s+/, "Hubot: "))
     
     @bot = bot
 
@@ -61,7 +61,7 @@ class TalkerClient extends EventEmitter
     #callback
     @socket.addListener 'data', (data) ->
       console.log data
-      message = JSON.parse data
+      message = JSON.parse(data)
 
       if message.type == "connected"
         console.log "Succesfully connected, listing users:"
