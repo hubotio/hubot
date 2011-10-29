@@ -8,9 +8,17 @@ This version is designed to be deployed on heroku.
 Playing with Hubot
 ==================
 
-You'll need to install the necessary dependencies for hubot. All of
+First, create your own hubot, nubot.
+
+    % npm install
+    % PATH="node_modules/.bin:$PATH" bin/hubot -c nubot
+    Creating a hubot install at nubot
+
+You'll need to install the necessary dependencies for nubot. All of
 those dependencies are provided by [npm](http://npmjs.org).
 
+    % cd nubot
+    % npm install
     % bin/hubot
 
 You'll see some startup output about where your scripts come from.
@@ -68,7 +76,7 @@ Create a separate user for your bot and get their token from the web UI.
     % heroku config:add HUBOT_CAMPFIRE_TOKEN="..."
 
 Get the numeric ids of the rooms you want the bot to join, comma
-delimited. If you want the bot to connect to `https://mysubdomain.campfirenow.com/room/42` 
+delimited. If you want the bot to connect to `https://mysubdomain.campfirenow.com/room/42`
 and `https://mysubdomain.campfirenow.com/room/1024` then you'd add it like this:
 
     % heroku config:add HUBOT_CAMPFIRE_ROOMS="42,1024"
