@@ -146,5 +146,17 @@ class XmppBot extends Robot
     for str in strings
       @send user, "#{user.name}: #{str}"
 
+  topic: (user, strings...) ->
+    string = strings.join "\n"
+
+    message = new Xmpp.Element('message',
+                from: @options.username,
+                to: user.room
+                type: user.type
+              ).
+              c('subject').t(string)
+
+    @client.send message
+
 module.exports = XmppBot
 
