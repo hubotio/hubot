@@ -32,10 +32,20 @@ class Talker extends Robot
         bot.write {type: "ping"}
       , 25000
 
-    bot.on "Message", (message)->
+    bot.on "TextMessage", (message)->
       console.log message
       author = self.userForId(message.user.id)
       self.receive new Robot.TextMessage(author, message.content.replace(/^\s*@hubot\s+/, "Hubot: "))
+    
+    bot.on "EnterMessage", (message) ->
+      console.log message
+      author = self.userForId(message.user.id)
+      self.receive new Robot.EnterMessage(author)
+    
+    bot.on "LeaveMessage", (message) ->
+      console.log message
+      author = self.userForId(message.user.id)
+      self.receive new Robot.LeaveMessage(author)
     
     @bot = bot
 
@@ -66,7 +76,12 @@ class TalkerClient extends EventEmitter
       if message.type == "connected"
         console.log "Succesfully connected, listing users:"
       if message.type == "message"
-        self.emit "Message", message
+        self.emit "TextMessage", message
+      if message.type == "join"
+        self.emit "EnterMessage", message
+      if message.type == "leave"
+        self.emit "LeaveMessage", message
+      
     @socket.addListener "eof", ->
       console.log "eof"
     @socket.addListener "timeout", ->
