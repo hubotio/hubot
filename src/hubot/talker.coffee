@@ -64,15 +64,19 @@ class TalkerClient extends EventEmitter
     
     @socket = tls.connect @port, @domain, ->
       # callback called only after successful socket socket
-      console.log "Connected to " + @domain
+      console.log "Connected to " + self.domain
       self.socket.setEncoding @encoding
       callback()
        
     #callback
     @socket.addListener 'data', (data) ->
       console.log data
-      message = JSON.parse(data)
-
+      
+      if data.indexOf('{"type":"users"') == 0
+        message = JSON.parse(data)
+      else
+        message = {"type": "none"}
+        
       if message.type == "connected"
         console.log "Succesfully connected, listing users:"
       if message.type == "message"
@@ -81,6 +85,8 @@ class TalkerClient extends EventEmitter
         self.emit "EnterMessage", message
       if message.type == "leave"
         self.emit "LeaveMessage", message
+      if message.type == "error"
+        self.disconnect message.message
       
     @socket.addListener "eof", ->
       console.log "eof"
