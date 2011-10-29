@@ -242,6 +242,8 @@ class Robot.Brain extends EventEmitter
   mergeData: (data) ->
     for k of (data or { })
       @data[k] = data[k]
+      
+    @emit 'loaded', @data
 
 class Robot.Message
   # Represents an incoming message from the chat.

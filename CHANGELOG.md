@@ -1,3 +1,9 @@
+v1.1.5
+======
+* Add a talkerapp adapter - Victor Castell <victorcoder@gmail.com>
+* Add a twitter adapter - Mathilde Lemee <mathilde.lemee@yahoo.fr>
+* Emit a loaded event in mergeData - codec <codec@fnord.cx>
+
 v1.1.2
 ======
 * Fix the optparse npm install anomaly
