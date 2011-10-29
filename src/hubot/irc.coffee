@@ -44,6 +44,7 @@ class IrcBot extends Robot
           debug: true,
           port: options.port,
           stripColors: true,
+          secure: if options.port is "6697" then true else false,
         }
 
     unless options.nickpass
