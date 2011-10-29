@@ -12,7 +12,8 @@ Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/) in
 
 Download the [latest version of hubot](https://github.com/github/hubot/downloads).
 
-Then follow the instructions in the README in the `hubot` directory.
+Then follow the instructions in the
+[README](https://github.com/github/hubot/blob/master/src/templates/README.md#readme).
 
 ## Scripts
 
@@ -28,7 +29,7 @@ Install all of the required dependencies by running `npm install`.
 
 It's easy to test scripts locally with an interactive shell:
 
-    % bin/hubot
+    % PATH="node_modules/.bin:$PATH" bin/hubot
 
 ...and to run tests:
 
