@@ -12,7 +12,8 @@ Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/) in
 
 Download the [latest version of hubot](https://github.com/github/hubot/downloads).
 
-Then follow the instructions in the README in the `hubot` directory.
+Then follow the instructions in the
+[README](https://github.com/github/hubot/blob/master/src/templates/README.md#readme).
 
 ## Scripts
 
