@@ -124,7 +124,7 @@ class Robot
     Fs.readFile path, "utf-8", (err, body) =>
       throw err if err
       for i, line of body.split("\n")
-        break    if line[0] != '#'
+        break    if !(line[0] == '#' or line.substr(0, 2) == '//')
         continue if !line.match('-')
         @commands.push line[2..line.length]
 
