@@ -32,19 +32,23 @@ class Talker extends Robot
         bot.write {type: "ping"}
       , 25000
 
+    bot.on "Users", (message)->
+      for user in message.users
+        self.userForId(user.id, user)
+
     bot.on "TextMessage", (message)->
       console.log message
-      author = self.userForId(message.user.id)
+      author = self.userForId(message.user.id, message.user)
       self.receive new Robot.TextMessage(author, message.content.replace(/^\s*@hubot\s+/, "Hubot: "))
     
     bot.on "EnterMessage", (message) ->
       console.log message
-      author = self.userForId(message.user.id)
+      author = self.userForId(message.user.id, message.user)
       self.receive new Robot.EnterMessage(author)
     
     bot.on "LeaveMessage", (message) ->
       console.log message
-      author = self.userForId(message.user.id)
+      author = self.userForId(message.user.id, message.user)
       self.receive new Robot.LeaveMessage(author)
     
     @bot = bot
@@ -70,23 +74,28 @@ class TalkerClient extends EventEmitter
        
     #callback
     @socket.addListener 'data', (data) ->
-      console.log data
-      
-      if data.indexOf('"type":"users"') > 0
-        message = {"type": "none"}
-      else
-        message = JSON.parse(data)
-        
-      if message.type == "connected"
-        console.log "Succesfully connected, listing users:"
-      if message.type == "message"
-        self.emit "TextMessage", message
-      if message.type == "join"
-        self.emit "EnterMessage", message
-      if message.type == "leave"
-        self.emit "LeaveMessage", message
-      if message.type == "error"
-        self.disconnect message.message
+      for line in data.split '\n'
+        console.log line
+
+        message = unless line is ''
+          message = JSON.parse(line)
+        else
+          message = null
+
+        if message
+          if message.type == "connected"
+            self.emit "Connected"
+          if message.type == "users"
+            self.emit "Users", message
+          if message.type == "message"
+            self.emit "TextMessage", message
+          if message.type == "join"
+            self.emit "EnterMessage", message
+          if message.type == "leave"
+            self.emit "LeaveMessage", message
+          if message.type == "error"
+            self.disconnect message.message
+
       
     @socket.addListener "eof", ->
       console.log "eof"
