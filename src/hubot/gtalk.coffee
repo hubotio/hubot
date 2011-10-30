@@ -3,12 +3,16 @@ Xmpp = require 'simple-xmpp'
 
 class Gtalkbot extends Robot
   run: ->
-    # Connect to gtalk servers
-    new Xmpp.connect
+    
+    # Client Options
+    options = 
       jid: process.env.HUBOT_GTALK_USERNAME
       password: process.env.HUBOT_GTALK_PASSWORD
       host: 'talk.google.com'
       port: 5222
+
+    # Connect to gtalk servers
+    new Xmpp.connect options
 
     # Events
     Xmpp.on 'online', @.online
@@ -16,7 +20,7 @@ class Gtalkbot extends Robot
     Xmpp.on 'error', @.error
     
     # Log options
-    #console.log options
+    console.log options
 	 
   online: =>
     console.log 'Hubot is online, talk.google.com!'
@@ -30,7 +34,7 @@ class Gtalkbot extends Robot
 
   reply: (user, strings...) ->
     for str in strings
-      @send user.name, "#{str}"
+      @send user, "#{str}"
 
   error: (err) =>
     console.error err
