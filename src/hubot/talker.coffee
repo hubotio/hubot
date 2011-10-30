@@ -74,21 +74,24 @@ class TalkerClient extends EventEmitter
        
     #callback
     @socket.addListener 'data', (data) ->
-      console.log data
-      message = JSON.parse(data)
+      for line in data.split '\n'
+        console.log line
+        message = JSON.parse(line) unless line is ''
 
-      if message.type == "connected"
-        console.log "Succesfully connected, listing users:"
-      if message.type == "users"
-        self.emit "Users", message
-      if message.type == "message"
-        self.emit "TextMessage", message
-      if message.type == "join"
-        self.emit "EnterMessage", message
-      if message.type == "leave"
-        self.emit "LeaveMessage", message
-      if message.type == "error"
-        self.disconnect message.message
+        if message
+          if message.type == "connected"
+            self.emit "Connected"
+          if message.type == "users"
+            self.emit "Users", message
+          if message.type == "message"
+            self.emit "TextMessage", message
+          if message.type == "join"
+            self.emit "EnterMessage", message
+          if message.type == "leave"
+            self.emit "LeaveMessage", message
+          if message.type == "error"
+            self.disconnect message.message
+
       
     @socket.addListener "eof", ->
       console.log "eof"
