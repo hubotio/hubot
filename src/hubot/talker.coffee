@@ -76,7 +76,11 @@ class TalkerClient extends EventEmitter
     @socket.addListener 'data', (data) ->
       for line in data.split '\n'
         console.log line
-        message = JSON.parse(line) unless line is ''
+
+        message = unless line is ''
+          message = JSON.parse(line)
+        else
+          message = null
 
         if message
           if message.type == "connected"
