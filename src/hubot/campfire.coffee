@@ -4,12 +4,13 @@ EventEmitter = require("events").EventEmitter
 
 class Campfire extends Robot
   send: (user, strings...) ->
-    for str in strings
-      @bot.Room(user.room).speak str, (err, data) ->
+    if strings.length > 0
+      @bot.Room(user.room).speak strings.shift(), (err, data) =>
         console.log "campfire error: #{err}" if err
+        @send user, strings...
 
   reply: (user, strings...) ->
-    @send user, "#{user.name}: #{str}" for str in strings
+    @send user, strings.map((str) -> "#{user.name}: #{str}")...
 
   run: ->
     self = @
