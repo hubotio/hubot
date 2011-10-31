@@ -1,6 +1,6 @@
 Robot = require '../robot'
 HTTP  = require 'http'
-Qs    = require 'querystring'
+QS    = require 'querystring'
 
 class Twilio extends Robot
   constructor: ->
@@ -11,10 +11,11 @@ class Twilio extends Robot
 
   send: (user, strings...) ->
     message = strings.join "\n"
-    console.log "Sending reply SMS: #{message} to #{user.id}"
     @send_sms message, user.id, (err, body) =>
       if err or not body?
-        console.log "error sending reply SMS: #{err}"
+        console.log "Error sending reply SMS: #{err}"
+      else
+        console.log "Sending reply SMS: #{message} to #{user.id}"
 
   reply: (user, strings...) ->
     for str in strings
@@ -25,7 +26,7 @@ class Twilio extends Robot
 
   run: ->
     server = HTTP.createServer (request, response) =>
-      payload = Qs.parse(request.url)
+      payload = QS.parse(request.url)
 
       if payload.Body? and payload.From?
         console.log "Received SMS: #{payload.Body} from #{payload.From}"
@@ -42,8 +43,21 @@ class Twilio extends Robot
     @receive new Robot.TextMessage user, body
 
   send_sms: (message, to, callback) ->
-    # rework to use scoped-http-client here
-    console.log "#{to}: #{message}"
+    auth = new Buffer(@sid + ':' + @token).toString("base64")
+    data = QS.stringify From: @from, To: to, Body: message
+
+    @http("https://api.twilio.com")
+      .path("/2010-04-01/Accounts/#{@sid}/SMS/Messages.json")
+      .header("Authorization", "Basic #{auth}")
+      .header("Content-Type", "application/x-www-form-urlencoded")
+      .post(data) (err, res, body) ->
+        if err
+          callback err
+        else if res.statusCode is 201
+          json = JSON.parse(body)
+          callback null, body
+        else
+          json = JSON.parse(body)
+          callback body.message
 
 module.exports = Twilio
-
