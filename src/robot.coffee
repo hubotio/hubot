@@ -10,6 +10,7 @@ class Robot
   # path - String directory full of Hubot scripts to load.
   constructor: (path, name = "Hubot") ->
     @name        = name
+    @getName     = -> name
     @brain       = new Robot.Brain
     @commands    = []
     @Response    = Robot.Response

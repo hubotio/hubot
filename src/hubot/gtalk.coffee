@@ -36,11 +36,11 @@ class Gtalkbot extends Robot
     , @options.keepaliveInterval
 
     # He is alive!
-    console.log Robot.getName() + ' is online, talk.google.com!'
+    console.log @getName() + ' is online, talk.google.com!'
 
   read: (stanza) =>
     if stanza.attrs.type is 'error'
-      console.error '[xmpp error]' + stanza
+      console.error '[xmpp error] - ' + stanza
       return
 
     # Make sure we have a message
@@ -51,8 +51,11 @@ class Gtalkbot extends Robot
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
     body = stanza.getChild 'body'
     return unless body
-
+    
     message = body.getText()
+
+    # Pad the message with robot name just incase it was not provided.
+    message = if !message.match(new RegExp("^"+@getName()+":?","i")) then @getName()+" "+message else message
 
     # Send the message to the robot
     @receive new Robot.TextMessage from, message
