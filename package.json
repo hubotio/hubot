@@ -1,38 +1,33 @@
 {
-  "name": "hubot",
-  "version": "1.1.0",
-  "author": "hubot",
-  "keywords": [
-    "github hubot campfire bot"
-  ],
+  "name":        "hubot",
+  "version":     "1.1.0",
+  "author":      "hubot",
+  "keywords":    "github hubot campfire bot",
   "description": "A simple helpful Robot for your Company",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/github/hubot/raw/master/LICENSE"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/github/hubot.git"
+  "licenses":     [{
+    "type":       "MIT",
+    "url":        "http://github.com/github/hubot/raw/master/LICENSE"
+  }],
+
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/github/hubot.git"
   },
+
   "dependencies": {
     "coffee-script": "1.1.1",
     "optparse": "1.0.1",
     "scoped-http-client": "0.9.4",
     "irc": "0.2",
     "node-xmpp": ">=0.2.6",
-    "simple-xmpp":">= 0.1.5beta",
-    "node-stringprep":">= 0.0.5",
     "wobot": "0.3.0"
   },
+
   "main": "./index",
+
   "bin": {
     "hubot": "./bin/hubot"
   },
-  "engine": "node >= 0.4.1 < 0.5.0",
-  "devDependencies": {},
-  "engines": {
-    "node": "*"
-  }
+
+  "engine": "node >= 0.4.1 < 0.5.0"
 }

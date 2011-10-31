@@ -1,36 +1,72 @@
 Robot = require '../robot'
-Xmpp = require 'simple-xmpp'
+Xmpp = require 'node-xmpp'
 
 class Gtalkbot extends Robot
   run: ->
-    
+
     # Client Options
     options = 
       jid: process.env.HUBOT_GTALK_USERNAME
       password: process.env.HUBOT_GTALK_PASSWORD
       host: 'talk.google.com'
       port: 5222
+      keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
 
     # Connect to gtalk servers
-    new Xmpp.connect options
+    @client = new Xmpp.Client options
 
     # Events
-    Xmpp.on 'online', @.online
-    Xmpp.on 'chat', @.chat
-    Xmpp.on 'error', @.error
+    @client.on 'online', @.online
+    @client.on 'stanza', @.read
+    @client.on 'error', @.error
     
     # Log options
     console.log options
-	 
-  online: =>
-    console.log 'Hubot is online, talk.google.com!'
 
-  chat: (from,message) =>
+    # Share the optionss
+    @options = options
+
+  online: =>
+    @client.send new Xmpp.Element('presence')
+      .c('show').t('chat')
+
+    # send raw whitespace for keepalive
+    setInterval =>
+      @client.send ' '
+    , @options.keepaliveInterval
+
+    # He is alive!
+    console.log Robot.getName() + ' is online, talk.google.com!'
+
+  read: (stanza) =>
+    if stanza.attrs.type is 'error'
+      console.error '[xmpp error]' + stanza
+      return
+
+    # Make sure we have a message
+    return if !stanza.is 'message' or stanza.attrs.type not in ['groupchat', 'direct', 'chat']
+    
+    # Strip the from attribute to get who this is from
+    [from, room] = stanza.attrs.from.split '/'
+    # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
+    body = stanza.getChild 'body'
+    return unless body
+
+    message = body.getText()
+
+    # Send the message to the robot
     @receive new Robot.TextMessage from, message
   
   send: (user, strings...) ->
     for str in strings
-      Xmpp.send user, str
+      message = new Xmpp.Element('message',
+          from: @options.username
+          to: user
+          type: 'chat' 
+        ).
+        c('body').t(str)
+      # Send it off
+      @client.send message
 
   reply: (user, strings...) ->
     for str in strings
