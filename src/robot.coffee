@@ -220,7 +220,7 @@ class Robot.Brain extends EventEmitter
   mergeData: (data) ->
     for k of (data or { })
       @data[k] = data[k]
-      
+
     @emit 'loaded', @data
 
 class Robot.Message
@@ -310,7 +310,7 @@ class Robot.Response
 
   # Public: Posts a topic changing message
   #
-  # strings - One or more strings to set as the topic of the 
+  # strings - One or more strings to set as the topic of the
   #           room the bot is in.
   #
   # Returns nothing.
