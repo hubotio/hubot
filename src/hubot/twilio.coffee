@@ -18,8 +18,7 @@ class Twilio extends Robot
         console.log "Sending reply SMS: #{message} to #{user.id}"
 
   reply: (user, strings...) ->
-    for str in strings
-      @send user, "#{user.name}: #{str}"
+    @send user, str for str in strings
 
   respond: (regex, callback) ->
     @hear regex, callback
