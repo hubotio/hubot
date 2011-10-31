@@ -11,11 +11,15 @@ class Twilio extends Robot
 
   send: (user, strings...) ->
     message = strings.join "\n"
-    @send_sms message, user.id, (err, body) =>
-      if err or not body?
-        console.log "Error sending reply SMS: #{err}"
-      else
-        console.log "Sending reply SMS: #{message} to #{user.id}"
+
+    if message.length > 160
+      console.log "Cannot send reply, body is greater than 160 characters"
+    else
+      @send_sms message, user.id, (err, body) =>
+        if err or not body?
+          console.log "Error sending reply SMS: #{err}"
+        else
+          console.log "Sending reply SMS: #{message} to #{user.id}"
 
   reply: (user, strings...) ->
     @send user, str for str in strings
