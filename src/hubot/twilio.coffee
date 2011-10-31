@@ -12,10 +12,8 @@ class Twilio extends Robot
   send: (user, strings...) ->
     message = strings.join "\n"
 
-    if message.length > 160
-      console.log "Cannot send reply, body is greater than 160 characters"
-    else
-      @send_sms message, user.id, (err, body) =>
+    for msg in @split_long_sms(message)
+      @send_sms message, user.id, (err, body) ->
         if err or not body?
           console.log "Error sending reply SMS: #{err}"
         else
@@ -62,5 +60,17 @@ class Twilio extends Robot
         else
           json = JSON.parse(body)
           callback body.message
+
+  split_long_sms: (message) ->
+    strs = []
+    while str.length > 150
+      pos = str.substring(0, 150).lastIndexOf(" ")
+      pos = (if pos <= 0 then 150 else pos)
+      strs.push str.substring(0, pos)
+      i = str.indexOf(" ", pos) + 1
+      i = pos  if i < pos or i > pos + 150
+      str = str.substring(i)
+    strs.push str
+    strs
 
 module.exports = Twilio
