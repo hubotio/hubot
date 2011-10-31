@@ -17,17 +17,16 @@ class Talker extends Robot
     self = @
     options =
       token:   process.env.HUBOT_TALKER_TOKEN
-      rooms:   process.env.HUBOT_TALKER_ROOMS
+      room:    process.env.HUBOT_TALKER_ROOM
 
     console.log options
     bot = new TalkerClient(options)
     console.log bot
     
     bot.connect ->
-      options.rooms.split(',').forEach (room) ->
-        console.log "Entering room: " + room
-        bot.write {"room": room, "token": options.token, "type": "connect"}
-        
+      console.log "Entering room: " + options.room
+      bot.write {"room": options.room, "token": options.token, "type": "connect"}
+
       setInterval -> 
         bot.write {type: "ping"}
       , 25000
@@ -58,7 +57,7 @@ module.exports = Talker
 class TalkerClient extends EventEmitter
   constructor: (options) ->
     @token         = options.token
-    @rooms         = options.rooms.split(",")
+    @room          = options.room
     @domain        = 'talkerapp.com'
     @encoding      = 'utf8'
     @port          = 8500
@@ -77,14 +76,9 @@ class TalkerClient extends EventEmitter
       for line in data.split '\n'
         console.log line
 
-        message = unless line is ''
-          message = JSON.parse(line)
-        else
-          message = null
+        message = if line is '' then null else JSON.parse(line)
 
         if message
-          if message.type == "connected"
-            self.emit "Connected"
           if message.type == "users"
             self.emit "Users", message
           if message.type == "message"
