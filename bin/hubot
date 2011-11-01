@@ -11,24 +11,21 @@ Path       = require 'path'
 HTTP       = require 'http'
 Creator    = require '../src/creator'
 OptParse   = require 'optparse'
-PortNumber = parseInt(process.env.PORT) || 8080
-
-Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp", "groupme", "talker", "twitter", "flowdock", "gtalk"]
 
 Switches = [
-  [ "-h", "--help",              "Display the help information"],
-  [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
-  [ "-c", "--create PATH",       "Create a deployable hubot"],
-  [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
-  [ "-n", "--name NAME",         "The name of the robot in chat" ],
-  [ "-v", "--version",           "Displays the version of hubot installed"]
+  [ "-h", "--help",            "Display the help information"],
+  [ "-a", "--adapter ADAPTER", "The Adapter to use"],
+  [ "-c", "--create PATH",     "Create a deployable hubot"],
+  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/'"],
+  [ "-n", "--name NAME",       "The name of the robot in chat"],
+  [ "-v", "--version",         "Displays the version of hubot installed"]
 ]
 
 Options =
   path: "."
   name: "Hubot"
   create: false
-  adapter: "stdio"
+  adapter: "shell"
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -55,7 +52,9 @@ Parser.on "version", (opt, value) ->
 
 Parser.parse process.ARGV
 
-process.on 'SIGTERM', -> process.exit(0)
+process.on 'SIGTERM', ->
+  console.log "Shutting down..."
+  process.exit(0)
 
 if Options.create
   creator = new Creator.Creator(Options.path)
@@ -64,46 +63,45 @@ if Options.create
 else if Options.version
   package_path = __dirname + "/../package.json"
 
-  Fs.readFile package_path, (err,data) ->
+  Fs.readFile package_path, (err, data) ->
     if err
-      console.error "Could not open package file : %s", err
-      process.exit 1
+      console.error "Could not open package file: %s", err
+      process.exit(1)
 
     content = JSON.parse(data.toString('ascii'))
     console.log content['version']
-
-    process.exit 0
-
+    process.exit(0)
 else
-  adapter = if Options.adapter in Adapters
-    Options.adapter
-  else
-    'shell'
-
+  # load the robot, and pass it the adapter and path to adapters...
+  #
   adaptersPath = Path.resolve "src", "adapters"
-  robot = Hubot.loadBot adapter, adaptersPath, Options.name
+  robot = Hubot.loadBot Options.adapter, adaptersPath, Options.name
   robot.enableSlash = Options.enableSlash
 
+  # load the locally deployed scripts in ./scripts
+  #
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
   robot.load scriptsPath
 
+  # load the core hubot scripts in ./src/scripts
+  #
   scriptsPath = Path.resolve "src", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
   robot.load scriptsPath
 
+  # load the hubot-scripts which are specified in `hubot-scripts.json`
+  #
   scriptsFile = Path.resolve "hubot-scripts.json"
   Path.exists scriptsFile, (exists) =>
     if exists
       console.log "Loading hubot-scripts from #{scriptsFile}"
       Fs.readFile scriptsFile, (err, data) =>
-        JSON.parse(data).forEach (plugin) =>
-          robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
-    else
-      scriptsPath = Path.resolve "src", "scripts"
-      console.log "Loading hubot-scripts plugins at #{scriptsPath}"
-      robot.load scriptsPath
+        for script in JSON.parse(data)
+          path = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+          robot.loadFile path, script
 
   robot.run()
 
 # vim:ft=coffee ts=2 sw=2 et :
+

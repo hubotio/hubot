@@ -2,7 +2,6 @@ Robot = require '../robot'
 
 class Shell extends Robot.Adapter
   send: (user, strings...) ->
-    console.log strings
     for str in strings
       console.log str
 

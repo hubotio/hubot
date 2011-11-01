@@ -17,6 +17,8 @@ class Robot
     @loadPaths   = []
     @enableSlash = false
 
+    @adapters    = []
+
     Adapter = require("#{adaptersPath}/#{adapter}")
     @adapter = new Adapter(@)
 
@@ -112,7 +114,6 @@ class Robot
   # Public: Help Commands for Running Scripts
   #
   # Returns an array of help commands for running scripts
-  #
   helpCommands: () ->
     @commands.sort()
 
@@ -141,7 +142,6 @@ class Robot
     @brain.data.users
 
   # Public: Get a User object given a unique identifier
-  #
   userForId: (id, options) ->
     user = @brain.data.users[id]
     unless user
@@ -150,7 +150,6 @@ class Robot
     user
 
   # Public: Get a User object given a name
-  #
   userForName: (name) ->
     result = null
     lowerName = name.toLowerCase()
@@ -162,26 +161,12 @@ class Robot
 class Robot.Adapter
   constructor: (@robot) ->
 
-  # Public: Raw method for sending data back to the chat source. Extend this.
-  #
-  # user    - A Robot.User instance.
-  # strings - One or more Strings for each message to send.
   send: (user, strings...) ->
 
-  # Public: Raw method for building a reply and sending it back to the chat
-  # source. Extend this.
-  #
-  # user    - A Robot.User instance.
-  # strings - One or more Strings for each reply to send.
   reply: (user, strings...) ->
 
-  # Public: Raw method for setting a topic on the chat source. Extend this.
-  #
-  # user    - A Robot.User instance
-  # strings - One more more Strings to set as the topic.
   topic: (user, strings...) ->
 
-  # Public: Raw method for invoking the bot to run. Extend this.
   run: ->
 
 class Robot.User
@@ -374,3 +359,4 @@ class Robot.Response
 Robot.Response.prototype.httpClient = require 'scoped-http-client'
 
 module.exports = Robot
+
