@@ -1,3 +1,22 @@
+v1.1.9
+======
+* Add a google talk adapter - Arlo Carreon <arlo.carreon@gmail.com>
+
+v1.1.8
+======
+* Fix a bug in robot.respond that allowed regexes to be constructed that
+  could be triggered without prefixing with the robot's name - atmos
+* Fixup rarely triggered response stuff that uses an undefined variable
+
+v1.1.7
+======
+* Fix username issues where campfire names weren't updated - atmos
+* Allow help files to parse from raw js - Jason Ford <jason@jason-ford.com>
+* Talkerapp bug fix ups - Charles Barbier <unixcharles@gmail.com>, Magnus Bergmark <magnus.bergmark@gmail.com>
+* Preserve ordering in campfire message sending - Sean Cribbs <sean@basho.com>
+* Flowdock adapter - Arttu Tervo <arttu.tervo@nodeta.fi>
+
+
 v1.1.5
 ======
 * Add a talkerapp adapter - Victor Castell <victorcoder@gmail.com>

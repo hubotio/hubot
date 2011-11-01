@@ -65,10 +65,10 @@ getCode = (language,languages) ->
       return code if lang.toLowerCase() is language.toLowerCase()
 
 module.exports = (robot) ->
-  robot.respond /(translate)( me)?(( from) ([a-z]*))?(( (in)?to) ([a-z]*))? (.*)/i, (msg) ->
-    term   = "\"#{msg.match[10]}\""
-    origin = if msg.match[5] isnt undefined then getCode(msg.match[5], languages) else 'auto'
-    target = if msg.match[9] isnt undefined then getCode(msg.match[9], languages) else 'en'
+  robot.respond /(?:translate)(?: me)?(?:(?: from) ([a-z]*))?(?:(?: (?:in)?to) ([a-z]*))? (.*)/i, (msg) ->
+    term   = "\"#{msg.match[3]}\""
+    origin = if msg.match[1] isnt undefined then getCode(msg.match[1], languages) else 'auto'
+    target = if msg.match[2] isnt undefined then getCode(msg.match[2], languages) else 'en'
     
     msg.http("http://translate.google.com/translate_a/t")
       .query({
@@ -90,7 +90,7 @@ module.exports = (robot) ->
           language =languages[parsed[2]]
           parsed = parsed[0] && parsed[0][0] && parsed[0][0][0]
           if parsed
-            if msg.match[9] is undefined
+            if msg.match[2] is undefined
               msg.send "#{term} is #{language} for #{parsed}"
             else
               msg.send "The #{language} #{term} translates as #{parsed} in #{languages[target]}"

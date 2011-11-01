@@ -1,6 +1,6 @@
 {
   "name":        "hubot",
-  "version":     "1.1.4",
+  "version":     "1.1.9",
   "author":      "hubot",
   "keywords":    "github hubot campfire bot",
   "description": "A simple helpful Robot for your Company",
@@ -23,7 +23,8 @@
     "irc": "0.2",
     "node-xmpp": ">=0.2.6",
     "wobot": "0.3.0",
-    "imap": "0.2.5"
+    "imap": "0.2.5",
+    "flowdock": "0.2.x"
   },
 
   "main": "./index",

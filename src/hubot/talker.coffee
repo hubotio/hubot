@@ -7,106 +7,118 @@ tls          = require('tls')
 class Talker extends Robot
   send: (user, strings...) ->
     strings.forEach (str) =>
-      @bot.write {"type": "message", "content": str}
+      @bot.write user.room, {"type": "message", "content": str}
 
   reply: (user, strings...) ->
     strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+      @send user, "@#{user.name} #{str}"
 
   run: ->
     self = @
-    options =
-      token:   process.env.HUBOT_TALKER_TOKEN
-      rooms:   process.env.HUBOT_TALKER_ROOMS
+    token = process.env.HUBOT_TALKER_TOKEN
+    rooms = process.env.HUBOT_TALKER_ROOMS.split(',')
 
-    console.log options
-    bot = new TalkerClient(options)
+    bot = new TalkerClient()
     console.log bot
-    
-    bot.connect ->
-      options.rooms.split(',').forEach (room) ->
-        console.log "Entering room: " + room
-        bot.write {"room": room, "token": options.token, "type": "connect"}
-        
-      setInterval -> 
-        bot.write {type: "ping"}
+
+    ping = (room)->
+      setInterval ->
+        bot.write room, {type: "ping"}
       , 25000
 
-    bot.on "TextMessage", (message)->
-      console.log message
-      author = self.userForId(message.user.id)
-      self.receive new Robot.TextMessage(author, message.content.replace(/^\s*@hubot\s+/, "Hubot: "))
-    
-    bot.on "EnterMessage", (message) ->
-      console.log message
-      author = self.userForId(message.user.id)
-      self.receive new Robot.EnterMessage(author)
-    
-    bot.on "LeaveMessage", (message) ->
-      console.log message
-      author = self.userForId(message.user.id)
-      self.receive new Robot.LeaveMessage(author)
-    
+    bot.on "Ready", (room)->
+      message = {"room": room, "token": token, "type": "connect"}
+      bot.write room, message
+      ping room
+
+    bot.on "Users", (message)->
+      for user in message.users
+        self.userForId(user.id, user)
+
+    bot.on "TextMessage", (room, message)->
+      unless self.name == message.user.name
+        # Replace "@mention" with "mention: ", case-insensitively
+        regexp = new RegExp "^@#{self.name}", 'i'
+        content = message.content.replace(regexp, "#{self.name}:")
+
+        self.receive new Robot.TextMessage self.userForMessage(room, message), content
+
+    bot.on "EnterMessage", (room, message) ->
+      unless self.name == message.user.name
+        self.receive new Robot.EnterMessage self.userForMessage(room, message)
+
+    bot.on "LeaveMessage", (room, message) ->
+      unless self.name == message.user.name
+        self.receive new Robot.LeaveMessage self.userForMessage(room, message)
+
+    for room in rooms
+      bot.sockets[room] = bot.createSocket(room)
+
     @bot = bot
+
+  userForMessage: (room, message)->
+    author = @userForId(message.user.id, message.user)
+    author.room = room
+    author
 
 module.exports = Talker
 
 class TalkerClient extends EventEmitter
-  constructor: (options) ->
-    @token         = options.token
-    @rooms         = options.rooms.split(",")
+  constructor: ->
     @domain        = 'talkerapp.com'
     @encoding      = 'utf8'
     @port          = 8500
+    @sockets       = {}
 
-  connect: (callback) ->
-    self = @    
-    
-    @socket = tls.connect @port, @domain, ->
-      # callback called only after successful socket socket
-      console.log "Connected to " + self.domain
-      self.socket.setEncoding @encoding
-      callback()
-       
-    #callback
-    @socket.addListener 'data', (data) ->
-      console.log data
-      
-      if data.indexOf('"type":"users"') > 0
-        message = {"type": "none"}
-      else
-        message = JSON.parse(data)
-        
-      if message.type == "connected"
-        console.log "Succesfully connected, listing users:"
-      if message.type == "message"
-        self.emit "TextMessage", message
-      if message.type == "join"
-        self.emit "EnterMessage", message
-      if message.type == "leave"
-        self.emit "LeaveMessage", message
-      if message.type == "error"
-        self.disconnect message.message
-      
-    @socket.addListener "eof", ->
-      console.log "eof"
-    @socket.addListener "timeout", ->
-      console.log "timeout"
-    @socket.addListener "end", ->
-      console.log "end"
-  
-  write: (arguments) ->
+  createSocket: (room) ->
     self = @
-    
-    if @socket.readyState != 'open'
-      return self.disconnect 'cannot send with readyState: ' + @socket.readyState
-  
+
+    socket = tls.connect @port, @domain, ->
+      console.log("Connected to room #{room}.")
+      self.emit "Ready", room
+
+    #callback
+    socket.on 'data', (data) ->
+      for line in data.split '\n'
+        message = if line is '' then null else JSON.parse(line)
+
+        if message
+          console.log "From room #{room}: #{line}"
+          if message.type == "users"
+            self.emit "Users", message
+          if message.type == "message"
+            self.emit "TextMessage", room, message
+          if message.type == "join"
+            self.emit "EnterMessage", room, message
+          if message.type == "leave"
+            self.emit "LeaveMessage", room, message
+          if message.type == "error"
+            self.disconnect room, message.message
+
+    socket.addListener "eof", ->
+      console.log "eof"
+    socket.addListener "timeout", ->
+      console.log "timeout"
+    socket.addListener "end", ->
+      console.log "end"
+
+    socket.setEncoding @encoding
+
+    socket
+
+  write: (room, arguments) ->
+    self = @
+    @sockets[room]
+
+    if @sockets[room].readyState != 'open'
+      return @disconnect 'cannot send with readyState: ' + @sockets[room].readyState
+
     message = JSON.stringify(arguments)
-    console.log message
-    
-    @socket.write message, @encoding
-  
-  disconnect: (why) ->
-    if @socket.readyState != 'closed' 
-      @socket.close
+    console.log "To room #{room}: #{message}"
+
+    @sockets[room].write message, @encoding
+
+  disconnect: (room, why) ->
+    if @sockets[room] != 'closed'
+      @sockets[room]
       console.log 'disconnected (reason: ' + why + ')'
