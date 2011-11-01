@@ -85,7 +85,7 @@ else
   robot = Hubot.loadBot adapter, scriptsPath, Options.name
   robot.enableSlash = Options.enableSlash
 
-  scriptsPath = Path.resolve "src", "hubot", "scripts"
+  scriptsPath = Path.resolve "src", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
   robot.load scriptsPath
 
