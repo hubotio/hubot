@@ -36,19 +36,22 @@ class Talker extends Robot
         self.userForId(user.id, user)
 
     bot.on "TextMessage", (room, message)->
-      content = message.content
+      unless self.name == message.user.name
+        content = message.content
 
-      # Replace "@mention" with "mention: ", case-insensitively
-      regexp = new RegExp("\\b@#{self.quoteRegex(self.name)}\\b", 'i')
-      content = message.content.replace(regexp, "#{self.name}: ")
+        # Replace "@mention" with "mention: ", case-insensitively
+        regexp = new RegExp("\\b@#{self.quoteRegex(self.name)}\\b", 'i')
+        content = message.content.replace(regexp, "#{self.name}: ")
 
-      self.receive new Robot.TextMessage self.userForMessage(room, message), content
+        self.receive new Robot.TextMessage self.userForMessage(room, message), content
 
     bot.on "EnterMessage", (room, message) ->
-      self.receive new Robot.EnterMessage self.userForMessage(room, message)
+      unless self.name == message.user.name
+        self.receive new Robot.EnterMessage self.userForMessage(room, message)
 
     bot.on "LeaveMessage", (room, message) ->
-      self.receive new Robot.LeaveMessage self.userForMessage(room, message)
+      unless self.name == message.user.name
+        self.receive new Robot.LeaveMessage self.userForMessage(room, message)
 
     for room in rooms
       bot.sockets[room] = bot.createSocket(room)
