@@ -37,11 +37,9 @@ class Talker extends Robot
 
     bot.on "TextMessage", (room, message)->
       unless self.name == message.user.name
-        content = message.content
-
         # Replace "@mention" with "mention: ", case-insensitively
-        regexp = new RegExp("\\b@#{self.quoteRegex(self.name)}\\b", 'i')
-        content = message.content.replace(regexp, "#{self.name}: ")
+        regexp = new RegExp "^@#{self.name}", 'i'
+        content = message.content.replace(regexp, "#{self.name}:")
 
         self.receive new Robot.TextMessage self.userForMessage(room, message), content
 
@@ -62,9 +60,6 @@ class Talker extends Robot
     author = @userForId(message.user.id, message.user)
     author.room = room
     author
-
-  quoteRegex: (string) ->
-    string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 
 module.exports = Talker
 
