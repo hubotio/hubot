@@ -1,3 +1,7 @@
+v1.1.9
+======
+* Add a google talk adapter - Arlo Carreon <arlo.carreon@gmail.com>
+
 v1.1.8
 ======
 * Fix a bug in robot.respond that allowed regexes to be constructed that
