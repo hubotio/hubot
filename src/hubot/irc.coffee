@@ -4,17 +4,31 @@ Irc   = require "irc"
 class IrcBot extends Robot
   send: (user, strings...) ->
     for str in strings
-      console.log "#{user.name}: #{str}"
-      @bot.say(user.room, str)
+      if user.room
+        console.log "#{user.room} #{str}"
+        @bot.say(user.room, str)
+      else
+        console.log "#{user.name} #{str}"
+        @bot.say(user.name, str)
 
   reply: (user, strings...) ->
     for str in strings
       @send user, "#{user.name}: #{str}"
 
+  join: (channel) ->
+    self = @
+    @bot.join channel, () ->
+      console.log('joined %s', channel)
+
+  part: (channel) ->
+    @bot.part channel, () ->
+      console.log('left %s', channel)
+
   run: ->
     self = @
+
     options =
-      nick:     process.env.HUBOT_IRC_NICK
+      nick:     process.env.HUBOT_IRC_NICK or @name
       port:     process.env.HUBOT_IRC_PORT
       rooms:    process.env.HUBOT_IRC_ROOMS.split(",")
       server:   process.env.HUBOT_IRC_SERVER
@@ -27,6 +41,8 @@ class IrcBot extends Robot
           password: options.password,
           debug: true,
           port: options.port,
+          stripColors: true,
+          secure: if options.port is "6697" then true else false,
         }
 
     unless options.nickpass
@@ -43,20 +59,23 @@ class IrcBot extends Robot
           bot.say 'NickServ', "identify #{options.nickpass}"
         else if options.nickpass and from is 'NickServ' and text.indexOf('now identified') isnt -1
           for room in options.rooms
-            bot.join room, ->
-              console.log('%s has joined %s', options.nick, room)
+            @join room
 
-    bot.addListener 'message', (from, toRoom, message) ->
-      console.log "From #{from} to #{toRoom}: #{message}"
+    bot.addListener 'message', (from, to, message) ->
+      console.log "From #{from} to #{to}: #{message}"
 
       if message.match new RegExp "^#{options.nick}", "i"
         unless user_id[from]
           user_id[from] = next_id
           next_id = next_id + 1
 
-      user = new Robot.User user_id[from], {
-        room: toRoom,
-      }
+      user = new Robot.User user_id[from]
+      user.name = from
+      if to.match(/^[&#]/)
+        user.room = to
+        console.log "#{to} <#{from}> #{message}"
+      else
+        console.log "msg <#{from}> #{message}"
 
       self.receive new Robot.TextMessage(user, message)
 

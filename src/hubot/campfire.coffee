@@ -4,12 +4,13 @@ EventEmitter = require("events").EventEmitter
 
 class Campfire extends Robot
   send: (user, strings...) ->
-    for str in strings
-      @bot.Room(user.room).speak str, (err, data) ->
+    if strings.length > 0
+      @bot.Room(user.room).speak strings.shift(), (err, data) =>
         console.log "campfire error: #{err}" if err
+        @send user, strings...
 
   reply: (user, strings...) ->
-    @send user, "#{user.name}: #{str}" for str in strings
+    @send user, strings.map((str) -> "#{user.name}: #{str}")...
 
   run: ->
     self = @
@@ -24,24 +25,30 @@ class Campfire extends Robot
       bot.User user, (err, userData) ->
         if userData.user
           author = self.userForId(userData.user.id, userData.user)
+          self.brain.data.users[userData.user.id].name = userData.user.name
+          self.brain.data.users[userData.user.id].email_address = userData.user.email_address
           author.room = room
           callback id, created, room, user, body, author
 
     bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.TextMessage(author, body)
+      unless bot.info.id == author.id
+        self.receive new Robot.TextMessage(author, body)
 
     bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.EnterMessage(author)
+      unless bot.info.id == author.id
+        self.receive new Robot.EnterMessage(author)
 
     bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
-      self.receive new Robot.LeaveMessage(author)
+      unless bot.info.id == author.id
+        self.receive new Robot.LeaveMessage(author)
 
     bot.Me (err, data) ->
       bot.info = data.user
       bot.name = bot.info.name
-      for room_id in bot.rooms
-        bot.Room(room_id).join (err, callback) ->
-          bot.Room(room_id).listen()
+      for roomId in bot.rooms
+        do (roomId) ->
+          bot.Room(roomId).join (err, callback) ->
+            bot.Room(roomId).listen()
 
     @bot = bot
 
@@ -183,7 +190,7 @@ class CampfireStreaming extends EventEmitter
         if response.statusCode >= 400
           switch response.statusCode
             when 401 then throw new Error("Invalid access token provided, campfire refused the authentication")
-            else console.log "campfire error: #{err}"
+            else console.log "campfire error: #{response.statusCode}"
 
 
         try
