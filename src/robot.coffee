@@ -70,7 +70,7 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@ ((msg) -> msg instanceof Robot.LeaveMessage), callback)
+    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
 
   # Public: Passes the given message to any interested Listeners.
   #
