@@ -27,7 +27,7 @@ class Shell extends Robot.Adapter
     , 3000
 
   receive: (message) ->
-    @robot.receive(message)
+    @robot.receive(@, message)
 
 module.exports = Shell
 

@@ -13,25 +13,25 @@ Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 
 Switches = [
-  [ "-h", "--help",            "Display the help information"],
-  [ "-a", "--adapter ADAPTER", "The Adapter to use"],
-  [ "-c", "--create PATH",     "Create a deployable hubot"],
-  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/'"],
-  [ "-n", "--name NAME",       "The name of the robot in chat"],
-  [ "-v", "--version",         "Displays the version of hubot installed"]
+  [ "-h", "--help", "Display the help information"],
+  [ "-a", "--adapter ADAPTER[,ADAPTER2,...]", "The Adapter to use"],
+  [ "-c", "--create PATH", "Create a deployable hubot"],
+  [ "-s", "--enable-slash", "Enable replacing the robot's name with '/'"],
+  [ "-n", "--name NAME", "The name of the robot in chat"],
+  [ "-v", "--version", "Displays the version of hubot installed"]
 ]
 
 Options =
   path: "."
   name: "Hubot"
   create: false
-  adapter: "shell"
+  adapters: ["shell"]
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
 
 Parser.on "adapter", (opt, value) ->
-  Options.adapter = value
+  Options.adapters = value.split(",")
 
 Parser.on "name", (opt, value) ->
   Options.name = value
@@ -75,7 +75,7 @@ else
   # load the robot, and pass it the adapter and path to adapters...
   #
   adaptersPath = Path.resolve "src", "adapters"
-  robot = Hubot.loadBot Options.adapter, adaptersPath, Options.name
+  robot = Hubot.loadBot Options.adapters, adaptersPath, Options.name
   robot.enableSlash = Options.enableSlash
 
   # load the locally deployed scripts in ./scripts

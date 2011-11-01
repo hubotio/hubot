@@ -8,7 +8,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (adapter, adaptersPath, name = "Hubot") ->
+  constructor: (adapters, adaptersPath, name = "Hubot") ->
     @name        = name
     @brain       = new Robot.Brain
     @commands    = []
@@ -19,8 +19,12 @@ class Robot
 
     @adapters    = []
 
-    Adapter = require("#{adaptersPath}/#{adapter}")
-    @adapter = new Adapter(@)
+    for adapter in adapters
+      try
+        Adapter = require("#{adaptersPath}/#{adapter}")
+        @adapters.push new Adapter(@)
+      catch err
+        console.log "Error loading #{adapter} adapter: #{err}"
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -79,10 +83,10 @@ class Robot
   # message - A Robot.Message instance.
   #
   # Returns nothing.
-  receive: (message) ->
+  receive: (adapter, message) ->
     for lst in @listeners
       try
-        lst.call message
+        lst.call adapter, message
       catch ex
         console.log "error while calling listener: #{ex}"
 
@@ -131,7 +135,7 @@ class Robot
         @commands.push line[2..line.length]
 
   run: ->
-    @adapter.run()
+    adapter.run() for adapter in @adapters
 
   # Public: Raw method for shutting the bot down.
   # Extend this.
@@ -263,9 +267,9 @@ class Listener
   # message - a Robot.Message instance.
   #
   # Returns nothing.
-  call: (message) ->
+  call: (adapter, message) ->
     if match = @matcher message
-      @callback new @robot.Response(@robot, message, match)
+      @callback new @robot.Response(adapter, message, match)
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
@@ -288,7 +292,7 @@ class Robot.Response
   # robot   - The current Robot instance.
   # message - The current Robot.Message instance.
   # match   - The Match object from the successful Regex match.
-  constructor: (@robot, @message, @match) ->
+  constructor: (@adapter, @message, @match) ->
 
   # Public: Posts a message back to the chat source
   #
@@ -297,7 +301,7 @@ class Robot.Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.adapter.send @message.user, strings...
+    @adapter.send @message.user, strings...
 
   # Public: Posts a topic changing message
   #
@@ -306,7 +310,7 @@ class Robot.Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @robot.adapter.topic @message.user, strings...
+    @adapter.topic @message.user, strings...
 
   # Public: Posts a message mentioning the current user.
   #
@@ -315,7 +319,7 @@ class Robot.Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.adapter.reply @message.user, strings...
+    @adapter.reply @message.user, strings...
 
   # Public: Picks a random item from the given items.
   #
