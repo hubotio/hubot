@@ -1,3 +1,9 @@
+v1.1.8
+======
+* Fix a bug in robot.respond that allowed regexes to be constructed that
+  could be triggered without prefixing with the robot's name - atmos
+* Fixup rarely triggered response stuff that uses an undefined variable
+
 v1.1.7
 ======
 * Fix username issues where campfire names weren't updated - atmos

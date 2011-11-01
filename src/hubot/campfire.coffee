@@ -190,7 +190,7 @@ class CampfireStreaming extends EventEmitter
         if response.statusCode >= 400
           switch response.statusCode
             when 401 then throw new Error("Invalid access token provided, campfire refused the authentication")
-            else console.log "campfire error: #{err}"
+            else console.log "campfire error: #{response.statusCode}"
 
 
         try
