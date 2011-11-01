@@ -8,7 +8,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot") ->
+  constructor: (adapter, adaptersPath, name = "Hubot") ->
     @name        = name
     @brain       = new Robot.Brain
     @commands    = []
@@ -17,7 +17,8 @@ class Robot
     @loadPaths   = []
     @enableSlash = false
 
-    @load path if path
+    Adapter = require("#{adaptersPath}/#{adapter}")
+    @adapter = new Adapter(@)
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -69,7 +70,7 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
+    @listeners.push new Listener(@ ((msg) -> msg instanceof Robot.LeaveMessage), callback)
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -128,28 +129,8 @@ class Robot
         continue if !line.match('-')
         @commands.push line[2..line.length]
 
-  # Public: Raw method for sending data back to the chat source.  Extend this.
-  #
-  # user    - A Robot.User instance.
-  # strings - One or more Strings for each message to send.
-  send: (user, strings...) ->
-
-  # Public: Raw method for building a reply and sending it back to the chat
-  # source. Extend this.
-  #
-  # user    - A Robot.User instance.
-  # strings - One or more Strings for each reply to send.
-  reply: (user, strings...) ->
-
-  # Public: Raw method for setting a topic on the chat source. Extend this.
-  #
-  # user    - A Robot.User instance
-  # strings - One more more Strings to set as the topic.
-  topic: (user, strings...) ->
-
-  # Public: Raw method for invoking the bot to run
-  # Extend this.
   run: ->
+    @adapter.run()
 
   # Public: Raw method for shutting the bot down.
   # Extend this.
@@ -177,6 +158,31 @@ class Robot
       if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
     result
+
+class Robot.Adapter
+  constructor: (@robot) ->
+
+  # Public: Raw method for sending data back to the chat source. Extend this.
+  #
+  # user    - A Robot.User instance.
+  # strings - One or more Strings for each message to send.
+  send: (user, strings...) ->
+
+  # Public: Raw method for building a reply and sending it back to the chat
+  # source. Extend this.
+  #
+  # user    - A Robot.User instance.
+  # strings - One or more Strings for each reply to send.
+  reply: (user, strings...) ->
+
+  # Public: Raw method for setting a topic on the chat source. Extend this.
+  #
+  # user    - A Robot.User instance
+  # strings - One more more Strings to set as the topic.
+  topic: (user, strings...) ->
+
+  # Public: Raw method for invoking the bot to run. Extend this.
+  run: ->
 
 class Robot.User
   # Represents a participating user in the chat.
@@ -306,7 +312,7 @@ class Robot.Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.send @message.user, strings...
+    @robot.adapter.send @message.user, strings...
 
   # Public: Posts a topic changing message
   #
@@ -315,7 +321,7 @@ class Robot.Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @robot.topic @message.user, strings...
+    @robot.adapter.topic @message.user, strings...
 
   # Public: Posts a message mentioning the current user.
   #
@@ -324,7 +330,7 @@ class Robot.Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.reply @message.user, strings...
+    @robot.adapter.reply @message.user, strings...
 
   # Public: Picks a random item from the given items.
   #

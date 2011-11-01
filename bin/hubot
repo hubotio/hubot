@@ -80,10 +80,13 @@ else
   else
     'shell'
 
+  adaptersPath = Path.resolve "src", "adapters"
+  robot = Hubot.loadBot adapter, adaptersPath, Options.name
+  robot.enableSlash = Options.enableSlash
+
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = Hubot.loadBot adapter, scriptsPath, Options.name
-  robot.enableSlash = Options.enableSlash
+  robot.load scriptsPath
 
   scriptsPath = Path.resolve "src", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
