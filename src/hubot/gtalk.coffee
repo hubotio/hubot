@@ -36,7 +36,7 @@ class Gtalkbot extends Robot
     , @options.keepaliveInterval
 
     # He is alive!
-    console.log @getName() + ' is online, talk.google.com!'
+    console.log @name + ' is online, talk.google.com!'
 
   read: (stanza) =>
     if stanza.attrs.type is 'error'
@@ -55,7 +55,7 @@ class Gtalkbot extends Robot
     message = body.getText()
 
     # Pad the message with robot name just incase it was not provided.
-    message = if !message.match(new RegExp("^"+@getName()+":?","i")) then @getName()+" "+message else message
+    message = if !message.match(new RegExp("^"+@name+":?","i")) then @name+" "+message else message
 
     # Send the message to the robot
     @receive new Robot.TextMessage from, message
