@@ -11,7 +11,7 @@ class Talker extends Robot
 
   reply: (user, strings...) ->
     strings.forEach (str) =>
-      @send user, "#{user.name}: #{str}"
+      @send user, "@#{user.name} #{str}"
 
   run: ->
     self = @
