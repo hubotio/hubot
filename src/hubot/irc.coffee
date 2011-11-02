@@ -34,6 +34,7 @@ class IrcBot extends Robot
       server:   process.env.HUBOT_IRC_SERVER
       password: process.env.HUBOT_IRC_PASSWORD
       nickpass: process.env.HUBOT_IRC_NICKSERV_PASSWORD
+      usessl:   Boolean(process.env.HUBOT_IRC_USESSL) or false
 
     console.log options
 
@@ -42,7 +43,7 @@ class IrcBot extends Robot
           debug: true,
           port: options.port,
           stripColors: true,
-          secure: if options.port is "6697" then true else false,
+          secure: options.usessl,
         }
 
     unless options.nickpass
@@ -57,7 +58,7 @@ class IrcBot extends Robot
       bot.addListener 'notice', (from, to, text) ->
         if from is 'NickServ' and text.indexOf('registered') isnt -1
           bot.say 'NickServ', "identify #{options.nickpass}"
-        else if options.nickpass and from is 'NickServ' and text.indexOf('now identified') isnt -1
+        else if options.nickpass and from is 'NickServ' and (text.indexOf('now identified') isnt -1 or text.indexOf('now recognized') isnt -1)
           for room in options.rooms
             @join room
 
