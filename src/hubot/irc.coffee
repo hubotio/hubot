@@ -94,6 +94,10 @@ class IrcBot extends Robot
     bot.addListener 'kick', (channel, who, _by, reason) ->
         console.log('%s was kicked from %s by %s: %s', who, channel, _by, reason)
 
+    bot.addListener 'invite', (channel, from) ->
+      console.log('%s invite you to join %s', from, channel)
+      bot.join channel
+
     @bot = bot
 
 module.exports = IrcBot
