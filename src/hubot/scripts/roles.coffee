@@ -16,7 +16,7 @@ module.exports = (robot) ->
       msg.send "Who ain't I?"
     else if name is robot.name
       msg.send "The best."
-    else if user = robot.userForName name
+    else if user = robot.userForName(name, true)
       user.roles = user.roles or [ ]
       if user.roles.length > 0
         msg.send "#{name} is #{user.roles.join(", ")}."
@@ -31,7 +31,7 @@ module.exports = (robot) ->
 
     unless name in ['who', 'what', 'where', 'when', 'why']
       unless newRole.match(/^not\s+/i)
-        if user = robot.userForName name
+        if user = robot.userForName(name, true)
           user.roles = user.roles or [ ]
 
           if newRole in user.roles
@@ -50,7 +50,7 @@ module.exports = (robot) ->
     newRole = msg.match[2].trim()
 
     unless name in ['who', 'what', 'where', 'when', 'why']
-      if user = robot.userForName name
+      if user = robot.userForName(name, true)
         user.roles = user.roles or [ ]
 
         if newRole not in user.roles

@@ -170,12 +170,19 @@ class Robot
 
   # Public: Get a User object given a name
   #
-  userForName: (name) ->
+  userForName: (name, matchPartial = false) ->
     result = null
     lowerName = name.toLowerCase()
     for k of (@brain.data.users or { })
       if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
+
+    if !result? && matchPartial
+      for k of (@brain.data.users or { })
+        if @brain.data.users[k]['name'].toLowerCase().lastIndexOf(lowerName, 0) == 0
+          return null if result? # there were multiple partial matches
+          result = @brain.data.users[k]
+
     result
 
 class Robot.User
