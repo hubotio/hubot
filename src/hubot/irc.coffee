@@ -34,6 +34,10 @@ class IrcBot extends Robot
       server:   process.env.HUBOT_IRC_SERVER
       password: process.env.HUBOT_IRC_PASSWORD
       nickpass: process.env.HUBOT_IRC_NICKSERV_PASSWORD
+      fakessl:  process.env.HUBOT_IRC_SERVER_FAKE_SSL or false
+      unflood:  process.env.HUBOT_IRC_UNFLOOD or false
+      debug:    process.env.HUBOT_IRC_DEBUG or false
+
 
     console.log options
 
@@ -43,6 +47,8 @@ class IrcBot extends Robot
           port: options.port,
           stripColors: true,
           secure: if options.port is "6697" then true else false,
+          selfSigned: options.fakessl,
+          floodProtection: options.unflood
         }
 
     unless options.nickpass
