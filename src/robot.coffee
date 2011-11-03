@@ -156,7 +156,7 @@ class Robot
   close: ->
     @brain.close()
 
-  users: () ->
+  users: ->
     @brain.data.users
 
   # Public: Get a User object given a unique identifier
@@ -176,6 +176,7 @@ class Robot
     for k of (@brain.data.users or { })
       if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
+        break
     result
 
 class Robot.User
