@@ -13,7 +13,7 @@ Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
-Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp", "groupme", "talker", "twitter", "flowdock", "gtalk"]
+Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp", "groupme", "talker", "twitter", "flowdock", "gtalk", "cli"]
 
 Switches = [
   [ "-h", "--help",              "Display the help information"],
@@ -21,6 +21,7 @@ Switches = [
   [ "-c", "--create PATH",       "Create a deployable hubot"],
   [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
   [ "-n", "--name NAME",         "The name of the robot in chat" ],
+  [ "-q", "--quiet",             "Silence verbosity on STDOUT" ],
   [ "-v", "--version",           "Displays the version of hubot installed"]
 ]
 
@@ -29,6 +30,7 @@ Options =
   name: "Hubot"
   create: false
   adapter: "stdio"
+  verbose: true
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -50,12 +52,25 @@ Parser.on "help", (opt, value) ->
   console.log Parser.toString()
   process.exit 0
 
+Parser.on "quiet", (opt) ->
+  Options.verbose = false
+
 Parser.on "version", (opt, value) ->
   Options.version = true
 
-Parser.parse process.ARGV
+argv = process.argv.slice 2
+# don't process arguments after "--"
+if (idx = argv.indexOf '--') >= 0
+  extra = argv.slice idx + 1
+  argv = argv.slice 0, idx
+
+Args = Parser.parse argv
+Args.push extra... if extra
 
 process.on 'SIGTERM', -> process.exit(0)
+
+debug = (msg) ->
+  console.log msg if Options.verbose
 
 if Options.create
   creator = new Creator.Creator(Options.path)
@@ -80,27 +95,37 @@ else
   else
     'shell'
 
-  scriptsPath = Path.resolve "./scripts"
-  console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = Hubot.loadBot adapter, scriptsPath, Options.name
-  robot.enableSlash = Options.enableSlash
+  robot = Hubot.loadBot adapter,
+    name:        Options.name
+    enableSlash: Options.enableSlash
+    debugStream: if Options.verbose then process.stdout else null
+    errStream:   process.stderr
 
-  scriptsPath = Path.resolve "src", "hubot", "scripts"
-  console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
-  robot.load scriptsPath
+  expectedLoads = 3
+  callback = ->
+    if --expectedLoads is 0
+      # run hubot after scripts have finished loading
+      robot.run Args
+
+  loadScripts = (name, path, cb) ->
+    scriptsPath = Path.resolve path...
+    debug "Loading #{name} at #{scriptsPath}"
+    robot.load scriptsPath, cb
+
+  loadScripts "deploy-local scripts", [ "./scripts" ], callback
+  loadScripts "hubot core scripts",   [ "src", "hubot", "scripts" ], callback
 
   scriptsFile = Path.resolve "hubot-scripts.json"
   Path.exists scriptsFile, (exists) =>
     if exists
-      console.log "Loading hubot-scripts from #{scriptsFile}"
-      Fs.readFile scriptsFile, (err, data) =>
-        JSON.parse(data).forEach (plugin) =>
-          robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
+      debug "Loading hubot-scripts listed in #{scriptsFile}"
+      Fs.readFile scriptsFile, (err, data) ->
+        throw err if err
+        scriptsPath = Path.resolve("node_modules", "hubot-scripts", "src", "scripts")
+        plugins = JSON.parse(data)
+        plugins.forEach (plugin, idx) -> robot.loadFile scriptsPath, plugin, ->
+          callback?() if idx is plugins.length - 1
     else
-      scriptsPath = Path.resolve "src", "scripts"
-      console.log "Loading hubot-scripts plugins at #{scriptsPath}"
-      robot.load scriptsPath
-
-  robot.run()
+      loadScripts "hubot-scripts plugins", [ "src", "scripts" ], callback
 
 # vim:ft=coffee ts=2 sw=2 et :

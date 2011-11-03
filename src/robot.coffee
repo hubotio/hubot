@@ -8,16 +8,17 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot") ->
-    @name        = name
+  constructor: (options = { }) ->
+    @name        = options.name || "Hubot"
     @brain       = new Robot.Brain
     @commands    = []
     @Response    = Robot.Response
     @listeners   = []
     @loadPaths   = []
-    @enableSlash = false
-
-    @load path if path
+    @enableSlash = !!options.enableSlash
+    @debugStream = options.debugStream
+    @errStream   = options.errStream
+    @errStream   = process.stderr if @errStream is undefined
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -27,7 +28,7 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    @listeners.push new TextListener(@, regex, callback)
+    @addListener TextListener, regex, callback
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex.  All regexes treat patterns like they begin
@@ -43,8 +44,8 @@ class Robot
     modifiers = re.pop() # pop off modifiers
 
     if re[0] and re[0][0] is "^"
-      console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
-      console.log "WARNING: The regex in question was #{regex.toString()}\n"
+      @warn "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
+      @warn "WARNING: The regex in question was #{regex.toString()}\n"
 
     pattern = re.join("/") # combine the pattern back again
     if @enableSlash
@@ -52,8 +53,7 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 
-    console.log newRegex.toString()
-    @listeners.push new TextListener(@, newRegex, callback)
+    @addListener TextListener, newRegex, callback
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
@@ -61,7 +61,7 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.EnterMessage), callback)
+    @addListener Listener, ((msg) -> msg instanceof Robot.EnterMessage), callback
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
@@ -69,7 +69,15 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
+    @addListener Listener, ((msg) -> msg instanceof Robot.LeaveMessage), callback
+
+  # Private: Instantiates and adds a Listener by type
+  #
+  # type - A Listener class
+  addListener: (type, args...) ->
+    listener = new type(@, args...)
+    @debug "matching #{listener.regex}" if listener.regex
+    @listeners.push listener
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -77,36 +85,48 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
+    someMatched = false
     for lst in @listeners
       try
-        lst.call message
+        someMatched = true if lst.call message
       catch ex
-        console.log "error while calling listener: #{ex}"
+        @warn "error while calling listener: #{ex}"
+
+    @noMatch message unless someMatched
+
+  # Called when no listener matched a message passed to `receive`
+  noMatch: (message) ->
 
   # Public: Loads every script in the given path.
   #
   # path - A String path on the filesystem.
+  # callback - A Function called once loading is complete
   #
   # Returns nothing.
-  load: (path) ->
+  load: (path, callback) ->
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
-        for file in Fs.readdirSync(path)
-          @loadFile path, file
+        files = Fs.readdirSync(path)
+        remaining = files.length
+        cb = -> callback exists if --remaining is 0 and callback
+        @loadFile path, file, cb for file in files
+      else
+        callback? exists
 
   # Public: Loads a file in path
   #
   # path - A String path on the filesystem.
   # file - A String filename in path on the filesystem.
+  # callback - A Function called once loading is complete
   #
   # Returns nothing.
-  loadFile: (path, file) ->
+  loadFile: (path, file, callback) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
     if ext is '.coffee' or ext is '.js'
       require(full) @
-      @parseHelp "#{path}/#{file}"
+      @parseHelp "#{full}#{ext}", callback
 
   # Public: Help Commands for Running Scripts
   #
@@ -118,15 +138,17 @@ class Robot
   # Private: load help info from a loaded script
   #
   # path - The path to the file on disk
+  # callback - A Function called once parsing is complete
   #
   # Returns nothing
-  parseHelp: (path) ->
+  parseHelp: (path, callback) ->
     Fs.readFile path, "utf-8", (err, body) =>
       throw err if err
       for i, line of body.split("\n")
         break    if !(line[0] == '#' or line.substr(0, 2) == '//')
         continue if !line.match('-')
         @commands.push line[2..line.length]
+      callback?()
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
@@ -155,6 +177,12 @@ class Robot
   # Extend this.
   close: ->
     @brain.close()
+
+  debug: (msg) ->
+    @debugStream.write msg.toString() + "\n", 'utf8' if @debugStream
+
+  warn: (msg) ->
+    @errStream.write msg.toString() + "\n", 'utf8' if @errStream
 
   users: () ->
     @brain.data.users
@@ -275,6 +303,7 @@ class Listener
   call: (message) ->
     if match = @matcher message
       @callback new @robot.Response(@robot, message, match)
+      return true
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
