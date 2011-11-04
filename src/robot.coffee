@@ -145,22 +145,6 @@ class Robot
   users: () ->
     @brain.data.users
 
-  # Public: Get a User object given a unique identifier
-  userForId: (id, options) ->
-    user = @brain.data.users[id]
-    unless user
-      user = new Robot.User id, options
-      @brain.data.users[id] = user
-    user
-
-  # Public: Get a User object given a name
-  userForName: (name) ->
-    result = null
-    lowerName = name.toLowerCase()
-    for k of (@brain.data.users or { })
-      if @brain.data.users[k]['name'].toLowerCase() is lowerName
-        result = @brain.data.users[k]
-    result
 
 class Robot.Adapter
   constructor: (@robot) ->
@@ -172,6 +156,26 @@ class Robot.Adapter
   topic: (user, strings...) ->
 
   run: ->
+
+  receive: (message) ->
+    @robot.receive @, message
+
+  # Public: Get a User object given a unique identifier
+  userForId: (id, options) ->
+    user = @robot.users[id]
+    unless user
+      user = new Robot.User id, options
+      @robot.users[id] = user
+    user
+
+  # Public: Get a User object given a name
+  userForName: (name) ->
+    result = null
+    lowerName = name.toLowerCase()
+    for k of (@robot.users or { })
+      if @robot.users[k]['name'].toLowerCase() is lowerName
+        result = @robot.users[k]
+    result
 
 class Robot.User
   # Represents a participating user in the chat.

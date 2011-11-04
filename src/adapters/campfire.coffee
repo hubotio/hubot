@@ -26,9 +26,9 @@ class Campfire extends Robot.Adapter
     withAuthor = (callback) -> (id, created, room, user, body) ->
       bot.User user, (err, userData) ->
         if userData.user
-          author = self.robot.userForId(userData.user.id, userData.user)
-          self.robot.brain.data.users[userData.user.id].name = userData.user.name
-          self.robot.brain.data.users[userData.user.id].email_address = userData.user.email_address
+          author = self.userForId(userData.user.id, userData.user)
+          self.robot.users[userData.user.id].name = userData.user.name
+          self.robot.users[userData.user.id].email_address = userData.user.email_address
           author.room = room
           callback id, created, room, user, body, author
 
@@ -53,9 +53,6 @@ class Campfire extends Robot.Adapter
             bot.Room(roomId).listen()
 
     @bot = bot
-
-  receive: (message) ->
-    @robot.receive(@, message)
 
 module.exports = Campfire
 
@@ -196,7 +193,6 @@ class CampfireStreaming extends EventEmitter
           switch response.statusCode
             when 401 then throw new Error("Invalid access token provided, campfire refused the authentication")
             else console.log "campfire error: #{response.statusCode}"
-
 
         try
           callback null, JSON.parse(data)

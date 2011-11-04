@@ -10,9 +10,7 @@ class Shell extends Robot.Adapter
       @send user, "#{user.name}: #{str}"
 
   run: ->
-    console.log "Shell Adapter Running..."
-
-    user = @robot.userForId('1', {name: "Shell"})
+    user = @userForId('1', {name: "Shell"})
 
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
@@ -21,13 +19,10 @@ class Shell extends Robot.Adapter
         @receive new Robot.TextMessage user, line
 
     setTimeout =>
-      user   = @robot.userForId('1', {name: "Shell"})
-      atmos  = @robot.userForId('2', {name: "atmos"})
-      holman = @robot.userForId('3', {name: "Zach Holman"})
+      user   = @userForId('1', {name: "Shell"})
+      atmos  = @userForId('2', {name: "atmos"})
+      holman = @userForId('3', {name: "Zach Holman"})
     , 3000
-
-  receive: (message) ->
-    @robot.receive(@, message)
 
 module.exports = Shell
 
