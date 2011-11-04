@@ -13,19 +13,6 @@ Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
-Adapters = [
-  "irc",
-  "campfire",
-  "hipchat",
-  "twilio",
-  "xmpp",
-  "groupme",
-  "talker",
-  "twitter",
-  "flowdock",
-  "gtalk"
-]
-
 Switches = [
   [ "-h", "--help",            "Display the help information"],
   [ "-a", "--adapter ADAPTER", "The Adapter to use"],
@@ -86,15 +73,10 @@ else if Options.version
     process.exit 0
 
 else
-  adapter = if Options.adapter in Adapters
-    Options.adapter
-  else
-    'shell'
-
-  robot = Hubot.loadBot adapter, Options.name
+  robot = Hubot.loadBot Options.adapter, Options.name
   robot.enableSlash = Options.enableSlash
 
-  scriptsPath = Path.resolve "./scripts"
+  scriptsPath = Path.resolve ".", "scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
   robot.load scriptsPath
 
