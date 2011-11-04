@@ -8,7 +8,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (path, name = "Hubot") ->
+  constructor: (name = "Hubot") ->
     @name        = name
     @brain       = new Robot.Brain
     @commands    = []
@@ -16,8 +16,6 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-
-    @load path if path
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.

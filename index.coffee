@@ -4,9 +4,9 @@
 #     YourBot = Hubot.robot 'campfire', 'blah', 'yourbot'
 
 # Loads a Hubot robot
-exports.loadBot = (adapterName, path, botName) ->
+exports.loadBot = (adapterName, botName) ->
   robot = require "./src/adapters/#{adapterName}"
-  new robot path, botName
+  new robot botName
 
 exports.robot = ->
   require './src/robot'
