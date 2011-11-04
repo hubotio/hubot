@@ -39,7 +39,7 @@ Options =
   path: "."
   name: "Hubot"
   create: false
-  adapter: "stdio"
+  adapter: "shell"
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -106,8 +106,8 @@ else
   Path.exists scriptsFile, (exists) =>
     if exists
       console.log "Loading hubot-scripts from #{scriptsFile}"
-      Fs.readFile scriptsFile, (err, data) =>
-        JSON.parse(data).forEach (plugin) =>
+      Fs.readFile scriptsFile, (err, data) ->
+        for plugin in JSON.parse(data)
           robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
 
   robot.run()

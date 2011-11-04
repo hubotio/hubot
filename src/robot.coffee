@@ -8,7 +8,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (name = "Hubot") ->
+  constructor: (adapter, name = "Hubot") ->
     @name        = name
     @brain       = new Robot.Brain
     @commands    = []
@@ -16,6 +16,9 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
+
+    Adapter = require("./adapters/#{adapter}")
+    @adapter = new Adapter(@)
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -126,6 +129,32 @@ class Robot
         continue if !line.match('-')
         @commands.push line[2..line.length]
 
+  users: ->
+    @brain.data.users
+
+  # Public: Get a User object given a unique identifier
+  userForId: (id, options) ->
+    user = @brain.data.users[id]
+    unless user
+      user = new Robot.User id, options
+      @brain.data.users[id] = user
+    user
+
+  # Public: Get a User object given a name
+  userForName: (name) ->
+    result = null
+    lowerName = name.toLowerCase()
+    for k of (@brain.data.users or { })
+      if @brain.data.users[k]['name'].toLowerCase() is lowerName
+        result = @brain.data.users[k]
+    result
+
+  run: ->
+    @adapter.run()
+
+class Robot.Adapter
+  constructor: (@robot) ->
+
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
   # user    - A Robot.User instance.
@@ -152,29 +181,22 @@ class Robot
   # Public: Raw method for shutting the bot down.
   # Extend this.
   close: ->
-    @brain.close()
+    @robot.brain.close()
 
-  users: () ->
-    @brain.data.users
+  receive: (message) ->
+    @robot.receive message
+
+  users: ->
+    @robot.users
 
   # Public: Get a User object given a unique identifier
-  #
   userForId: (id, options) ->
-    user = @brain.data.users[id]
-    unless user
-      user = new Robot.User id, options
-      @brain.data.users[id] = user
-    user
+    @robot.userForId id, options
 
   # Public: Get a User object given a name
-  #
   userForName: (name) ->
-    result = null
-    lowerName = name.toLowerCase()
-    for k of (@brain.data.users or { })
-      if @brain.data.users[k]['name'].toLowerCase() is lowerName
-        result = @brain.data.users[k]
-    result
+    @robot.userForName name
+
 
   # Public: Creates a scoped http client with chainable methods for
   # modifying the request.  This doesn't actually make a request though.
@@ -335,7 +357,7 @@ class Robot.Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.send @message.user, strings...
+    @robot.adapter.send @message.user, strings...
 
   # Public: Posts a topic changing message
   #
@@ -344,7 +366,7 @@ class Robot.Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @robot.topic @message.user, strings...
+    @robot.adapter.topic @message.user, strings...
 
   # Public: Posts a message mentioning the current user.
   #
@@ -353,7 +375,7 @@ class Robot.Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.reply @message.user, strings...
+    @robot.adapter.reply @message.user, strings...
 
   # Public: Picks a random item from the given items.
   #
