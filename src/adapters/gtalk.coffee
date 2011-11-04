@@ -28,7 +28,6 @@ class Gtalkbot extends Robot
 
   online: =>
     @client.send new Xmpp.Element('presence')
-      .c('show').t('chat')
 
     # send raw whitespace for keepalive
     setInterval =>
