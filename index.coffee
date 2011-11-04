@@ -5,7 +5,7 @@
 
 # Loads a Hubot robot
 exports.loadBot = (adapterName, path, botName) ->
-  robot = require "./src/hubot/#{adapterName}"
+  robot = require "./src/adapters/#{adapterName}"
   new robot path, botName
 
 exports.robot = ->
