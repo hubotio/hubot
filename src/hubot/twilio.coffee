@@ -1,92 +1,76 @@
 Robot = require '../robot'
-Http  = require 'http'
-Https = require 'https'
-Qs    = require 'querystring'
+HTTP  = require 'http'
+QS    = require 'querystring'
 
 class Twilio extends Robot
   constructor: ->
-    @config =
-      sid: process.env.HUBOT_SMS_SID
-      token: process.env.HUBOT_SMS_TOKEN
-      from: process.env.HUBOT_SMS_FROM
-    super
+    @sid   = process.env.HUBOT_SMS_SID
+    @token = process.env.HUBOT_SMS_TOKEN
+    @from  = process.env.HUBOT_SMS_FROM
+    super()
 
   send: (user, strings...) ->
     message = strings.join "\n"
-    @post message, user.id, (error, body) ->
-      if error or not body
-        console.log "error sending response: #{error}"
-      else
-        console.log "successful sending #{body}"
+
+    for msg in @split_long_sms(message)
+      @send_sms message, user.id, (err, body) ->
+        if err or not body?
+          console.log "Error sending reply SMS: #{err}"
+        else
+          console.log "Sending reply SMS: #{message} to #{user.id}"
 
   reply: (user, strings...) ->
-    for str in strings
-      @send user, "#{user.name}: #{str}"
+    @send user, str for str in strings
 
   respond: (regex, callback) ->
     @hear regex, callback
 
   run: ->
-    console.log "Hubot: the SMS reader."
+    server = HTTP.createServer (request, response) =>
+      payload = QS.parse(request.url)
 
-    server = Http.createServer (request, response) =>
-      payload = Qs.parse(request.url)
-
-      @handle payload.Body, payload.From if payload.Body and payload.From
+      if payload.Body? and payload.From?
+        console.log "Received SMS: #{payload.Body} from #{payload.From}"
+        @receive_sms(payload.Body, payload.From)
 
       response.writeHead 200, 'Content-Type': 'text/plain'
       response.end()
 
     server.listen (parseInt(process.env.PORT) or 8080), "0.0.0.0"
 
-  handle: (body, from) ->
+  receive_sms: (body, from) ->
     return if body.length is 0
     user = @userForId from
     @receive new Robot.TextMessage user, body
 
-  post: (message, to, callback) ->
-    host = "api.twilio.com"
-    path = "/2010-04-01/Accounts/#{@config.sid}/SMS/Messages.json"
+  send_sms: (message, to, callback) ->
+    auth = new Buffer(@sid + ':' + @token).toString("base64")
+    data = QS.stringify From: @from, To: to, Body: message
 
-    auth = new Buffer(@config.sid + ':' + @config.token).toString("base64")
-
-    headers =
-      'Authorization': "Basic " + auth
-      'Content-Type': "application/x-www-form-urlencoded"
-      'Host': host
-
-    params = Qs.stringify
-      'From': @config.from
-      'To': to
-      'Body': message
-
-    headers['Content-Length'] = params.length
-
-    opts =
-      host: host
-      port: 443
-      method: "POST"
-      path: path
-      headers: headers
-
-    request = Https.request opts, (response) ->
-      data = ""
-
-      response.setEncoding "utf8"
-
-      response.on "data", (chunk) ->
-        data += chunk
-
-      response.on "end", ->
-        body = JSON.parse data
-
-        if response.statusCode is 201
+    @http("https://api.twilio.com")
+      .path("/2010-04-01/Accounts/#{@sid}/SMS/Messages.json")
+      .header("Authorization", "Basic #{auth}")
+      .header("Content-Type", "application/x-www-form-urlencoded")
+      .post(data) (err, res, body) ->
+        if err
+          callback err
+        else if res.statusCode is 201
+          json = JSON.parse(body)
           callback null, body
         else
+          json = JSON.parse(body)
           callback body.message
 
-    request.write params
-    request.end()
+  split_long_sms: (message) ->
+    strs = []
+    while str.length > 150
+      pos = str.substring(0, 150).lastIndexOf(" ")
+      pos = (if pos <= 0 then 150 else pos)
+      strs.push str.substring(0, pos)
+      i = str.indexOf(" ", pos) + 1
+      i = pos  if i < pos or i > pos + 150
+      str = str.substring(i)
+    strs.push str
+    strs
 
 module.exports = Twilio
-
