@@ -2,7 +2,7 @@ Robot = require '../robot'
 HTTP  = require 'http'
 QS    = require 'querystring'
 
-class Twilio extends Robot
+class Twilio extends Robot.Adapter
   constructor: ->
     @sid   = process.env.HUBOT_SMS_SID
     @token = process.env.HUBOT_SMS_TOKEN
