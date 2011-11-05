@@ -18,7 +18,7 @@ class Robot
     @enableSlash = false
 
     Adapter = require "#{adapterPath}/#{adapter}"
-    @adapter = new Adapter(@)
+    @adapter = new Adapter @
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -129,6 +129,7 @@ class Robot
         continue if !line.match('-')
         @commands.push line[2..line.length]
 
+  # Public: Get an Array of User objects stored in the brain.
   users: ->
     @brain.data.users
 
@@ -149,10 +150,16 @@ class Robot
         result = @brain.data.users[k]
     result
 
+  # Public: Run Hubot using the loaded adapter.
+  #
+  # Returns nothing.
   run: ->
     @adapter.run()
 
 class Robot.Adapter
+  # An adapter is a specific interface to a chat source for robots.
+  #
+  # robot - A Robot instance.
   constructor: (@robot) ->
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
@@ -183,9 +190,15 @@ class Robot.Adapter
   close: ->
     @robot.brain.close()
 
+  # Public: Dispatch a received message to the robot.
+  #
+  # message - A TextMessage instance of the received message.
+  #
+  # Returns nothing.
   receive: (message) ->
     @robot.receive message
 
+  # Public: Get an Array of User objects stored in the brain.
   users: ->
     @robot.users
 
@@ -249,14 +262,25 @@ class Robot.Brain extends EventEmitter
 
     @resetSaveInterval 5
 
+  # Emits the 'save' event so that 'brain' scripts can handle persisting.
+  #
+  # Returns nothing.
   save: ->
     @emit 'save', @data
 
+  # Emits the 'close' event so that 'brain' scripts can handle closing.
+  #
+  # Returns nothing.
   close: ->
     clearInterval @saveInterval
     @save()
     @emit 'close'
 
+  # Reset the interval between save function calls.
+  #
+  # seconds - An Integer of seconds between saves.
+  #
+  # Returns nothing.
   resetSaveInterval: (seconds) ->
     clearInterval @saveInterval if @saveInterval
     @saveInterval = setInterval =>
