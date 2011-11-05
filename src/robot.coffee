@@ -8,7 +8,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (adapter, name = "Hubot") ->
+  constructor: (adapterPath, adapter, name = "Hubot") ->
     @name        = name
     @brain       = new Robot.Brain
     @commands    = []
@@ -17,7 +17,7 @@ class Robot
     @loadPaths   = []
     @enableSlash = false
 
-    Adapter = require("./adapters/#{adapter}")
+    Adapter = require "#{adapterPath}/#{adapter}"
     @adapter = new Adapter(@)
 
   # Public: Adds a Listener that attempts to match incoming messages based on

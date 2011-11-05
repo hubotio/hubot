@@ -73,7 +73,8 @@ else if Options.version
     process.exit 0
 
 else
-  robot = Hubot.loadBot Options.adapter, Options.name
+  adapterPath = Path.resolve "src", "adapters"
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
   robot.enableSlash = Options.enableSlash
 
   scriptsPath = Path.resolve ".", "scripts"
