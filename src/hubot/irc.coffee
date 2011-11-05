@@ -37,6 +37,7 @@ class IrcBot extends Robot
       fakessl:  process.env.HUBOT_IRC_SERVER_FAKE_SSL or false
       unflood:  process.env.HUBOT_IRC_UNFLOOD or false
       debug:    process.env.HUBOT_IRC_DEBUG or false
+      usessl:   process.env.HUBOT_IRC_USESSL or true
 
     console.log options
 
@@ -45,7 +46,7 @@ class IrcBot extends Robot
           debug: true,
           port: options.port,
           stripColors: true,
-          secure: if options.port is "6697" then true else false,
+          secure: if options.port is "6697" and options.usessl  then true else false,
           selfSigned: options.fakessl,
           floodProtection: options.unflood
         }
@@ -62,7 +63,7 @@ class IrcBot extends Robot
       bot.addListener 'notice', (from, to, text) ->
         if from is 'NickServ' and text.indexOf('registered') isnt -1
           bot.say 'NickServ', "identify #{options.nickpass}"
-        else if options.nickpass and from is 'NickServ' and (text.indexOf('now identified') isnt -1 or text.indexOf('now recognized') isnt -1)
+        else if options.nickpass and from is 'NickServ' and text.indexOf('Password accepted.') isnt -1
           for room in options.rooms
             @join room
 
