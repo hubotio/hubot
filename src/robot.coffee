@@ -35,9 +35,10 @@ class Robot
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
+  # all      - Parse all messages (not only those for bot)?
   #
   # Returns nothing.
-  respond: (regex, callback) ->
+  respond: (regex, callback, all = false) ->
     re = regex.toString().split("/")
     re.shift()           # remove empty first item
     modifiers = re.pop() # pop off modifiers
@@ -47,7 +48,9 @@ class Robot
       console.log "WARNING: The regex in question was #{regex.toString()}\n"
 
     pattern = re.join("/") # combine the pattern back again
-    if @enableSlash
+    if all
+      newRegex = new RegExp("^\\s*(?:#{pattern})", modifiers)
+    else if @enableSlash
       newRegex = new RegExp("^(?:\/|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
