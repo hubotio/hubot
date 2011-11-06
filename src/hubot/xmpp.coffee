@@ -6,7 +6,7 @@ class XmppBot extends Robot
     options =
       username: process.env.HUBOT_XMPP_USERNAME
       password: process.env.HUBOT_XMPP_PASSWORD
-      rooms:    process.env.HUBOT_XMPP_ROOMS.split(',')
+      rooms:    @parseRooms process.env.HUBOT_XMPP_ROOMS.split(',')
       keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
 
     console.log options
@@ -33,16 +33,28 @@ class XmppBot extends Robot
     # join each room
     # http://xmpp.org/extensions/xep-0045.html for XMPP chat standard
     for room in @options.rooms
-      @client.send(new Xmpp.Element('presence', to: "#{room}/#{@name}" )
-        .c('x', xmlns: 'http://jabber.org/protocol/muc' )
-        .c('history', seconds: 1 )) # prevent the server from confusing us with old messages
+      @client.send do =>
+        el = new Xmpp.Element('presence', to: "#{room.jid}/#{@name}" )
+        x = el.c('x', xmlns: 'http://jabber.org/protocol/muc' )
+        x.c('history', seconds: 1 ) # prevent the server from confusing us with old messages
                                     # and it seems that servers don't reliably support maxchars
                                     # or zero values
+        if (room.password) then x.c('password').t(room.password)
+        return x
 
     # send raw whitespace for keepalive
     setInterval =>
       @client.send ' '
     , @options.keepaliveInterval
+
+  parseRooms: (items) ->
+    rooms = []
+    for room in items
+      index = room.indexOf(':')
+      rooms.push
+        jid:      room.slice(0, if index > 0 then index else room.length)
+        password: if index > 0 then room.slice(index+1) else false
+    return rooms
 
   read: (stanza) =>
     if stanza.attrs.type is 'error'
