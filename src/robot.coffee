@@ -15,7 +15,7 @@ class Robot
     @Response    = Robot.Response
     @listeners   = []
     @loadPaths   = []
-    @enableSlash = false
+    @alias       = false
 
     @load path if path
 
@@ -47,8 +47,9 @@ class Robot
       console.log "WARNING: The regex in question was #{regex.toString()}\n"
 
     pattern = re.join("/") # combine the pattern back again
-    if @enableSlash
-      newRegex = new RegExp("^(?:\/|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
+    if @alias
+      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") # escape alias for regexp
+      newRegex = new RegExp("^(?:#{alias}|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 

@@ -19,7 +19,8 @@ Switches = [
   [ "-h", "--help",              "Display the help information"],
   [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
   [ "-c", "--create PATH",       "Create a deployable hubot"],
-  [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
+  [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/' (deprecated)"],
+  [ "-l", "--alias ALIAS",       "Enable replacing the robot's name with alias"],
   [ "-n", "--name NAME",         "The name of the robot in chat" ],
   [ "-v", "--version",           "Displays the version of hubot installed"]
 ]
@@ -29,6 +30,7 @@ Options =
   name: "Hubot"
   create: false
   adapter: "stdio"
+  alias: false
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -43,8 +45,13 @@ Parser.on "create", (opt, value) ->
   Options.path = value
   Options.create = true
 
+# deprecated
 Parser.on "enable-slash", (opt) ->
-  Options.enableSlash = true
+  console.log "-s and --enable-slash is deprecated please use -l or --alias '/'"
+  Options.alias = '/'
+
+Parser.on "alias", (opt, value) ->
+  Options.alias = value
 
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
@@ -83,7 +90,7 @@ else
   scriptsPath = Path.resolve "./scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
   robot = Hubot.loadBot adapter, scriptsPath, Options.name
-  robot.enableSlash = Options.enableSlash
+  robot.alias = Options.alias
 
   scriptsPath = Path.resolve "src", "hubot", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
