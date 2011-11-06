@@ -143,13 +143,17 @@ class XmppBot extends Robot
     for str in strings
       console.log "Sending to #{user.room}: #{str}"
 
-      to = if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
+      params =
+        to: if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
+        type: user.type
+      
+      switch user.type
+        when 'chat'
+          params.from = "#{@options.username}/#{@name}"
+        when 'direct'
+          params.from = @options.username
 
-      message = new Xmpp.Element('message',
-                  from: @options.username
-                  to: to
-                  type: user.type
-                ).
+      message = new Xmpp.Element('message', params).
                 c('body').t(str)
 
       @client.send message
@@ -162,7 +166,6 @@ class XmppBot extends Robot
     string = strings.join "\n"
 
     message = new Xmpp.Element('message',
-                from: @options.username,
                 to: user.room
                 type: user.type
               ).
