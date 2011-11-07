@@ -8,11 +8,14 @@ class Gtalkbot extends Robot
     options = 
       jid: process.env.HUBOT_GTALK_USERNAME
       password: process.env.HUBOT_GTALK_PASSWORD
-      acceptDomains: process.env.HUBOT_GTALK_WHITELIST_DOMAINS.split(',')
-      acceptUsers: process.env.HUBOT_GTALK_WHITELIST_USERS.split(',')
+      acceptDomains: (entry.trim() for entry in (process.env.HUBOT_GTALK_WHITELIST_DOMAINS ? '').split(',') when entry.trim() != '')
+      acceptUsers: (entry.trim() for entry in (process.env.HUBOT_GTALK_WHITELIST_USERS ? '').split(',') when entry.trim() != '')
       host: 'talk.google.com'
       port: 5222
       keepaliveInterval: 15000 # ms interval to send query to gtalk server
+    
+    if not options.jid or not options.password
+      throw Error('You need to set HUBOT_GTALK_USERNAME and HUBOT_GTALK_PASSWORD anv vars for gtalk to work')
 
     # Connect to gtalk servers
     @client = new Xmpp.Client 
@@ -44,6 +47,7 @@ class Gtalkbot extends Robot
       )
 
     # Check for buddy requests every so often
+    @client.send roster_query
     setInterval =>
       @client.send roster_query
     , @options.keepaliveInterval
@@ -84,21 +88,32 @@ class Gtalkbot extends Robot
     @receive new Robot.TextMessage from, message
 
   handlePresence: (stanza) =>
-
-    domainRegexStr = "^*@["+@options.acceptDomains.join('|')+"]$"
-    domainRegex = new RegExp(domainRegexStr,"i")
+    return if stanza.attrs.type isnt 'subscribe'
+    
+    ignore = false
+    if @options.acceptDomains.length > 0 or @options.acceptUsers.length > 0
+      ignore = true
+      [from, room] = stanza.attrs.from.split '/'
+      if @options.acceptDomains.length > 0
+        [username, domain] = stanza.attrs.from.split '@'
+        ignore = false if domain in @options.acceptDomains
+        
+      if @options.acceptUsers.length > 0
+        ignore = false if from in @options.acceptUsers
+    
     # Check for buddy request
-    if stanza.attrs.type is 'subscribe' and stanza.attrs.from in @options.acceptUsers or stanza.attrs.from.match(domainRegex)
-      @client.send new Xmpp.Element('presence',
-        to:   stanza.attrs.from
-        id:   stanza.attrs.id
-        type: 'subscribed'
-      )
-    else
-      console.log "We denied: " + stanza.attrs.from
-      # Lets see what we are trying to match
-      console.log "Accepted Users: " + @options.acceptUsers.join(',')
-      console.log "Accepted Domains: " + @options.acceptDomains.join(',')
+    if stanza.attrs.type is 'subscribe'
+      if not ignore
+        @client.send new Xmpp.Element('presence',
+          to:   stanza.attrs.from
+          id:   stanza.attrs.id
+          type: 'subscribed'
+        )
+      else
+        console.log "We denied: " + stanza.attrs.from
+        # Lets see what we are trying to match
+        console.log "Accepted Users: " + @options.acceptUsers.join(',')
+        console.log "Accepted Domains: " + @options.acceptDomains.join(',')
     
 
   send: (user, strings...) ->
