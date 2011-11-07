@@ -1,3 +1,21 @@
+v1.1.11
+=======
+* support self-signed SSL certs for IRC - Ville Lautanala <lautis@gmail.com>
+* twilio adapter fixups - Tom Bell
+* XMPP adapter fixups - Patrik Votocek <patrik@votocek.cz>
+* Everyone gets a pug - Jon Maddox <jon@jonmaddox.com>
+* Accept contact list requests - Arlo Carreon <arlo.carreon@gmail.com>
+* Google talk whitelisting support - pescuma <pescuma@chaordicsystems.com>
+
+v1.1.10
+=======
+* Fix optparse problems on certain linuxes
+* IRC adapter fixups for users - Andrew Nordman <cadwallion@gmail.com>
+* Bump npm irc depedency - BrokenEnso <ericday96@gmail.com>
+* accept invites on IRC - Dingding Ye <yedingding@gmail.com>
+* Support talkerapp style @replies - Charles Barbier <unixcharles@gmail.com>
+* Set hubot's google talk status properly - Matt McCormick <mbmccormick@gmail.com>
+
 v1.1.9
 ======
 * Add a google talk adapter - Arlo Carreon <arlo.carreon@gmail.com>
