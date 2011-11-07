@@ -86,7 +86,7 @@ class Gtalkbot extends Robot
   handlePresence: (stanza) =>
 
     domainRegexStr = "^*@["+@options.acceptDomains.join('|')+"]$"
-    domainRegex = new RegExp(domainRegex,"i")
+    domainRegex = new RegExp(domainRegexStr,"i")
     # Check for buddy request
     if stanza.attrs.type is 'subscribe' and stanza.attrs.from in @options.acceptUsers or stanza.attrs.from.match(domainRegex)
       @client.send new Xmpp.Element('presence',
