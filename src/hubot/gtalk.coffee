@@ -72,6 +72,11 @@ class Gtalkbot extends Robot
       return
 
   handleMessage: (stanza) =>
+    if @ignoreUser(stanza.attrs.from)
+      console.log "Ignoring user message because of whitelist: #{stanza.attrs.from}"
+      console.log "  Accepted Users: " + @options.acceptUsers.join(',')
+      console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
+      return
 
     # Strip the from attribute to get who this is from
     [from, room] = stanza.attrs.from.split '/'
@@ -88,34 +93,37 @@ class Gtalkbot extends Robot
     @receive new Robot.TextMessage from, message
 
   handlePresence: (stanza) =>
+    # Check for buddy request
     return if stanza.attrs.type isnt 'subscribe'
     
+    if @ignoreUser(stanza.attrs.from)
+      console.log "Ignoring user subscribe because of whitelist: #{stanza.attrs.from}"
+      console.log "  Accepted Users: " + @options.acceptUsers.join(',')
+      console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
+      return
+
+    # Accept
+    @client.send new Xmpp.Element('presence',
+      to:   stanza.attrs.from
+      id:   stanza.attrs.id
+      type: 'subscribed'
+    )
+    
+  ignoreUser: (user) ->
     ignore = false
+    
     if @options.acceptDomains.length > 0 or @options.acceptUsers.length > 0
       ignore = true
-      [from, room] = stanza.attrs.from.split '/'
+      [from, room] = user.split '/'
       if @options.acceptDomains.length > 0
-        [username, domain] = stanza.attrs.from.split '@'
+        [username, domain] = from.split '@'
         ignore = false if domain in @options.acceptDomains
         
       if @options.acceptUsers.length > 0
         ignore = false if from in @options.acceptUsers
     
-    # Check for buddy request
-    if stanza.attrs.type is 'subscribe'
-      if not ignore
-        @client.send new Xmpp.Element('presence',
-          to:   stanza.attrs.from
-          id:   stanza.attrs.id
-          type: 'subscribed'
-        )
-      else
-        console.log "We denied: " + stanza.attrs.from
-        # Lets see what we are trying to match
-        console.log "Accepted Users: " + @options.acceptUsers.join(',')
-        console.log "Accepted Domains: " + @options.acceptDomains.join(',')
-    
-
+    return ignore
+  
   send: (user, strings...) ->
     for str in strings
       message = new Xmpp.Element('message',
