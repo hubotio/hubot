@@ -18,11 +18,6 @@
     "coffee-script": "1.1.2",
     "optparse": "1.0.3",
     "scoped-http-client": "0.9.4",
-    "irc": "0.3.2",
-    "node-xmpp": "0.2.11",
-    "wobot": "0.3.0",
-    "imap": "0.2.5",
-    "flowdock": "0.2.2"
   },
 
   "main": "./index",
