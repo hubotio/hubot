@@ -133,7 +133,7 @@ class Robot
   users: ->
     @brain.data.users
 
-  # Public: Get a User object given a unique identifier
+  # Public: Get a User object given a unique identifier.
   userForId: (id, options) ->
     user = @brain.data.users[id]
     unless user
@@ -141,7 +141,7 @@ class Robot
       @brain.data.users[id] = user
     user
 
-  # Public: Get a User object given a name
+  # Public: Get a User object given a name.
   userForName: (name) ->
     result = null
     lowerName = name.toLowerCase()
@@ -149,6 +149,13 @@ class Robot
       if @brain.data.users[k]['name'].toLowerCase() is lowerName
         result = @brain.data.users[k]
     result
+
+  # Public: Update a User objects name property.
+  updateUserName: (id, name) ->
+    user = @userForId id
+    unless user.name is name
+      user.name = name
+    user
 
   # Public: Run Hubot using the loaded adapter.
   #
