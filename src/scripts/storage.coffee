@@ -4,11 +4,11 @@
 # show storage - Display the contents that are persisted in redis
 #
 
-Sys = require "sys"
+Util = require "util"
 
 module.exports = (robot) ->
   robot.respond /show storage$/i, (msg) ->
-    output = Sys.inspect(robot.brain.data, false, 4)
+    output = Util.inspect(robot.brain.data, false, 4)
     msg.send output
 
   robot.respond /show users$/i, (msg) ->
