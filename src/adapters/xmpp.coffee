@@ -1,7 +1,7 @@
 Robot = require '../robot'
 Xmpp  = require 'node-xmpp'
 
-class XmppBot extends Robot
+class XmppBot extends Robot.Adapter
   run: ->
     options =
       username: process.env.HUBOT_XMPP_USERNAME
@@ -34,7 +34,7 @@ class XmppBot extends Robot
     # http://xmpp.org/extensions/xep-0045.html for XMPP chat standard
     for room in @options.rooms
       @client.send do =>
-        el = new Xmpp.Element('presence', to: "#{room.jid}/#{@name}" )
+        el = new Xmpp.Element('presence', to: "#{room.jid}/#{@robot.name}" )
         x = el.c('x', xmlns: 'http://jabber.org/protocol/muc' )
         x.c('history', seconds: 1 ) # prevent the server from confusing us with old messages
                                     # and it seems that servers don't reliably support maxchars
