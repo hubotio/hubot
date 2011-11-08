@@ -150,13 +150,6 @@ class Robot
         result = @brain.data.users[k]
     result
 
-  # Public: Update a User objects name property.
-  updateUserName: (id, name) ->
-    user = @userForId id
-    unless user.name is name
-      user.name = name
-    user
-
   # Public: Run Hubot using the loaded adapter.
   #
   # Returns nothing.
