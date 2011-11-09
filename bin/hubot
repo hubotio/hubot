@@ -51,7 +51,7 @@ Parser.on "help", (opt, value) ->
 Parser.on "version", (opt, value) ->
   Options.version = true
 
-Parser.parse process.ARGV
+Parser.parse process.argv
 
 process.on 'SIGTERM', -> process.exit(0)
 
