@@ -3,6 +3,7 @@ Xmpp = require 'node-xmpp'
 
 class Gtalkbot extends Robot
   run: ->
+    Xmpp.JID.prototype.from = -> @bare().toString()
 
     # Client Options
     options = 
@@ -72,14 +73,17 @@ class Gtalkbot extends Robot
       return
 
   handleMessage: (stanza) =>
-    if @ignoreUser(stanza.attrs.from)
+    jid = new Xmpp.JID(stanza.attrs.from)
+    
+    if @isMe(jid)
+      return
+    
+    if @ignoreUser(jid)
       console.log "Ignoring user message because of whitelist: #{stanza.attrs.from}"
       console.log "  Accepted Users: " + @options.acceptUsers.join(',')
       console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
       return
 
-    # Strip the from attribute to get who this is from
-    [from, room] = stanza.attrs.from.split '/'
     # ignore empty bodies (i.e., topic changes -- maybe watch these someday)
     body = stanza.getChild 'body'
     return unless body
@@ -90,37 +94,80 @@ class Gtalkbot extends Robot
     message = if !message.match(new RegExp("^"+@name+":?","i")) then @name + " " + message else message
 
     # Send the message to the robot
-    @receive new Robot.TextMessage from, message
+    @receive new Robot.TextMessage @getUser(jid), message
 
   handlePresence: (stanza) =>
-    # Check for buddy request
-    return if stanza.attrs.type isnt 'subscribe'
+    jid = new Xmpp.JID(stanza.attrs.from)
     
-    if @ignoreUser(stanza.attrs.from)
-      console.log "Ignoring user subscribe because of whitelist: #{stanza.attrs.from}"
+    if @isMe(jid)
+      return
+
+    if @ignoreUser(jid)
+      console.log "Ignoring user presence because of whitelist: #{stanza.attrs.from}"
       console.log "  Accepted Users: " + @options.acceptUsers.join(',')
       console.log "  Accepted Domains: " + @options.acceptDomains.join(',')
       return
 
-    # Accept
-    @client.send new Xmpp.Element('presence',
-      to:   stanza.attrs.from
-      id:   stanza.attrs.id
-      type: 'subscribed'
-    )
-    
-  ignoreUser: (user) ->
-    ignore = false
-    
-    if @options.acceptDomains.length > 0 or @options.acceptUsers.length > 0
-      ignore = true
-      [from, room] = user.split '/'
-      if @options.acceptDomains.length > 0
-        [username, domain] = from.split '@'
-        ignore = false if domain in @options.acceptDomains
+    # xmpp doesn't add types for standard available mesages
+    # note that upon joining a room, server will send available
+    # presences for all members
+    # http://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.1
+    stanza.attrs.type ?= 'available'
+
+    switch stanza.attrs.type
+      when 'subscribe'
+        console.log "#{jid.from()} subscribed to us"
+
+        @client.send new Xmpp.Element('presence',
+            from: stanza.attrs.to
+            to:   stanza.attrs.from
+            id:   stanza.attrs.id
+            type: 'subscribed'
+        )
         
-      if @options.acceptUsers.length > 0
-        ignore = false if from in @options.acceptUsers
+      when 'probe'
+        @client.send new Xmpp.Element('presence',
+            from: stanza.attrs.to
+            to:   stanza.attrs.from
+            id:   stanza.attrs.id
+        )
+        
+      when 'available'
+        user = @getUser jid
+        user.online = true
+        
+        @receive new Robot.EnterMessage(user)
+        
+      when 'unavailable'
+        user = @getUser jid
+        user.online = false
+        
+        @receive new Robot.LeaveMessage(user)
+  
+  getUser: (jid) ->
+    user = @userForId jid.from(),
+      name: jid.user
+      user: jid.user
+      domain: jid.domain
+    
+    # This can change from request to request
+    user.resource = jid.resource
+    return user
+  
+  isMe: (jid) ->
+    return jid.from() == @options.jid
+    
+  ignoreUser: (jid) ->
+    if @options.acceptDomains.length < 1 and @options.acceptUsers.length < 1
+      return false
+    
+    ignore = true
+    
+    if @options.acceptDomains.length > 0
+      ignore = false if jid.domain in @options.acceptDomains
+      
+    if @options.acceptUsers.length > 0
+      ignore = false if jid.from() in @options.acceptUsers
     
     return ignore
   
@@ -128,7 +175,7 @@ class Gtalkbot extends Robot
     for str in strings
       message = new Xmpp.Element('message',
           from: @options.username
-          to: user
+          to: user.id
           type: 'chat' 
         ).
         c('body').t(str)
