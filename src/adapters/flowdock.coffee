@@ -34,6 +34,7 @@ class Flowdock extends Robot
       return unless message.event == 'message'
       flow = bot.flows.filter((flow) -> return flow.name == message.flow)[0]
       author = @userForId(message.user)
+      return if @name == author.name
       author.flow = flow
       self.receive new Robot.TextMessage(author, message.content)
 
