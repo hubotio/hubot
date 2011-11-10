@@ -1,7 +1,7 @@
 Robot        = require "../robot"
 flowdock     = require "flowdock"
 
-class Flowdock extends Robot
+class Flowdock extends Robot.Adapter
   send: (user, strings...) ->
     strings.forEach (str) =>
       @bot.chatMessage(user.flow.subdomain, user.flow.name, str)
