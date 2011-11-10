@@ -16,7 +16,7 @@ PortNumber = parseInt(process.env.PORT) || 8080
 Switches = [
   [ "-h", "--help",            "Display the help information"],
   [ "-a", "--adapter ADAPTER", "The Adapter to use"],
-  [ "-c", "--create PATH",     "Create a deployable hubot"],
+  [ "-c", "--create PATH",     "Create a deployable hubot for Campfire"],
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/'"],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
   [ "-v", "--version",         "Displays the version of hubot installed"]
