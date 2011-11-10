@@ -2,13 +2,9 @@
 
 This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
-You'll probably never have to hack on this repo directly.  Instead this repo
+You'll probably never have to hack on this repo directly. Instead this repo
 provides a library that's distributed by npm that you simply require in your
 project.
-
-Please note that the repo is in an unstable state as it is going through some
-changes to move the adapters out of the core and into their own packages. The
-latest stable release is `v1.1.11`.
 
 ## Getting Your Own
 
@@ -19,12 +15,18 @@ Download the [latest version of hubot](https://github.com/github/hubot/downloads
 
 Then follow the instructions in the README in the `hubot` directory.
 
+## Adapters
+
+Hubot ships with Campfire and Shell adapters. A number of third-party adapters
+exist which you can install with `npm install <adapter>` and then use that with
+your hubot.
+
 ## Scripts
 
 Hubot ships with a couple of default scripts, but there's a growing
 number of extras in the [hubot-scripts](https://github.com/github/hubot-scripts)
 repository. `hubot-scripts` is a way to share scripts with the entire
-community.  Check out the [README](https://github.com/github/hubot-scripts#readme)
+community. Check out the [README](https://github.com/github/hubot-scripts#readme)
 for more help on installing individual scripts.
 
 ## Local Testing
