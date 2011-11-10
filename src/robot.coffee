@@ -16,9 +16,9 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
+    @adapter     = null
 
-    Adapter = require "#{adapterPath}/#{adapter}"
-    @adapter = new Adapter @
+    @loadAdapter adapterPath, adapter
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -108,6 +108,18 @@ class Robot
     if ext is '.coffee' or ext is '.js'
       require(full) @
       @parseHelp "#{path}/#{file}"
+
+  loadAdapter: (path, adapter) ->
+    if adapter in [ "campfire", "shell" ]
+      Adapter = require "#{path}/#{adapter}"
+      @adapter = new Adapter @
+    else
+      try
+        Adapter = require "hubot-#{adapter}"
+        @adapter = new Adapter @
+      catch err
+        console.log "Can't load adapter #{adapter}, try installing hubot-#{adapter}"
+        process.exit 1
 
   # Public: Help Commands for Running Scripts
   #
