@@ -21,10 +21,30 @@ Then follow the instructions in the README in the `hubot` directory.
 Hubot ships with Campfire and Shell adapters. A number of third-party adapters
 exist which you can install with npm and then use that with your hubot.
 
-Adapters were moved out of the core of hubot to help reduce the number of
-dependencies which were not really required depending on which adapter you
-decided to use. Also the majority of pull requests were adapter related which
-meant new releases had to be cut more often.
+### Creating an Adapter
+
+Creating an adapter for hubot is very simple. So simple infact hubot himself
+has written his own adapters.
+
+1. Start a project for the npm package
+2. Add `hubot` as a dependency to your `package.json` file
+3. Add your main adapter file as the `main` file in `package.json`
+
+Below is an example of requiring hubot to extend `Robot.Adapter` and exporting
+a `use` function that will be used to load your adapter when used.
+
+```coffeescript
+
+Robot = require("hubot").robot()
+
+class MyAdapter extends Robot.Adapter
+  # You'll want to override the various methods see existing adapters
+  # ...
+
+exports.use = (robot) ->
+  new MyAdapter robot
+
+```
 
 ## Scripts
 
