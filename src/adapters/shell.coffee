@@ -26,5 +26,6 @@ class Shell extends Robot.Adapter
       holman = @userForId('3', { name: "Zach Holman" })
     , 3000
 
-module.exports = Shell
+exports.use = (robot) ->
+  new Shell robot
 

@@ -109,22 +109,26 @@ class Robot
       require(full) @
       @parseHelp "#{path}/#{file}"
 
+  # Load the adapter Hubot is going to use.
+  #
+  # path    - A String of the path to adapter if local.
+  # adapter - A String of the adapter name to use.
+  #
+  # Returns nothing.
   loadAdapter: (path, adapter) ->
-    if adapter in [ "campfire", "shell" ]
-      Adapter = require "#{path}/#{adapter}"
-      @adapter = new Adapter @
-    else
-      try
-        Adapter = require "hubot-#{adapter}"
-        @adapter = new Adapter @
-      catch err
-        console.log "Can't load adapter #{adapter}, try installing hubot-#{adapter}"
-        process.exit 1
+    try
+      path = if adapter in [ "campfire", "shell" ]
+        "#{path}/#{adapter}"
+      else
+        "hubot-#{adapter}"
+
+      @adapter = require("#{path}").use(@)
+    catch err
+      console.log "Can't load adapter '#{adapter}', try installing the package"
 
   # Public: Help Commands for Running Scripts
   #
   # Returns an array of help commands for running scripts
-  #
   helpCommands: () ->
     @commands.sort()
 
