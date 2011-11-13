@@ -13,22 +13,20 @@ Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
-Adapters = ["irc", "campfire", "hipchat", "twilio", "xmpp", "groupme", "talker", "twitter", "flowdock", "gtalk"]
-
 Switches = [
-  [ "-h", "--help",              "Display the help information"],
-  [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
-  [ "-c", "--create PATH",       "Create a deployable hubot"],
-  [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/'"],
-  [ "-n", "--name NAME",         "The name of the robot in chat" ],
-  [ "-v", "--version",           "Displays the version of hubot installed"]
+  [ "-h", "--help",            "Display the help information"],
+  [ "-a", "--adapter ADAPTER", "The Adapter to use"],
+  [ "-c", "--create PATH",     "Create a deployable hubot"],
+  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/'"],
+  [ "-n", "--name NAME",       "The name of the robot in chat" ],
+  [ "-v", "--version",         "Displays the version of hubot installed"]
 ]
 
 Options =
   path: "."
   name: "Hubot"
   create: false
-  adapter: "stdio"
+  adapter: "shell"
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -53,7 +51,7 @@ Parser.on "help", (opt, value) ->
 Parser.on "version", (opt, value) ->
   Options.version = true
 
-Parser.parse process.ARGV
+Parser.parse process.argv
 
 process.on 'SIGTERM', -> process.exit(0)
 
@@ -75,17 +73,15 @@ else if Options.version
     process.exit 0
 
 else
-  adapter = if Options.adapter in Adapters
-    Options.adapter
-  else
-    'shell'
-
-  scriptsPath = Path.resolve "./scripts"
-  console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot = Hubot.loadBot adapter, scriptsPath, Options.name
+  adapterPath = Path.resolve "src", "adapters"
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
   robot.enableSlash = Options.enableSlash
 
-  scriptsPath = Path.resolve "src", "hubot", "scripts"
+  scriptsPath = Path.resolve ".", "scripts"
+  console.log "Loading deploy-local scripts at #{scriptsPath}"
+  robot.load scriptsPath
+
+  scriptsPath = Path.resolve "src", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
   robot.load scriptsPath
 
@@ -93,13 +89,9 @@ else
   Path.exists scriptsFile, (exists) =>
     if exists
       console.log "Loading hubot-scripts from #{scriptsFile}"
-      Fs.readFile scriptsFile, (err, data) =>
-        JSON.parse(data).forEach (plugin) =>
+      Fs.readFile scriptsFile, (err, data) ->
+        for plugin in JSON.parse(data)
           robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
-    else
-      scriptsPath = Path.resolve "src", "scripts"
-      console.log "Loading hubot-scripts plugins at #{scriptsPath}"
-      robot.load scriptsPath
 
   robot.run()
 

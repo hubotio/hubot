@@ -1,4 +1,5 @@
 Robot = require '../src/robot'
+Path  = require 'path'
 Url   = require 'url'
 
 # A programmer's best friend.
@@ -30,24 +31,12 @@ exports.danger = (helper, cb) ->
   server
 
 class Helper extends Robot
-  constructor: (path) ->
-    super path, 'helper'
+  constructor: (scriptPath) ->
+    adapterPath = Path.resolve "test"
+    super adapterPath, 'danger_adapter', 'helper'
+    @load scriptPath
     @sent = []
     @Response = Helper.Response
-
-  send: (user, strings...) ->
-    strings.forEach (str) =>
-      @sent.push str
-    @cb? strings...
-
-  reply: (user, strings...) ->
-    strings.forEach (str) =>
-      @send user, "#{@name}: #{str}"
-
-  # modified to accept a string and pass the Robot.TextMessage to super()
-  receive: (text) ->
-    user = new Robot.User 1, 'helper'
-    super new Robot.TextMessage(user, text)
 
 if not process.env.HUBOT_LIVE
   class Helper.Response extends Robot.Response

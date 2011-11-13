@@ -1,7 +1,7 @@
 Robot        = require "../robot"
 flowdock     = require "flowdock"
 
-class Flowdock extends Robot
+class Flowdock extends Robot.Adapter
   send: (user, strings...) ->
     strings.forEach (str) =>
       @bot.chatMessage(user.flow.subdomain, user.flow.name, str)
@@ -34,6 +34,7 @@ class Flowdock extends Robot
       return unless message.event == 'message'
       flow = bot.flows.filter((flow) -> return flow.name == message.flow)[0]
       author = @userForId(message.user)
+      return if @name == author.name
       author.flow = flow
       self.receive new Robot.TextMessage(author, message.content)
 

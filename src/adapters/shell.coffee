@@ -1,6 +1,6 @@
 Robot = require '../robot'
 
-class Shell extends Robot
+class Shell extends Robot.Adapter
   send: (user, strings...) ->
     for str in strings
       console.log str
@@ -12,7 +12,7 @@ class Shell extends Robot
   run: ->
     console.log "Hubot: the Shell."
 
-    user = @userForId('1', {name: "Shell"})
+    user = @userForId('1', { name: "Shell" })
 
     process.stdin.resume()
     process.stdin.on 'data', (txt) =>
@@ -21,9 +21,9 @@ class Shell extends Robot
         @receive new Robot.TextMessage user, line
 
     setTimeout =>
-      user   = @userForId('1', {name: "Shell"})
-      atmos  = @userForId('2', {name: "atmos"})
-      holman = @userForId('3', {name: "Zach Holman"})
+      user   = @userForId('1', { name: "Shell" })
+      atmos  = @userForId('2', { name: "atmos" })
+      holman = @userForId('3', { name: "Zach Holman" })
     , 3000
 
 module.exports = Shell
