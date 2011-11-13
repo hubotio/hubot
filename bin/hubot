@@ -14,12 +14,13 @@ OptParse   = require 'optparse'
 PortNumber = parseInt(process.env.PORT) || 8080
 
 Switches = [
-  [ "-h", "--help",            "Display the help information"],
-  [ "-a", "--adapter ADAPTER", "The Adapter to use"],
-  [ "-c", "--create PATH",     "Create a deployable hubot"],
-  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/'"],
-  [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-v", "--version",         "Displays the version of hubot installed"]
+  [ "-h", "--help",              "Display the help information"],
+  [ "-a", "--adapter ADAPTER",   "The Adapter to use"],
+  [ "-c", "--create PATH",       "Create a deployable hubot"],
+  [ "-s", "--enable-slash",      "Enable replacing the robot's name with '/' (deprecated)"],
+  [ "-l", "--alias ALIAS",       "Enable replacing the robot's name with alias"],
+  [ "-n", "--name NAME",         "The name of the robot in chat" ],
+  [ "-v", "--version",           "Displays the version of hubot installed"]
 ]
 
 Options =
@@ -27,6 +28,7 @@ Options =
   name: "Hubot"
   create: false
   adapter: "shell"
+  alias: false
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -42,7 +44,11 @@ Parser.on "create", (opt, value) ->
   Options.create = true
 
 Parser.on "enable-slash", (opt) ->
-  Options.enableSlash = true
+  console.log "WARNING: -s and --enable-slash are deprecated please use -l or --alias '/'"
+  Options.alias = '/'
+
+Parser.on "alias", (opt, value) ->
+  Options.alias = value
 
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
@@ -76,10 +82,10 @@ else
   adapterPath = Path.resolve "src", "adapters"
   robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
   robot.enableSlash = Options.enableSlash
+  robot.alias = Options.alias
 
   scriptsPath = Path.resolve ".", "scripts"
   console.log "Loading deploy-local scripts at #{scriptsPath}"
-  robot.load scriptsPath
 
   scriptsPath = Path.resolve "src", "scripts"
   console.log "Loading hubot core scripts for relative scripts at #{scriptsPath}"
