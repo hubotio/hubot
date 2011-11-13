@@ -74,6 +74,10 @@ else if Options.version
 
 else
   adapterPath = Path.resolve "src", "adapters"
+  unless Path.existsSync adapterPath
+    # we are running a deployable hubot
+    adapterPath = Path.resolve "node_modules", "hubot", "src", "adapters"
+
   robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
   robot.enableSlash = Options.enableSlash
 
