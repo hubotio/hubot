@@ -1,12 +1,12 @@
 Robot = require '../robot'
 Xmpp  = require 'node-xmpp'
 
-class XmppBot extends Robot
+class XmppBot extends Robot.Adapter
   run: ->
     options =
       username: process.env.HUBOT_XMPP_USERNAME
       password: process.env.HUBOT_XMPP_PASSWORD
-      rooms:    process.env.HUBOT_XMPP_ROOMS.split(',')
+      rooms:    @parseRooms process.env.HUBOT_XMPP_ROOMS.split(',')
       keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
 
     console.log options
@@ -33,16 +33,28 @@ class XmppBot extends Robot
     # join each room
     # http://xmpp.org/extensions/xep-0045.html for XMPP chat standard
     for room in @options.rooms
-      @client.send(new Xmpp.Element('presence', to: "#{room}/#{@name}" )
-        .c('x', xmlns: 'http://jabber.org/protocol/muc' )
-        .c('history', seconds: 1 )) # prevent the server from confusing us with old messages
+      @client.send do =>
+        el = new Xmpp.Element('presence', to: "#{room.jid}/#{@robot.name}" )
+        x = el.c('x', xmlns: 'http://jabber.org/protocol/muc' )
+        x.c('history', seconds: 1 ) # prevent the server from confusing us with old messages
                                     # and it seems that servers don't reliably support maxchars
                                     # or zero values
+        if (room.password) then x.c('password').t(room.password)
+        return x
 
     # send raw whitespace for keepalive
     setInterval =>
       @client.send ' '
     , @options.keepaliveInterval
+
+  parseRooms: (items) ->
+    rooms = []
+    for room in items
+      index = room.indexOf(':')
+      rooms.push
+        jid:      room.slice(0, if index > 0 then index else room.length)
+        password: if index > 0 then room.slice(index+1) else false
+    return rooms
 
   read: (stanza) =>
     if stanza.attrs.type is 'error'
@@ -131,13 +143,17 @@ class XmppBot extends Robot
     for str in strings
       console.log "Sending to #{user.room}: #{str}"
 
-      to = if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
+      params =
+        to: if user.type in ['direct', 'chat'] then "#{user.room}/#{user.id}" else user.room
+        type: user.type
+      
+      switch user.type
+        when 'chat'
+          params.from = "#{@options.username}/#{@name}"
+        when 'direct'
+          params.from = @options.username
 
-      message = new Xmpp.Element('message',
-                  from: @options.username
-                  to: to
-                  type: user.type
-                ).
+      message = new Xmpp.Element('message', params).
                 c('body').t(str)
 
       @client.send message
@@ -150,7 +166,6 @@ class XmppBot extends Robot
     string = strings.join "\n"
 
     message = new Xmpp.Element('message',
-                from: @options.username,
                 to: user.room
                 type: user.type
               ).

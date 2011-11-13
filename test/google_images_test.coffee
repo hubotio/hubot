@@ -2,7 +2,7 @@ Tests  = require './tests'
 assert = require 'assert'
 helper = Tests.helper()
 
-require('../src/hubot/scripts/google-images') helper
+require('../src/scripts/google-images') helper
 
 # start up a danger room for google images
 danger = Tests.danger helper, (req, res, url) ->

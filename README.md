@@ -2,13 +2,18 @@
 
 This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
-You'll probably never have to hack on this repo directly.  Instead this
-repo provides a library that's distributed by npm that you simply
-require in your project.
+You'll probably never have to hack on this repo directly.  Instead this repo
+provides a library that's distributed by npm that you simply require in your
+project.
+
+Please note that the repo is in an unstable state as it is going through some
+changes to move the adapters out of the core and into their own packages. The
+latest stable release is `v1.1.11`.
 
 ## Getting Your Own
 
-Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/) installed.
+Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/)
+installed.
 
 Download the [latest version of hubot](https://github.com/github/hubot/downloads).
 
