@@ -2,7 +2,7 @@ Robot        = require "../robot"
 HTTPS        = require "https"
 Wobot        = require("wobot").Bot
 
-class HipChat extends Robot
+class HipChat extends Robot.Adapter
   send: (user, strings...) ->
     for str in strings
       @bot.message user.reply_to, str
