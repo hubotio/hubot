@@ -6,8 +6,8 @@ class Gtalkbot extends Robot
     Xmpp.JID.prototype.from = -> @bare().toString()
 
     # Client Options
-    options = 
-      jid: process.env.HUBOT_GTALK_USERNAME
+    @options = 
+      username: process.env.HUBOT_GTALK_USERNAME
       password: process.env.HUBOT_GTALK_PASSWORD
       acceptDomains: (entry.trim() for entry in (process.env.HUBOT_GTALK_WHITELIST_DOMAINS ? '').split(',') when entry.trim() != '')
       acceptUsers: (entry.trim() for entry in (process.env.HUBOT_GTALK_WHITELIST_USERS ? '').split(',') when entry.trim() != '')
@@ -15,27 +15,24 @@ class Gtalkbot extends Robot
       port: 5222
       keepaliveInterval: 15000 # ms interval to send query to gtalk server
     
-    if not options.jid or not options.password
-      throw Error('You need to set HUBOT_GTALK_USERNAME and HUBOT_GTALK_PASSWORD anv vars for gtalk to work')
+    if not @options.username or not @options.password
+      throw new Error('You need to set HUBOT_GTALK_USERNAME and HUBOT_GTALK_PASSWORD anv vars for gtalk to work')
 
     # Connect to gtalk servers
     @client = new Xmpp.Client 
-      jid: options.jid
-      password: options.password
-      host: options.host
-      port: options.port
+      jid: @options.username
+      password: @options.password
+      host: @options.host
+      port: @options.port
 
     # Events
     @client.on 'online', @.online
     @client.on 'stanza', @.readStanza
     @client.on 'error', @.error
 
-    # Share the optionss
-    @options = options
-
   online: =>
     @client.send new Xmpp.Element('presence')
-
+    
     # He is alive!
     console.log @name + ' is online, talk.google.com!'
 
@@ -119,7 +116,7 @@ class Gtalkbot extends Robot
         console.log "#{jid.from()} subscribed to us"
 
         @client.send new Xmpp.Element('presence',
-            from: stanza.attrs.to
+            from: @client.jid.toString()
             to:   stanza.attrs.from
             id:   stanza.attrs.id
             type: 'subscribed'
@@ -127,7 +124,7 @@ class Gtalkbot extends Robot
         
       when 'probe'
         @client.send new Xmpp.Element('presence',
-            from: stanza.attrs.to
+            from: @client.jid.toString()
             to:   stanza.attrs.from
             id:   stanza.attrs.id
         )
@@ -155,7 +152,7 @@ class Gtalkbot extends Robot
     return user
   
   isMe: (jid) ->
-    return jid.from() == @options.jid
+    return jid.from() == @options.username
     
   ignoreUser: (jid) ->
     if @options.acceptDomains.length < 1 and @options.acceptUsers.length < 1
@@ -174,7 +171,7 @@ class Gtalkbot extends Robot
   send: (user, strings...) ->
     for str in strings
       message = new Xmpp.Element('message',
-          from: @options.username
+          from: @client.jid.toString()
           to: user.id
           type: 'chat' 
         ).
