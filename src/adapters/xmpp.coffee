@@ -88,6 +88,9 @@ class XmppBot extends Robot.Adapter
       message = body.getText()
 
       [room, from] = stanza.attrs.from.split '/'
+      
+      # ignore our own messages in rooms
+      return if from == @robot.username
 
       # note that 'from' isn't a full JID, just the local user part
       user = @userForId from
