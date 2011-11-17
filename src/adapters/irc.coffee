@@ -60,7 +60,7 @@ class IrcBot extends Robot.Adapter
       bot.addListener 'notice', (from, to, text) ->
         if from is 'NickServ' and text.indexOf('registered') isnt -1
           bot.say 'NickServ', "identify #{options.nickpass}"
-        else if options.nickpass and from is 'NickServ' and text.indexOf('Password accepted.') isnt -1
+        else if options.nickpass and from is 'NickServ' and text.indexOf('Password accepted') isnt -1
           for room in options.rooms
             @join room
 
