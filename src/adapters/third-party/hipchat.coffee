@@ -1,4 +1,5 @@
-Robot        = require "../robot"
+Robot        = require('hubot').robot()
+
 HTTPS        = require "https"
 Wobot        = require("wobot").Bot
 
@@ -124,5 +125,6 @@ class HipChat extends Robot.Adapter
       console.log err.stack
       callback err
 
-module.exports = HipChat
+exports.use = (robot) ->
+  new HipChat robot
 

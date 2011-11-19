@@ -1,11 +1,12 @@
-Robot           = require '../robot'
+Robot           = require('hubot').robot()
+
 ImapConnection  = require('imap').ImapConnection
 EventEmitter    = require("events").EventEmitter
 util            = require('util')
 
 CRLF = "\r\n"
 
-class Email extends Robot
+class Email extends Robot.Adapter
   run: ->
     self = @
 
@@ -25,7 +26,8 @@ class Email extends Robot
 
     imap.connect()
 
-exports.Email = Email
+exports.use = (robot) ->
+  new Email robot
 
 class ImapBot extends EventEmitter
   constructor: (options) ->
@@ -45,13 +47,13 @@ class ImapBot extends EventEmitter
 
   connect: (callback) ->
     @imap.connect (err) =>
-      throw err if err
+      throw err if err?
 
       @open()
 
   open: ->
     @imap.openBox @mailbox, (err) =>
-      throw err if err
+      throw err if err?
       @imap.on 'error', (err) -> throw err
       @imap.on 'mail', @recieve
 
@@ -108,12 +110,12 @@ class Message
   parse: (callback) ->
     while @buffer
       switch @state
-        when 'INIT'     then @readBoundry()
-        when 'HEADERS'  then @readHeaders()
-        when 'BODY'     then @readBody()
-        when 'FIN'      then @readFinish(callback)
+        when 'INIT'    then @readBoundry()
+        when 'HEADERS' then @readHeaders()
+        when 'BODY'    then @readBody()
+        when 'FIN'     then @readFinish(callback)
 
-  readBoundry: () ->
+  readBoundry: ->
     throw "Boundary Missing" if @buffer.indexOf(CRLF) == -1
 
     lines     = @buffer.split(CRLF)
@@ -122,7 +124,7 @@ class Message
 
     @state = 'HEADERS'
 
-  readHeaders: () ->
+  readHeaders: ->
     throw "Header(s) Missing" if @buffer.indexOf(CRLF + CRLF) == -1
 
     # throw away the body headers for now
@@ -131,7 +133,7 @@ class Message
 
     @state = 'BODY'
 
-  readBody: () ->
+  readBody: ->
     throw "Plain Body Missing" if @buffer.indexOf(@boundary) == -1
 
     @body = @buffer.split(@boundary, 1)[0]

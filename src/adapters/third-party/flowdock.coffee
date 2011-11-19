@@ -3,15 +3,14 @@ flowdock     = require "flowdock"
 
 class Flowdock extends Robot.Adapter
   send: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @bot.chatMessage(user.flow.subdomain, user.flow.name, str)
 
   reply: (user, strings...) ->
-    strings.forEach (str) =>
+    for str in strings
       @send user, "#{user.name}: #{str}"
 
   run: ->
-    self = @
     options =
       login_email:    process.env.HUBOT_FLOWDOCK_LOGIN_EMAIL
       login_password: process.env.HUBOT_FLOWDOCK_LOGIN_PASSWORD
@@ -36,7 +35,7 @@ class Flowdock extends Robot.Adapter
       author = @userForId(message.user)
       return if @name == author.name
       author.flow = flow
-      self.receive new Robot.TextMessage(author, message.content)
+      @receive new Robot.TextMessage(author, message.content)
 
     @bot = bot
 

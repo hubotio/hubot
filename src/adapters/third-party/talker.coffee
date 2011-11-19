@@ -1,10 +1,11 @@
-Robot        = require "../robot"
-HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
+Robot        = require('hubot').robot()
+
+HTTPS        = require 'https'
+EventEmitter = require('events').EventEmitter
 net          = require('net')
 tls          = require('tls')
 
-class Talker extends Robot
+class Talker extends Robot.Adapter
   send: (user, strings...) ->
     strings.forEach (str) =>
       @bot.write user.room, {"type": "message", "content": str}
@@ -61,7 +62,8 @@ class Talker extends Robot
     author.room = room
     author
 
-module.exports = Talker
+exports.use = (robot) ->
+  new Talker robot
 
 class TalkerClient extends EventEmitter
   constructor: ->
@@ -122,3 +124,4 @@ class TalkerClient extends EventEmitter
     if @sockets[room] != 'closed'
       @sockets[room]
       console.log 'disconnected (reason: ' + why + ')'
+

@@ -1,4 +1,5 @@
-Robot = require '../robot'
+Robot = require('hubot').robot()
+
 Xmpp  = require 'node-xmpp'
 
 class XmppBot extends Robot.Adapter
@@ -180,5 +181,6 @@ class XmppBot extends Robot.Adapter
 
     @client.send message
 
-module.exports = XmppBot
+exports.use = (robot) ->
+  new XmppBot robot
 
