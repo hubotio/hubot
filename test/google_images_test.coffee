@@ -8,9 +8,10 @@ require('../src/scripts/google-images') helper
 danger = Tests.danger helper, (req, res, url) ->
   res.writeHead 200
   res.end JSON.stringify(
-    {responseData: {results: [
-      {unescapedUrl: "(#{url.query.q})"}
-    ]}}
+    responseData:
+      results: [
+        unescapedUrl: "(#{url.query.q})"
+      ]
   )
 
 # callbacks for when hubot sends messages
