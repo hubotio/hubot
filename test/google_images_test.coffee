@@ -37,4 +37,5 @@ danger.start tests, ->
   helper.receive 'helper: image me foo'
   helper.receive 'helper: image foo'
   helper.receive 'helper: animate me foo'
+  helper.stop()
 
