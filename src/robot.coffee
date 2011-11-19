@@ -19,7 +19,7 @@ class Robot
     @loadPaths   = []
     @enableSlash = false
 
-    @loadAdapter adapterPath, adapter
+    @loadAdapter adapterPath, adapter if adapter?
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.

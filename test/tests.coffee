@@ -27,16 +27,33 @@ exports.danger = (helper, cb) ->
       cb()
 
   server.on 'close', -> helper.close()
-
   server
 
 class Helper extends Robot
   constructor: (scriptPath) ->
     adapterPath = Path.resolve "test"
-    super adapterPath, 'danger_adapter', 'helper'
+    super null, null, 'helper'
     @load scriptPath
     @sent = []
     @Response = Helper.Response
+    @adapter = new Danger(@)
+
+class Danger extends Robot.Adapter
+  send: (user, strings...) ->
+    strings.forEach (str) =>
+      @sent.push str
+    @cb? strings...
+
+  reply: (user, strings...) ->
+    strings.forEach (str) =>
+      @send user, "#{@name}: #{str}"
+
+  run: ->
+    console.log "Hubot: The Danger Room."
+
+  receive: (text) ->
+    user = new Robot.User 1, 'helper'
+    super new Robot.TextMessage user, text
 
 if not process.env.HUBOT_LIVE
   class Helper.Response extends Robot.Response
