@@ -1,4 +1,5 @@
 Robot = require '../src/robot'
+User  = require '../src/user'
 Path  = require 'path'
 Url   = require 'url'
 
@@ -51,7 +52,7 @@ class Danger extends Robot.Adapter
     @send user, "#{@robot.name}: #{str}" for str in strings
 
   receive: (text) ->
-    user = new Robot.User 1, 'helper'
+    user = new User 1, 'helper'
     super new Robot.TextMessage user, text
 
 if not process.env.HUBOT_LIVE
