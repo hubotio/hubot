@@ -101,4 +101,3 @@ else
 
   robot.run()
 
-# vim:ft=coffee ts=2 sw=2 et :

@@ -209,3 +209,4 @@ class CampfireStreaming extends EventEmitter
     request.on "error", (err) ->
       console.log err
       console.log err.stack
+

@@ -90,3 +90,4 @@ v1.0.3
 * Ensure people are running node 0.4.x - Corey Donohoe <atmos@atmos.org>
 * Doc fixups - Aitor García Rey <aitor@linkingpaths.com>
 * Twilio adapter support - Tom Bell <tomb@tombell.org.uk>
+

@@ -10,3 +10,4 @@ class User
       @[k] = options[k]
 
 module.exports = User
+

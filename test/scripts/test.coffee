@@ -15,3 +15,4 @@ module.exports = (robot) ->
     msg.http('http://127.0.0.1').port(9001)
       .get() (err, res, body) ->
         msg.send body
+

@@ -48,3 +48,4 @@ class Brain extends EventEmitter
     @emit 'loaded', @data
 
 module.exports = Brain
+

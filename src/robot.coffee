@@ -295,9 +295,6 @@ class Robot.Adapter
   http: (url) ->
     @httpClient.create(url)
 
-
-
-
 class Robot.Message
   # Represents an incoming message from the chat.
   #
@@ -446,3 +443,4 @@ Robot.Response::httpClient = HttpClient
 Robot::httpClient = HttpClient
 
 module.exports = Robot
+

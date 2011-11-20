@@ -21,4 +21,3 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         msg.send "There are #{JSON.parse(body).pug_count} pugs."
 
-
