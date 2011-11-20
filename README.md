@@ -30,14 +30,15 @@ has written his own adapters.
 2. Add `hubot` as a dependency to your `package.json` file
 3. Add your main adapter file as the `main` file in `package.json`
 
-Below is an example of requiring hubot to extend `Robot.Adapter` and exporting
+Below is an example of requiring hubot to extend `Adapter` and exporting
 a `use` function that will be used to load your adapter when used.
 
 ```coffeescript
 
-Robot = require("hubot").robot()
+Robot   = require("hubot").robot()
+Adapter = require("hubot").adapter()
 
-class MyAdapter extends Robot.Adapter
+class MyAdapter extends Adapter
   # You'll want to override the various methods see existing adapters
   # ...
 

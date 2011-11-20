@@ -1,6 +1,7 @@
-Robot = require '../robot'
+Robot   = require '../robot'
+Adapter = require '../adapter'
 
-class Shell extends Robot.Adapter
+class Shell extends Adapter
   send: (user, strings...) ->
     for str in strings
       console.log str

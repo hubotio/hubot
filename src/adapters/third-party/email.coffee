@@ -1,12 +1,13 @@
-Robot           = require('hubot').robot()
+Robot          = require('hubot').robot()
+Adapter        = require('hubot').adapter()
 
-ImapConnection  = require('imap').ImapConnection
-EventEmitter    = require("events").EventEmitter
-util            = require('util')
+ImapConnection = require('imap').ImapConnection
+EventEmitter   = require('events').EventEmitter
+util           = require('util')
 
 CRLF = "\r\n"
 
-class Email extends Robot.Adapter
+class Email extends Adapter
   run: ->
     self = @
 

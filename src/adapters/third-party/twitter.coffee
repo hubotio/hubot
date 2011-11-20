@@ -1,4 +1,5 @@
-Robot        = require('robot').robot()
+Robot        = require('hubot').robot()
+Adapter      = require('hubot').adapter()
 
 HTTPS        = require 'https'
 EventEmitter = require('events').EventEmitter
@@ -17,7 +18,7 @@ consumer = new oauth.OAuth "https://twitter.com/oauth/request_token",
                            "",
                            "HMAC-SHA1"
 
-class Twitter extends Robot.Adapter
+class Twitter extends Adapter
   send: (user, strings...) ->
     strings.forEach (str) =>
       text = str

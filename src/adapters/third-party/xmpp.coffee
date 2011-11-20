@@ -1,8 +1,9 @@
-Robot = require('hubot').robot()
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-Xmpp  = require 'node-xmpp'
+Xmpp    = require 'node-xmpp'
 
-class XmppBot extends Robot.Adapter
+class XmppBot extends Adapter
   run: ->
     options =
       username: process.env.HUBOT_XMPP_USERNAME

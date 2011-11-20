@@ -1,11 +1,12 @@
 Robot        = require('hubot').robot()
+Adapter      = require('hubot').adapter()
 
 HTTPS        = require 'https'
 EventEmitter = require('events').EventEmitter
 net          = require('net')
 tls          = require('tls')
 
-class Talker extends Robot.Adapter
+class Talker extends Adapter
   send: (user, strings...) ->
     strings.forEach (str) =>
       @bot.write user.room, {"type": "message", "content": str}

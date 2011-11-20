@@ -1,8 +1,9 @@
-Robot = require('hubot').robot()
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-Irc   = require 'irc'
+Irc     = require 'irc'
 
-class IrcBot extends Robot.Adapter
+class IrcBot extends Adapter
   send: (user, strings...) ->
     for str in strings
       if user.room

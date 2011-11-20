@@ -1,8 +1,9 @@
-Robot = require('hubot').robot()
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-Xmpp = require 'node-xmpp'
+Xmpp    = require 'node-xmpp'
 
-class Gtalkbot extends Robot
+class Gtalkbot extends Adapter
   run: ->
     Xmpp.JID.prototype.from = -> @bare().toString()
 

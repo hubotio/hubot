@@ -1,8 +1,10 @@
-Robot        = require "../robot"
-HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
+Robot        = require '../robot'
+Adapter      = require '../adapter'
 
-class Campfire extends Robot.Adapter
+HTTPS        = require 'https'
+EventEmitter = require('events').EventEmitter
+
+class Campfire extends Adapter
   send: (user, strings...) ->
     if strings.length > 0
       @bot.Room(user.room).speak strings.shift(), (err, data) =>

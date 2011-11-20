@@ -11,6 +11,9 @@ exports.loadBot = (adapterPath, adapterName, botName) ->
 exports.robot = ->
   require './src/robot'
 
+exports.adapter = ->
+  require './src/adapter'
+
 # Loads the Hubot test harness.
 exports.tests = ->
   require './test/tests'

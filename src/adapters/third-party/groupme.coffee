@@ -1,10 +1,11 @@
-Robot = require('hubot').robot()
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-HTTP  = require 'http'
-HTTPS = require 'https'
-URL   = require 'url'
+HTTP    = require 'http'
+HTTPS   = require 'https'
+URL     = require 'url'
 
-class GroupMe extends Robot.Adapter
+class GroupMe extends Adapter
   send: (user, strings...) ->
     strings.forEach (str) =>
       if str.match(/(png|jpg)$/i)

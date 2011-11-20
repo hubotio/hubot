@@ -1,9 +1,10 @@
-Robot        = require('hubot').robot()
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-HTTPS        = require "https"
-Wobot        = require("wobot").Bot
+HTTPS   = require 'https'
+Wobot   = require('wobot').Bot
 
-class HipChat extends Robot.Adapter
+class HipChat extends Adapter
   send: (user, strings...) ->
     for str in strings
       @bot.message user.reply_to, str
