@@ -53,7 +53,7 @@ class Robot
     pattern = re.join("/") # combine the pattern back again
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") # escape alias for regexp
-      newRegex = new RegExp("^(?:#{alias}|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
+      newRegex = new RegExp("^(?:#{alias}[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 
