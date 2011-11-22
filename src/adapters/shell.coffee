@@ -11,8 +11,6 @@ class Shell extends Adapter
       @send user, "#{user.name}: #{str}"
 
   run: ->
-    console.log "Hubot: the Shell."
-
     user = @userForId('1', { name: "Shell" })
 
     process.stdin.resume()
