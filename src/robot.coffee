@@ -22,8 +22,7 @@ class Robot
     @loadPaths   = []
     @enableSlash = false
 
-    @logLevel    = process.env.HUBOT_LOG_LEVEL || "info"
-    @logger      = new Log @logLevel
+    @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
     @loadAdapter adapterPath, adapter if adapter?
 
