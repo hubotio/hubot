@@ -6,6 +6,8 @@ Url          = require 'url'
 Brain        = require './brain'
 User         = require './user'
 
+HUBOT_DEFAULT_ADAPTERS = [ "campfire", "shell" ]
+
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
@@ -54,6 +56,7 @@ class Robot
       @logger.warning "The regex in question was #{regex.toString()}"
 
     pattern = re.join("/") # combine the pattern back again
+
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") # escape alias for regexp
       newRegex = new RegExp("^(?:#{alias}[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
@@ -98,6 +101,7 @@ class Robot
   # Returns nothing.
   load: (path) ->
     @logger.info "Loading scripts from #{path}"
+
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
@@ -127,7 +131,7 @@ class Robot
     @logger.info "Loading adapter #{adapter}"
 
     try
-      path = if adapter in [ "campfire", "shell" ]
+      path = if adapter in HUBOT_DEFAULT_ADAPTERS
         "#{path}/#{adapter}"
       else
         "hubot-#{adapter}"
@@ -139,7 +143,7 @@ class Robot
   # Public: Help Commands for Running Scripts
   #
   # Returns an array of help commands for running scripts
-  helpCommands: () ->
+  helpCommands: ->
     @commands.sort()
 
   # Private: load help info from a loaded script
@@ -149,7 +153,7 @@ class Robot
   # Returns nothing
   parseHelp: (path) ->
     Fs.readFile path, "utf-8", (err, body) =>
-      throw err if err
+      throw err if err?
       for i, line of body.split("\n")
         break    if !(line[0] == '#' or line.substr(0, 2) == '//')
         continue if !line.match('-')
@@ -183,7 +187,7 @@ class Robot
   usersForRawFuzzyName: (fuzzyName) ->
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
-         user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
+      user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
       
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which
