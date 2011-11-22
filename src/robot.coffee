@@ -1,6 +1,7 @@
 Fs           = require 'fs'
-Url          = require 'url'
+Log          = require 'log'
 Path         = require 'path'
+Url          = require 'url'
 
 Brain        = require './brain'
 User         = require './user'
@@ -20,6 +21,9 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
+
+    @logLevel    = process.env.HUBOT_LOG_LEVEL || "info"
+    @logger      = new Log @logLevel
 
     @loadAdapter adapterPath, adapter if adapter?
 
@@ -47,8 +51,8 @@ class Robot
     modifiers = re.pop() # pop off modifiers
 
     if re[0] and re[0][0] is "^"
-      console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
-      console.log "WARNING: The regex in question was #{regex.toString()}\n"
+      @logger.warning "Anchors don't work well with respond, perhaps you want to use 'hear'"
+      @logger.warning "The regex in question was #{regex.toString()}"
 
     pattern = re.join("/") # combine the pattern back again
     if @alias
@@ -57,7 +61,7 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 
-    console.log newRegex.toString()
+    @logger.debug newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
@@ -86,7 +90,7 @@ class Robot
       try
         lst.call message
       catch ex
-        console.log "error while calling listener: #{ex}"
+        @logger.error "Unable to call the listener: #{ex}"
 
   # Public: Loads every script in the given path.
   #
@@ -94,6 +98,7 @@ class Robot
   #
   # Returns nothing.
   load: (path) ->
+    @logger.info "Loading scripts from #{path}"
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
@@ -120,6 +125,8 @@ class Robot
   #
   # Returns nothing.
   loadAdapter: (path, adapter) ->
+    @logger.info "Loading adapter #{adapter}"
+
     try
       path = if adapter in [ "campfire", "shell" ]
         "#{path}/#{adapter}"
@@ -128,7 +135,7 @@ class Robot
 
       @adapter = require("#{path}").use(@)
     catch err
-      console.log "Can't load adapter '#{adapter}', try installing the package"
+      @logger.error "Cannot load adapter #{adapter}, try installing the package"
 
   # Public: Help Commands for Running Scripts
   #
