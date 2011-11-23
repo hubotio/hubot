@@ -118,8 +118,16 @@ class Robot
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
     if ext is '.coffee' or ext is '.js'
-      require(full) @
-      @parseHelp "#{path}/#{file}"
+      try
+        require(full) @
+        @parseHelp "#{path}/#{file}"
+      catch err
+        @logger.error "#{err}"
+
+  loadHubotScripts: (path, scripts) ->
+    @logger.info "Loading hubot-scripts from #{path}"
+    for script in scripts
+      @loadFile path, script
 
   # Load the adapter Hubot is going to use.
   #

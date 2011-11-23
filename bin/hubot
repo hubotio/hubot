@@ -90,14 +90,13 @@ else
   scriptsPath = Path.resolve "src", "scripts"
   robot.load scriptsPath
 
-  # TODO: move this loading into robot.coffee
   scriptsFile = Path.resolve "hubot-scripts.json"
   Path.exists scriptsFile, (exists) =>
     if exists
-      console.log "Loading hubot-scripts from #{scriptsFile}"
       Fs.readFile scriptsFile, (err, data) ->
-        for plugin in JSON.parse(data)
-          robot.loadFile Path.resolve("node_modules", "hubot-scripts", "src", "scripts"), plugin
+        scripts = JSON.parse data
+        scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+        robot.loadHubotScripts scriptsPath, scripts
 
   robot.run()
 
