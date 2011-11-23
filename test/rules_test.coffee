@@ -5,6 +5,10 @@ require('../src/scripts/rules') helper
 
 tests = [
   'helper: the rules'
+  'helper: the laws'
+  'helper: what are the laws?'
+  'helper: what are the three laws of robotics?'
+  'helper: what are the 3 laws?'
 ]
 
 until tests.length == 0
