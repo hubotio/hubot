@@ -4,14 +4,13 @@ helper = Tests.helper()
 require('../src/scripts/rules') helper
 
 tests = [
-  (helper) ->
-    helper.adapter.receive 'helper: the rules'
-    assert.ok helper.sent[0].match /1\. A robot may not .+/
+  'helper: the rules'
 ]
 
 until tests.length == 0
   helper.reset()
-  test = tests.shift()
-  test(helper)
+  msg = tests.shift()
+  helper.adapter.receive msg
+  assert.ok helper.sent[0].match /1\. A robot may not .+/
 
 helper.stop()
