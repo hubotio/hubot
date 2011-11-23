@@ -10,7 +10,7 @@ tests = [
 ]
 
 until tests.length == 0
-  helper.sent = []
+  helper.reset()
   test = tests.shift()
   test(helper)
 
