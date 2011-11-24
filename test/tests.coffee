@@ -44,6 +44,9 @@ class Helper extends Robot
   stop: ->
     process.exit 0
 
+  reset: ->
+    @sent = []
+
 class Danger extends Adapter
   send: (user, strings...) ->
     @robot.sent.push str for str in strings
