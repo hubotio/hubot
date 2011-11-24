@@ -167,6 +167,22 @@ class Robot
         continue if !line.match('-')
         @commands.push line[2..line.length]
 
+  # Public: A helper send function which delegates to the adapter's send
+  # function.
+  #
+  # user    - A User instance.
+  # strings - One or more Strings for each message to send.
+  send: (user, strings...) ->
+    @adapter.send user, strings...
+
+  # Public: A helper reply function which delegates to the adapter's reply
+  # function.
+  #
+  # user    - A User instance.
+  # strings - One or more Strings for each message to send.
+  reply: (user, strings...) ->
+    @adapter.reply user, strings...
+
   # Public: Get an Array of User objects stored in the brain.
   users: ->
     @brain.data.users
