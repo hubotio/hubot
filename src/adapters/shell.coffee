@@ -1,29 +1,50 @@
-Robot   = require '../robot'
-Adapter = require '../adapter'
+Readline = require 'readline'
+
+Robot    = require '../robot'
+Adapter  = require '../adapter'
 
 class Shell extends Adapter
+  constructor: (robot) ->
+    super robot
+    @repl = null
+
   send: (user, strings...) ->
-    for str in strings
-      console.log str
+    console.log str for str in strings
+    @repl.prompt()
 
   reply: (user, strings...) ->
-    for str in strings
-      @send user, "#{user.name}: #{str}"
+    @send user, strings...
 
   run: ->
-    user = @userForId('1', { name: "Shell" })
+    stdin = process.openStdin()
+    stdout = process.stdout
 
-    process.stdin.resume()
-    process.stdin.on 'data', (txt) =>
-      txt.toString().split("\n").forEach (line) =>
-        return if line.length is 0
-        @receive new Robot.TextMessage user, line
+    process.on "uncaughtException", (err) =>
+      @robot.logger.error "#{err}"
 
-    setTimeout =>
-      user   = @userForId('1', { name: "Shell" })
-      atmos  = @userForId('2', { name: "atmos" })
-      holman = @userForId('3', { name: "Zach Holman" })
-    , 3000
+    if Readline.createInterface.length > 3
+      @repl = Readline.createInterface stdin, null
+
+      stdin.on "data", (buffer) =>
+        @repl.write buffer
+    else
+      @repl = Readline.createInterface stdin, stdout, null
+
+    @repl.on "attemptClose", =>
+      @repl.close()
+
+    @repl.on "close", =>
+      process.stdout.write "\n"
+      stdin.destroy()
+      process.exit 0
+
+    @repl.on "line", (buffer) =>
+      user = @userForId '1', name: "Shell"
+      @receive new Robot.TextMessage user, buffer
+      @repl.prompt()
+
+    @repl.setPrompt "#{@robot.name}> "
+    @repl.prompt()
 
 exports.use = (robot) ->
   new Shell robot
