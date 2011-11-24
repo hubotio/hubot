@@ -1,7 +1,6 @@
 # Hubot
 
-This is a version of GitHub's Campfire bot, hubot. He's <s>pretty<s> really
-cool.
+This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
 You'll probably never have to hack on this repo directly. Instead this repo
 provides a library that's distributed by npm that you simply require in your
@@ -24,10 +23,13 @@ exist which you can install with npm and then use that with your hubot.
 ### Creating an Adapter
 
 Creating an adapter for hubot is very simple. So simple infact hubot himself
-has written his own adapters.
+has written his own adapters. Adapters in the
+[third-party](https://github.com/github/hubot/tree/master/src/adapters/third-party)
+directory will need to have ownership claimed preferably by the original
+contributor.
 
-1. Start a project for the npm package
-2. Add `hubot` as a dependency to your `package.json` file
+1. Start a project for the hubot adapter npm package
+2. Add `hubot` 2.0 as a dependency to your `package.json` file
 3. Add your main adapter file as the `main` file in `package.json`
 
 Below is an example of requiring hubot to extend `Adapter` and exporting
@@ -46,6 +48,9 @@ exports.use = (robot) ->
   new MyAdapter robot
 
 ```
+
+Please submit issues and pull requests for third party adapters to the adapter
+repo not this repo unless it's the Campfire or Shell adapter.
 
 ## Scripts
 

@@ -35,6 +35,14 @@ Take a look at the scripts in the `./scripts` folder for examples.
 Delete any scripts you think are silly.  Add whatever functionality you
 want hubot to have.
 
+Adapters
+========
+
+Adapters are now external to the core of hubot, apart from Campfire and Shell.
+If you would like to use an external adapter you can edit the `package.json` to
+include the adapter package in the `dependencies` then update the `Procfile` to
+load the adapter `app: bin/hubot -a <adapter> -n hubot` where `<adapter>` is
+the name of the adapter with the `hubot-` prefix.
 
 hubot-scripts
 =============
@@ -77,30 +85,6 @@ Add the subdomain hubot should connect to. If you web URL looks like
 `http://mysubdomain.campfirenow.com` then you'd add it like this:
 
     % heroku config:add HUBOT_CAMPFIRE_ACCOUNT="mysubdomain"
-
-IRC Variables
-------------------
-
-    % heroku config:add HUBOT_IRC_SERVER="irc.freenode.net"
-
-    % heroku config:add HUBOT_IRC_ROOMS="#github,#node.js"
-
-    % heroku config:add HUBOT_IRC_NICK="MICCHECK1212"
-
-Twilio Variables
-------------------
-
-You must have a Twilio account with credit and a number that can send and
-receive SMS messages.
-
-    % heroku config:add HUBOT_SMS_FROM="+14156662671"
-
-    % heroku config:add HUBOT_SMS_SID="AC5d10e5624da757326d12f8d31c08c20b"
-
-    % heroku config:add HUBOT_SMS_TOKEN="4ada63e18146a204e468fb6289030231"
-
-After getting Hubot up and running, update the "SMS Request URL" for your
-Twilio number to point to your Hubot instance.
 
 Restart the bot
 ---------------
