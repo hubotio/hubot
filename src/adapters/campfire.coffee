@@ -55,6 +55,10 @@ class Campfire extends Adapter
           bot.Room(roomId).join (err, callback) ->
             bot.Room(roomId).listen()
 
+    bot.on "reconnect", (roomId) =>
+      bot.Room(roomId).join (err, callback) ->
+        bot.Room(roomId).listen()
+
     @bot = bot
 
 exports.use = (robot) ->
@@ -159,8 +163,10 @@ class CampfireStreaming extends EventEmitter
                   @robot.logger.error "Campfire error: #{err}"
 
         response.on "end", =>
-          @robot.logger.error "Streaming connection closed. :("
-          process.exit(1)
+          @robot.logger.error "Streaming connection closed for room #{id}. :("
+          setTimeout (->
+            self.emit "reconnect", id
+          ), 5000
 
         response.on "error", (err) =>
           @robot.logger.error "Campfire response error: #{err}"
