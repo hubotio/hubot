@@ -35,6 +35,10 @@ contributor.
 Below is an example of requiring hubot to extend `Adapter` and exporting
 a `use` function that will be used to load your adapter when used.
 
+You will also have access to a `@robot.logger` instance which you can use
+for logging. Check out [log.js](https://github.com/visionmedia/log.js) for more
+information about the logging library used in hubot.
+
 ```coffeescript
 
 Robot   = require("hubot").robot()
