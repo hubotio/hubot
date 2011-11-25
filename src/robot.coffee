@@ -212,7 +212,7 @@ class Robot
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
       user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
-      
+
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which
   # fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
@@ -224,7 +224,7 @@ class Robot
     # will include exact matches
     for user in matchedUsers
       return [user] if user.name.toLowerCase() is lowerFuzzyName
-          
+
     matchedUsers
 
   run: ->
