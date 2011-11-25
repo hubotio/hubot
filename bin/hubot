@@ -11,7 +11,6 @@ Path       = require 'path'
 HTTP       = require 'http'
 Creator    = require '../src/creator'
 OptParse   = require 'optparse'
-PortNumber = parseInt(process.env.PORT) || 8080
 
 Switches = [
   [ "-h", "--help",            "Display the help information" ],
