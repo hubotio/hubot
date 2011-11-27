@@ -48,7 +48,7 @@ class HipChat extends Adapter
           for user in response.users
             self.userForId user.user_id, user
         else
-          console.log "Can't list rooms: #{err}"
+          console.log "Can't list users: #{err}"
 
     bot.onError (message) ->
       # If HipChat sends an error, we get the error message from XMPP.
@@ -59,13 +59,15 @@ class HipChat extends Adapter
         console.log "Received error from HipChat:", message
 
     bot.onMessage (channel, from, message) ->
-      author = name: from, reply_to: channel
+      author = self.userForName from
+      author.name = from unless author.name
+      author.reply_to = channel
       hubot_msg = message.replace(mention, "#{self.name}: ")
       self.receive new Robot.TextMessage(author, hubot_msg)
 
     bot.onPrivateMessage (from, message) =>
-      user = self.userForId(from.match(/_(\d+)@/)[1])
-      author = name: user.name, reply_to: from
+      author = self.userForId(from.match(/_(\d+)@/)[1])
+      author.reply_to = from
       self.receive new Robot.TextMessage(author, "#{self.name}: #{message}")
 
     bot.connect()
