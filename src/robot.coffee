@@ -147,6 +147,7 @@ class Robot
       @adapter = require("#{path}").use(@)
     catch err
       @logger.error "Cannot load adapter #{adapter}, try installing the package"
+      @logger.error "Reason: #{err}"
 
   # Public: Help Commands for Running Scripts
   #
