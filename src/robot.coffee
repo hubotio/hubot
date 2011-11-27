@@ -230,6 +230,10 @@ class Robot
   run: ->
     @adapter.run()
 
+  shutdown: ->
+    @adapter.close()
+    @brain.close()
+
 class Robot.Message
   # Represents an incoming message from the chat.
   #
