@@ -25,6 +25,7 @@ class Shell extends Adapter
 
     @repl.on "close", =>
       stdin.destroy()
+      @robot.shutdown()
       process.exit 0
 
     @repl.on "line", (buffer) =>
