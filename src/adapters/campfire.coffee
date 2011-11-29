@@ -55,7 +55,7 @@ class Campfire extends Adapter
           bot.Room(roomId).join (err, callback) ->
             bot.Room(roomId).listen()
 
-    bot.on "reconnect", (roomId) =>
+    bot.on "reconnect", (roomId) ->
       bot.Room(roomId).join (err, callback) ->
         bot.Room(roomId).listen()
 
@@ -87,6 +87,7 @@ class CampfireStreaming extends EventEmitter
 
   Room: (id) ->
     self = @
+    logger = @robot.logger
 
     show: (callback) ->
       self.post "/room/#{id}", "", callback
@@ -132,18 +133,18 @@ class CampfireStreaming extends EventEmitter
         "method" : "GET"
         "headers": headers
 
-      request = HTTPS.request options, (response) =>
+      request = HTTPS.request options, (response) ->
         response.setEncoding("utf8")
 
         buf = ''
 
-        response.on "data", (chunk) =>
+        response.on "data", (chunk) ->
           if chunk is ' '
             # campfire api sends a ' ' heartbeat every 3s
 
           else if chunk.match(/^\s*Access Denied/)
             # errors are not json formatted
-            @robot.logger.error "Campfire error: #{chunk}"
+            logger.error "Campfire error: #{chunk}"
             process.exit(1)
 
           else
@@ -160,19 +161,19 @@ class CampfireStreaming extends EventEmitter
                   data = JSON.parse part
                   self.emit data.type, data.id, data.created_at, data.room_id, data.user_id, data.body
                 catch err
-                  @robot.logger.error "Campfire error: #{err}"
+                  logger.error "Campfire error: #{err}"
 
-        response.on "end", =>
-          @robot.logger.error "Streaming connection closed for room #{id}. :("
+        response.on "end", ->
+          logger.error "Streaming connection closed for room #{id}. :("
           setTimeout (->
             self.emit "reconnect", id
           ), 5000
 
-        response.on "error", (err) =>
-          @robot.logger.error "Campfire response error: #{err}"
+        response.on "error", (err) ->
+          logger.error "Campfire response error: #{err}"
 
       request.on "error", (err) ->
-        @robot.logger.error "Campfire request error: #{err}"
+        logger.error "Campfire request error: #{err}"
 
       request.end()
 
@@ -204,27 +205,27 @@ class CampfireStreaming extends EventEmitter
       body = new Buffer(body)
       options.headers["Content-Length"] = body.length
 
-    request = HTTPS.request options, (response) =>
+    request = HTTPS.request options, (response) ->
       data = ""
 
-      response.on "data", (chunk) =>
+      response.on "data", (chunk) ->
         data += chunk
 
-      response.on "end", =>
+      response.on "end", ->
         if response.statusCode >= 400
           switch response.statusCode
             when 401
               throw new Error "Invalid access token provided, campfire refused the authentication"
             else
-              @robot.logger.error "Campfire error: #{response.statusCode}"
+              logger.error "Campfire error: #{response.statusCode}"
 
         try
           callback null, JSON.parse(data)
         catch err
           callback null, data or { }
 
-      response.on "error", (err) =>
-        @robot.logger.error "Campfire response error: #{err}"
+      response.on "error", (err) ->
+        logger.error "Campfire response error: #{err}"
         callback err, { }
 
     if method is "POST"
@@ -232,6 +233,6 @@ class CampfireStreaming extends EventEmitter
     else
       request.end()
 
-    request.on "error", (err) =>
-      @robot.logger.error "Campfire request error: #{err}"
+    request.on "error", (err) ->
+      logger.error "Campfire request error: #{err}"
 
