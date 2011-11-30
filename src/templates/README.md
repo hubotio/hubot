@@ -9,7 +9,10 @@ Playing with Hubot
 ==================
 
 You'll need to install the necessary dependencies for hubot. All of
-those dependencies are provided by [npm](http://npmjs.org).
+those dependencies are provided by [npm](http://npmjs.org) except for       
+Redis server.    
+Ubuntu: ```sudo apt-get install redis-server```     
+Then:
 
     % bin/hubot
 
