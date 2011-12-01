@@ -1,5 +1,11 @@
+v2.0.5
+======
+* All adapters have been removed except for shell and campfire
+* Better win32 compatability
+* Campfire reconnects on streaming errors on a per-room basis
+
 v2.0.0
-=====
+======
 * Major adapter overhaul, they're now external - Tom Bell
 * Shell adapter now functions like a REPL - Tom Bell
 * Improved logging using log.js - Tom Bell
