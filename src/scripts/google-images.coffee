@@ -17,6 +17,8 @@ module.exports = (robot) ->
       msg.send url
 
   robot.respond /(?:mo?u)?sta(?:s|c)he?(?: me)? (.*)/i, (msg) ->
+    type = Math.floor(Math.random() * 3)
+    mustachify = "http://mustachify.me/#{type}?src="
     imagery = msg.match[1]
 
     if imagery.match /^https?:\/\//i
@@ -24,8 +26,6 @@ module.exports = (robot) ->
     else
       imageMe msg, imagery, (url) ->
         msg.send "#{mustachify}#{url}"
-
-mustachify = "http://mustachify.me/?src="
 
 imageMe = (msg, query, cb) ->
   msg.http('http://ajax.googleapis.com/ajax/services/search/images')
