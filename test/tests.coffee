@@ -57,8 +57,11 @@ class Danger extends Adapter
     @send user, "#{@robot.name}: #{str}" for str in strings
 
   receive: (text) ->
-    user = new User 1, 'helper'
-    super new Robot.TextMessage user, text
+    if typeof text is 'string'
+      user = new User 1, 'helper'
+      super new Robot.TextMessage user, text
+    else
+      super text
 
 if not process.env.HUBOT_LIVE
   class Helper.Response extends Robot.Response

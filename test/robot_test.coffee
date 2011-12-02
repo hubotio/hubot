@@ -7,7 +7,7 @@ server = require('http').createServer (req, res) ->
   res.end "fetched"
 
 server.listen 9001, ->
-  assert.equal 4, helper.listeners.length
+  assert.equal 5, helper.listeners.length
   assert.equal 0, helper.sent.length
 
   helper.adapter.receive 'test'
@@ -22,6 +22,7 @@ server.listen 9001, ->
   assert.equal 3, helper.sent.length
   assert.ok helper.sent[2].match(/^(1|2)$/)
 
+
   # Test that when we message a room, the 'recipient' is the robot user and the room attribute is set properly
   helper.messageRoom "chat@example.com", "Hello room"
   assert.equal 4, helper.sent.length
@@ -29,9 +30,14 @@ server.listen 9001, ->
   assert.equal helper.id, helper.recipients[3].id
   assert.equal "Hello room", helper.sent[3]
 
+  helper.adapter.receive 'foobar'
+  assert.equal 5, helper.sent.length
+  assert.equal 'catch-all', helper.sent[4]
+
+
   # set a callback for when the next message is replied to
   helper.cb = (msg) ->
-    assert.equal 5, helper.sent.length
+    assert.equal 6, helper.sent.length
     assert.equal 'fetched', msg
     helper.close()
     server.close()
