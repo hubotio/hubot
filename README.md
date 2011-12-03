@@ -33,7 +33,7 @@ contributor.
 
 **NOTE**: If you've already released an adapter, remove the hubot dependecy
 from the `package.json` file as this causes hubot to be installed twice
-causes some issues.
+and causes some issues.
 
 Below is an example of requiring hubot to extend `Adapter` and exporting
 a `use` function that will be used to load your adapter when used.
