@@ -29,8 +29,11 @@ directory will need to have ownership claimed preferably by the original
 contributor.
 
 1. Start a project for the hubot adapter npm package
-2. Add `hubot` 2.0 as a dependency to your `package.json` file
-3. Add your main adapter file as the `main` file in `package.json`
+2. Add your main adapter file as the `main` file in `package.json`
+
+**NOTE**: If you've already released an adapter, remove the hubot dependecy
+from the `package.json` file as this causes hubot to be installed twice
+causes some issues.
 
 Below is an example of requiring hubot to extend `Adapter` and exporting
 a `use` function that will be used to load your adapter when used.
