@@ -2,74 +2,54 @@
 
 This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
-You'll probably never have to hack on this repo directly. Instead this repo
-provides a library that's distributed by npm that you simply require in your
-project.
+**You'll probably never have to hack on this repo directly.**
 
-## Getting Your Own
+Instead this repo provides a library that's distributed by `npm` that you
+simply require in your project. Follow the instructions below and get your own
+hubot ready to deploy.
 
-Make sure you have [node.js](http://nodejs.org/) and [npm](http://npmjs.org/)
-installed.
+## Getting your own
 
-Download the [latest version of hubot](https://github.com/github/hubot/downloads).
+Make sure you have [node.js][nodejs] and [npm][npmjs] installed.
 
-Then follow the instructions in the README in the `hubot` directory.
+Download the [latest version of hubot][hubot-latest].
+
+Then follow the instructions in the [README][readme] in the extracted `hubot`
+directory.
+
+[nodejs]: http://nodejs.org
+[npmjs]: http://npmjs.org
+[hubot-latest]: https://github.com/github/hubot/downloads
+[readme]: https://github.com/github/hubot/blob/master/src/templates/README.md
 
 ## Adapters
 
-Hubot ships with Campfire and Shell adapters. A number of third-party adapters
-exist which you can install with npm and then use that with your hubot.
-
-### Creating an Adapter
-
-Creating an adapter for hubot is very simple. So simple infact hubot himself
-has written his own adapters. Adapters in the
-[third-party](https://github.com/github/hubot/tree/master/src/adapters/third-party)
-directory will need to have ownership claimed preferably by the original
-contributor.
-
-1. Start a project for the hubot adapter npm package
-2. Add your main adapter file as the `main` file in `package.json`
-
-**NOTE**: If you've already released an adapter, remove the hubot dependecy
-from the `package.json` file as this causes hubot to be installed twice
-and causes some issues.
-
-Below is an example of requiring hubot to extend `Adapter` and exporting
-a `use` function that will be used to load your adapter when used.
-
-You will also have access to a `@robot.logger` instance which you can use
-for logging. Check out [log.js](https://github.com/visionmedia/log.js) for more
-information about the logging library used in hubot.
-
-```coffeescript
-
-Robot   = require("hubot").robot()
-Adapter = require("hubot").adapter()
-
-class MyAdapter extends Adapter
-  # You'll want to override the various methods see existing adapters
-  # ...
-
-exports.use = (robot) ->
-  new MyAdapter robot
-
-```
+Adapters are the interface to the service you want your hubot to run on. This
+can be something like Campfire or IRC. There are a number of third party
+adapters that the community have contributed. Check the
+[hubot wiki][hubot-wiki] for the available ones and how to create your own.
 
 Please submit issues and pull requests for third party adapters to the adapter
 repo not this repo unless it's the Campfire or Shell adapter.
 
-## Scripts
+[hubot-wiki]: https://github.com/github/hubot/wiki
+[third-party-adapters]: https://github.com/github/hubot/tree/master/src/adapters/third-party
+[split-subpath]: http://help.github.com/split-a-subpath-into-a-new-repo/
+[logjs]: https://github.com/visionmedia/log.js
+
+## hubot-scripts
 
 Hubot ships with a number of default scripts, but there's a growing number of
-extras in the [hubot-scripts](https://github.com/github/hubot-scripts)
-repository. `hubot-scripts` is a way to share scripts with the entire
-community.
+extras in the [hubot-scripts][hubot-scripts] repository. `hubot-scripts` is a
+way to share scripts with the entire community.
 
-Check out the [README](https://github.com/github/hubot-scripts#readme)
-for more help on installing individual scripts.
+Check out the [README][hubot-scripts-readme] for more help on installing
+individual scripts.
 
-## Local Testing
+[hubot-scripts]: https://github.com/github/hubot-scripts
+[hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
+
+## Testing hubot locally
 
 Install all of the required dependencies by running `npm install`.
 
@@ -78,7 +58,7 @@ It's easy to test scripts locally with an interactive shell:
     % export PATH="node_modules/.bin:$PATH"
     % bin/hubot
 
-... and to run tests:
+... and to run unit tests:
 
     % make test
 
