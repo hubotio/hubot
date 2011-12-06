@@ -1,3 +1,7 @@
+v2.0.6
+======
+* Don't kill all username looks if some users don't have name attribute
+
 v2.0.5
 ======
 * All adapters have been removed except for shell and campfire
