@@ -200,7 +200,8 @@ class Robot
     result = null
     lowerName = name.toLowerCase()
     for k of (@brain.data.users or { })
-      if @brain.data.users[k]['name'].toLowerCase() is lowerName
+      userName = @brain.data.users[k]['name']
+      if userName? and userName.toLowerCase() is lowerName
         result = @brain.data.users[k]
     result
 
