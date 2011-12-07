@@ -1,3 +1,8 @@
+v2.0.7
+======
+* Update topic and logger scoping fixups - Horace Ko
+* Don't exit the process if listening to a room is denied
+
 v2.0.6
 ======
 * Don't kill all username looks if some users don't have name attribute
