@@ -152,8 +152,7 @@ class CampfireStreaming extends EventEmitter
 
           else if chunk.match(/^\s*Access Denied/)
             # errors are not json formatted
-            logger.error "Campfire error: #{chunk}"
-            process.exit(1)
+            logger.error "Campfire error on room #{id}: #{chunk}"
 
           else
             # api uses newline terminated json payloads
