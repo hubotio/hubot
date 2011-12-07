@@ -16,8 +16,8 @@ class Campfire extends Adapter
     @send user, strings.map((str) -> "#{user.name}: #{str}")...
 
   topic: (user, strings...) ->
-    @bot.Room(user.room).speak "Changing topic: #{strings.join}"
-    @bot.topic(strings.join("\n"))
+    @bot.Room(user.room).topic strings.join(" / "), (err, data) =>
+      @robot.logger.error "Campfire error: #{err}" if err?
 
   run: ->
     self = @
@@ -113,7 +113,8 @@ class CampfireStreaming extends EventEmitter
       @message text, "PasteMessage", callback
 
     topic: (text, callback) ->
-      self.put "/room/#{id}", text, callback
+      body = {room: {topic: text}}
+      self.put "/room/#{id}", body, callback
 
     sound: (text, callback) ->
       @message text, "SoundMessage", callback
@@ -195,6 +196,8 @@ class CampfireStreaming extends EventEmitter
     @request "PUT", path, body, callback
 
   request: (method, path, body, callback) ->
+    logger = @robot.logger
+
     headers =
       "Authorization" : @authorization
       "Host"          : @domain
@@ -208,7 +211,7 @@ class CampfireStreaming extends EventEmitter
       "method" : method
       "headers": headers
 
-    if method is "POST"
+    if method is "POST" || method is "PUT"
       if typeof(body) isnt "string"
         body = JSON.stringify body
 
@@ -238,7 +241,7 @@ class CampfireStreaming extends EventEmitter
         logger.error "Campfire response error: #{err}"
         callback err, { }
 
-    if method is "POST"
+    if method is "POST" || method is "PUT"
       request.end(body, 'binary')
     else
       request.end()
