@@ -15,6 +15,10 @@ class Campfire extends Adapter
   reply: (user, strings...) ->
     @send user, strings.map((str) -> "#{user.name}: #{str}")...
 
+  topic: (user, strings...) ->
+    @bot.Room(user.room).speak "Changing topic: #{strings.join}"
+    @bot.topic(strings.join("\n"))
+
   run: ->
     self = @
 
@@ -108,6 +112,9 @@ class CampfireStreaming extends EventEmitter
     paste: (text, callback) ->
       @message text, "PasteMessage", callback
 
+    topic: (text, callback) ->
+      self.put "/room/#{id}", text, callback
+
     sound: (text, callback) ->
       @message text, "SoundMessage", callback
 
@@ -183,6 +190,9 @@ class CampfireStreaming extends EventEmitter
 
   post: (path, body, callback) ->
     @request "POST", path, body, callback
+
+  put: (path, body, callback) ->
+    @request "PUT", path, body, callback
 
   request: (method, path, body, callback) ->
     headers =
