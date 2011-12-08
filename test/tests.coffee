@@ -22,7 +22,7 @@ exports.danger = (helper, cb) ->
 
   server.start = (tests, cb) ->
     server.listen 9001, ->
-      helper.cb = (messages...) ->
+      helper.adapter.cb = (messages...) ->
         tests.shift() messages...
         server.close() if tests.length == 0
 
