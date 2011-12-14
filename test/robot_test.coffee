@@ -22,9 +22,16 @@ server.listen 9001, ->
   assert.equal 3, helper.sent.length
   assert.ok helper.sent[2].match(/^(1|2)$/)
 
+  # Test that when we message a room, the 'recipient' is the robot user and the room attribute is set properly
+  helper.messageRoom "chat@example.com", "Hello room"
+  assert.equal 4, helper.sent.length
+  assert.equal "chat@example.com", helper.recipients[3].room
+  assert.equal helper.id, helper.recipients[3].id
+  assert.equal "Hello room", helper.sent[3]
+
   # set a callback for when the next message is replied to
   helper.cb = (msg) ->
-    assert.equal 4, helper.sent.length
+    assert.equal 5, helper.sent.length
     assert.equal 'fetched', msg
     helper.close()
     server.close()
