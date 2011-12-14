@@ -175,6 +175,15 @@ class Robot
   send: (user, strings...) ->
     @adapter.send user, strings...
 
+  # Public: A helper send function to message a room that the robot is in
+  #
+  # room    - String designating the room to message
+  # strings - One or more Strings for each message to send.
+  messageRoom: (room, strings...) ->
+    user = @userForId @id, { room: room }
+    @adapter.send user, strings...
+
+
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
   #

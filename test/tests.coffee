@@ -35,10 +35,10 @@ class Helper extends Robot
   constructor: (scriptPath) ->
     super null, null, 'helper'
     @load scriptPath
-
+    @id = 1
     @Response = Helper.Response
     @sent = []
-
+    @recipients = []
     @adapter = new Danger @
 
   stop: ->
@@ -50,6 +50,7 @@ class Helper extends Robot
 class Danger extends Adapter
   send: (user, strings...) ->
     @robot.sent.push str for str in strings
+    @robot.recipients.push user for str in strings
     @cb? strings...
 
   reply: (user, strings...) ->
