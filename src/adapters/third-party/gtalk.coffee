@@ -7,6 +7,8 @@ class Gtalkbot extends Adapter
   run: ->
     Xmpp.JID.prototype.from = -> @bare().toString()
 
+    @name = 'Hubot'
+	
     # Client Options
     @options = 
       username: process.env.HUBOT_GTALK_USERNAME
@@ -28,13 +30,13 @@ class Gtalkbot extends Adapter
       port: @options.port
 
     # Events
-    @client.on 'online', @online
-    @client.on 'stanza', @readStanza
-    @client.on 'error', @error
+    @client.on 'online', => @online()
+    @client.on 'stanza', (stanza) => @readStanza(stanza)
+    @client.on 'error', => @error()
 
   online: ->
     @client.send new Xmpp.Element('presence')
-    
+
     # He is alive!
     console.log @name + ' is online, talk.google.com!'
 
@@ -46,7 +48,7 @@ class Gtalkbot extends Adapter
 
     # Check for buddy requests every so often
     @client.send roster_query
-    setInterval ->
+    setInterval =>
       @client.send roster_query
     , @options.keepaliveInterval
 
@@ -86,12 +88,14 @@ class Gtalkbot extends Adapter
     return unless body
 
     message = body.getText()
+    console.log 'Body:', message
 
     # Pad the message with robot name just incase it was not provided.
     message = if not message.match(new RegExp("^"+@name+":?","i")) then @name + " " + message else message
 
     # Send the message to the robot
-    @receive new Robot.TextMessage @getUser(jid), message
+    user = @getUser jid
+    @receive new Robot.TextMessage(user, message)
 
   handlePresence: (stanza) ->
     jid = new Xmpp.JID(stanza.attrs.from)
@@ -187,5 +191,5 @@ class Gtalkbot extends Adapter
     console.error err
 
 exports.use = (robot) ->
-  new GtalkBot robot
+  new Gtalkbot robot
 
