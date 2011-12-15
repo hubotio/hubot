@@ -88,7 +88,6 @@ class Gtalkbot extends Adapter
     return unless body
 
     message = body.getText()
-    console.log 'Body:', message
 
     # Pad the message with robot name just incase it was not provided.
     message = if not message.match(new RegExp("^"+@name+":?","i")) then @name + " " + message else message
