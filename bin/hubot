@@ -85,12 +85,6 @@ else
   robot.enableSlash = Options.enableSlash
   robot.alias = Options.alias
 
-  scriptsPath = Path.resolve ".", "scripts"
-  robot.load scriptsPath
-
-  scriptsPath = Path.resolve "src", "scripts"
-  robot.load scriptsPath
-
   scriptsFile = Path.resolve "hubot-scripts.json"
   Path.exists scriptsFile, (exists) =>
     if exists
@@ -98,6 +92,13 @@ else
         scripts = JSON.parse data
         scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
         robot.loadHubotScripts scriptsPath, scripts
+
+  scriptsPath = Path.resolve ".", "scripts"
+  robot.load scriptsPath
+
+  scriptsPath = Path.resolve "src", "scripts"
+  robot.load scriptsPath
+
 
   robot.run()
 

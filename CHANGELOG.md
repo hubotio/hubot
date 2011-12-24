@@ -1,4 +1,10 @@
 v2.1.1
+* Update behaviour of finishing further execution of listeners
+* Scripts are now loaded in the following order
+  * Scripts defined in `./hubot-scripts.json` are loaded in order
+  * Scripts are loaded alphabetically from `/scripts`
+
+v2.1.1
 ======
 * The hwhoops release, finish/done behavior is handled elsewhere
 

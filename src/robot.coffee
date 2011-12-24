@@ -92,6 +92,7 @@ class Robot
     for listener in @listeners
       try
         listener.call message
+        break if message.done
       catch ex
         @logger.error "Unable to call the listener: #{ex}"
 
@@ -301,7 +302,7 @@ class Listener
   # Returns nothing.
   call: (message) ->
     if match = @matcher message
-      @callback new @robot.Response(@robot, message, match) unless message.done
+      @callback new @robot.Response(@robot, message, match) 
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
