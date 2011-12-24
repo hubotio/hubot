@@ -167,7 +167,7 @@ class Robot
   #
   # Returns nothing.
   loadAdapter: (path, adapter) ->
-    @logger.info "Loading adapter #{adapter}"
+    @logger.debug "Loading adapter #{adapter}"
 
     try
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
@@ -287,11 +287,10 @@ class Robot
   parseVersion: ->
     package_path = __dirname + "/../package.json"
 
-    console.log package_path
-    data = Fs.readFileSync package_path, 'utf8', (err,data) =>
+    data = Fs.readFileSync package_path, 'utf8'
 
-    content = JSON.parse(data)
-    @version = content['version']
+    content = JSON.parse data
+    @version = content.version
 
 class Robot.Message
   # Represents an incoming message from the chat.

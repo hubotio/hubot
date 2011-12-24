@@ -71,19 +71,6 @@ if Options.create
   creator = new Creator.Creator(Options.path)
   creator.run()
 
-else if Options.version
-  package_path = __dirname + "/../package.json"
-
-  Fs.readFile package_path, (err,data) ->
-    if err
-      console.error "Could not open package file : %s", err
-      process.exit 1
-
-    content = JSON.parse(data.toString('ascii'))
-    console.log content['version']
-
-    process.exit 0
-
 else
   adapterPath = Path.resolve __dirname, "..", "src", "adapters"
 
@@ -91,6 +78,10 @@ else
                         Options.adapter,
                         Options.enableHttpd,
                         Options.name
+
+  if Options.version
+    console.log robot.version
+    process.exit 0
 
   robot.enableSlash = Options.enableSlash
   robot.alias = Options.alias
