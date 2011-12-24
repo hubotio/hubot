@@ -23,10 +23,21 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
+    connect      = require 'connect'
+    @connect     = connect()
 
     @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
     @loadAdapter adapterPath, adapter if adapter?
+
+  # Public: Specify a router and callback to register as Connect middleware.
+  #
+  # route    - A String of the route to match.
+  # callback - A Function that is called when the route is requested
+  #
+  # Returns nothing.
+  route: (route, callback) ->
+    @connect.use route, callback
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -241,6 +252,7 @@ class Robot
     matchedUsers
 
   run: ->
+    @connect.listen process.env.PORT
     @adapter.run()
 
   shutdown: ->
