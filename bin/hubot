@@ -19,6 +19,7 @@ Switches = [
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
+  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
 
@@ -28,6 +29,7 @@ Options =
   create: false
   adapter: "shell"
   alias: false
+  enableHttpd: true
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -48,6 +50,9 @@ Parser.on "enable-slash", (opt) ->
 
 Parser.on "alias", (opt, value) ->
   Options.alias = value
+
+Parser.on "disable-httpd", (opt) ->
+  Options.enableHttpd = false
 
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
@@ -81,7 +86,12 @@ else if Options.version
 
 else
   adapterPath = Path.resolve __dirname, "..", "src", "adapters"
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
+
+  robot = Hubot.loadBot adapterPath,
+                        Options.adapter,
+                        Options.enableHttpd,
+                        Options.name
+
   robot.enableSlash = Options.enableSlash
   robot.alias = Options.alias
 

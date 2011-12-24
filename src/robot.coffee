@@ -14,7 +14,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (adapterPath, adapter, name = "Hubot") ->
+  constructor: (adapterPath, adapter, httpd, name = "Hubot") ->
     @name        = name
     @brain       = new Brain
     @alias       = false
@@ -24,10 +24,9 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-
     @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
-    @setupConnect()
+    @setupConnect() if httpd
     @loadAdapter adapterPath, adapter if adapter?
 
   # Public: Specify a router and callback to register as Connect middleware.
@@ -148,13 +147,15 @@ class Robot
   # Sets up basic authentication if parameters are provided
   #
   # Returns: nothing.
-  setupConnect: () ->
+  setupConnect: ->
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
 
     @connect = Connect()
     if user and pass
       @connect.use Connect.basicAuth(user, path)
+
+    @connect.listen process.env.PORT
 
   # Load the adapter Hubot is going to use.
   #
@@ -265,7 +266,6 @@ class Robot
     matchedUsers
 
   run: ->
-    @connect.listen process.env.PORT
     @adapter.run()
 
   shutdown: ->
@@ -279,7 +279,7 @@ class Robot.Message
   constructor: (@user, @done = false) ->
 
   # Indicates that no other Listener should be called on this object
-  finish: () ->
+  finish: ->
     @done = true
 
 class Robot.TextMessage extends Robot.Message
@@ -390,7 +390,7 @@ class Robot.Response
   # Public: Tell the message to stop dispatching to listeners
   #
   # Returns nothing.
-  finish: () ->
+  finish: ->
     @message.finish()
 
   # Public: Creates a scoped http client with chainable methods for
