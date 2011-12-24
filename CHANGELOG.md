@@ -1,4 +1,5 @@
-v2.1.1
+v2.1.2
+======
 * Update behaviour of finishing further execution of listeners
 * Scripts are now loaded in the following order
   * Scripts defined in `./hubot-scripts.json` are loaded in order
