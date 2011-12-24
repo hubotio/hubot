@@ -84,15 +84,18 @@ class Robot
 
   # Public: Passes the given message to any interested Listeners.
   #
-  # message - A Robot.Message instance.
+  # message - A Robot.Message instance. Listeners can flag this message as
+  #  'done' to prevent further execution
   #
   # Returns nothing.
   receive: (message) ->
-    for lst in @listeners
-      try
-        lst.call message
-      catch ex
-        @logger.error "Unable to call the listener: #{ex}"
+    for listener in @listeners
+      unless message.done
+        try
+          listener.call message
+        catch ex
+          @logger.error "Unable to call the listener: #{ex}"
+
 
   # Public: Loads every script in the given path.
   #
@@ -248,7 +251,11 @@ class Robot.Message
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
-  constructor: (@user) ->
+  constructor: (@user, @done = false) ->
+
+  # Indicates that no other Listener should be called on this object
+  finish: () ->
+    @done = true
 
 class Robot.TextMessage extends Robot.Message
   # Represents an incoming message from the chat.
@@ -351,9 +358,15 @@ class Robot.Response
   #
   # items - An Array of items (usually Strings).
   #
-  # Returns a random item.
+  # Returns an random item.
   random: (items) ->
     items[ Math.floor(Math.random() * items.length) ]
+
+  # Public: Tell the message to stop dispatching to listeners
+  #
+  # Returns nothing.
+  finish: () ->
+    @message.finish()
 
   # Public: Creates a scoped http client with chainable methods for
   # modifying the request.  This doesn't actually make a request though.
