@@ -1,10 +1,11 @@
-Fs           = require 'fs'
-Log          = require 'log'
-Path         = require 'path'
-Url          = require 'url'
+Fs      = require 'fs'
+Url     = require 'url'
+Log     = require 'log'
+Path    = require 'path'
+Connect = require 'connect'
 
-Brain        = require './brain'
-User         = require './user'
+User    = require './user'
+Brain   = require './brain'
 
 HUBOT_DEFAULT_ADAPTERS = [ "campfire", "shell" ]
 
@@ -23,8 +24,7 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-    connect      = require 'connect'
-    @connect     = connect()
+    @connect     = Connect()
 
     @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
