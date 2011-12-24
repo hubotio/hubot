@@ -1,3 +1,17 @@
+v2.1.0
+======
+* Introduce Response.finish() to indicate that a message should not be
+  passed on to any other listeners
+* Scripts are evaluated in the following order
+  * `./scripts` is loaded alphabetically
+  * The contents of `./hubot-scripts.json` is loaded in order
+
+    module.exports = (robot) ->
+      robot.respond /\s*yo\s*\\?/i, (msg) ->
+        msg.reply "Yo!"
+        msg.finish()
+
+
 v2.0.7
 ======
 * Update topic and logger scoping fixups - Horace Ko
