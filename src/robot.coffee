@@ -24,10 +24,10 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-    @connect     = Connect()
 
     @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
+    @setupConnect()
     @loadAdapter adapterPath, adapter if adapter?
 
   # Public: Specify a router and callback to register as Connect middleware.
@@ -142,6 +142,19 @@ class Robot
     @logger.info "Loading hubot-scripts from #{path}"
     for script in scripts
       @loadFile path, script
+
+  # Setup the Connect server's defaults
+  #
+  # Sets up basic authentication if parameters are provided
+  #
+  # Returns: nothing.
+  setupConnect: () ->
+    user = process.env.CONNECT_USER
+    pass = process.env.CONNECT_PASSWORD
+
+    @connect = Connect()
+    if user and pass
+      @connect.use Connect.basicAuth(user, path)
 
   # Load the adapter Hubot is going to use.
   #
