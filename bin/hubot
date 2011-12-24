@@ -74,10 +74,7 @@ if Options.create
 else
   adapterPath = Path.resolve __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath,
-                        Options.adapter,
-                        Options.enableHttpd,
-                        Options.name
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
 
   if Options.version
     console.log robot.version
