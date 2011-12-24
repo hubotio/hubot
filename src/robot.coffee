@@ -36,7 +36,7 @@ class Robot
   #
   # Returns nothing.
   route: (route, callback) ->
-    @connect.use route, callback
+    @router.get route, callback
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -157,7 +157,7 @@ class Robot
     @connect.use Connect.router (app) =>
       @router = app
 
-    @connect.listen process.env.PORT
+    @connect.listen process.env.PORT || 8080
 
   # Load the adapter Hubot is going to use.
   #
