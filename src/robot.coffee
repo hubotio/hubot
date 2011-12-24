@@ -152,10 +152,14 @@ class Robot
     pass = process.env.CONNECT_PASSWORD
 
     @connect = Connect()
+
     if user and pass
       @connect.use Connect.basicAuth(user, path)
+
+    @connect.use Connect.bodyParser()
     @connect.use Connect.router (app) =>
       @router = app
+
 
     @connect.listen process.env.PORT || 8080
 
