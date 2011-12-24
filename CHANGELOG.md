@@ -1,3 +1,7 @@
+v2.1.1
+======
+* The hwhoops release, finish/done behavior is handled elsewhere
+
 v2.1.0
 ======
 * Introduce Response.finish() to indicate that a message should not be

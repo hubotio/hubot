@@ -15,7 +15,7 @@
   },
 
   "dependencies": {
-    "hubot": "2.1.0",
+    "hubot": "2.1.1",
     "hubot-scripts": "2.0.2",
     "optparse": "1.0.3"
   }

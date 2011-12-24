@@ -90,11 +90,10 @@ class Robot
   # Returns nothing.
   receive: (message) ->
     for listener in @listeners
-      unless message.done
-        try
-          listener.call message
-        catch ex
-          @logger.error "Unable to call the listener: #{ex}"
+      try
+        listener.call message
+      catch ex
+        @logger.error "Unable to call the listener: #{ex}"
 
 
   # Public: Loads every script in the given path.
@@ -302,7 +301,7 @@ class Listener
   # Returns nothing.
   call: (message) ->
     if match = @matcher message
-      @callback new @robot.Response(@robot, message, match)
+      @callback new @robot.Response(@robot, message, match) unless message.done
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
