@@ -26,6 +26,7 @@ class Robot
     @enableSlash = false
     @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
+    @parseVersion()
     @setupConnect() if httpd
     @loadAdapter adapterPath, adapter if adapter?
 
@@ -267,12 +268,30 @@ class Robot
 
     matchedUsers
 
+  # Kick off the event loop for the adapter
+  #
+  # Returns: Nothing.
   run: ->
     @adapter.run()
 
+  # Public: Gracefully shutdown the robot process
+  #
+  # Returns: Nothing.
   shutdown: ->
     @adapter.close()
     @brain.close()
+
+  # Public: The version of Hubot from npm
+  #
+  # Returns: SemVer compliant version number
+  parseVersion: ->
+    package_path = __dirname + "/../package.json"
+
+    console.log package_path
+    data = Fs.readFileSync package_path, 'utf8', (err,data) =>
+
+    content = JSON.parse(data)
+    @version = content['version']
 
 class Robot.Message
   # Represents an incoming message from the chat.
