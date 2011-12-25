@@ -159,8 +159,23 @@ class Robot
 
     @connect.use Connect.bodyParser()
     @connect.use Connect.router (app) =>
-      @router = app
 
+      @router =
+        get: (route, callback) =>
+          @logger.debug "Registered route: GET #{route}"
+          app.get route, callback
+
+        post: (route, callback) =>
+          @logger.debug "Registered route: POST #{route}"
+          app.post route, callback
+
+        put: (route, callback) =>
+          @logger.debug "Registered route: PUT #{route}"
+          app.put route, callback
+
+        delete: (route, callback) =>
+          @logger.debug "Registered route: DELETE #{route}"
+          app.delete route, callback
 
     @connect.listen process.env.PORT || 8080
 
