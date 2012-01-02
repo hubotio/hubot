@@ -15,6 +15,7 @@ OptParse   = require 'optparse'
 Switches = [
   [ "-h", "--help",            "Display the help information" ],
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
+  [ "-w", "--wait-for-adapter", "Wait for the adapter to emit a boot event before loading scripts" ],
   [ "-c", "--create PATH",     "Create a deployable hubot" ],
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
@@ -30,12 +31,16 @@ Options =
   adapter: "shell"
   alias: false
   enableHttpd: true
+  waitForAdapter: false
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
 
 Parser.on "adapter", (opt, value) ->
   Options.adapter = value
+
+Parser.on "wait-for-adapter", (opt) ->
+  Options.waitForAdapter = true
 
 Parser.on "name", (opt, value) ->
   Options.name = value
@@ -83,20 +88,25 @@ else
   robot.enableSlash = Options.enableSlash
   robot.alias = Options.alias
 
-  scriptsFile = Path.resolve "hubot-scripts.json"
-  Path.exists scriptsFile, (exists) =>
-    if exists
-      Fs.readFile scriptsFile, (err, data) ->
-        scripts = JSON.parse data
-        scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-        robot.loadHubotScripts scriptsPath, scripts
+  loadScripts = ->
+    scriptsPath = Path.resolve ".", "scripts"
+    robot.load scriptsPath
 
-  scriptsPath = Path.resolve ".", "scripts"
-  robot.load scriptsPath
+    scriptsPath = Path.resolve "src", "scripts"
+    robot.load scriptsPath
 
-  scriptsPath = Path.resolve "src", "scripts"
-  robot.load scriptsPath
+    scriptsFile = Path.resolve "hubot-scripts.json"
+    Path.exists scriptsFile, (exists) =>
+      if exists
+        Fs.readFile scriptsFile, (err, data) ->
+          scripts = JSON.parse data
+          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+          robot.loadHubotScripts scriptsPath, scripts
 
+  if Options.waitForAdapter
+    robot.adapter.on 'booted', loadScripts
+  else
+    loadScripts()
 
   robot.run()
 
