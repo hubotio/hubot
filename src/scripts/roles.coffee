@@ -27,6 +27,7 @@ module.exports = (robot) ->
         user.roles = user.roles or [ ]
         if user.roles.length > 0
           msg.send "#{name} is #{user.roles.join(", ")}."
+          msg.finish()
         else
           msg.send "#{name} is nothing to me."
       else if users.length > 1
@@ -45,6 +46,7 @@ module.exports = (robot) ->
           user = users[0]
           user.roles = user.roles or [ ]
 
+          msg.finish()
           if newRole in user.roles
             msg.send "I know"
           else
@@ -68,6 +70,7 @@ module.exports = (robot) ->
         user = users[0]
         user.roles = user.roles or [ ]
 
+        msg.finish()
         if newRole not in user.roles
           msg.send "I know."
         else

@@ -70,6 +70,7 @@ module.exports = (robot) ->
     origin = if msg.match[1] isnt undefined then getCode(msg.match[1], languages) else 'auto'
     target = if msg.match[2] isnt undefined then getCode(msg.match[2], languages) else 'en'
     
+    msg.finish()
     msg.http("http://translate.google.com/translate_a/t")
       .query({
         client: 't'

@@ -7,6 +7,7 @@
 
 module.exports = (robot) ->
   robot.respond /help\s*(.*)?$/i, (msg) ->
+    msg.finish()
     cmds = robot.helpCommands()
     if msg.match[1]
       cmds = cmds.filter (cmd) -> cmd.match(new RegExp(msg.match[1]))
