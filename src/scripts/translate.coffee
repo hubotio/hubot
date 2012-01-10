@@ -83,6 +83,7 @@ module.exports = (robot) ->
         uptl: "en"
         text: term
       })
+      .header('User-Agent', 'Mozilla/5.0')
       .get() (err, res, body) ->
         data   = body
         if data.length > 4 && data[0] == '['
