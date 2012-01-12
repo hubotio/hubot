@@ -19,6 +19,7 @@ Switches = [
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
+  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
 
@@ -28,6 +29,7 @@ Options =
   create: false
   adapter: "shell"
   alias: false
+  enableHttpd: true
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -49,6 +51,9 @@ Parser.on "enable-slash", (opt) ->
 Parser.on "alias", (opt, value) ->
   Options.alias = value
 
+Parser.on "disable-httpd", (opt) ->
+  Options.enableHttpd = false
+
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
   process.exit 0
@@ -66,22 +71,15 @@ if Options.create
   creator = new Creator.Creator(Options.path)
   creator.run()
 
-else if Options.version
-  package_path = __dirname + "/../package.json"
-
-  Fs.readFile package_path, (err,data) ->
-    if err
-      console.error "Could not open package file : %s", err
-      process.exit 1
-
-    content = JSON.parse(data.toString('ascii'))
-    console.log content['version']
-
-    process.exit 0
-
 else
   adapterPath = Path.resolve __dirname, "..", "src", "adapters"
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
+
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
+
+  if Options.version
+    console.log robot.version
+    process.exit 0
+
   robot.enableSlash = Options.enableSlash
   robot.alias = Options.alias
 
