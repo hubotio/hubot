@@ -1,10 +1,11 @@
-Fs           = require 'fs'
-Log          = require 'log'
-Path         = require 'path'
-Url          = require 'url'
+Fs      = require 'fs'
+Url     = require 'url'
+Log     = require 'log'
+Path    = require 'path'
+Connect = require 'connect'
 
-Brain        = require './brain'
-User         = require './user'
+User    = require './user'
+Brain   = require './brain'
 
 HUBOT_DEFAULT_ADAPTERS = [ "campfire", "shell" ]
 
@@ -13,7 +14,7 @@ class Robot
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (adapterPath, adapter, name = "Hubot") ->
+  constructor: (adapterPath, adapter, httpd, name = "Hubot") ->
     @name        = name
     @brain       = new Brain
     @alias       = false
@@ -23,10 +24,20 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-
     @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
+    @parseVersion()
+    @setupConnect() if httpd
     @loadAdapter adapterPath, adapter if adapter?
+
+  # Public: Specify a router and callback to register as Connect middleware.
+  #
+  # route    - A String of the route to match.
+  # callback - A Function that is called when the route is requested
+  #
+  # Returns nothing.
+  route: (route, callback) ->
+    @router.get route, callback
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -132,6 +143,42 @@ class Robot
     for script in scripts
       @loadFile path, script
 
+  # Setup the Connect server's defaults
+  #
+  # Sets up basic authentication if parameters are provided
+  #
+  # Returns: nothing.
+  setupConnect: ->
+    user = process.env.CONNECT_USER
+    pass = process.env.CONNECT_PASSWORD
+
+    @connect = Connect()
+
+    if user and pass
+      @connect.use Connect.basicAuth(user, path)
+
+    @connect.use Connect.bodyParser()
+    @connect.use Connect.router (app) =>
+
+      @router =
+        get: (route, callback) =>
+          @logger.debug "Registered route: GET #{route}"
+          app.get route, callback
+
+        post: (route, callback) =>
+          @logger.debug "Registered route: POST #{route}"
+          app.post route, callback
+
+        put: (route, callback) =>
+          @logger.debug "Registered route: PUT #{route}"
+          app.put route, callback
+
+        delete: (route, callback) =>
+          @logger.debug "Registered route: DELETE #{route}"
+          app.delete route, callback
+
+    @connect.listen process.env.PORT || 8080
+
   # Load the adapter Hubot is going to use.
   #
   # path    - A String of the path to adapter if local.
@@ -139,7 +186,7 @@ class Robot
   #
   # Returns nothing.
   loadAdapter: (path, adapter) ->
-    @logger.info "Loading adapter #{adapter}"
+    @logger.debug "Loading adapter #{adapter}"
 
     try
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
@@ -240,12 +287,29 @@ class Robot
 
     matchedUsers
 
+  # Kick off the event loop for the adapter
+  #
+  # Returns: Nothing.
   run: ->
     @adapter.run()
 
+  # Public: Gracefully shutdown the robot process
+  #
+  # Returns: Nothing.
   shutdown: ->
     @adapter.close()
     @brain.close()
+
+  # Public: The version of Hubot from npm
+  #
+  # Returns: SemVer compliant version number
+  parseVersion: ->
+    package_path = __dirname + "/../package.json"
+
+    data = Fs.readFileSync package_path, 'utf8'
+
+    content = JSON.parse data
+    @version = content.version
 
 class Robot.Message
   # Represents an incoming message from the chat.
@@ -254,7 +318,7 @@ class Robot.Message
   constructor: (@user, @done = false) ->
 
   # Indicates that no other Listener should be called on this object
-  finish: () ->
+  finish: ->
     @done = true
 
 class Robot.TextMessage extends Robot.Message
@@ -365,7 +429,7 @@ class Robot.Response
   # Public: Tell the message to stop dispatching to listeners
   #
   # Returns nothing.
-  finish: () ->
+  finish: ->
     @message.finish()
 
   # Public: Creates a scoped http client with chainable methods for
