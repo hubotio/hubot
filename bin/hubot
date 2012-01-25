@@ -104,7 +104,7 @@ else
           robot.loadHubotScripts scriptsPath, scripts
 
   if Options.waitForAdapter
-    robot.adapter.on 'booted', loadScripts
+    robot.adapter.on 'connected', loadScripts
   else
     loadScripts()
 
