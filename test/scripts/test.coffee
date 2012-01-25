@@ -16,3 +16,5 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         msg.send body
 
+  robot.catchall (msg) ->
+    msg.send 'catch-all' if msg.message.text is 'foobar'

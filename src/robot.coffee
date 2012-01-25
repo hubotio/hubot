@@ -93,6 +93,15 @@ class Robot
   leave: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
 
+
+  # Public: Adds a Listener that triggers when no other text matchers match.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  catchall: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
+
   # Public: Passes the given message to any interested Listeners.
   #
   # message - A Robot.Message instance. Listeners can flag this message as
@@ -100,12 +109,15 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    for listener in @listeners
+    results = for listener in @listeners
       try
         listener.call message
         break if message.done
       catch ex
         @logger.error "Unable to call the listener: #{ex}"
+        false
+    if message not instanceof Robot.CatchAllMessage and results.indexOf(true) is -1
+      @receive new Robot.CatchAllMessage(message)
 
 
   # Public: Loads every script in the given path.
@@ -347,6 +359,12 @@ class Robot.EnterMessage extends Robot.Message
 # user - A User instance for the user who left.
 class Robot.LeaveMessage extends Robot.Message
 
+class Robot.CatchAllMessage extends Robot.Message
+  # Represents a message that no matchers matched.
+  #
+  # message - The original message.
+  constructor: (@message) ->
+
 class Listener
   # Listeners receive every message from the chat source and decide if they
   # want to act on it.
@@ -363,10 +381,13 @@ class Listener
   #
   # message - a Robot.Message instance.
   #
-  # Returns nothing.
+  # Returns a boolean of whether the matcher matched.
   call: (message) ->
     if match = @matcher message
-      @callback new @robot.Response(@robot, message, match) 
+      @callback new @robot.Response(@robot, message, match)
+      true
+    else
+      false
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
