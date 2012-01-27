@@ -109,9 +109,10 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    results = for listener in @listeners
+    results = []
+    for listener in @listeners
       try
-        listener.call message
+        results.push listener.call(message)
         break if message.done
       catch ex
         @logger.error "Unable to call the listener: #{ex}"
