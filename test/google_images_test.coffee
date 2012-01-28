@@ -1,7 +1,7 @@
 Tests  = require './tests'
 assert = require 'assert'
 helper = Tests.helper()
-
+Robot  = require '../src/robot'
 require('../src/scripts/google-images') helper
 
 # start up a danger room for google images
@@ -28,14 +28,20 @@ tests = [
 ]
 
 # run the async tests
+messages = [
+  'helper: stache me foo',
+  'helper: stache foo',
+  'helper: mustache me foo',
+  'helper: mustache foo',
+  'helper: img foo',
+  'helper: image me foo',
+  'helper: image foo',
+  'helper: animate me foo'
+]
+user = {}
 danger.start tests, ->
-  helper.receive 'helper: stache me foo'
-  helper.receive 'helper: stache foo'
-  helper.receive 'helper: mustache me foo'
-  helper.receive 'helper: mustache foo'
-  helper.receive 'helper: img foo'
-  helper.receive 'helper: image me foo'
-  helper.receive 'helper: image foo'
-  helper.receive 'helper: animate me foo'
+  for message in messages
+    helper.receive new Robot.TextMessage user, message
+
   helper.stop()
 

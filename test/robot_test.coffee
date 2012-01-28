@@ -1,6 +1,7 @@
 Tests  = require './tests'
 assert = require 'assert'
 helper = Tests.helper()
+require './scripts/test'
 
 server = require('http').createServer (req, res) ->
   res.writeHead 200
