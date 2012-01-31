@@ -1,3 +1,14 @@
+v2.1.3
+======
+* Hubot now has a web interface and supports connect middleware, examples in httpd.coffee - atmos / tombell
+    module.exports = (robot) ->
+      robot.router.get "/hubot/version", (req, res) ->
+        res.end robot.version
+* Add a catchAll callback that handles responses that match nothing else - titanous / ejfinnerman
+    module.exports = (robot) ->
+      robot.catchAll (msg) ->
+        router.get "/hubot/version", (req, res) ->
+
 v2.1.2
 ======
 * Update behaviour of finishing further execution of listeners
