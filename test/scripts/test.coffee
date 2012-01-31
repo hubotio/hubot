@@ -16,5 +16,5 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         msg.send body
 
-  robot.catchall (msg) ->
+  robot.catchAll (msg) ->
     msg.send 'catch-all'

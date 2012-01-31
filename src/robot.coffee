@@ -99,7 +99,7 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  catchall: (callback) ->
+  catchAll: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
 
   # Public: Passes the given message to any interested Listeners.
