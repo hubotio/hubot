@@ -1,5 +1,5 @@
-v2.1.3
-======
+v2.1.3 - The Heat Stroke Release
+================================
 * Hubot now has a web interface and supports connect middleware, examples in httpd.coffee - atmos / tombell
     module.exports = (robot) ->
       robot.router.get "/hubot/version", (req, res) ->
