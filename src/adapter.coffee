@@ -1,6 +1,7 @@
 Robot      = require './robot'
+event     = require 'events'
 
-class Adapter
+class Adapter extends event.EventEmitter
   # An adapter is a specific interface to a chat source for robots.
   #
   # robot - A Robot instance.

@@ -34,9 +34,9 @@ class Shell extends Adapter
       user = @userForId '1', name: "Shell", room: "Shell"
       @receive new Robot.TextMessage user, buffer
 
+    self.emit "connected"
     @repl.setPrompt "#{@robot.name}> "
     @repl.prompt()
 
 exports.use = (robot) ->
   new Shell robot
-
