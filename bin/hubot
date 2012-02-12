@@ -15,7 +15,6 @@ OptParse   = require 'optparse'
 Switches = [
   [ "-h", "--help",            "Display the help information" ],
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-w", "--wait-for-adapter", "Wait for the adapter to emit a boot event before loading scripts" ],
   [ "-c", "--create PATH",     "Create a deployable hubot" ],
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
@@ -103,12 +102,8 @@ else
           scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
           robot.loadHubotScripts scriptsPath, scripts
 
-  if Options.waitForAdapter
-    robot.adapter.on 'connected', loadScripts
-  else
-    loadScripts()
+  robot.adapter.on 'connected', loadScripts
 
   robot.run()
 
 # vim:ft=coffee ts=2 sw=2 et :
-
