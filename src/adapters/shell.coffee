@@ -15,6 +15,7 @@ class Shell extends Adapter
     @send user, strings...
 
   run: ->
+    self = @
     stdin = process.openStdin()
     stdout = process.stdout
 
