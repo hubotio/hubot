@@ -65,6 +65,8 @@ class Campfire extends Adapter
 
     @bot = bot
 
+    self.emit "connected"
+
 exports.use = (robot) ->
   new Campfire robot
 
@@ -247,4 +249,3 @@ class CampfireStreaming extends EventEmitter
 
     request.on "error", (err) ->
       logger.error "Campfire request error: #{err}"
-
