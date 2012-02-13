@@ -31,16 +31,12 @@ Options =
   adapter: "shell"
   alias: false
   enableHttpd: true
-  waitForAdapter: false
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
 
 Parser.on "adapter", (opt, value) ->
   Options.adapter = value
-
-Parser.on "wait-for-adapter", (opt) ->
-  Options.waitForAdapter = true
 
 Parser.on "name", (opt, value) ->
   Options.name = value
