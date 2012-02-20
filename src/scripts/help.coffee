@@ -10,5 +10,7 @@ module.exports = (robot) ->
     cmds = robot.helpCommands()
     if msg.match[1]
       cmds = cmds.filter (cmd) -> cmd.match(new RegExp(msg.match[1]))
-    msg.send cmds.join("\n")
-
+    emit = cmds.join("\n")
+    unless robot.name is 'Hubot'
+      emit = emit.replace(/(H|h)ubot/g, robot.name)
+    msg.send emit
