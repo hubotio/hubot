@@ -38,7 +38,7 @@ module.exports = (robot) ->
     name    = msg.match[1]
     newRole = msg.match[2].trim()
 
-    unless name in ['who', 'what', 'where', 'when', 'why']
+    unless name in ['', 'who', 'what', 'where', 'when', 'why']
       unless newRole.match(/^not\s+/i)
         users = robot.usersForFuzzyName(name)
         if users.length is 1
