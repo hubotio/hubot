@@ -1,10 +1,27 @@
+v2.1.4
+======
+* Hubot now keeps himself alive due to Heroku's web processes shutting down
+  when idle - tombell
+
+* Hubot's image search is now defaulted to safe search - kylev
+
+* Hubot now emits a 'connected' event when he connects to the chosen
+  adapter - sbryant
+
+* Fix the roles.coffee not to respond to empty names - christierney
+
 v2.1.3 - The Heat Stroke Release
 ================================
-* Hubot now has a web interface and supports connect middleware, examples in httpd.coffee - atmos / tombell
+* Hubot now has a web interface and supports connect middleware, examples in
+  httpd.coffee - atmos / tombell
+
     module.exports = (robot) ->
       robot.router.get "/hubot/version", (req, res) ->
         res.end robot.version
-* Add a catchAll callback that handles responses that match nothing else - titanous / ejfinnerman
+
+* Add a catchAll callback that handles responses that match nothing
+  else - titanous / ejfinnerman
+
     module.exports = (robot) ->
       robot.catchAll (msg) ->
         router.get "/hubot/version", (req, res) ->
@@ -32,7 +49,6 @@ v2.1.0
       robot.respond /\s*yo\s*\\?/i, (msg) ->
         msg.reply "Yo!"
         msg.finish()
-
 
 v2.0.7
 ======
