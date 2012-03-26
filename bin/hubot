@@ -14,13 +14,13 @@ Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 
 Switches = [
-  [ "-h", "--help",            "Display the help information" ],
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
   [ "-c", "--create PATH",     "Create a deployable hubot" ],
-  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
+  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
+  [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
+  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
 
@@ -38,19 +38,9 @@ Parser.banner = "Usage hubot [options]"
 Parser.on "adapter", (opt, value) ->
   Options.adapter = value
 
-Parser.on "name", (opt, value) ->
-  Options.name = value
-
 Parser.on "create", (opt, value) ->
   Options.path = value
   Options.create = true
-
-Parser.on "enable-slash", (opt) ->
-  console.log "WARNING: -s and --enable-slash are deprecated please use -l or --alias '/'"
-  Options.alias = '/'
-
-Parser.on "alias", (opt, value) ->
-  Options.alias = value
 
 Parser.on "disable-httpd", (opt) ->
   Options.enableHttpd = false
@@ -58,6 +48,16 @@ Parser.on "disable-httpd", (opt) ->
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
   process.exit 0
+
+Parser.on "alias", (opt, value) ->
+  Options.alias = value
+
+Parser.on "name", (opt, value) ->
+  Options.name = value
+
+Parser.on "enable-slash", (opt) ->
+  console.log "WARNING: -s and --enable-slash are deprecated please use -l or --alias '/'"
+  Options.alias = '/'
 
 Parser.on "version", (opt, value) ->
   Options.version = true
