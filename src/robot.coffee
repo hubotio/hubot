@@ -166,6 +166,8 @@ class Robot
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
 
+    Connect.router = require 'connect_router'
+
     @connect = Connect()
 
     if user and pass

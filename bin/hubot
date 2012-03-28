@@ -5,6 +5,8 @@
 #
 # Launch an interactive hubot
 #
+# vim:ft=coffee ts=2 sw=2 et :
+# -*- mode:coffee -*-
 
 Hubot      = require '..'
 Fs         = require 'fs'
@@ -103,4 +105,3 @@ else
 
   robot.run()
 
-# vim:ft=coffee ts=2 sw=2 et :
