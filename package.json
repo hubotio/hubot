@@ -16,7 +16,7 @@
 
   "dependencies": {
     "coffee-script": "1.2.0",
-    "commander": "0.5.2",
+    "optparse": "1.0.3",
     "scoped-http-client": "0.9.6",
     "log": "1.3.0",
     "connect": "2.0.3",
