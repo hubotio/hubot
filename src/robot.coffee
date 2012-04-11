@@ -161,7 +161,7 @@ class Robot
   #
   # Sets up basic authentication if parameters are provided
   #
-  # Returns: nothing.
+  # Returns nothing.
   setupConnect: ->
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
@@ -170,9 +170,7 @@ class Robot
 
     @connect = Connect()
 
-    if user and pass
-      @connect.use Connect.basicAuth(user, path)
-
+    @connect.use Connect.basicAuth(user, path) if user and pass
     @connect.use Connect.bodyParser()
     @connect.use Connect.router (app) =>
 
@@ -195,10 +193,12 @@ class Robot
 
     @connect.listen process.env.PORT || 8080
 
-    setInterval =>
-      HttpClient.create("http://localhost:#{process.env.PORT || 8080}/hubot/ping")
-        .post() (err, res, bod) =>
-          @logger.info "Keep alive ping!"
+    hostname = process.env.HEROKU_HOSTNAME || "localhost:#{process.env.PORT || 8080}/"
+
+    setinterval =>
+      httpclient.create("#{hostname}/hubot/ping")
+        .post() (err, res, body) =>
+          @logger.info "keep alive ping!"
     , 1200000
 
   # Load the adapter Hubot is going to use.
