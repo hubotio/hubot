@@ -193,13 +193,14 @@ class Robot
 
     @connect.listen process.env.PORT || 8080
 
-    hostname = process.env.HEROKU_HOSTNAME || "localhost:#{process.env.PORT || 8080}/"
+    hostname = process.env.HEROKU_HOSTNAME
 
-    setinterval =>
-      httpclient.create("#{hostname}/hubot/ping")
-        .post() (err, res, body) =>
-          @logger.info "keep alive ping!"
-    , 1200000
+    if hostname
+      setinterval =>
+        httpclient.create("#{hostname}/hubot/ping")
+          .post() (err, res, body) =>
+            @logger.info "keep alive ping!"
+      , 1200000
 
   # Load the adapter Hubot is going to use.
   #
