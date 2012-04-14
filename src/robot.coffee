@@ -194,7 +194,7 @@ class Robot
     @connect.listen process.env.PORT || 8080
 
     hostname = process.env.HEROKU_URL
-    hostname = "#{hostname}/" unless /\/$/.test hostname
+    hostname += '/' unless /\/$/.test hostname
 
     if hostname
       setInterval =>
