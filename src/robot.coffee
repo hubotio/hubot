@@ -196,8 +196,8 @@ class Robot
     hostname = process.env.HEROKU_HOSTNAME
 
     if hostname
-      setinterval =>
-        httpclient.create("#{hostname}/hubot/ping")
+      setInterval =>
+        HttpClient.create("http://#{hostname}/hubot/ping")
           .post() (err, res, body) =>
             @logger.info "keep alive ping!"
       , 1200000
