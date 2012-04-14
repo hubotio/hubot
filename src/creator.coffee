@@ -17,7 +17,7 @@ class Creator
   mkdirDashP: (path) ->
     Path.exists path, (exists) ->
       unless exists
-        Fs.mkdir path, '0755', (err) ->
+        Fs.mkdir path, 0o0755, (err) ->
           throw err if err
 
   # Copy the contents of a file from one place to another
