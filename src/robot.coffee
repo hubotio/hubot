@@ -197,7 +197,7 @@ class Robot
 
     if hostname
       setInterval =>
-        httpclient.create("#{hostname}/hubot/ping")
+        HttpClient.create("http://#{hostname}/hubot/ping")
           .post() (err, res, body) =>
             @logger.info "keep alive ping!"
       , 1200000
