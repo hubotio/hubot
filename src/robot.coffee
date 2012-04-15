@@ -193,12 +193,12 @@ class Robot
 
     @connect.listen process.env.PORT || 8080
 
-    hostname = process.env.HEROKU_URL
-    hostname += '/' unless /\/$/.test hostname
+    herokuUrl = process.env.HEROKU_URL
 
-    if hostname
+    if herokuUrl
+      herokuUrl += '/' unless /\/$/.test herokuUrl
       setInterval =>
-        HttpClient.create("#{hostname}/hubot/ping")
+        HttpClient.create("#{herokuUrl}hubot/ping")
           .post() (err, res, body) =>
             @logger.info "keep alive ping!"
       , 1200000
