@@ -194,9 +194,9 @@ class Robot
     @connect.listen process.env.PORT || 8080
 
     hostname = process.env.HEROKU_URL
-    hostname += '/' unless /\/$/.test hostname
 
     if hostname
+      hostname += '/' unless /\/$/.test hostname
       setInterval =>
         HttpClient.create("#{hostname}hubot/ping")
           .post() (err, res, body) =>
