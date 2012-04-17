@@ -1,3 +1,9 @@
+v2.2.0
+======
+* Fixed keep alive ping, requires `HEROKU_URL` - tombell and jimeh
+
+* Updated dependency versions - tombell and jimeh
+
 v2.1.4
 ======
 * Hubot now keeps himself alive due to Heroku's web processes shutting down
