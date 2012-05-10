@@ -276,6 +276,11 @@ class Robot
     unless user
       user = new User id, options
       @brain.data.users[id] = user
+
+    if options.room and (!user.room or user.room isnt options.room)
+      user = new User id, options
+      @brain.data.users[id] = user
+
     user
 
   # Public: Get a User object given a name.
