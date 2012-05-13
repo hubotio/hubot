@@ -2,8 +2,8 @@
 #
 # These commands are grabbed from comment blocks at the top of each file.
 #
-# help - Displays all of the help commands that Hubot knows about.
-# help <query> - Displays all help commands that match <query>.
+# hubot help - Displays all of the help commands that Hubot knows about.
+# hubot help <query> - Displays all help commands that match <query>.
 
 module.exports = (robot) ->
   robot.respond /help\s*(.*)?$/i, (msg) ->
