@@ -14,7 +14,7 @@ otherRules = [
 
 # Make sure that hubot knows the rules.
 #
-# the rules - Make sure hubot still knows the rules.
+# hubot the rules - Make sure hubot still knows the rules.
 module.exports = (robot) ->
   robot.respond /(what are )?the (three |3 )?(rules|laws)/i, (msg) ->
     text = msg.message.text
