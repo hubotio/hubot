@@ -115,8 +115,8 @@ class Robot
       try
         results.push listener.call(message)
         break if message.done
-      catch ex
-        @logger.error "Unable to call the listener: #{ex}"
+      catch error
+        @logger.error "Unable to call the listener: #{error}\n#{error.stack}"
         false
     if message not instanceof Robot.CatchAllMessage and results.indexOf(true) is -1
       @receive new Robot.CatchAllMessage(message)
@@ -149,8 +149,8 @@ class Robot
       try
         require(full) @
         @parseHelp "#{path}/#{file}"
-      catch err
-        @logger.error "#{err}"
+      catch error
+        @logger.error "Unable to load #{path}: #{error}\n#{error.stack}"
 
   loadHubotScripts: (path, scripts) ->
     @logger.info "Loading hubot-scripts from #{path}"
@@ -220,7 +220,7 @@ class Robot
 
       @adapter = require("#{path}").use(@)
     catch err
-      @logger.error "Cannot load adapter #{adapter} - #{err}"
+      @logger.error "Cannot load adapter #{adapter} - #{err}\n#{err.stack}"
 
   # Public: Help Commands for Running Scripts
   #
