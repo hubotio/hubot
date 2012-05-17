@@ -128,7 +128,7 @@ class Robot
   #
   # Returns nothing.
   load: (path) ->
-    @logger.info "Loading scripts from #{path}"
+    @logger.debug "Loading scripts from #{path}"
 
     Path.exists path, (exists) =>
       if exists
