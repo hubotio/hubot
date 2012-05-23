@@ -169,8 +169,8 @@ class CampfireStreaming extends EventEmitter
                 try
                   data = JSON.parse part
                   self.emit data.type, data.id, data.created_at, data.room_id, data.user_id, data.body
-                catch err
-                  logger.error "Campfire error: #{err}"
+                catch error
+                  logger.error "Campfire error: #{error}\n#{error.stack}"
 
         response.on "end", ->
           logger.error "Streaming connection closed for room #{id}. :("
@@ -235,7 +235,7 @@ class CampfireStreaming extends EventEmitter
 
         try
           callback null, JSON.parse(data)
-        catch err
+        catch error
           callback null, data or { }
 
       response.on "error", (err) ->
