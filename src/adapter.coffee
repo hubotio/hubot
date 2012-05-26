@@ -1,11 +1,12 @@
-EventEmitter = require('events').EventEmitter
+{EventEmitter} = require 'events'
+HttpClient     = require 'scoped-http-client'
 
 class Adapter extends EventEmitter
   # An adapter is a specific interface to a chat source for robots.
   #
   # robot - A Robot instance.
   constructor: (@robot) ->
-    @httpClient = require 'scoped-http-client'
+    @httpClient = HttpClient
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
@@ -38,8 +39,6 @@ class Adapter extends EventEmitter
   # Public: Dispatch a received message to the robot.
   #
   # message - A TextMessage instance of the received message.
-  #
-  # Returns nothing.
   receive: (message) ->
     @robot.receive message
 
@@ -58,14 +57,12 @@ class Adapter extends EventEmitter
   # Public: Get all users whose names match fuzzyName. Currently, match
   # means 'starts with', but this could be extended to match initials,
   # nicknames, etc.
-  #
   usersForRawFuzzyName: (fuzzyName) ->
     @robot.usersForRawFuzzyName fuzzyName
 
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which
   # fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
-  #
   usersForFuzzyName: (fuzzyName) ->
     @robot.usersForFuzzyName fuzzyName
 

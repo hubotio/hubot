@@ -1,4 +1,4 @@
-EventEmitter = require('events').EventEmitter
+{EventEmitter} = require 'events'
 
 # http://www.the-isb.com/images/Nextwave-Aaron01.jpg
 class Brain extends EventEmitter

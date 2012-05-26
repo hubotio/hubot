@@ -1,31 +1,32 @@
 Fs         = require 'fs'
-Url        = require 'url'
 Log        = require 'log'
 Path       = require 'path'
-Connect    = require 'connect'
 HttpClient = require 'scoped-http-client'
 
-User       = require './user'
-Brain      = require './brain'
+User                                                    = require './user'
+Brain                                                   = require './brain'
+Response                                                = require './response'
+{Listener,TextListener}                                 = require './listener'
+{TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
 
-HUBOT_DEFAULT_ADAPTERS = [ "campfire", "shell" ]
+HUBOT_DEFAULT_ADAPTERS = [ 'campfire', 'shell' ]
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
   # path - String directory full of Hubot scripts to load.
-  constructor: (adapterPath, adapter, httpd, name = "Hubot") ->
+  constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
     @name        = name
     @brain       = new Brain
     @alias       = false
     @adapter     = null
     @commands    = []
-    @Response    = Robot.Response
+    @Response    = Response
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
-    @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
+    @logger      = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
     @setupConnect() if httpd
@@ -59,18 +60,18 @@ class Robot
   #
   # Returns nothing.
   respond: (regex, callback) ->
-    re = regex.toString().split("/")
+    re = regex.toString().split('/')
     re.shift()           # remove empty first item
     modifiers = re.pop() # pop off modifiers
 
-    if re[0] and re[0][0] is "^"
+    if re[0] and re[0][0] is '^'
       @logger.warning "Anchors don't work well with respond, perhaps you want to use 'hear'"
       @logger.warning "The regex in question was #{regex.toString()}"
 
-    pattern = re.join("/") # combine the pattern back again
+    pattern = re.join('/') # combine the pattern back again
 
     if @alias
-      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") # escape alias for regexp
+      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') # escape alias for regexp
       newRegex = new RegExp("^(?:#{alias}[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
@@ -84,7 +85,7 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.EnterMessage), callback)
+    @listeners.push new Listener(@, ((msg) -> msg instanceof EnterMessage), callback)
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
@@ -92,7 +93,7 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.LeaveMessage), callback)
+    @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
 
 
   # Public: Adds a Listener that triggers when no other text matchers match.
@@ -101,11 +102,11 @@ class Robot
   #
   # Returns nothing.
   catchAll: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof Robot.CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
+    @listeners.push new Listener(@, ((msg) -> msg instanceof CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
 
   # Public: Passes the given message to any interested Listeners.
   #
-  # message - A Robot.Message instance. Listeners can flag this message as
+  # message - A Message instance. Listeners can flag this message as
   #  'done' to prevent further execution
   #
   # Returns nothing.
@@ -118,8 +119,8 @@ class Robot
       catch error
         @logger.error "Unable to call the listener: #{error}\n#{error.stack}"
         false
-    if message not instanceof Robot.CatchAllMessage and results.indexOf(true) is -1
-      @receive new Robot.CatchAllMessage(message)
+    if message not instanceof CatchAllMessage and results.indexOf(true) is -1
+      @receive new CatchAllMessage(message)
 
 
   # Public: Loads every script in the given path.
@@ -166,6 +167,7 @@ class Robot
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
 
+    Connect        = require 'connect'
     Connect.router = require 'connect_router'
 
     @connect = Connect()
@@ -200,7 +202,7 @@ class Robot
       setInterval =>
         HttpClient.create("#{herokuUrl}hubot/ping")
           .post() (err, res, body) =>
-            @logger.info "keep alive ping!"
+            @logger.info 'keep alive ping!'
       , 1200000
 
   # Load the adapter Hubot is going to use.
@@ -210,7 +212,7 @@ class Robot
   #
   # Returns nothing.
   loadAdapter: (path, adapter) ->
-    @logger.debug "Loading adapter #{adapter}"
+    @logger.debug 'Loading adapter #{adapter}'
 
     try
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
@@ -234,7 +236,7 @@ class Robot
   #
   # Returns nothing
   parseHelp: (path) ->
-    Fs.readFile path, "utf-8", (err, body) =>
+    Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
       for i, line of body.split("\n")
         break    if !(line[0] == '#' or line.substr(0, 2) == '//')
@@ -333,174 +335,10 @@ class Robot
   #
   # Returns: SemVer compliant version number
   parseVersion: ->
-    package_path = __dirname + "/../package.json"
-
+    package_path = __dirname + '/../package.json'
     data = Fs.readFileSync package_path, 'utf8'
-
     content = JSON.parse data
     @version = content.version
 
-class Robot.Message
-  # Represents an incoming message from the chat.
-  #
-  # user - A User instance that sent the message.
-  constructor: (@user, @done = false) ->
-
-  # Indicates that no other Listener should be called on this object
-  finish: ->
-    @done = true
-
-class Robot.TextMessage extends Robot.Message
-  # Represents an incoming message from the chat.
-  #
-  # user - A User instance that sent the message.
-  # text - The String message contents.
-  constructor: (@user, @text) ->
-    super @user
-
-  # Determines if the message matches the given regex.
-  #
-  # regex - The Regex to check.
-  #
-  # Returns a Match object or null.
-  match: (regex) ->
-    @text.match regex
-
-# Represents an incoming user entrance notification.
-#
-# user - A User instance for the user who entered.
-class Robot.EnterMessage extends Robot.Message
-
-# Represents an incoming user exit notification.
-#
-# user - A User instance for the user who left.
-class Robot.LeaveMessage extends Robot.Message
-
-class Robot.CatchAllMessage extends Robot.Message
-  # Represents a message that no matchers matched.
-  #
-  # message - The original message.
-  constructor: (@message) ->
-
-class Listener
-  # Listeners receive every message from the chat source and decide if they
-  # want to act on it.
-  #
-  # robot    - The current Robot instance.
-  # matcher  - The Function that determines if this listener should trigger the
-  #            callback.
-  # callback - The Function that is triggered if the incoming message matches.
-  constructor: (@robot, @matcher, @callback) ->
-
-  # Public: Determines if the listener likes the content of the message.  If
-  # so, a Response built from the given Message is passed to the Listener
-  # callback.
-  #
-  # message - a Robot.Message instance.
-  #
-  # Returns a boolean of whether the matcher matched.
-  call: (message) ->
-    if match = @matcher message
-      @callback new @robot.Response(@robot, message, match)
-      true
-    else
-      false
-
-class TextListener extends Listener
-  # TextListeners receive every message from the chat source and decide if they want
-  # to act on it.
-  #
-  # robot    - The current Robot instance.
-  # regex    - The Regex that determines if this listener should trigger the
-  #            callback.
-  # callback - The Function that is triggered if the incoming message matches.
-  constructor: (@robot, @regex, @callback) ->
-    @matcher = (message) =>
-      if message instanceof Robot.TextMessage
-        message.match @regex
-
-class Robot.Response
-  # Public: Responses are sent to matching listeners.  Messages know about the
-  # content and user that made the original message, and how to reply back to
-  # them.
-  #
-  # robot   - The current Robot instance.
-  # message - The current Robot.Message instance.
-  # match   - The Match object from the successful Regex match.
-  constructor: (@robot, @message, @match) ->
-
-  # Public: Posts a message back to the chat source
-  #
-  # strings - One or more strings to be posted.  The order of these strings
-  #           should be kept intact.
-  #
-  # Returns nothing.
-  send: (strings...) ->
-    @robot.adapter.send @message.user, strings...
-
-  # Public: Posts a topic changing message
-  #
-  # strings - One or more strings to set as the topic of the
-  #           room the bot is in.
-  #
-  # Returns nothing.
-  topic: (strings...) ->
-    @robot.adapter.topic @message.user, strings...
-
-  # Public: Posts a message mentioning the current user.
-  #
-  # strings - One or more strings to be posted.  The order of these strings
-  #           should be kept intact.
-  #
-  # Returns nothing.
-  reply: (strings...) ->
-    @robot.adapter.reply @message.user, strings...
-
-  # Public: Picks a random item from the given items.
-  #
-  # items - An Array of items (usually Strings).
-  #
-  # Returns an random item.
-  random: (items) ->
-    items[ Math.floor(Math.random() * items.length) ]
-
-  # Public: Tell the message to stop dispatching to listeners
-  #
-  # Returns nothing.
-  finish: ->
-    @message.finish()
-
-  # Public: Creates a scoped http client with chainable methods for
-  # modifying the request.  This doesn't actually make a request though.
-  # Once your request is assembled, you can call `get()`/`post()`/etc to
-  # send the request.
-  #
-  # url - String URL to access.
-  #
-  # Examples:
-  #
-  #     res.http("http://example.com")
-  #       # set a single header
-  #       .header('Authorization', 'bearer abcdef')
-  #
-  #       # set multiple headers
-  #       .headers(Authorization: 'bearer abcdef', Accept: 'application/json')
-  #
-  #       # add URI query parameters
-  #       .query(a: 1, b: 'foo & bar')
-  #
-  #       # make the actual request
-  #       .get() (err, res, body) ->
-  #         console.log body
-  #
-  #       # or, you can POST data
-  #       .post(data) (err, res, body) ->
-  #         console.log body
-  #
-  # Returns a ScopedClient instance.
-  http: (url) ->
-    @httpClient.create(url)
-
-Robot.Response::httpClient = HttpClient
 
 module.exports = Robot

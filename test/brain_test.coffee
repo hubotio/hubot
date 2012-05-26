@@ -1,5 +1,5 @@
 assert = require 'assert'
-Robot  = require '../src/robot'
+
 Brain  = require '../src/brain'
 
 saved   = false
@@ -23,4 +23,3 @@ brain.resetSaveInterval 0.1
 process.on 'exit', ->
   assert.ok saved
   assert.ok closed
-
