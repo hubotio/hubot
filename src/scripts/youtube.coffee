@@ -3,6 +3,7 @@
 # hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
 module.exports = (robot) ->
   robot.respond /(youtube|yt)( me)? (.*)/i, (msg) ->
+    msg.finish()
     query = msg.match[3]
     msg.http("http://gdata.youtube.com/feeds/api/videos")
       .query({

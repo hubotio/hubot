@@ -4,6 +4,7 @@ module.exports = (robot) ->
     msg.send "PONG"
 
   robot.respond /ECHO (.*)$/i, (msg) ->
+    msg.finish()
     msg.send msg.match[1]
 
   robot.respond /TIME$/i, (msg) ->
