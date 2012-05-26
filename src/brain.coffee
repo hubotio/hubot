@@ -1,23 +1,23 @@
-EventEmitter = require('events').EventEmitter
+{EventEmitter} = require 'events'
 
 # http://www.the-isb.com/images/Nextwave-Aaron01.jpg
 class Brain extends EventEmitter
-  # Represents somewhat persistent storage for the robot.
+  # Represents somewhat persistent storage for the robot. Extend this.
   #
-  # Returns a new Brain with no external storage.  Extend this!
+  # Returns a new Brain with no external storage.
   constructor: () ->
     @data =
       users: { }
 
     @resetSaveInterval 5
 
-  # Emits the 'save' event so that 'brain' scripts can handle persisting.
+  # Public: Emits the 'save' event so that 'brain' scripts can handle persisting.
   #
   # Returns nothing.
   save: ->
     @emit 'save', @data
 
-  # Emits the 'close' event so that 'brain' scripts can handle closing.
+  # Public: Emits the 'close' event so that 'brain' scripts can handle closing.
   #
   # Returns nothing.
   close: ->
@@ -25,7 +25,7 @@ class Brain extends EventEmitter
     @save()
     @emit 'close'
 
-  # Reset the interval between save function calls.
+  # Public: Reset the interval between save function calls.
   #
   # seconds - An Integer of seconds between saves.
   #
@@ -36,11 +36,11 @@ class Brain extends EventEmitter
       @save()
     , seconds * 1000
 
-  # Merge keys loaded from a DB against the in memory representation
+  # Public: Merge keys loaded from a DB against the in memory representation.
   #
-  # Returns nothing
+  # Returns nothing.
   #
-  # Caveats: Deeply nested structures don't merge well
+  # Caveats: Deeply nested structures don't merge well.
   mergeData: (data) ->
     for k of (data or { })
       @data[k] = data[k]
@@ -48,4 +48,3 @@ class Brain extends EventEmitter
     @emit 'loaded', @data
 
 module.exports = Brain
-

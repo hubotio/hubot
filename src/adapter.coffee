@@ -1,17 +1,17 @@
-Robot      = require './robot'
-event     = require 'events'
+{EventEmitter} = require 'events'
 
-class Adapter extends event.EventEmitter
+class Adapter extends EventEmitter
   # An adapter is a specific interface to a chat source for robots.
   #
   # robot - A Robot instance.
   constructor: (@robot) ->
-    @httpClient = require 'scoped-http-client'
 
-  # Public: Raw method for sending data back to the chat source.  Extend this.
+  # Public: Raw method for sending data back to the chat source. Extend this.
   #
   # user    - A User instance.
   # strings - One or more Strings for each message to send.
+  #
+  # Returns nothing.
   send: (user, strings...) ->
 
   # Public: Raw method for building a reply and sending it back to the chat
@@ -19,40 +19,49 @@ class Adapter extends event.EventEmitter
   #
   # user    - A User instance.
   # strings - One or more Strings for each reply to send.
+  #
+  # Returns nothing.
   reply: (user, strings...) ->
 
   # Public: Raw method for setting a topic on the chat source. Extend this.
   #
-  # user    - A User instance
+  # user    - A User instance.
   # strings - One more more Strings to set as the topic.
+  #
+  # Returns nothing.
   topic: (user, strings...) ->
 
-  # Public: Raw method for invoking the bot to run
-  # Extend this.
+  # Public: Raw method for invoking the bot to run. Extend this.
+  #
+  # Returns nothing.
   run: ->
 
-  # Public: Raw method for shutting the bot down.
-  # Extend this.
+  # Public: Raw method for shutting the bot down. Extend this.
+  #
+  # Returns nothing.
   close: ->
-    @robot.brain.close()
 
   # Public: Dispatch a received message to the robot.
-  #
-  # message - A TextMessage instance of the received message.
   #
   # Returns nothing.
   receive: (message) ->
     @robot.receive message
 
   # Public: Get an Array of User objects stored in the brain.
+  #
+  # Returns an Array of User objects.
   users: ->
     @robot.users
 
-  # Public: Get a User object given a unique identifier
+  # Public: Get a User object given a unique identifier.
+  #
+  # Returns a User instance of the specified user.
   userForId: (id, options) ->
     @robot.userForId id, options
 
-  # Public: Get a User object given a name
+  # Public: Get a User object given a name.
+  #
+  # Returns a User instance for the user with the specified name.
   userForName: (name) ->
     @robot.userForName name
 
@@ -60,6 +69,7 @@ class Adapter extends event.EventEmitter
   # means 'starts with', but this could be extended to match initials,
   # nicknames, etc.
   #
+  # Returns an Array of User instances matching the fuzzy name.
   usersForRawFuzzyName: (fuzzyName) ->
     @robot.usersForRawFuzzyName fuzzyName
 
@@ -67,39 +77,17 @@ class Adapter extends event.EventEmitter
   # just that user. Otherwise, returns an array of all users for which
   # fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
   #
+  # Returns an Array of User instances matching the fuzzy name.
   usersForFuzzyName: (fuzzyName) ->
     @robot.usersForFuzzyName fuzzyName
 
   # Public: Creates a scoped http client with chainable methods for
-  # modifying the request.  This doesn't actually make a request though.
+  # modifying the request. This doesn't actually make a request though.
   # Once your request is assembled, you can call `get()`/`post()`/etc to
   # send the request.
   #
-  # url - String URL to access.
-  #
-  # Examples:
-  #
-  #     res.http("http://example.com")
-  #       # set a single header
-  #       .header('Authorization', 'bearer abcdef')
-  #
-  #       # set multiple headers
-  #       .headers(Authorization: 'bearer abcdef', Accept: 'application/json')
-  #
-  #       # add URI query parameters
-  #       .query(a: 1, b: 'foo & bar')
-  #
-  #       # make the actual request
-  #       .get() (err, res, body) ->
-  #         console.log body
-  #
-  #       # or, you can POST data
-  #       .post(data) (err, res, body) ->
-  #         console.log body
-  #
   # Returns a ScopedClient instance.
   http: (url) ->
-    @httpClient.create(url)
+    @robot.http(url)
 
 module.exports = Adapter
-
