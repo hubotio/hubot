@@ -39,6 +39,8 @@ class Robot
   #
   # route    - A String of the route to match.
   # callback - A Function that is called when the route is requested.
+  #
+  # Returns nothing.
   route: (route, callback) ->
     @router.get route, callback
 
@@ -47,15 +49,19 @@ class Robot
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
   hear: (regex, callback) ->
     @listeners.push new TextListener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
-  # at the robot based on a Regex.  All regexes treat patterns like they begin
+  # at the robot based on a Regex. All regexes treat patterns like they begin
   # with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split('/')
     re.shift()           # remove empty first item
@@ -79,18 +85,24 @@ class Robot
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
   # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
   enter: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof EnterMessage), callback)
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
   # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
   leave: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
 
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
   catchAll: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
 
@@ -98,6 +110,8 @@ class Robot
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
   #           prevent further execution.
+  #
+  # Returns nothing.
   receive: (message) ->
     results = []
     for listener in @listeners
@@ -113,6 +127,8 @@ class Robot
   # Public: Loads every script in the given path.
   #
   # path - A String path on the filesystem.
+  #
+  # Returns nothing.
   load: (path) ->
     @logger.debug "Loading scripts from #{path}"
 
@@ -126,6 +142,8 @@ class Robot
   #
   # path - A String path on the filesystem.
   # file - A String filename in path on the filesystem.
+  #
+  # Returns nothing.
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
@@ -140,12 +158,16 @@ class Robot
   #
   # path    - A String path to the hubot-scripts files.
   # scripts - An Array of scripts to load.
+  #
+  # Returns nothing.
   loadHubotScripts: (path, scripts) ->
     @logger.info "Loading hubot-scripts from #{path}"
     for script in scripts
       @loadFile path, script
 
   # Setup the Connect server's defaults.
+  #
+  # Returns nothing.
   setupConnect: ->
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
@@ -192,6 +214,8 @@ class Robot
   #
   # path    - A String of the path to adapter if local.
   # adapter - A String of the adapter name to use.
+  #
+  # Returns nothing.
   loadAdapter: (path, adapter) ->
     @logger.debug 'Loading adapter #{adapter}'
 
@@ -214,6 +238,8 @@ class Robot
   # Private: load help info from a loaded script.
   #
   # path - A String path to the file on disk.
+  #
+  # Returns nothing.
   parseHelp: (path) ->
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
@@ -227,6 +253,8 @@ class Robot
   #
   # user    - A User instance.
   # strings - One or more Strings for each message to send.
+  #
+  # Returns nothing.
   send: (user, strings...) ->
     @adapter.send user, strings...
 
@@ -234,6 +262,8 @@ class Robot
   #
   # room    - String designating the room to message.
   # strings - One or more Strings for each message to send.
+  #
+  # Returns nothing.
   messageRoom: (room, strings...) ->
     user = @userForId @id, { room: room }
     @adapter.send user, strings...
@@ -243,6 +273,8 @@ class Robot
   #
   # user    - A User instance.
   # strings - One or more Strings for each message to send.
+  #
+  # Returns nothing.
   reply: (user, strings...) ->
     @adapter.reply user, strings...
 
@@ -254,7 +286,7 @@ class Robot
 
   # Public: Get a User object given a unique identifier.
   #
-  # Returns a User instance.
+  # Returns a User instance of the specified user.
   userForId: (id, options) ->
     user = @brain.data.users[id]
     unless user
@@ -269,7 +301,7 @@ class Robot
 
   # Public: Get a User object given a name.
   #
-  # Returns a User instance.
+  # Returns a User instance for the user with the specified name.
   userForName: (name) ->
     result = null
     lowerName = name.toLowerCase()
@@ -283,7 +315,7 @@ class Robot
   # means 'starts with', but this could be extended to match initials,
   # nicknames, etc.
   #
-  # Returns an Array of User objects.
+  # Returns an Array of User instances matching the fuzzy name.
   usersForRawFuzzyName: (fuzzyName) ->
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
@@ -293,7 +325,7 @@ class Robot
   # just that user. Otherwise, returns an array of all users for which
   # fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
   #
-  # Returns an Array of User objects.
+  # Returns an Array of User instances matching the fuzzy name.
   usersForFuzzyName: (fuzzyName) ->
     matchedUsers = @usersForRawFuzzyName(fuzzyName)
     lowerFuzzyName = fuzzyName.toLowerCase()
@@ -304,11 +336,15 @@ class Robot
 
     matchedUsers
 
-  # Kick off the event loop for the adapter
+  # Public: Kick off the event loop for the adapter
+  #
+  # Returns nothing.
   run: ->
     @adapter.run()
 
   # Public: Gracefully shutdown the robot process
+  #
+  # Returns nothing.
   shutdown: ->
     @adapter.close()
     @brain.close()
@@ -323,7 +359,7 @@ class Robot
     @version = content.version
 
   # Public: Creates a scoped http client with chainable methods for
-  # modifying the request.  This doesn't actually make a request though.
+  # modifying the request. This doesn't actually make a request though.
   # Once your request is assembled, you can call `get()`/`post()`/etc to
   # send the request.
   #

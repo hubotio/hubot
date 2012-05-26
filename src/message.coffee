@@ -5,6 +5,8 @@ class Message
   constructor: (@user, @done = false) ->
 
   # Indicates that no other Listener should be called on this object
+  #
+  # Returns nothing.
   finish: ->
     @done = true
 
@@ -12,13 +14,13 @@ class TextMessage extends Message
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
-  # text - The String message contents.
+  # text - A String message.
   constructor: (@user, @text) ->
     super @user
 
   # Determines if the message matches the given regex.
   #
-  # regex - The Regex to check.
+  # regex - A Regex to check.
   #
   # Returns a Match object or null.
   match: (regex) ->
