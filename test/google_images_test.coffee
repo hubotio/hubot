@@ -1,7 +1,10 @@
 Tests  = require './tests'
 assert = require 'assert'
 helper = Tests.helper()
-Robot  = require '../src/robot'
+
+Robot         = require '../src/robot'
+{TextMessage} = require '../src/message'
+
 require('../src/scripts/google-images') helper
 
 # start up a danger room for google images
@@ -41,7 +44,7 @@ messages = [
 user = {}
 danger.start tests, ->
   for message in messages
-    helper.receive new Robot.TextMessage user, message
+    helper.receive new TextMessage user, message
 
   helper.stop()
 

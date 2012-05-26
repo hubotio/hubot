@@ -1,8 +1,11 @@
-Robot   = require '../src/robot'
-Adapter = require '../src/adapter'
-User    = require '../src/user'
-Path    = require 'path'
-Url     = require 'url'
+Url           = require 'url'
+Path          = require 'path'
+
+Robot         = require '../src/robot'
+Adapter       = require '../src/adapter'
+User          = require '../src/user'
+Response      = require '../src/response'
+{TextMessage} = require '../src/message'
 
 # A programmer's best friend.
 # http://timenerdworld.files.wordpress.com/2010/12/joint-venture-s1e3_1.jpg
@@ -59,12 +62,12 @@ class Danger extends Adapter
   receive: (text) ->
     if typeof text is 'string'
       user = new User 1, 'helper'
-      super new Robot.TextMessage user, text
+      super new TextMessage user, text
     else
       super text
 
 if not process.env.HUBOT_LIVE
-  class Helper.Response extends Robot.Response
+  class Helper.Response extends Response
     # This changes ever HTTP request to hit the danger server above
     http: (url) ->
       super(url).host('127.0.0.1').port(9001)

@@ -1,5 +1,5 @@
 #!/usr/bin/env coffee
-# -*- mode:coffee -*-
+
 ##
 # hubot [options]
 #
@@ -71,7 +71,7 @@ unless process.platform is "win32"
     process.exit 0
 
 if Options.create
-  creator = new Creator.Creator(Options.path)
+  creator = new Creator(Options.path)
   creator.run()
 
 else
