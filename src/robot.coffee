@@ -15,7 +15,10 @@ class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
-  # path - String directory full of Hubot scripts to load.
+  # adapterPath - A String of the path to local adapters.
+  # adapter     - A String of the adapter name.
+  # httpd       - A Boolean whether to enable the HTTP daemon.
+  # name        - A String of the robot name, defaults to Hubot.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
     @name        = name
     @brain       = new Brain
@@ -35,9 +38,7 @@ class Robot
   # Public: Specify a router and callback to register as Connect middleware.
   #
   # route    - A String of the route to match.
-  # callback - A Function that is called when the route is requested
-  #
-  # Returns nothing.
+  # callback - A Function that is called when the route is requested.
   route: (route, callback) ->
     @router.get route, callback
 
@@ -46,8 +47,6 @@ class Robot
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
-  #
-  # Returns nothing.
   hear: (regex, callback) ->
     @listeners.push new TextListener(@, regex, callback)
 
@@ -57,8 +56,6 @@ class Robot
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
-  #
-  # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split('/')
     re.shift()           # remove empty first item
@@ -82,33 +79,25 @@ class Robot
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
   # callback - A Function that is called with a Response object.
-  #
-  # Returns nothing.
   enter: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof EnterMessage), callback)
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
   # callback - A Function that is called with a Response object.
-  #
-  # Returns nothing.
   leave: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
 
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
-  #
-  # Returns nothing.
   catchAll: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
 
   # Public: Passes the given message to any interested Listeners.
   #
-  # message - A Message instance. Listeners can flag this message as
-  #  'done' to prevent further execution
-  #
-  # Returns nothing.
+  # message - A Message instance. Listeners can flag this message as 'done' to
+  #           prevent further execution.
   receive: (message) ->
     results = []
     for listener in @listeners
@@ -124,8 +113,6 @@ class Robot
   # Public: Loads every script in the given path.
   #
   # path - A String path on the filesystem.
-  #
-  # Returns nothing.
   load: (path) ->
     @logger.debug "Loading scripts from #{path}"
 
@@ -135,12 +122,10 @@ class Robot
         for file in Fs.readdirSync(path)
           @loadFile path, file
 
-  # Public: Loads a file in path
+  # Public: Loads a file in path.
   #
   # path - A String path on the filesystem.
   # file - A String filename in path on the filesystem.
-  #
-  # Returns nothing.
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
@@ -151,16 +136,16 @@ class Robot
       catch error
         @logger.error "Unable to load #{path}: #{error}\n#{error.stack}"
 
+  # Public: Load scripts specfic in the `hubot-scripts.json` file.
+  #
+  # path    - A String path to the hubot-scripts files.
+  # scripts - An Array of scripts to load.
   loadHubotScripts: (path, scripts) ->
     @logger.info "Loading hubot-scripts from #{path}"
     for script in scripts
       @loadFile path, script
 
-  # Setup the Connect server's defaults
-  #
-  # Sets up basic authentication if parameters are provided
-  #
-  # Returns nothing.
+  # Setup the Connect server's defaults.
   setupConnect: ->
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
@@ -207,8 +192,6 @@ class Robot
   #
   # path    - A String of the path to adapter if local.
   # adapter - A String of the adapter name to use.
-  #
-  # Returns nothing.
   loadAdapter: (path, adapter) ->
     @logger.debug 'Loading adapter #{adapter}'
 
@@ -222,17 +205,15 @@ class Robot
     catch err
       @logger.error "Cannot load adapter #{adapter} - #{err}\n#{err.stack}"
 
-  # Public: Help Commands for Running Scripts
+  # Public: Help Commands for Running Scripts.
   #
-  # Returns an array of help commands for running scripts
+  # Returns an Array of help commands for running scripts.
   helpCommands: ->
     @commands.sort()
 
-  # Private: load help info from a loaded script
+  # Private: load help info from a loaded script.
   #
-  # path - The path to the file on disk
-  #
-  # Returns nothing
+  # path - A String path to the file on disk.
   parseHelp: (path) ->
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
@@ -249,9 +230,9 @@ class Robot
   send: (user, strings...) ->
     @adapter.send user, strings...
 
-  # Public: A helper send function to message a room that the robot is in
+  # Public: A helper send function to message a room that the robot is in.
   #
-  # room    - String designating the room to message
+  # room    - String designating the room to message.
   # strings - One or more Strings for each message to send.
   messageRoom: (room, strings...) ->
     user = @userForId @id, { room: room }
@@ -266,10 +247,14 @@ class Robot
     @adapter.reply user, strings...
 
   # Public: Get an Array of User objects stored in the brain.
+  #
+  # Returns an Array of User objects.
   users: ->
     @brain.data.users
 
   # Public: Get a User object given a unique identifier.
+  #
+  # Returns a User instance.
   userForId: (id, options) ->
     user = @brain.data.users[id]
     unless user
@@ -283,6 +268,8 @@ class Robot
     user
 
   # Public: Get a User object given a name.
+  #
+  # Returns a User instance.
   userForName: (name) ->
     result = null
     lowerName = name.toLowerCase()
@@ -296,6 +283,7 @@ class Robot
   # means 'starts with', but this could be extended to match initials,
   # nicknames, etc.
   #
+  # Returns an Array of User objects.
   usersForRawFuzzyName: (fuzzyName) ->
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
@@ -305,6 +293,7 @@ class Robot
   # just that user. Otherwise, returns an array of all users for which
   # fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
   #
+  # Returns an Array of User objects.
   usersForFuzzyName: (fuzzyName) ->
     matchedUsers = @usersForRawFuzzyName(fuzzyName)
     lowerFuzzyName = fuzzyName.toLowerCase()
@@ -316,21 +305,17 @@ class Robot
     matchedUsers
 
   # Kick off the event loop for the adapter
-  #
-  # Returns: Nothing.
   run: ->
     @adapter.run()
 
   # Public: Gracefully shutdown the robot process
-  #
-  # Returns: Nothing.
   shutdown: ->
     @adapter.close()
     @brain.close()
 
   # Public: The version of Hubot from npm
   #
-  # Returns: SemVer compliant version number
+  # Returns a String of the version number.
   parseVersion: ->
     package_path = __dirname + '/../package.json'
     data = Fs.readFileSync package_path, 'utf8'
