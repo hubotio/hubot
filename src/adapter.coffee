@@ -1,7 +1,6 @@
-Robot      = require './robot'
-event     = require 'events'
+EventEmitter = require('events').EventEmitter
 
-class Adapter extends event.EventEmitter
+class Adapter extends EventEmitter
   # An adapter is a specific interface to a chat source for robots.
   #
   # robot - A Robot instance.
@@ -102,4 +101,3 @@ class Adapter extends event.EventEmitter
     @httpClient.create(url)
 
 module.exports = Adapter
-

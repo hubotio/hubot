@@ -64,4 +64,3 @@ class Creator
     @copy "#{@templateDir}/#{file}", "#{@path}/#{file}" for file in files
 
 exports.Creator = Creator
-

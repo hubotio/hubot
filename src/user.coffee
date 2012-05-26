@@ -1,5 +1,3 @@
-Robot = require './robot'
-
 class User
   # Represents a participating user in the chat.
   #
@@ -11,4 +9,3 @@ class User
     @['name'] ||= @id
 
 module.exports = User
-
