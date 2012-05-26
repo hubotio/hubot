@@ -1,12 +1,10 @@
 {EventEmitter} = require 'events'
-HttpClient     = require 'scoped-http-client'
 
 class Adapter extends EventEmitter
   # An adapter is a specific interface to a chat source for robots.
   #
   # robot - A Robot instance.
   constructor: (@robot) ->
-    @httpClient = HttpClient
 
   # Public: Raw method for sending data back to the chat source.  Extend this.
   #
@@ -71,30 +69,8 @@ class Adapter extends EventEmitter
   # Once your request is assembled, you can call `get()`/`post()`/etc to
   # send the request.
   #
-  # url - String URL to access.
-  #
-  # Examples:
-  #
-  #     res.http("http://example.com")
-  #       # set a single header
-  #       .header('Authorization', 'bearer abcdef')
-  #
-  #       # set multiple headers
-  #       .headers(Authorization: 'bearer abcdef', Accept: 'application/json')
-  #
-  #       # add URI query parameters
-  #       .query(a: 1, b: 'foo & bar')
-  #
-  #       # make the actual request
-  #       .get() (err, res, body) ->
-  #         console.log body
-  #
-  #       # or, you can POST data
-  #       .post(data) (err, res, body) ->
-  #         console.log body
-  #
   # Returns a ScopedClient instance.
   http: (url) ->
-    @httpClient.create(url)
+    @robot.http(url)
 
 module.exports = Adapter

@@ -1,5 +1,3 @@
-HttpClient = require 'scoped-http-client'
-
 class Response
   # Public: Responses are sent to matching listeners.  Messages know about the
   # content and user that made the original message, and how to reply back to
@@ -9,7 +7,6 @@ class Response
   # message - The current Message instance.
   # match   - The Match object from the successful Regex match.
   constructor: (@robot, @message, @match) ->
-    @httpClient = HttpClient
 
   # Public: Posts a message back to the chat source
   #
@@ -57,30 +54,8 @@ class Response
   # Once your request is assembled, you can call `get()`/`post()`/etc to
   # send the request.
   #
-  # url - String URL to access.
-  #
-  # Examples:
-  #
-  #     res.http("http://example.com")
-  #       # set a single header
-  #       .header('Authorization', 'bearer abcdef')
-  #
-  #       # set multiple headers
-  #       .headers(Authorization: 'bearer abcdef', Accept: 'application/json')
-  #
-  #       # add URI query parameters
-  #       .query(a: 1, b: 'foo & bar')
-  #
-  #       # make the actual request
-  #       .get() (err, res, body) ->
-  #         console.log body
-  #
-  #       # or, you can POST data
-  #       .post(data) (err, res, body) ->
-  #         console.log body
-  #
   # Returns a ScopedClient instance.
   http: (url) ->
-    @httpClient.create(url)
+    @robot.http(url)
 
 module.exports = Response
