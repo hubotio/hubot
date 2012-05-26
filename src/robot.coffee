@@ -95,7 +95,6 @@ class Robot
   leave: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
 
-
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
@@ -121,7 +120,6 @@ class Robot
         false
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
-
 
   # Public: Loads every script in the given path.
   #
@@ -258,7 +256,6 @@ class Robot
   messageRoom: (room, strings...) ->
     user = @userForId @id, { room: room }
     @adapter.send user, strings...
-
 
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
