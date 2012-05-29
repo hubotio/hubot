@@ -161,7 +161,7 @@ class Robot
   #
   # Returns nothing.
   loadHubotScripts: (path, scripts) ->
-    @logger.info "Loading hubot-scripts from #{path}"
+    @logger.debug "Loading hubot-scripts from #{path}"
     for script in scripts
       @loadFile path, script
 
