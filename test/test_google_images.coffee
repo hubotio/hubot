@@ -1,14 +1,13 @@
-Tests  = require './tests'
 assert = require 'assert'
-helper = Tests.helper()
 
-Robot         = require '../src/robot'
+Helper  = require './helper'
+helper  = Helper.helper()
+
 {TextMessage} = require '../src/message'
 
 require('../src/scripts/google-images') helper
 
-# start up a danger room for google images
-danger = Tests.danger helper, (req, res, url) ->
+danger = Helper.danger helper, (req, res, url) ->
   res.writeHead 200
   res.end JSON.stringify(
     responseData:
@@ -17,7 +16,6 @@ danger = Tests.danger helper, (req, res, url) ->
       ]
   )
 
-# callbacks for when hubot sends messages
 mu    = "http://mustachify.me/?src="
 tests = [
   (msg) -> assert.equal "#{mu}(foo)#.png", msg
@@ -30,7 +28,6 @@ tests = [
   (msg) -> assert.equal "(animated foo)#.png", msg
 ]
 
-# run the async tests
 messages = [
   'helper: stache me foo',
   'helper: stache foo',

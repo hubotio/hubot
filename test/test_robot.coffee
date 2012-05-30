@@ -1,7 +1,7 @@
-Tests  = require './tests'
 assert = require 'assert'
-helper = Tests.helper()
-require './scripts/test'
+
+Helper = require './helper'
+helper = Helper.helper()
 
 server = require('http').createServer (req, res) ->
   res.writeHead 200
@@ -23,7 +23,6 @@ server.listen 9001, ->
   assert.equal 3, helper.sent.length
   assert.ok helper.sent[2].match(/^(1|2)$/)
 
-
   # Test that when we message a room, the 'recipient' is the robot user and the room attribute is set properly
   helper.messageRoom "chat@example.com", "Hello room"
   assert.equal 4, helper.sent.length
@@ -34,7 +33,6 @@ server.listen 9001, ->
   helper.adapter.receive 'foobar'
   assert.equal 5, helper.sent.length
   assert.equal 'catch-all', helper.sent[4]
-
 
   # set a callback for when the next message is replied to
   helper.cb = (msg) ->

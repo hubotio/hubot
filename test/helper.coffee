@@ -1,5 +1,4 @@
 Url           = require 'url'
-Path          = require 'path'
 
 Robot         = require '../src/robot'
 Adapter       = require '../src/adapter'
