@@ -244,9 +244,9 @@ class Robot
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
       for i, line of body.split("\n")
-        break    if !(line[0] == '#' or line.substr(0, 2) == '//')
-        continue if !line.match('-')
-        @commands.push line[2..line.length]
+        break    if not (line[0] == '#' or line.substr(0, 2) == '//')
+        continue if not line.match('-')
+        @commands.push line[2..line.length].replace /^hubot/i, @name
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
