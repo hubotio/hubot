@@ -152,7 +152,7 @@ class Robot
         require(full) @
         @parseHelp "#{path}/#{file}"
       catch error
-        @logger.error "Unable to load #{path}: #{error}\n#{error.stack}"
+        @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
 
   # Public: Load scripts specfic in the `hubot-scripts.json` file.
   #
