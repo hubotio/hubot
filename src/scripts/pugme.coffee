@@ -1,7 +1,9 @@
-# Pugme is the most important thing in your life
+# Description:
+#   Pugme is the most important thing in your life
 #
-# hubot pug me - Receive a pug
-# hubot pug bomb N - get N pugs
+# Commands:
+#   hubot pug me - Receive a pug
+#   hubot pug bomb N - get N pugs
 
 module.exports = (robot) ->
 

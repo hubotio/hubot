@@ -1,6 +1,8 @@
-# Messing around with the YouTube API.
+# Description:
+#   Messing around with the YouTube API.
 #
-# hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
+# Commands:
+#   hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
 module.exports = (robot) ->
   robot.respond /(youtube|yt)( me)? (.*)/i, (msg) ->
     query = msg.match[3]

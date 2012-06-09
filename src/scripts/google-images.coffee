@@ -1,9 +1,11 @@
-# A way to interact with the Google Images API.
+# Description:
+#   A way to interact with the Google Images API.
 #
-# hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
-# hubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
-# hubot mustache me <url> - Adds a mustache to the specified URL.
-# hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
+# Commands:
+#   hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
+#   hubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
+#   hubot mustache me <url> - Adds a mustache to the specified URL.
+#   hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
 
 _ = require('underscore')._
 
