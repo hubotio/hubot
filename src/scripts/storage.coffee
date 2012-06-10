@@ -3,7 +3,7 @@
 #
 # Commands:
 #  hubot show users - Display all users that hubot knows about
-#  hubot show storage - Display the contents that are persisted in redis
+#  hubot show storage - Display the contents that are persisted in the brain
 
 
 Util = require "util"
