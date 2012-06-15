@@ -1,6 +1,8 @@
-Tests  = require './tests'
 assert = require 'assert'
-helper = Tests.helper()
+
+Helper = require './helper'
+helper = Helper.helper()
+
 require('../src/scripts/rules') helper
 
 tests = [

@@ -1,6 +1,6 @@
-User = require '../src/user'
 assert = require 'assert'
 
+User = require '../src/user'
 
 user = new User "Fake User", {name: 'fake', type: "groupchat"}
 assert.equal "Fake User", user.id
