@@ -19,7 +19,7 @@
     "optparse": "1.0.3",
     "scoped-http-client": "0.9.7",
     "log": "1.3.0",
-    "connect": "2.1.0",
+    "connect": "2.3.4",
     "connect_router": "1.8.6"
   },
 
