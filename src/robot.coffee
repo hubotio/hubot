@@ -265,7 +265,7 @@ class Robot
   #
   # Returns nothing.
   messageRoom: (room, strings...) ->
-    user = @userForId @id, { room: room }
+    user = { room: room }
     @adapter.send user, strings...
 
   # Public: A helper reply function which delegates to the adapter's reply
