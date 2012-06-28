@@ -36,14 +36,21 @@ class EnterMessage extends Message
 # user - A User instance for the user who left.
 class LeaveMessage extends Message
 
+# Represents a topic change message.
+#
+# user - A User instance for the user who changed the topic
+# text - A String topic
+class TopicChangeMessage extends TextMessage
+
 class CatchAllMessage extends Message
   # Represents a message that no matchers matched.
   #
   # message - The original message.
   constructor: (@message) ->
 
-module.exports.Message         = Message
-module.exports.TextMessage     = TextMessage
-module.exports.EnterMessage    = EnterMessage
-module.exports.LeaveMessage    = LeaveMessage
-module.exports.CatchAllMessage = CatchAllMessage
+module.exports.Message            = Message
+module.exports.TextMessage        = TextMessage
+module.exports.EnterMessage       = EnterMessage
+module.exports.LeaveMessage       = LeaveMessage
+module.exports.TopicChangeMessage = TopicChangeMessage
+module.exports.CatchAllMessage    = CatchAllMessage
