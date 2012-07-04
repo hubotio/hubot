@@ -28,17 +28,22 @@ server.listen 9001, ->
   helper.messageRoom "chat@example.com", "Hello room"
   assert.equal 4, helper.sent.length
   assert.equal "chat@example.com", helper.recipients[3].room
-  assert.equal helper.id, helper.recipients[3].id
   assert.equal "Hello room", helper.sent[3]
 
-  helper.adapter.receive 'foobar'
+  helper.messageRoom "chat2@example.com", "Hello to another room"
   assert.equal 5, helper.sent.length
-  assert.equal 'catch-all', helper.sent[4]
+  assert.equal "chat2@example.com", helper.recipients[4].room
+  assert.equal "Hello to another room", helper.sent[4]
+
+
+  helper.adapter.receive 'foobar'
+  assert.equal 6, helper.sent.length
+  assert.equal 'catch-all', helper.sent[5]
 
 
   # set a callback for when the next message is replied to
   helper.cb = (msg) ->
-    assert.equal 6, helper.sent.length
+    assert.equal 7, helper.sent.length
     assert.equal 'fetched', msg
     helper.close()
     server.close()
