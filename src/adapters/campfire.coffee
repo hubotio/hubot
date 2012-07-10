@@ -79,7 +79,7 @@ class CampfireStreaming extends EventEmitter
     @token         = options.token
     @rooms         = options.rooms.split(",")
     @account       = options.account
-    @domain        = @account + ".campfirenow.com"
+    @host          = @account + ".campfirenow.com"
     @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
 
   Rooms: (callback) ->
@@ -201,12 +201,12 @@ class CampfireStreaming extends EventEmitter
 
     headers =
       "Authorization" : @authorization
-      "Host"          : @domain
+      "Host"          : @host
       "Content-Type"  : "application/json"
 
     options =
       "agent"  : false
-      "host"   : @domain
+      "host"   : @host
       "port"   : 443
       "path"   : path
       "method" : method
