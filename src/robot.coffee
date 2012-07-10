@@ -35,6 +35,8 @@ class Robot
     @setupConnect() if httpd
     @loadAdapter adapterPath, adapter if adapter?
 
+    @documentation = {}
+
   # Public: Specify a router and callback to register as Connect middleware.
   #
   # route    - A String of the route to match.
@@ -243,10 +245,18 @@ class Robot
   parseHelp: (path) ->
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
-      for i, line of body.split("\n")
-        break    if not (line[0] == '#' or line.substr(0, 2) == '//')
-        continue if not line.match('-')
-        @commands.push line[2..line.length].replace /^hubot/i, @name
+
+      for i, line of body.split "\n"
+        break unless line[0] is '#' or line.substr 0, 2 is '//'
+
+        cleaned_line = line[2..line.length].replace "\n", ""
+
+        if cleaned_line.length isnt 0 and cleaned_line.toLowerCase() isnt 'none'
+          if cleaned_line[0..1] isnt '  '
+            current_section = cleaned_line.replace(':', '').toLowerCase()
+          else
+            if current_section is 'commands'
+              @commands.push cleaned_line
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
