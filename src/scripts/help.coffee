@@ -22,3 +22,8 @@ module.exports = (robot) ->
       emit = emit.replace /(H|h)ubot/g, robot.name
 
     msg.send emit
+
+  robot.router.get '/hubot/help', (req, res) ->
+    cmds = robot.helpCommands()
+    res.setHeader 'content-type', 'text/html'
+    res.end cmds.join '<br />'
