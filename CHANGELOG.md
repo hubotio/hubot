@@ -1,3 +1,17 @@
+v2.3.0
+======
+* Extracted remaining classes into their own files - tombell
+
+**Note** this is a breaking change for adapters. Adapters are going to want to
+use the following code snippet for requiring classes from hubot.
+
+    {Adapter,Robot} = require 'hubot'
+
+* Update the formatting of documentation comments at the top of
+  scripts - technicalpickles
+
+* Update the parsing of the documentation comments - tombell
+
 v2.2.0
 ======
 * Fixed keep alive ping, requires `HEROKU_URL` - tombell and jimeh
