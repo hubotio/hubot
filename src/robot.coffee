@@ -3,11 +3,11 @@ Log        = require 'log'
 Path       = require 'path'
 HttpClient = require 'scoped-http-client'
 
-User                                                    = require './user'
-Brain                                                   = require './brain'
-Response                                                = require './response'
-{Listener,TextListener}                                 = require './listener'
-{TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
+User                                                                       = require './user'
+Brain                                                                      = require './brain'
+Response                                                                   = require './response'
+{Listener,TextListener,MessageListener}                                    = require './listener'
+{TextMessage,EnterMessage,LeaveMessage,TopicChangeMessage,CatchAllMessage} = require './message'
 
 inspect = require('util').inspect
 
@@ -51,7 +51,7 @@ class Robot
     @router.get route, callback
 
   # Public: Adds a Listener that attempts to match incoming messages based on
-  # a Regex.
+  # a Regex or the message type.
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
@@ -59,6 +59,20 @@ class Robot
   # Returns nothing.
   hear: (regex, callback) ->
     @listeners.push new TextListener(@, regex, callback)
+
+  # Public: Adds a Listener that attempts to match the incoming message type
+  # to the pattern supplied.
+  #
+  # pattern   - A Regex, string, or message type to match against.
+  #             Ex:
+  #               /(?:Enter|Leave)Message/
+  #               "TextMessage"
+  #               TopicChangeMessage
+  # callback  - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  see: (pattern, callback) ->
+    @listeners.push new MessageListener(@, pattern, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin
@@ -94,7 +108,7 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof EnterMessage), callback)
+    this.see EnterMessage, callback
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
@@ -102,7 +116,7 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
+    this.see LeaveMessage, callback
 
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
