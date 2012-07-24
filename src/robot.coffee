@@ -200,7 +200,7 @@ class Robot
           @logger.debug "Registered route: DELETE #{route}"
           app.delete route, callback
 
-    @connect.listen process.env.PORT || 8080
+    @server = @connect.listen process.env.PORT || 8080
 
     herokuUrl = process.env.HEROKU_URL
 
