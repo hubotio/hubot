@@ -219,7 +219,7 @@ class Robot
   #
   # Returns nothing.
   loadAdapter: (path, adapter) ->
-    @logger.debug 'Loading adapter #{adapter}'
+    @logger.debug "Loading adapter #{adapter}"
 
     try
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
