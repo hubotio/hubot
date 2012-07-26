@@ -1,3 +1,11 @@
+v2.3.2
+======
+* New route `/hubot/help` to display command help - tombell
+
+* Role script fix - ferlores
+
+* Store connect server - tombell
+
 v2.3.0
 ======
 * Extracted remaining classes into their own files - tombell
