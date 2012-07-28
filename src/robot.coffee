@@ -247,7 +247,7 @@ class Robot
       throw err if err?
 
       for i, line of body.split "\n"
-        break unless line[0] is '#' or line.substr 0, 2 is '//'
+        break unless line[0] is '#' or line.substr(0, 2) is '//'
 
         cleaned_line = line[2..line.length].replace("\n", "")
 
