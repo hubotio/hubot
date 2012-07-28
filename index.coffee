@@ -7,8 +7,7 @@ Response                                                = require './src/respons
 {TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './src/message'
 
 module.exports.loadBot = (adapterPath, adapterName, enableHttpd, botName) ->
-  robot = require './src/robot'
-  new robot adapterPath, adapterName, enableHttpd, botName
+  new Robot adapterPath, adapterName, enableHttpd, botName
 
 module.exports.User            = User
 module.exports.Brain           = Brain
