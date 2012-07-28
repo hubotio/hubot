@@ -94,7 +94,7 @@ else
     robot.load scriptsPath
 
     scriptsFile = Path.resolve "hubot-scripts.json"
-    Path.exists scriptsFile, (exists) =>
+    Fs.exists scriptsFile, (exists) =>
       if exists
         Fs.readFile scriptsFile, (err, data) ->
           scripts = JSON.parse data
