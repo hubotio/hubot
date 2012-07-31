@@ -16,6 +16,7 @@ module.exports = (robot) ->
     "Be more specific, I know #{users.length} people named like that: #{(user.name for user in users).join(", ")}"
 
   robot.respond /who is @?([\w .-]+)\?*$/i, (msg) ->
+    joiner = ', '
     name = msg.match[1].trim()
 
     if name is "you"
@@ -28,7 +29,9 @@ module.exports = (robot) ->
         user = users[0]
         user.roles = user.roles or [ ]
         if user.roles.length > 0
-          msg.send "#{name} is #{user.roles.join(", ")}."
+          if user.roles.join('').search(',') > -1
+            joiner = '; '
+          msg.send "#{name} is #{user.roles.join(joiner)}."
         else
           msg.send "#{name} is nothing to me."
       else if users.length > 1
