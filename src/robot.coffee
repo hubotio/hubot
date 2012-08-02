@@ -134,7 +134,7 @@ class Robot
   load: (path) ->
     @logger.debug "Loading scripts from #{path}"
 
-    Path.exists path, (exists) =>
+    Fs.exists path, (exists) =>
       if exists
         @loadPaths.push path
         for file in Fs.readdirSync(path)
