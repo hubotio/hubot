@@ -52,7 +52,8 @@ helpContents = (name, commands) ->
 
 module.exports = (robot) ->
   robot.respond /help\s*(.*)?$/i, (msg) ->
-    cmds = robot.helpCommands()
+    cmds = robot.helpCommands().map (cmd) ->
+      cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 
     if msg.match[1]
       cmds = cmds.filter (cmd) ->
