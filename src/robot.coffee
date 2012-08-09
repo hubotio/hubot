@@ -51,7 +51,7 @@ class Robot
     @router.get route, callback
 
   # Public: Adds a Listener that attempts to match incoming messages based on
-  # a Regex or the message type.
+  # a Regex.
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.

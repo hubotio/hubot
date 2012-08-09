@@ -99,6 +99,9 @@ class CampfireStreaming extends EventEmitter
     self = @
     logger = @robot.logger
 
+    info: (callback) ->
+      self.get "/room/#{id}", callback
+
     show: (callback) ->
       self.post "/room/#{id}", "", callback
 
