@@ -13,6 +13,7 @@ class Shell extends Adapter
     @repl.prompt()
 
   reply: (user, strings...) ->
+    strings = strings.map (s) -> "#{user.name}: #{s}"
     @send user, strings...
 
   run: ->
