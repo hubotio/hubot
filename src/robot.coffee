@@ -363,7 +363,7 @@ class Robot
   #
   # Returns a String of the version number.
   parseVersion: ->
-    package_path = __dirname + '/../package.json'
+    package_path = Path.join __dirname, '..', 'package.json'
     data = Fs.readFileSync package_path, 'utf8'
     content = JSON.parse data
     @version = content.version
