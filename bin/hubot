@@ -1,24 +1,14 @@
 #!/usr/bin/env coffee
-
-##
-# hubot [options]
-#
-# Launch an interactive hubot
-#
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Hubot      = require '..'
-Fs         = require 'fs'
-Path       = require 'path'
-HTTP       = require 'http'
-Creator    = require '../src/creator'
-OptParse   = require 'optparse'
+Hubot   = require '..'
+Creator = require '../src/creator'
 
-Fs       = require 'fs'
-Path     = require 'path'
+Fs      = require 'fs'
+Path    = require 'path'
 
-App      = require 'commander'
+App     = require 'commander'
 
 pkg = Fs.readFileSync "#{__dirname}/../package.json"
 
