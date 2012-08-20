@@ -97,10 +97,10 @@ module.exports = (robot) ->
       .header('User-Agent', 'Mozilla/5.0')
       .get() (err, res, body) ->
         data   = body
-        if data.length > 4 && data[0] == '['
+        if data.length > 4 and data[0] == '['
           parsed = eval(data)
           language =languages[parsed[2]]
-          parsed = parsed[0] && parsed[0][0] && parsed[0][0][0]
+          parsed = parsed[0] and parsed[0][0] and parsed[0][0][0]
           if parsed
             if msg.match[2] is undefined
               msg.send "#{term} is #{language} for #{parsed}"
