@@ -1,7 +1,8 @@
-Fs         = require 'fs'
-Log        = require 'log'
-Path       = require 'path'
-HttpClient = require 'scoped-http-client'
+Fs           = require 'fs'
+Log          = require 'log'
+Path         = require 'path'
+HttpClient   = require 'scoped-http-client'
+EventEmitter = require('events').EventEmitter;
 
 User                                                    = require './user'
 Brain                                                   = require './brain'
@@ -22,6 +23,7 @@ class Robot
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
     @name        = name
     @brain       = new Brain
+    @events      = new EventEmitter
     @alias       = false
     @adapter     = null
     @commands    = []
