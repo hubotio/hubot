@@ -66,6 +66,33 @@ module.exports = (robot) ->
 There are functions for GET, POST, PUT and DELETE, which all take a route and
 callback function that accepts a request and a response.
 
+## Eventsystem
+
+Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used for data exchange between scripts.
+
+```coffeescript
+# src/scripts/github-commits.coffee
+module.exports = (robot) ->
+  robot.router.post "/hubot/gh-commits", (req, res) ->
+  	#code goes here
+    robot.emit "deploy", {
+        user    : {}, #hubot user object
+        repo    : 'https://github.com/github/hubot',
+        hash  : '2e1951c089bd865839328592ff673d2f08153643'
+    }
+```
+```coffeescript
+# src/scripts/heroku.coffee
+module.exports = (robot) ->
+  robot.events.on "commit", (commit) ->
+    robot.send commit.user, "Will now deploy #{commit.hash} from #{commit.repo}!"
+    #deploy code goes here
+```
+
+If you'll provide an event, it's very recommended to include a hubot user object in data. In case of other reacting scripts want to respond to chat.
+
+[event-emitter]: http://nodejs.org/api/events.html#events_class_events_eventemitter 
+
 ## Testing hubot locally
 
 Install all of the required dependencies by running `npm install`.
