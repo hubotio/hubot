@@ -52,7 +52,7 @@ helpContents = (name, commands) ->
 
 module.exports = (robot) ->
   robot.respond /help\s*(.*)?$/i, (msg) ->
-    cmds = robot.helpCommands().map (cmd) ->
+    cmds = if process.env.HUBOT_ESCAPE_HELP is 'false' then robot.helpCommands() else robot.helpCommands().map (cmd) ->
       cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 
     if msg.match[1]
