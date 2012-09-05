@@ -10,7 +10,7 @@ hubot ready to deploy.
 
 ## Getting your own
 
-Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node v0.6.5+) installed.
+Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node v0.6.3+) installed.
 
 Download the [latest version of hubot][hubot-latest].
 
