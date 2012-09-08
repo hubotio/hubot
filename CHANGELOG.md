@@ -1,3 +1,20 @@
+v2.3.3
+======
+
+* Fix help parsing of javascript iles - ferlores in #322 
+
+* Roles will correctly semicolon-delimit the list of roles if one (or more) roles contain a comma. - futuraprime in #327
+
+* Updated translations of supported languages as of 20120801 - sopel in #328
+
+* Escape brackets in html view of help - tombell, technicalpickles
+
+* More coffee-like translate.coffee - elmoeleven in #336
+
+* Fixed reference to when npm was included w/ node - technicalpickles in #347
+
+* Backwards-compatible help parsing, and tracking all documentation instead of just commands - technicalpickles
+
 v2.3.2
 ======
 * New route `/hubot/help` to display command help - tombell
