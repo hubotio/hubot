@@ -12,6 +12,8 @@ Response                                                = require './response'
 inspect = require('util').inspect
 
 HUBOT_DEFAULT_ADAPTERS = [ 'campfire', 'shell' ]
+HUBOT_DOCUMENTATION_SECTIONS = [ 'description', 'dependencies', 'configuration', 'commands', 'notes', 'author' ]
+
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -262,21 +264,33 @@ class Robot
         cleanedLine = line[2..line.length].replace("\n", "")
         @logger.debug "parseHelp(#{scriptName}): read #{cleanedLine}"
 
-        # clean line isn't empty, and isn't 'none'
-        if cleanedLine.length isnt 0 and cleanedLine.trim().toLowerCase() isnt 'none'
+        continue if cleanedLine.length is 0
+        continue if cleanedLine.trim().toLowerCase() is 'none'
 
-          # sections shouldn't have any leading whitespace
-          if cleanedLine[0..1] isnt '  '
-            currentSection = cleanedLine.replace(':', '').toLowerCase()
-            scriptDocumentation[currentSection] = []
-            @logger.debug "parseHelp(#{scriptName}): adding #{currentSection} section"
-          # lines in a section _do_ have leading whitespace
-          else
-            if currentSection
-              @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine.trim()}' to #{currentSection}"
-              scriptDocumentation[currentSection].push cleanedLine.trim()
-              if currentSection == 'commands'
-                @commands.push cleanedLine.trim()
+        # sections shouldn't have any leading whitespace
+        if cleanedLine.trim().toLowerCase().replace(':', '') in HUBOT_DOCUMENTATION_SECTIONS
+          currentSection = cleanedLine.replace(':', '').toLowerCase()
+          scriptDocumentation[currentSection] = []
+          @logger.debug "parseHelp(#{scriptName}): adding #{currentSection} section"
+        # lines in a section _do_ have leading whitespace
+        else
+          if currentSection
+            @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine.trim()}' to #{currentSection}"
+            scriptDocumentation[currentSection].push cleanedLine.trim()
+            if currentSection == 'commands'
+              @commands.push cleanedLine.trim()
+      # no current section? probably using old style documentation
+      if currentSection is null
+        @logger.info "#{path} is using deprecated documentation syntax"
+        scriptDocumentation.commands = []
+        for i, line of body.split("\n")
+          break    if not (line[0] == '#' or line.substr(0, 2) == '//')
+          continue if not line.match('-')
+          cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
+
+          @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine}' to commands"
+          scriptDocumentation.commands.push cleanedLine
+          @commands.push cleanedLine
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
