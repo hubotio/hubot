@@ -9,6 +9,8 @@ Response                                                = require './response'
 {Listener,TextListener}                                 = require './listener'
 {TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
 
+inspect = require('util').inspect
+
 HUBOT_DEFAULT_ADAPTERS = [ 'campfire', 'shell' ]
 
 class Robot
@@ -25,6 +27,7 @@ class Robot
     @alias        = false
     @adapter      = null
     @Response     = Response
+    @commands     = []
     @listeners    = []
     @loadPaths    = []
     @enableSlash  = false
@@ -234,18 +237,7 @@ class Robot
   #
   # Returns an Array of help commands for running scripts.
   helpCommands: ->
-    unless @commands
-      @logger.debug "helpCommands: haven't populated yet"
-      @commands = []
-
-      for script, scriptDocumentation of @documentation
-        @logger.debug "helpCommands: checking #{script} for commands"
-        if scriptDocumentation.commands
-          for command in scriptDocumentation.commands
-            @logger.debug "helpCommands: adding '#{command}' from #{script}"
-            @commands.push(command)
-    @commands
-
+    @commands.sort()
 
   # Private: load help info from a loaded script.
   #
@@ -281,13 +273,10 @@ class Robot
           # lines in a section _do_ have leading whitespace
           else
             if currentSection
-              @logger.debug "parseHelp(#{scriptName}) adding #{cleanedLine.trim()} to #{currentSection}"
+              @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine.trim()}' to #{currentSection}"
               scriptDocumentation[currentSection].push cleanedLine.trim()
-
-    if not scriptDocumentation.commands
-      scriptDocumentation.commands = []
-
-    scriptDocumentation.commands = scriptDocumentation.commands.sort()
+              if currentSection == 'commands'
+                @commands.push cleanedLine.trim()
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
