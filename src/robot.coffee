@@ -20,16 +20,15 @@ class Robot
   # httpd       - A Boolean whether to enable the HTTP daemon.
   # name        - A String of the robot name, defaults to Hubot.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
-    @name        = name
-    @brain       = new Brain
-    @alias       = false
-    @adapter     = null
-    @commands    = []
-    @Response    = Response
-    @listeners   = []
-    @loadPaths   = []
-    @enableSlash = false
-    @logger      = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @name         = name
+    @brain        = new Brain
+    @alias        = false
+    @adapter      = null
+    @Response     = Response
+    @listeners    = []
+    @loadPaths    = []
+    @enableSlash  = false
+    @logger       = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
     @setupConnect() if httpd
@@ -235,7 +234,18 @@ class Robot
   #
   # Returns an Array of help commands for running scripts.
   helpCommands: ->
-    @commands.sort()
+    unless @commands
+      @logger.debug "helpCommands: haven't populated yet"
+      @commands = []
+
+      for script, scriptDocumentation of @documentation
+        @logger.debug "helpCommands: checking #{script} for commands"
+        if scriptDocumentation.commands
+          for command in scriptDocumentation.commands
+            @logger.debug "helpCommands: adding '#{command}' from #{script}"
+            @commands.push(command)
+    @commands
+
 
   # Private: load help info from a loaded script.
   #
@@ -243,20 +253,41 @@ class Robot
   #
   # Returns nothing.
   parseHelp: (path) ->
+    @logger.debug "parseHelp of #{path}"
+    scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
+    scriptDocumentation = {}
+    @documentation[scriptName] = scriptDocumentation
+
+    @logger.debug "parseHelp populating @documentation[#{scriptName}]"
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
 
+      currentSection = null
       for i, line of body.split "\n"
         break unless line[0] is '#' or line.substr(0, 2) is '//'
 
-        cleaned_line = line[2..line.length].replace("\n", "")
+        # remove leading '# '
+        cleanedLine = line[2..line.length].replace("\n", "")
+        @logger.debug "parseHelp(#{scriptName}): read #{cleanedLine}"
 
-        if cleaned_line.length isnt 0 and cleaned_line.trim().toLowerCase() isnt 'none'
-          if cleaned_line[0..1] isnt '  '
-            current_section = cleaned_line.replace(':', '').toLowerCase()
+        # clean line isn't empty, and isn't 'none'
+        if cleanedLine.length isnt 0 and cleanedLine.trim().toLowerCase() isnt 'none'
+
+          # sections shouldn't have any leading whitespace
+          if cleanedLine[0..1] isnt '  '
+            currentSection = cleanedLine.replace(':', '').toLowerCase()
+            scriptDocumentation[currentSection] = []
+            @logger.debug "parseHelp(#{scriptName}): adding #{currentSection} section"
+          # lines in a section _do_ have leading whitespace
           else
-            if current_section is 'commands'
-              @commands.push cleaned_line.trim()
+            if currentSection
+              @logger.debug "parseHelp(#{scriptName}) adding #{cleanedLine.trim()} to #{currentSection}"
+              scriptDocumentation[currentSection].push cleanedLine.trim()
+
+    if not scriptDocumentation.commands
+      scriptDocumentation.commands = []
+
+    scriptDocumentation.commands = scriptDocumentation.commands.sort()
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
