@@ -260,8 +260,8 @@ class Robot
       for line in body.split "\n"
         break unless line[0] is '#' or line.substr(0, 2) is '//'
 
-        # remove leading '# '
-        cleanedLine = line[2..line.length].replace("\n", "").trim()
+        # remove leading comment
+        cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
         @logger.debug "parseHelp(#{scriptName}): read #{cleanedLine}"
 
         continue if cleanedLine.length is 0
@@ -279,6 +279,7 @@ class Robot
             scriptDocumentation[currentSection].push cleanedLine.trim()
             if currentSection == 'commands'
               @commands.push cleanedLine.trim()
+
       # no current section? probably using old style documentation
       if currentSection is null
         @logger.info "#{path} is using deprecated documentation syntax"
