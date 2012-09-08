@@ -38,5 +38,5 @@ module.exports = (robot) ->
       child.stdin.end()
 
   robot.router.get "/hubot/ip", (req, res) ->
-    robot.http('http://checkip.dyndns.org').get() (err, r, body) ->
+    robot.http('http://ifconfig.me/ip').get() (err, r, body) ->
       res.end body
