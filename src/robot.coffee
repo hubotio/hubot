@@ -257,7 +257,7 @@ class Robot
       throw err if err?
 
       currentSection = null
-      for i, line of body.split "\n"
+      for line in body.split "\n"
         break unless line[0] is '#' or line.substr(0, 2) is '//'
 
         # remove leading '# '
@@ -283,7 +283,7 @@ class Robot
       if currentSection is null
         @logger.info "#{path} is using deprecated documentation syntax"
         scriptDocumentation.commands = []
-        for i, line of body.split("\n")
+        for line in body.split("\n")
           break    if not (line[0] == '#' or line.substr(0, 2) == '//')
           continue if not line.match('-')
           cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
