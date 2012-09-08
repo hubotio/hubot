@@ -261,15 +261,15 @@ class Robot
         break unless line[0] is '#' or line.substr(0, 2) is '//'
 
         # remove leading '# '
-        cleanedLine = line[2..line.length].replace("\n", "")
+        cleanedLine = line[2..line.length].replace("\n", "").trim()
         @logger.debug "parseHelp(#{scriptName}): read #{cleanedLine}"
 
         continue if cleanedLine.length is 0
-        continue if cleanedLine.trim().toLowerCase() is 'none'
+        continue if cleanedLine.toLowerCase() is 'none'
 
-        # sections shouldn't have any leading whitespace
-        if cleanedLine.trim().toLowerCase().replace(':', '') in HUBOT_DOCUMENTATION_SECTIONS
-          currentSection = cleanedLine.replace(':', '').toLowerCase()
+        nextSection = cleanedLine.toLowerCase().replace(':', '')
+        if nextSection in HUBOT_DOCUMENTATION_SECTIONS
+          currentSection = nextSection
           scriptDocumentation[currentSection] = []
           @logger.debug "parseHelp(#{scriptName}): adding #{currentSection} section"
         # lines in a section _do_ have leading whitespace
