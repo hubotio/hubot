@@ -12,7 +12,7 @@ Response                                                = require './response'
 inspect = require('util').inspect
 
 HUBOT_DEFAULT_ADAPTERS = [ 'campfire', 'shell' ]
-HUBOT_DOCUMENTATION_SECTIONS = [ 'description', 'dependencies', 'configuration', 'commands', 'notes', 'author' ]
+HUBOT_DOCUMENTATION_SECTIONS = [ 'description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'examples', 'urls' ]
 
 
 class Robot
