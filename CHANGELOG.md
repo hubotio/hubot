@@ -1,3 +1,10 @@
+v2.3.4
+======
+
+* Add 'examples' and 'urls' to list of known documentation sections
+
+* Improve mustache results - marsam in #341
+
 v2.3.3
 ======
 
