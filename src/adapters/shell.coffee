@@ -22,7 +22,7 @@ class Shell extends Adapter
     stdout = process.stdout
 
     process.on 'uncaughtException', (err) =>
-      @robot.logger.error "#{err}"
+      @robot.logger.error err.stack
 
     @repl = Readline.createInterface stdin, stdout, null
 
