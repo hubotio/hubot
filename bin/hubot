@@ -22,6 +22,7 @@ Switches = [
   [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
+  [ "-i", "--config PATH",     "Use configuration file for env vars"],
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
@@ -57,6 +58,9 @@ Parser.on "alias", (opt, value) ->
 Parser.on "name", (opt, value) ->
   Options.name = value
 
+Parser.on "config", (opt, value) ->
+  Options.config = value
+
 Parser.on "enable-slash", (opt) ->
   console.log "WARNING: -s and --enable-slash are deprecated please use -l or --alias '/'"
   Options.alias = '/'
@@ -83,25 +87,38 @@ else
     console.log robot.version
     process.exit 0
 
-  robot.enableSlash = Options.enableSlash
-  robot.alias = Options.alias
-
-  loadScripts = ->
-    scriptsPath = Path.resolve ".", "scripts"
-    robot.load scriptsPath
-
-    scriptsPath = Path.resolve "src", "scripts"
-    robot.load scriptsPath
-
-    scriptsFile = Path.resolve "hubot-scripts.json"
-    Path.exists scriptsFile, (exists) =>
+  if Options.config
+    configPath = Path.resolve Options.config
+    Path.exists configPath, (exists) =>
       if exists
-        Fs.readFile scriptsFile, (err, data) ->
-          scripts = JSON.parse data
-          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-          robot.loadHubotScripts scriptsPath, scripts
+        config = require configPath
+        for own attr, value of config
+          process.env[attr] = value
+          console.log value
+        do next
+  else
+    do next
 
-  robot.adapter.on 'connected', loadScripts
+  next = ->
+    robot.enableSlash = Options.enableSlash
+    robot.alias = Options.alias
 
-  robot.run()
+    loadScripts = ->
+      scriptsPath = Path.resolve ".", "scripts"
+      robot.load scriptsPath
+
+      scriptsPath = Path.resolve "src", "scripts"
+      robot.load scriptsPath
+
+      scriptsFile = Path.resolve "hubot-scripts.json"
+      Path.exists scriptsFile, (exists) =>
+        if exists
+          Fs.readFile scriptsFile, (err, data) ->
+            scripts = JSON.parse data
+            scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+            robot.loadHubotScripts scriptsPath, scripts
+
+    robot.adapter.on 'connected', loadScripts
+
+    robot.run()
 
