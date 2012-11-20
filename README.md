@@ -99,9 +99,9 @@ Hubot can react directly to enter and leave events:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.enter, (msg) ->
+  robot.enter (msg) ->
     msg.send "Welcome!"
-  robot.leave, (msg) ->
+  robot.leave (msg) ->
     msg.send "Goodbye!"
 ```
 
