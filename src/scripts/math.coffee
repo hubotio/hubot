@@ -7,7 +7,7 @@
 module.exports = (robot) ->
   robot.respond /(calc|calculate|convert|math)( me)? (.*)/i, (msg) ->
     msg
-      .http('http://www.google.com/ig/calculator')
+      .http('https://www.google.com/ig/calculator')
       .query
         hl: 'en'
         q: msg.match[3]
