@@ -19,7 +19,7 @@ directory.
 
 [nodejs]: http://nodejs.org
 [npmjs]: http://npmjs.org
-[hubot-latest]: https://github.com/github/hubot/downloads
+[hubot-latest]: https://github.com/github/hubot/archive/master.zip
 [readme]: https://github.com/github/hubot/blob/master/src/templates/README.md
 
 ## Adapters
