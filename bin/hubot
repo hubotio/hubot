@@ -73,7 +73,6 @@ unless process.platform is "win32"
 if Options.create
   creator = new Creator(Options.path)
   creator.run()
-
 else
   adapterPath = Path.resolve __dirname, "..", "src", "adapters"
 
@@ -94,7 +93,7 @@ else
     robot.load scriptsPath
 
     scriptsFile = Path.resolve "hubot-scripts.json"
-    Path.exists scriptsFile, (exists) =>
+    Fs.exists scriptsFile, (exists) =>
       if exists
         Fs.readFile scriptsFile, (err, data) ->
           scripts = JSON.parse data

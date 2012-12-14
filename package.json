@@ -23,6 +23,11 @@
     "connect_router": "1.8.6"
   },
 
+  "engines": {
+    "node": "0.8.x",
+    "npm":  "1.1.x"
+  },
+
   "main": "./index",
 
   "bin": {
