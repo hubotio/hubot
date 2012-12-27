@@ -30,7 +30,7 @@ adapters that the community have contributed. Check the
 [hubot wiki][hubot-wiki] for the available ones and how to create your own.
 
 Please submit issues and pull requests for third party adapters to the adapter
-repo not this repo unless it's the Campfire or Shell adapter.
+repo, not this repo (unless it's the Campfire or Shell adapter).
 
 [hubot-wiki]: https://github.com/github/hubot/wiki
 [third-party-adapters]: https://github.com/github/hubot/tree/master/src/adapters/third-party
