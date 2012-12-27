@@ -75,7 +75,7 @@ if Options.create
   creator.run()
 
 else
-  adapterPath = Path.resolve __dirname, "..", "src", "adapters"
+  adapterPath = Path.join __dirname, "..", "src", "adapters"
 
   robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
 
@@ -87,21 +87,27 @@ else
   robot.alias = Options.alias
 
   loadScripts = ->
-    scriptsPath = Path.resolve ".", "scripts"
+    scriptsPath = Path.join __dirname, "..", "scripts"
     robot.load scriptsPath
 
-    scriptsPath = Path.resolve "src", "scripts"
+    scriptsPath = Path.join __dirname, "..", "src", "scripts"
     robot.load scriptsPath
 
-    scriptsFile = Path.resolve "hubot-scripts.json"
+    scriptsFile = Path.join __dirname, "..", "hubot-scripts.json"
+    if not Fs.existsSync scriptsFile
+      scriptsFile = Path.join __dirname, "..", "..", "..", "hubot-scripts.json"
+
+    scriptsPath = Path.join __dirname, "node_modules", "hubot-scripts", "src", "scripts"
+    if not Fs.existsSync scriptsPath
+      scriptsPath = Path.join __dirname, "..", "..", "hubot-scripts", "src", "scripts"
+
     Path.exists scriptsFile, (exists) =>
       if exists
         Fs.readFile scriptsFile, (err, data) ->
           scripts = JSON.parse data
-          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
           robot.loadHubotScripts scriptsPath, scripts
 
   robot.adapter.on 'connected', loadScripts
 
   robot.run()
-
+  
