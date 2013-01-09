@@ -77,7 +77,6 @@ unless process.platform is "win32"
 if Options.create
   creator = new Creator(Options.path)
   creator.run()
-
 else
   adapterPath = Path.resolve __dirname, "..", "src", "adapters"
 
