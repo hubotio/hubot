@@ -1,6 +1,6 @@
 {
   "name":        "hubot",
-  "version":     "2.3.5",
+  "version":     "2.4.0",
   "author":      "hubot",
   "keywords":    "github hubot campfire bot",
   "description": "A simple helpful Robot for your Company",
@@ -23,10 +23,14 @@
     "connect_router": "1.8.6"
   },
 
+  "engines": {
+    "node": ">= 0.8.x",
+    "npm": "1.1.x"
+  },
+
   "main": "./index",
 
   "bin": {
     "hubot": "./bin/hubot"
   }
 }
-
