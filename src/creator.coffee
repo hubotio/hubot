@@ -15,7 +15,7 @@ class Creator
   #
   # Returns nothing.
   mkdirDashP: (path) ->
-    Path.exists path, (exists) ->
+    Fs.exists path, (exists) ->
       unless exists
         Fs.mkdir path, 0o0755, (err) ->
           throw err if err
