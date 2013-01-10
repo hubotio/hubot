@@ -16,7 +16,7 @@ Switches = [
   [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-r", "--scripts PATH",    "Alternative scripts path" ],
+  [ "-r", "--require PATH",    "Alternative scripts path" ],
   [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
@@ -53,7 +53,7 @@ Parser.on "alias", (opt, value) ->
 Parser.on "name", (opt, value) ->
   Options.name = value
 
-Parser.on "scripts", (opt, value) ->
+Parser.on "require", (opt, value) ->
   Options.scripts.push(value)
 
 Parser.on "enable-slash", (opt) ->
