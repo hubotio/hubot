@@ -73,7 +73,7 @@ exports.use = (robot) ->
 class CampfireStreaming extends EventEmitter
   constructor: (options, @robot) ->
     unless options.token? and options.rooms? and options.account?
-      @robot.logger.error "Not enough parameters provided. I Need a token, rooms and account"
+      @robot.logger.error "Not enough parameters provided. I need a token, rooms and account"
       process.exit(1)
 
     @token         = options.token
