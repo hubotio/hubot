@@ -43,7 +43,6 @@ class Robot
     @Response     = Response
     @commands     = []
     @listeners    = []
-    @loadPaths    = []
     @enableSlash  = false
     @logger       = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
@@ -152,7 +151,6 @@ class Robot
 
     Fs.exists path, (exists) =>
       if exists
-        @loadPaths.push path
         for file in Fs.readdirSync(path)
           @loadFile path, file
 
