@@ -2,12 +2,12 @@
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Hubot      = require '..'
-Fs         = require 'fs'
-Path       = require 'path'
-HTTP       = require 'http'
-Creator    = require '../src/creator'
-OptParse   = require 'optparse'
+Creator  = require '../src/creator'
+Hubot    = require '..'
+
+Fs       = require 'fs'
+OptParse = require 'optparse'
+Path     = require 'path'
 
 Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
