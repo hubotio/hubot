@@ -50,15 +50,6 @@ class Robot
 
     @documentation = {}
 
-  # Public: Specify a router and callback to register as Connect middleware.
-  #
-  # route    - A String of the route to match.
-  # callback - A Function that is called when the route is requested.
-  #
-  # Returns nothing.
-  route: (route, callback) ->
-    @router.get route, callback
-
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
   #
