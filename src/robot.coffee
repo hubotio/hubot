@@ -11,9 +11,21 @@ Response                                                = require './response'
 
 inspect = require('util').inspect
 
-HUBOT_DEFAULT_ADAPTERS = [ 'campfire', 'shell' ]
-HUBOT_DOCUMENTATION_SECTIONS = [ 'description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'examples', 'urls' ]
+HUBOT_DEFAULT_ADAPTERS = [
+  'campfire',
+  'shell'
+]
 
+HUBOT_DOCUMENTATION_SECTIONS = [
+  'description',
+  'dependencies',
+  'configuration',
+  'commands',
+  'notes',
+  'author',
+  'examples',
+  'urls'
+]
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
