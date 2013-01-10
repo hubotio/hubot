@@ -9,8 +9,6 @@ Response                                                = require './response'
 {Listener,TextListener}                                 = require './listener'
 {TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
 
-inspect = require('util').inspect
-
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire',
   'shell'
