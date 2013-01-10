@@ -6,96 +6,61 @@ Creator  = require '../src/creator'
 Hubot    = require '..'
 
 Fs       = require 'fs'
-OptParse = require 'optparse'
 Path     = require 'path'
 
-Switches = [
-  [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-c", "--create PATH",     "Create a deployable hubot" ],
-  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
-  [ "-h", "--help",            "Display the help information" ],
-  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
-  [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-s", "--enable-slash",    "Enable replacing the robot's name with '/' (deprecated)" ],
-  [ "-v", "--version",         "Displays the version of hubot installed" ]
-]
+App      = require 'commander'
 
-Options =
-  adapter: "shell"
-  alias: false
-  create: false
-  enableHttpd: true
-  name: "Hubot"
-  path: "."
+pkg = Fs.readFileSync "#{__dirname}/../package.json"
 
-Parser = new OptParse.OptionParser(Switches)
-Parser.banner = "Usage hubot [options]"
+App.name = 'hubot'
+App.version = JSON.parse(pkg).version
 
-Parser.on "adapter", (opt, value) ->
-  Options.adapter = value
+App
+  .command('create [path]')
+  .description('Create a new deployable hubot')
+  .action (path, options) ->
+    path or= './hubot'
+    creator = new Creator(path)
+    creator.run()
 
-Parser.on "create", (opt, value) ->
-  Options.path = value
-  Options.create = true
+App
+  .command('start')
+  .description('Start a hubot instance')
+  .option('-a, --adapter <adapter>', 'Adapter for hubot to use')
+  .option('-d, --no-http', 'Disable the built in HTTP server')
+  .option('-l, --alias [alias]', 'Enable replacing the username with an alias')
+  .option('-u, --username <username>', 'Name for hubot to use')
+  .action (options) ->
+    name = options.username or 'hubot'
+    adapter = options.adapter or 'shell'
+    http = !!options.http
+    alias = if options.alias is true then '/' else options.alias
 
-Parser.on "disable-httpd", (opt) ->
-  Options.enableHttpd = false
+    adapterPath = Path.join __dirname, '..', 'src', 'adapters'
+    robot = Hubot.loadBot adapterPath, adapter, http, name
 
-Parser.on "help", (opt, value) ->
-  console.log Parser.toString()
+    robot.enableSlash = !!alias
+    robot.alias = alias
+
+    robot.adapter.on 'connected', ->
+      robot.load Path.join __dirname, '..', 'scripts'
+      robot.load Path.join __dirname, '..', 'src', 'scripts'
+
+      scriptsFile = Path.join __dirname, '..', 'hubot-scripts.json'
+      Fs.exists scriptsFile, (exists) ->
+        if exists
+          Fs.readFile scriptsFile, (err, data) ->
+            scripts = JSON.parse data
+            path = Path.join __dirname, 'node_modules', 'hubot-scripts', 'src', 'scripts'
+            robot.loadHubotScripts path, scripts
+
+    robot.run()
+
+App.parse process.argv
+
+if process.argv.length is 2
+  console.log App.helpInformation()
   process.exit 0
 
-Parser.on "alias", (opt, value) ->
-  Options.alias = value
-
-Parser.on "name", (opt, value) ->
-  Options.name = value
-
-Parser.on "enable-slash", (opt) ->
-  console.log "WARNING: -s and --enable-slash are deprecated please use -l or --alias '/'"
-  Options.alias = '/'
-
-Parser.on "version", (opt, value) ->
-  Options.version = true
-
-Parser.parse process.argv
-
-unless process.platform is "win32"
-  process.on 'SIGTERM', ->
-    process.exit 0
-
-if Options.create
-  creator = new Creator(Options.path)
-  creator.run()
-
-else
-  adapterPath = Path.resolve __dirname, "..", "src", "adapters"
-
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
-
-  if Options.version
-    console.log robot.version
-    process.exit 0
-
-  robot.enableSlash = Options.enableSlash
-  robot.alias = Options.alias
-
-  loadScripts = ->
-    scriptsPath = Path.resolve ".", "scripts"
-    robot.load scriptsPath
-
-    scriptsPath = Path.resolve "src", "scripts"
-    robot.load scriptsPath
-
-    scriptsFile = Path.resolve "hubot-scripts.json"
-    Fs.exists scriptsFile, (exists) =>
-      if exists
-        Fs.readFile scriptsFile, (err, data) ->
-          scripts = JSON.parse data
-          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-          robot.loadHubotScripts scriptsPath, scripts
-
-  robot.adapter.on 'connected', loadScripts
-
-  robot.run()
-
+unless process.platform is 'win32'
+  process.on 'SIGTERM', -> process.exit 0
