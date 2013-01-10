@@ -15,10 +15,6 @@ HTTP       = require 'http'
 Creator    = require '../src/creator'
 OptParse   = require 'optparse'
 
-# compatible node v0.6
-Fs.exists ||= (path, callback) ->
-  Path.exists(path, callback)
-
 Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
   [ "-c", "--create PATH",     "Create a deployable hubot" ],
