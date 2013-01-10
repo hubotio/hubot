@@ -251,7 +251,6 @@ class Robot
     scriptDocumentation = {}
     @documentation[scriptName] = scriptDocumentation
 
-    @logger.debug "parseHelp populating @documentation[#{scriptName}]"
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
 
@@ -261,7 +260,6 @@ class Robot
 
         # remove leading comment
         cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
-        @logger.debug "parseHelp(#{scriptName}): read #{cleanedLine}"
 
         continue if cleanedLine.length is 0
         continue if cleanedLine.toLowerCase() is 'none'
@@ -270,11 +268,9 @@ class Robot
         if nextSection in HUBOT_DOCUMENTATION_SECTIONS
           currentSection = nextSection
           scriptDocumentation[currentSection] = []
-          @logger.debug "parseHelp(#{scriptName}): adding #{currentSection} section"
         # lines in a section _do_ have leading whitespace
         else
           if currentSection
-            @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine.trim()}' to #{currentSection}"
             scriptDocumentation[currentSection].push cleanedLine.trim()
             if currentSection == 'commands'
               @commands.push cleanedLine.trim()
@@ -287,8 +283,6 @@ class Robot
           break    if not (line[0] == '#' or line.substr(0, 2) == '//')
           continue if not line.match('-')
           cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
-
-          @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine}' to commands"
           scriptDocumentation.commands.push cleanedLine
           @commands.push cleanedLine
 
