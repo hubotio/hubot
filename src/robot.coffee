@@ -272,7 +272,7 @@ class Robot
         else
           if currentSection
             scriptDocumentation[currentSection].push cleanedLine.trim()
-            if currentSection == 'commands'
+            if currentSection is 'commands'
               @commands.push cleanedLine.trim()
 
       # no current section? probably using old style documentation
@@ -280,7 +280,7 @@ class Robot
         @logger.info "#{path} is using deprecated documentation syntax"
         scriptDocumentation.commands = []
         for line in body.split("\n")
-          break    if not (line[0] == '#' or line.substr(0, 2) == '//')
+          break    if not (line[0] is '#' or line.substr(0, 2) is '//')
           continue if not line.match('-')
           cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
           scriptDocumentation.commands.push cleanedLine
@@ -357,7 +357,7 @@ class Robot
   usersForRawFuzzyName: (fuzzyName) ->
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
-      user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
+      user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) is 0)
 
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which
