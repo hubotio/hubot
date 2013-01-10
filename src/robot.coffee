@@ -232,7 +232,7 @@ class Robot
 
       @adapter = require("#{path}").use(@)
     catch err
-      @logger.error "Cannot load adapter #{adapter} - #{err}\n#{err.stack}"
+      @logger.error "Cannot load adapter #{adapter} - #{err}"
 
   # Public: Help Commands for Running Scripts.
   #
