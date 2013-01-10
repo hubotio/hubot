@@ -258,7 +258,6 @@ class Robot
       for line in body.split "\n"
         break unless line[0] is '#' or line.substr(0, 2) is '//'
 
-        # remove leading comment
         cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
 
         continue if cleanedLine.length is 0
@@ -268,14 +267,12 @@ class Robot
         if nextSection in HUBOT_DOCUMENTATION_SECTIONS
           currentSection = nextSection
           scriptDocumentation[currentSection] = []
-        # lines in a section _do_ have leading whitespace
         else
           if currentSection
             scriptDocumentation[currentSection].push cleanedLine.trim()
             if currentSection is 'commands'
               @commands.push cleanedLine.trim()
 
-      # no current section? probably using old style documentation
       if currentSection is null
         @logger.info "#{path} is using deprecated documentation syntax"
         scriptDocumentation.commands = []
