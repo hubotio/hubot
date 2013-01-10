@@ -159,7 +159,7 @@ class Robot
       catch error
         @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
 
-  # Public: Load scripts specfic in the `hubot-scripts.json` file.
+  # Public: Load scripts specfied in the `hubot-scripts.json` file.
   #
   # path    - A String path to the hubot-scripts files.
   # scripts - An Array of scripts to load.
