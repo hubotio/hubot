@@ -7,7 +7,7 @@ class Creator
   #
   # path - A String directory to create/upgrade scripts for
   constructor: (path) ->
-    @path = path
+    @path = Path.resolve path
     @templateDir = "#{__dirname}/templates"
     @scriptsDir  = "#{__dirname}/scripts"
 
@@ -18,7 +18,7 @@ class Creator
     Fs.exists path, (exists) ->
       unless exists
         Fs.mkdir path, 0o0755, (err) ->
-          throw err if err
+          console.log err if err
 
   # Copy the contents of a file from one place to another.
   #
