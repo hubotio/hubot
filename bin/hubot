@@ -1,10 +1,4 @@
 #!/usr/bin/env coffee
-
-##
-# hubot [options]
-#
-# Launch an interactive hubot
-#
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
