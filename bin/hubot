@@ -82,7 +82,6 @@ else
     console.log robot.version
     process.exit 0
 
-  robot.enableSlash = Options.enableSlash
   robot.alias = Options.alias
 
   loadScripts = ->
