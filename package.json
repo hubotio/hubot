@@ -27,6 +27,10 @@
     "nodeunit": "~> 0.7.4"
   },
 
+  "scripts": {
+    "test": "nodeunit --reporter minimal ./test"
+  },
+
   "engines": {
     "node": ">= 0.8.x",
     "npm": "1.1.x"
