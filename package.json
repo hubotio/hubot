@@ -23,6 +23,10 @@
     "scoped-http-client": "0.9.7"
   },
 
+  "devDependencies": {
+    "nodeunit": "~> 0.7.4"
+  },
+
   "engines": {
     "node": ">= 0.8.x",
     "npm": "1.1.x"
