@@ -15,12 +15,20 @@
   },
 
   "dependencies": {
-    "coffee-script": "~> 1.4.0",
-    "optparse": "1.0.3",
-    "scoped-http-client": "0.9.7",
-    "log": "1.3.0",
-    "connect": "2.3.4",
-    "connect_router": "1.8.6"
+    "coffee-script":      "~> 1.4.0",
+    "commander":          "1.1.1",
+    "connect":            "2.3.4",
+    "connect_router":     "1.8.6",
+    "log":                "1.3.0",
+    "scoped-http-client": "0.9.7"
+  },
+
+  "devDependencies": {
+    "nodeunit": "~> 0.7.4"
+  },
+
+  "scripts": {
+    "test": "nodeunit --reporter minimal ./test"
   },
 
   "engines": {

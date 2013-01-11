@@ -33,9 +33,6 @@ Please submit issues and pull requests for third party adapters to the adapter
 repo, not this repo (unless it's the Campfire or Shell adapter).
 
 [hubot-wiki]: https://github.com/github/hubot/wiki
-[third-party-adapters]: https://github.com/github/hubot/tree/master/src/adapters/third-party
-[split-subpath]: http://help.github.com/split-a-subpath-into-a-new-repo/
-[logjs]: https://github.com/visionmedia/log.js
 
 ## hubot-scripts
 
@@ -48,6 +45,20 @@ individual scripts.
 
 [hubot-scripts]: https://github.com/github/hubot-scripts
 [hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
+
+## external-scripts
+
+This functionality allows users to enable scripts from `npm` packages which
+don't have to be included in the `hubot-scripts` repository.
+
+To enable to functionality you can follow the following steps.
+
+1. Add the packages as dependencies into your `package.json`
+2. `npm install` to make sure those packages are installed
+
+To enable third-party scripts that you've added you will need to add the package
+name as a double quoted string to the `external-scripts.json` file for your
+hubot.
 
 ## HTTP Listener
 

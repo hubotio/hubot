@@ -1,14 +1,26 @@
 User = require '../src/user'
-assert = require 'assert'
 
+module.exports = {
 
-user = new User "Fake User", {name: 'fake', type: "groupchat"}
-assert.equal "Fake User", user.id
-assert.equal "groupchat", user.type
-assert.equal "fake", user.name
+  'create a user': (test) ->
+    user = new User 'Fake User',
+      name: 'fake'
+      type: 'groupchat'
 
-user = new User "Fake User", {room: "chat@room.jabber", type: "groupchat"}
-assert.equal "Fake User", user.id
-assert.equal "chat@room.jabber", user.room
-assert.equal "groupchat", user.type
-assert.equal "Fake User", user.name # Make sure that if no name is given, we fallback to the ID
+    test.ok 'Fake User' is user.id
+    test.ok 'fake' is user.name
+    test.ok 'groupchat' is user.type
+    test.done()
+
+  'create a user without name defaults to ID as name': (test) ->
+    user = new User 'Fake User',
+      room: 'chat@room.jabber'
+      type: 'groupchat'
+
+    test.ok 'Fake User' is user.id
+    test.ok 'Fake User' is user.name
+    test.ok 'groupchat' is user.type
+    test.ok 'chat@room.jabber' is user.room
+    test.done()
+
+}
