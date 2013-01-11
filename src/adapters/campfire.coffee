@@ -6,17 +6,17 @@ Adapter                                 = require '../adapter'
 {TextMessage,EnterMessage,LeaveMessage} = require '../message'
 
 class Campfire extends Adapter
-  send: (user, strings...) ->
+  send: (room, user, strings...) ->
     if strings.length > 0
-      @bot.Room(user.room).speak strings.shift(), (err, data) =>
+      @bot.Room(room).speak strings.shift(), (err, data) =>
         @robot.logger.error "Campfire error: #{err}" if err?
         @send user, strings...
 
-  reply: (user, strings...) ->
-    @send user, strings.map((str) -> "#{user.name}: #{str}")...
+  reply: (room, user, strings...) ->
+    @send room, user, strings.map((str) -> "#{user.name}: #{str}")...
 
-  topic: (user, strings...) ->
-    @bot.Room(user.room).topic strings.join(" / "), (err, data) =>
+  topic: (room, user, strings...) ->
+    @bot.Room(room).topic strings.join(" / "), (err, data) =>
       @robot.logger.error "Campfire error: #{err}" if err?
 
   run: ->

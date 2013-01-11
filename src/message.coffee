@@ -3,6 +3,7 @@ class Message
   #
   # user - A User instance that sent the message.
   constructor: (@user, @done = false) ->
+    @room = @user.room
 
   # Indicates that no other Listener should be called on this object
   #

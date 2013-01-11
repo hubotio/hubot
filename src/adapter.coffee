@@ -8,28 +8,31 @@ class Adapter extends EventEmitter
 
   # Public: Raw method for sending data back to the chat source. Extend this.
   #
+  # room    - A String or Number identifier of the room.
   # user    - A User instance.
   # strings - One or more Strings for each message to send.
   #
   # Returns nothing.
-  send: (user, strings...) ->
+  send: (room, user, strings...) ->
 
   # Public: Raw method for building a reply and sending it back to the chat
   # source. Extend this.
   #
+  # room    - A String or Number identifier of the room.
   # user    - A User instance.
   # strings - One or more Strings for each reply to send.
   #
   # Returns nothing.
-  reply: (user, strings...) ->
+  reply: (room, user, strings...) ->
 
   # Public: Raw method for setting a topic on the chat source. Extend this.
   #
+  # room    - A String or Number identifier of the room.
   # user    - A User instance.
   # strings - One more more Strings to set as the topic.
   #
   # Returns nothing.
-  topic: (user, strings...) ->
+  topic: (room, user, strings...) ->
 
   # Public: Raw method for invoking the bot to run. Extend this.
   #

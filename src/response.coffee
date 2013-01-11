@@ -7,11 +7,6 @@ class Response
   # message - A Message instance.
   # match   - A Match object from the successful Regex match.
   constructor: (@robot, @message, @match) ->
-    # Dirty hack to deep clone without a dependency...
-    json = JSON.stringify @message
-    message = JSON.parse json
-    @message = message
-
 
   # Public: Posts a message back to the chat source
   #
@@ -20,7 +15,7 @@ class Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.adapter.send @message.user, strings...
+    @robot.adapter.send @message.room, @message.user, strings...
 
   # Public: Posts a message mentioning the current user.
   #
@@ -29,7 +24,7 @@ class Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.adapter.reply @message.user, strings...
+    @robot.adapter.reply @message.room, @message.user, strings...
 
   # Public: Posts a topic changing message
   #
@@ -38,7 +33,7 @@ class Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @robot.adapter.topic @message.user, strings...
+    @robot.adapter.topic @message.room, @message.user, strings...
 
   # Public: Picks a random item from the given items.
   #
