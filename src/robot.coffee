@@ -41,7 +41,6 @@ class Robot
     @Response     = Response
     @commands     = []
     @listeners    = []
-    @enableSlash  = false
     @logger       = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
