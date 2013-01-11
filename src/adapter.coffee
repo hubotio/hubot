@@ -51,19 +51,19 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User objects.
   users: ->
-    @robot.users
+    @robot.brain.users
 
   # Public: Get a User object given a unique identifier.
   #
   # Returns a User instance of the specified user.
   userForId: (id, options) ->
-    @robot.userForId id, options
+    @robot.brain.userForId id, options
 
   # Public: Get a User object given a name.
   #
   # Returns a User instance for the user with the specified name.
   userForName: (name) ->
-    @robot.userForName name
+    @robot.brain.userForName name
 
   # Public: Get all users whose names match fuzzyName. Currently, match
   # means 'starts with', but this could be extended to match initials,
@@ -71,7 +71,7 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User instances matching the fuzzy name.
   usersForRawFuzzyName: (fuzzyName) ->
-    @robot.usersForRawFuzzyName fuzzyName
+    @robot.brain.usersForRawFuzzyName fuzzyName
 
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which
@@ -79,7 +79,7 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User instances matching the fuzzy name.
   usersForFuzzyName: (fuzzyName) ->
-    @robot.usersForFuzzyName fuzzyName
+    @robot.brain.usersForFuzzyName fuzzyName
 
   # Public: Creates a scoped http client with chainable methods for
   # modifying the request. This doesn't actually make a request though.
