@@ -99,6 +99,13 @@ else
           scriptsPath = Path.join __dirname, "node_modules", "hubot-scripts", "src", "scripts"
           robot.loadHubotScripts scriptsPath, scripts
 
+    scriptsFile = Path.join __dirname, "..", "external-scripts.json"
+    Fs.exists scriptsFile, (exists) =>
+      if exists
+        Fs.readFile scriptsFile, (err, data) ->
+          scripts = JSON.parse data
+          robot.loadExternalScripts scripts
+
     for path in Options.scripts
       if path[0] == '/'
         scriptsPath = path
