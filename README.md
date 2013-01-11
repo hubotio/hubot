@@ -33,9 +33,6 @@ Please submit issues and pull requests for third party adapters to the adapter
 repo, not this repo (unless it's the Campfire or Shell adapter).
 
 [hubot-wiki]: https://github.com/github/hubot/wiki
-[third-party-adapters]: https://github.com/github/hubot/tree/master/src/adapters/third-party
-[split-subpath]: http://help.github.com/split-a-subpath-into-a-new-repo/
-[logjs]: https://github.com/visionmedia/log.js
 
 ## hubot-scripts
 
