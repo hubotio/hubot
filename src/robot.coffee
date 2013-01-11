@@ -130,19 +130,6 @@ class Robot
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
 
-  # Public: Loads every script in the given path.
-  #
-  # path - A String path on the filesystem.
-  #
-  # Returns nothing.
-  load: (path) ->
-    @logger.debug "Loading scripts from #{path}"
-
-    Fs.exists path, (exists) =>
-      if exists
-        for file in Fs.readdirSync(path)
-          @loadFile path, file
-
   # Public: Loads a file in path.
   #
   # path - A String path on the filesystem.
@@ -158,6 +145,19 @@ class Robot
         @parseHelp "#{path}/#{file}"
       catch error
         @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
+
+  # Public: Loads every script in the given path.
+  #
+  # path - A String path on the filesystem.
+  #
+  # Returns nothing.
+  load: (path) ->
+    @logger.debug "Loading scripts from #{path}"
+
+    Fs.exists path, (exists) =>
+      if exists
+        for file in Fs.readdirSync(path)
+          @loadFile path, file
 
   # Public: Load scripts specfied in the `hubot-scripts.json` file.
   #
