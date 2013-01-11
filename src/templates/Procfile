@@ -1,1 +1,1 @@
-web: bin/hubot -a campfire -n Hubot
+web: bin/hubot start -a campfire -u Hubot
