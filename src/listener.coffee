@@ -37,5 +37,7 @@ class TextListener extends Listener
       if message instanceof TextMessage
         message.match @regex
 
-module.exports.Listener     = Listener
-module.exports.TextListener = TextListener
+module.exports = {
+  Listener
+  TextListener
+}

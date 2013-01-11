@@ -9,11 +9,21 @@ Response                                                = require './response'
 {Listener,TextListener}                                 = require './listener'
 {TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
 
-inspect = require('util').inspect
+HUBOT_DEFAULT_ADAPTERS = [
+  'campfire',
+  'shell'
+]
 
-HUBOT_DEFAULT_ADAPTERS = [ 'campfire', 'shell' ]
-HUBOT_DOCUMENTATION_SECTIONS = [ 'description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'examples', 'urls' ]
-
+HUBOT_DOCUMENTATION_SECTIONS = [
+  'description',
+  'dependencies',
+  'configuration',
+  'commands',
+  'notes',
+  'author',
+  'examples',
+  'urls'
+]
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -31,24 +41,11 @@ class Robot
     @Response     = Response
     @commands     = []
     @listeners    = []
-    @loadPaths    = []
-    @enableSlash  = false
     @logger       = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
     @setupConnect() if httpd
     @loadAdapter adapterPath, adapter if adapter?
-
-    @documentation = {}
-
-  # Public: Specify a router and callback to register as Connect middleware.
-  #
-  # route    - A String of the route to match.
-  # callback - A Function that is called when the route is requested.
-  #
-  # Returns nothing.
-  route: (route, callback) ->
-    @router.get route, callback
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -85,7 +82,6 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 
-    @logger.debug newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
@@ -130,20 +126,6 @@ class Robot
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
 
-  # Public: Loads every script in the given path.
-  #
-  # path - A String path on the filesystem.
-  #
-  # Returns nothing.
-  load: (path) ->
-    @logger.debug "Loading scripts from #{path}"
-
-    Fs.exists path, (exists) =>
-      if exists
-        @loadPaths.push path
-        for file in Fs.readdirSync(path)
-          @loadFile path, file
-
   # Public: Loads a file in path.
   #
   # path - A String path on the filesystem.
@@ -160,7 +142,19 @@ class Robot
       catch error
         @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
 
-  # Public: Load scripts specfic in the `hubot-scripts.json` file.
+  # Public: Loads every script in the given path.
+  #
+  # path - A String path on the filesystem.
+  #
+  # Returns nothing.
+  load: (path) ->
+    @logger.debug "Loading scripts from #{path}"
+    Fs.exists path, (exists) =>
+      if exists
+        for file in Fs.readdirSync(path)
+          @loadFile path, file
+
+  # Public: Load scripts specfied in the `hubot-scripts.json` file.
   #
   # path    - A String path to the hubot-scripts files.
   # scripts - An Array of scripts to load.
@@ -231,9 +225,9 @@ class Robot
       else
         "hubot-#{adapter}"
 
-      @adapter = require("#{path}").use(@)
+      @adapter = require(path).use @
     catch err
-      @logger.error "Cannot load adapter #{adapter} - #{err}\n#{err.stack}"
+      @logger.error "Cannot load adapter #{adapter} - #{err}"
 
   # Public: Help Commands for Running Scripts.
   #
@@ -247,12 +241,10 @@ class Robot
   #
   # Returns nothing.
   parseHelp: (path) ->
-    @logger.debug "parseHelp of #{path}"
+    @logger.debug "Parsing help for #{path}"
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
     scriptDocumentation = {}
-    @documentation[scriptName] = scriptDocumentation
 
-    @logger.debug "parseHelp populating @documentation[#{scriptName}]"
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
 
@@ -260,9 +252,7 @@ class Robot
       for line in body.split "\n"
         break unless line[0] is '#' or line.substr(0, 2) is '//'
 
-        # remove leading comment
         cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
-        @logger.debug "parseHelp(#{scriptName}): read #{cleanedLine}"
 
         continue if cleanedLine.length is 0
         continue if cleanedLine.toLowerCase() is 'none'
@@ -271,25 +261,19 @@ class Robot
         if nextSection in HUBOT_DOCUMENTATION_SECTIONS
           currentSection = nextSection
           scriptDocumentation[currentSection] = []
-          @logger.debug "parseHelp(#{scriptName}): adding #{currentSection} section"
-        # lines in a section _do_ have leading whitespace
         else
           if currentSection
-            @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine.trim()}' to #{currentSection}"
             scriptDocumentation[currentSection].push cleanedLine.trim()
-            if currentSection == 'commands'
+            if currentSection is 'commands'
               @commands.push cleanedLine.trim()
 
-      # no current section? probably using old style documentation
       if currentSection is null
         @logger.info "#{path} is using deprecated documentation syntax"
         scriptDocumentation.commands = []
         for line in body.split("\n")
-          break    if not (line[0] == '#' or line.substr(0, 2) == '//')
+          break    if not (line[0] is '#' or line.substr(0, 2) is '//')
           continue if not line.match('-')
           cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
-
-          @logger.debug "parseHelp(#{scriptName}) adding '#{cleanedLine}' to commands"
           scriptDocumentation.commands.push cleanedLine
           @commands.push cleanedLine
 
@@ -303,16 +287,6 @@ class Robot
   send: (user, strings...) ->
     @adapter.send user, strings...
 
-  # Public: A helper send function to message a room that the robot is in.
-  #
-  # room    - String designating the room to message.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  messageRoom: (room, strings...) ->
-    user = { room: room }
-    @adapter.send user, strings...
-
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
   #
@@ -322,6 +296,16 @@ class Robot
   # Returns nothing.
   reply: (user, strings...) ->
     @adapter.reply user, strings...
+
+  # Public: A helper send function to message a room that the robot is in.
+  #
+  # room    - String designating the room to message.
+  # strings - One or more Strings for each message to send.
+  #
+  # Returns nothing.
+  messageRoom: (room, strings...) ->
+    user = { room: room }
+    @adapter.send user, strings...
 
   # Public: Get an Array of User objects stored in the brain.
   #
@@ -364,7 +348,7 @@ class Robot
   usersForRawFuzzyName: (fuzzyName) ->
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
-      user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
+      user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) is 0)
 
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which

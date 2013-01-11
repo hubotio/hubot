@@ -17,15 +17,6 @@ class Response
   send: (strings...) ->
     @robot.adapter.send @message.user, strings...
 
-  # Public: Posts a topic changing message
-  #
-  # strings - One or more strings to set as the topic of the
-  #           room the bot is in.
-  #
-  # Returns nothing.
-  topic: (strings...) ->
-    @robot.adapter.topic @message.user, strings...
-
   # Public: Posts a message mentioning the current user.
   #
   # strings - One or more strings to be posted. The order of these strings
@@ -34,6 +25,15 @@ class Response
   # Returns nothing.
   reply: (strings...) ->
     @robot.adapter.reply @message.user, strings...
+
+  # Public: Posts a topic changing message
+  #
+  # strings - One or more strings to set as the topic of the
+  #           room the bot is in.
+  #
+  # Returns nothing.
+  topic: (strings...) ->
+    @robot.adapter.topic @message.user, strings...
 
   # Public: Picks a random item from the given items.
   #
