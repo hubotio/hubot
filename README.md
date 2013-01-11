@@ -46,6 +46,20 @@ individual scripts.
 [hubot-scripts]: https://github.com/github/hubot-scripts
 [hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
 
+## external-scripts
+
+This functionality allows users to enable scripts from `npm` packages which
+don't have to be included in the `hubot-scripts` repository.
+
+To enable to functionality you can follow the following steps.
+
+1. Add the packages as dependencies into your `package.json`
+2. `npm install` to make sure those packages are installed
+
+To enable third-party scripts that you've added you will need to add the package
+name as a double quoted string to the `external-scripts.json` file for your
+hubot.
+
 ## HTTP Listener
 
 Hubot has a HTTP listener which listens on the port specified by the `PORT`

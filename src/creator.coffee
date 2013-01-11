@@ -64,7 +64,8 @@ class Creator
       "README.md",
       ".gitignore",
       "bin/hubot",
-      "hubot-scripts.json"
+      "hubot-scripts.json",
+      "external-scripts.json"
     ]
 
     @copy "#{@templateDir}/#{file}", "#{@path}/#{file}" for file in files
