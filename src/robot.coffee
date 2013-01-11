@@ -84,7 +84,6 @@ class Robot
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 
-    @logger.debug newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
@@ -152,7 +151,6 @@ class Robot
   # Returns nothing.
   load: (path) ->
     @logger.debug "Loading scripts from #{path}"
-
     Fs.exists path, (exists) =>
       if exists
         for file in Fs.readdirSync(path)
@@ -245,7 +243,7 @@ class Robot
   #
   # Returns nothing.
   parseHelp: (path) ->
-    @logger.debug "parseHelp of #{path}"
+    @logger.debug "Parsing help for #{path}"
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
     scriptDocumentation = {}
     @documentation[scriptName] = scriptDocumentation
