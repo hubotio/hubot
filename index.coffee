@@ -6,17 +6,19 @@ Response                                                = require './src/respons
 {Listener,TextListener}                                 = require './src/listener'
 {TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './src/message'
 
+module.exports = {
+  User
+  Brain
+  Robot
+  Adapter
+  Response
+  Listener
+  TextListener
+  TextMessage
+  EnterMessage
+  LeaveMessage
+  CatchAllMessage
+}
+
 module.exports.loadBot = (adapterPath, adapterName, enableHttpd, botName) ->
   new Robot adapterPath, adapterName, enableHttpd, botName
-
-module.exports.User            = User
-module.exports.Brain           = Brain
-module.exports.Robot           = Robot
-module.exports.Adapter         = Adapter
-module.exports.Response        = Response
-module.exports.Listener        = Listener
-module.exports.TextListener    = TextListener
-module.exports.TextMessage     = TextMessage
-module.exports.EnterMessage    = EnterMessage
-module.exports.LeaveMessage    = LeaveMessage
-module.exports.CatchAllMessage = CatchAllMessage
