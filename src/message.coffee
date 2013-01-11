@@ -42,8 +42,10 @@ class CatchAllMessage extends Message
   # message - The original message.
   constructor: (@message) ->
 
-module.exports.Message         = Message
-module.exports.TextMessage     = TextMessage
-module.exports.EnterMessage    = EnterMessage
-module.exports.LeaveMessage    = LeaveMessage
-module.exports.CatchAllMessage = CatchAllMessage
+module.exports = {
+  Message
+  TextMessage
+  EnterMessage
+  LeaveMessage
+  CatchAllMessage
+}

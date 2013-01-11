@@ -5,10 +5,8 @@ class Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot. Extend this.
   #
   # Returns a new Brain with no external storage.
-  constructor: () ->
-    @data =
-      users: { }
-
+  constructor: ->
+    @data = users: { }
     @resetSaveInterval 5
 
   # Public: Emits the 'save' event so that 'brain' scripts can handle persisting.
