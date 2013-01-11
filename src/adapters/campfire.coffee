@@ -8,9 +8,9 @@ Adapter                                 = require '../adapter'
 class Campfire extends Adapter
   send: (envelope, strings...) ->
     if strings.length > 0
-      @bot.Room(envelop.room).speak strings.shift(), (err, data) =>
+      @bot.Room(envelope.room).speak strings.shift(), (err, data) =>
         @robot.logger.error "Campfire error: #{err}" if err?
-        @send envelop.user, strings...
+        @send envelope.user, strings...
 
   reply: (envelope, strings...) ->
     @send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
