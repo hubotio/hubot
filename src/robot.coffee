@@ -230,7 +230,7 @@ class Robot
       else
         "hubot-#{adapter}"
 
-      @adapter = require("#{path}").use(@)
+      @adapter = require(path).use @
     catch err
       @logger.error "Cannot load adapter #{adapter} - #{err}"
 
