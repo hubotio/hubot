@@ -66,6 +66,58 @@ module.exports = (robot) ->
 There are functions for GET, POST, PUT and DELETE, which all take a route and
 callback function that accepts a request and a response.
 
+## Robot Functionality
+
+### Hearing different messages
+Hubot can <tt>hear</tt> messages based on a Regex:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.hear /problem/i, (msg) ->
+    msg.send "ruh-roh"
+```
+
+### Responding to messages
+<tt>respond</tt> is similar to <tt>hear</tt> except Hubot will only respond to messages directed at him:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.respond /hi|hello/i, (msg) ->
+    msg.send "Hello!"
+```
+
+Alternatively, use <tt>reply</tt> to reply directly back to the user who originated the message:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.respond /hi|hello/i, (msg) ->
+    msg.reply "Hello!"
+```
+
+### Enter and Leave events
+Hubot can react directly to enter and leave events:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.enter (msg) ->
+    msg.send "Welcome!"
+  robot.leave (msg) ->
+    msg.send "Goodbye!"
+```
+
+### Seeing different types of messages
+Hubot has the ability to react to messages based on their type. For example, Campfire chatrooms will generate <tt>TextMessage</tt>, <tt>TopicChangeMessage</tt>, <tt>EnterMessage</tt>, etc.  To utilize this functionality, use the <tt>see</tt> function:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.see "TopicChangeMessage", (msg) ->
+    # do something fun
+  robot.see /TopicChangeMessage/, (msg) ->
+    # works for funness as well
+  robot.see TopicChangeMessage, (msg) ->
+    # just remember to require TopicChangeMessage...
+```
+
 ## Testing hubot locally
 
 Install all of the required dependencies by running `npm install`.

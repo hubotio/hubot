@@ -1,9 +1,9 @@
 HTTPS          = require 'https'
 {EventEmitter} = require 'events'
 
-Robot                                   = require '../robot'
-Adapter                                 = require '../adapter'
-{TextMessage,EnterMessage,LeaveMessage} = require '../message'
+Robot                                                      = require '../robot'
+Adapter                                                    = require '../adapter'
+{TextMessage,EnterMessage,LeaveMessage,TopicChangeMessage} = require '../message'
 
 class Campfire extends Adapter
   send: (user, strings...) ->
@@ -50,6 +50,10 @@ class Campfire extends Adapter
       unless bot.info.id == author.id
         self.receive new LeaveMessage(author)
 
+    bot.on "TopicChangeMessage", withAuthor (id, created, room, user, body, author) ->
+      unless bot.info.id == author.id
+        self.receive new TopicChangeMessage(author, body)
+
     bot.Me (err, data) ->
       bot.info = data.user
       bot.name = bot.info.name
@@ -94,6 +98,9 @@ class CampfireStreaming extends EventEmitter
   Room: (id) ->
     self = @
     logger = @robot.logger
+
+    info: (callback) ->
+      self.get "/room/#{id}", callback
 
     show: (callback) ->
       self.get "/room/#{id}", callback
