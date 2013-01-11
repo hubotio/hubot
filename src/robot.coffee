@@ -47,8 +47,6 @@ class Robot
     @setupConnect() if httpd
     @loadAdapter adapterPath, adapter if adapter?
 
-    @documentation = {}
-
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
   #
@@ -260,7 +258,6 @@ class Robot
     @logger.debug "Parsing help for #{path}"
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
     scriptDocumentation = {}
-    @documentation[scriptName] = scriptDocumentation
 
     Fs.readFile path, 'utf-8', (err, body) =>
       throw err if err?
