@@ -60,6 +60,29 @@ To enable third-party scripts that you've added you will need to add the package
 name as a double quoted string to the `external-scripts.json` file for your
 hubot.
 
+### Creating a script package
+
+Creating a script package for hubot is very simple. Start by creating a normal
+`npm` package. Make sure you add a main file for the entry point (e.g.
+`index.js` or `index.coffee`).
+
+In this entry point file you're going to have to export a function that hubot
+will use to load the scripts in your package. Below is a simple example for
+loading each script in a `./scripts` directory in your package.
+
+```coffeescript
+Fs   = require 'fs'
+Path = require 'path'
+
+module.exports = (robot) ->
+  path = Path.resolve __dirname, 'scripts'
+  Fs.exists path, (exists) ->
+    if exists
+      robot.loadFile path, file for file in Fs.readdirSync(path)
+```
+
+After you've built your `npm` package you can publish it to [npmjs][npmjs].
+
 ## HTTP Listener
 
 Hubot has a HTTP listener which listens on the port specified by the `PORT`
