@@ -165,6 +165,20 @@ class Robot
     for script in scripts
       @loadFile path, script
 
+  # Public: Load scripts from packages specfied in the
+  # `external-scripts.json` file.
+  #
+  # packages - An Array of packages containing hubot scripts to load.
+  #
+  # Returns nothing.
+  loadExternalScripts: (packages) ->
+    @logger.debug "Loading external-scripts from npm packages"
+    for pkg in packages
+      try
+        require(pkg) @
+      catch error
+        @logger.error "Error loading scripts from npm package - #{error}"
+
   # Setup the Connect server's defaults.
   #
   # Returns nothing.
