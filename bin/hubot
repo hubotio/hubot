@@ -54,6 +54,14 @@ App
             path = Path.join __dirname, 'node_modules', 'hubot-scripts', 'src', 'scripts'
             robot.loadHubotScripts path, scripts
 
+      scriptsFile = Path.join __dirname, '..', 'external-scripts.json'
+      Fs.exists scriptsFile, (exists) ->
+        if exists
+          Fs.readFile scriptsFile, (err, data) ->
+            console.log err if err?
+            scripts = JSON.parse data
+            robot.loadExternalScripts scripts
+
     robot.run()
 
 App.parse process.argv
