@@ -293,16 +293,6 @@ class Robot
   send: (user, strings...) ->
     @adapter.send user, strings...
 
-  # Public: A helper send function to message a room that the robot is in.
-  #
-  # room    - String designating the room to message.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  messageRoom: (room, strings...) ->
-    user = { room: room }
-    @adapter.send user, strings...
-
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
   #
@@ -312,6 +302,16 @@ class Robot
   # Returns nothing.
   reply: (user, strings...) ->
     @adapter.reply user, strings...
+
+  # Public: A helper send function to message a room that the robot is in.
+  #
+  # room    - String designating the room to message.
+  # strings - One or more Strings for each message to send.
+  #
+  # Returns nothing.
+  messageRoom: (room, strings...) ->
+    user = { room: room }
+    @adapter.send user, strings...
 
   # Public: Get an Array of User objects stored in the brain.
   #
