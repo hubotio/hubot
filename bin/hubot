@@ -81,10 +81,7 @@ else
   robot.alias = Options.alias
 
   loadScripts = ->
-    scriptsPath = Path.join __dirname, "..", "scripts"
-    robot.load scriptsPath
-
-    scriptsPath = Path.join __dirname, "..", "src", "scripts"
+    scriptsPath = Path.resolve ".", "scripts"
     robot.load scriptsPath
 
     scriptsFile = Path.join __dirname, "..", "hubot-scripts.json"
