@@ -1,6 +1,6 @@
 {
   "name":        "hosted-hubot",
-  "version":     "2.4.2",
+  "version":     "2.4.4",
   "author":      "GitHub Inc.",
   "keywords":    "github hubot campfire bot",
   "description": "A simple helpful Robot for your Company",
