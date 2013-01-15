@@ -84,12 +84,15 @@ else
     scriptsPath = Path.resolve ".", "scripts"
     robot.load scriptsPath
 
+    scriptsPath = Path.join __dirname, "..", "scripts"
+    robot.load scriptsPath
+
     scriptsFile = Path.join __dirname, "..", "hubot-scripts.json"
     Fs.exists scriptsFile, (exists) =>
       if exists
         Fs.readFile scriptsFile, (err, data) ->
           scripts = JSON.parse data
-          scriptsPath = Path.join __dirname, "node_modules", "hubot-scripts", "src", "scripts"
+          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
           robot.loadHubotScripts scriptsPath, scripts
 
     scriptsFile = Path.join __dirname, "..", "external-scripts.json"
