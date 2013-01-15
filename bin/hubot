@@ -84,6 +84,9 @@ else
     scriptsPath = Path.resolve ".", "scripts"
     robot.load scriptsPath
 
+    scriptsPath = Path.resolve ".", "src", "scripts"
+    robot.load scriptsPath
+
     hubotScripts = Path.resolve ".", "hubot-scripts.json"
     Fs.exists hubotScripts, (exists) ->
       if exists
