@@ -84,18 +84,18 @@ else
     scriptsPath = Path.resolve ".", "scripts"
     robot.load scriptsPath
 
-    scriptsFile = Path.resolve ".", "hubot-scripts.json"
-    Fs.exists scriptsFile, (exists) =>
+    hubotScripts = Path.resolve ".", "hubot-scripts.json"
+    Fs.exists hubotScripts, (exists) ->
       if exists
-        Fs.readFile scriptsFile, (err, data) ->
+        Fs.readFile hubotScripts, (err, data) ->
           scripts = JSON.parse data
           scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
           robot.loadHubotScripts scriptsPath, scripts
 
-    scriptsFile = Path.resolve ".", "external-scripts.json"
-    Fs.exists scriptsFile, (exists) =>
+    externalScripts = Path.resolve ".", "external-scripts.json"
+    Fs.exists externalScripts, (exists) ->
       if exists
-        Fs.readFile scriptsFile, (err, data) ->
+        Fs.readFile externalScripts, (err, data) ->
           scripts = JSON.parse data
           robot.loadExternalScripts scripts
 
