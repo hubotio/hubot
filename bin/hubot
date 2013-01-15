@@ -88,16 +88,18 @@ else
     Fs.exists hubotScripts, (exists) ->
       if exists
         Fs.readFile hubotScripts, (err, data) ->
-          scripts = JSON.parse data
-          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-          robot.loadHubotScripts scriptsPath, scripts
+          if data.length > 0
+            scripts = JSON.parse data
+            scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+            robot.loadHubotScripts scriptsPath, scripts
 
     externalScripts = Path.resolve ".", "external-scripts.json"
     Fs.exists externalScripts, (exists) ->
       if exists
         Fs.readFile externalScripts, (err, data) ->
-          scripts = JSON.parse data
-          robot.loadExternalScripts scripts
+          if data.length > 0
+            scripts = JSON.parse data
+            robot.loadExternalScripts scripts
 
     for path in Options.scripts
       if path[0] == '/'
