@@ -51,7 +51,7 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User objects.
   users: ->
-    @robot.users
+    @robot.users()
 
   # Public: Get a User object given a unique identifier.
   #
