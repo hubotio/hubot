@@ -89,17 +89,23 @@ else
       if exists
         Fs.readFile hubotScripts, (err, data) ->
           if data.length > 0
-            scripts = JSON.parse data
-            scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-            robot.loadHubotScripts scriptsPath, scripts
+            try
+              scripts = JSON.parse data
+              scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+              robot.loadHubotScripts scriptsPath, scripts
+            catch err
+              console.error "Error parsing JSON data from hubot-scripts.json: #{err}"
 
     externalScripts = Path.resolve ".", "external-scripts.json"
     Fs.exists externalScripts, (exists) ->
       if exists
         Fs.readFile externalScripts, (err, data) ->
           if data.length > 0
-            scripts = JSON.parse data
-            robot.loadExternalScripts scripts
+            try
+              scripts = JSON.parse data
+              robot.loadExternalScripts scripts
+            catch err
+              console.error "Error parsing JSON data from external-scripts.json: #{err}"
 
     for path in Options.scripts
       if path[0] == '/'
