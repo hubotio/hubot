@@ -10,6 +10,7 @@ class Response
     @envelope =
       room: @message.room
       user: @message.user
+      message_id: @message.id
 
   # Public: Posts a message back to the chat source
   #
