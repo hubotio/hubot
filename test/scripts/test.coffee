@@ -1,6 +1,10 @@
 # Tests hubot listeners
 module.exports = (robot) ->
   assert = require 'assert'
+  robot.hear /static/i, (msg) ->
+    msg.http('http://127.0.0.1/test').port(process.env.PORT or 8080)
+      .get() (err, res, body) ->
+        msg.send body
 
   robot.hear /test/i, (msg) ->
     msg.send "OK"

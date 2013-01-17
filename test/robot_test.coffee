@@ -8,7 +8,7 @@ server = require('http').createServer (req, res) ->
   res.end "fetched"
 
 server.listen 9001, ->
-  assert.equal 5, helper.listeners.length
+  assert.equal 6, helper.listeners.length
   assert.equal 0, helper.sent.length
 
   helper.adapter.receive 'test'
