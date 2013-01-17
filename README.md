@@ -100,6 +100,9 @@ module.exports = (robot) ->
 There are functions for GET, POST, PUT and DELETE, which all take a route and
 callback function that accepts a request and a response.
 
+In addition, if you set `CONNECT_STATIC`, the HTTP listener will serve static
+files from this directory.
+
 ## Testing hubot locally
 
 Install all of the required dependencies by running `npm install`.

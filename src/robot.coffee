@@ -185,6 +185,7 @@ class Robot
   setupConnect: ->
     user = process.env.CONNECT_USER
     pass = process.env.CONNECT_PASSWORD
+    stat = process.env.CONNECT_STATIC
 
     Connect        = require 'connect'
     Connect.router = require 'connect_router'
@@ -193,6 +194,7 @@ class Robot
 
     @connect.use Connect.basicAuth(user, pass) if user and pass
     @connect.use Connect.bodyParser()
+    @connect.use Connect.static(stat) if stat
     @connect.use Connect.router (app) =>
 
       @router =
