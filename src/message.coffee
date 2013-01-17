@@ -1,17 +1,9 @@
-Crypto = require 'crypto'
-
 class Message
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
   constructor: (@user, @done = false) ->
     @room = @user.room
-
-    # Generate a random id
-    try
-        @id = Crypto.randomBytes(16).toString 'hex'
-    catch err
-        throw err
 
   # Indicates that no other Listener should be called on this object
   #
