@@ -16,7 +16,8 @@ class TextMessage extends Message
   #
   # user - A User instance that sent the message.
   # text - A String message.
-  constructor: (@user, @text) ->
+  # id   - A String of the message ID.
+  constructor: (@user, @text, @id) ->
     super @user
 
   # Determines if the message matches the given regex.
@@ -30,11 +31,15 @@ class TextMessage extends Message
 # Represents an incoming user entrance notification.
 #
 # user - A User instance for the user who entered.
+# text - Always null.
+# id   - A String of the message ID.
 class EnterMessage extends Message
 
 # Represents an incoming user exit notification.
 #
 # user - A User instance for the user who left.
+# text - Always null.
+# id   - A String of the message ID.
 class LeaveMessage extends Message
 
 class CatchAllMessage extends Message
