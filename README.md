@@ -86,7 +86,7 @@ After you've built your `npm` package you can publish it to [npmjs][npmjs].
 ## HTTP Listener
 
 Hubot has a HTTP listener which listens on the port specified by the `PORT`
-environment variable.
+environment variable. If PORT is not specified, the default port will be 8080.
 
 You can specify routes to listen on in your scripts by using the `router`
 property on `robot`.
