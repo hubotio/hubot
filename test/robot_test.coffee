@@ -8,7 +8,7 @@ server = require('http').createServer (req, res) ->
   res.end "fetched"
 
 server.listen 9001, ->
-  assert.equal 6, helper.listeners.length
+  assert.equal 7, helper.listeners.length
   assert.equal 0, helper.sent.length
 
   helper.adapter.receive 'test'
@@ -23,7 +23,6 @@ server.listen 9001, ->
   assert.equal 3, helper.sent.length
   assert.ok helper.sent[2].match(/^(1|2)$/)
 
-
   # Test that when we message a room, the 'recipient' is the robot user and the room attribute is set properly
   helper.messageRoom "chat@example.com", "Hello room"
   assert.equal 4, helper.sent.length
@@ -35,10 +34,31 @@ server.listen 9001, ->
   assert.equal "chat2@example.com", helper.recipients[4].room
   assert.equal "Hello to another room", helper.sent[4]
 
-
   helper.adapter.receive 'foobar'
   assert.equal 6, helper.sent.length
   assert.equal 'catch-all', helper.sent[5]
+
+  # Testing replies
+  # ============================
+  # Using just the name
+  helper.adapter.receive "#{helper.name} rsvp"
+  assert.equal 7, helper.sent.length
+  assert.equal "responding", helper.sent[6]
+
+  # Using name with @ form
+  helper.adapter.receive "@#{helper.name} rsvp"
+  assert.equal 8, helper.sent.length
+  assert.equal "responding", helper.sent[7]
+
+  # Using just the alias
+  helper.adapter.receive "#{helper.alias} rsvp"
+  assert.equal 9, helper.sent.length
+  assert.equal "responding", helper.sent[8]
+
+  # Using alias with @ form
+  helper.adapter.receive "@#{helper.alias} rsvp"
+  assert.equal 10, helper.sent.length
+  assert.equal "responding", helper.sent[9]
 
 
   # set a callback for when the next message is replied to
