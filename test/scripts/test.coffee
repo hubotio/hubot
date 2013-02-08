@@ -12,6 +12,9 @@ module.exports = (robot) ->
   robot.hear /reply/i, (msg) ->
     msg.reply "OK"
 
+  robot.respond /rsvp/i, (msg) ->
+    msg.send "responding"
+
   robot.hear /random/i, (msg) ->
     msg.send msg.random([1,2]).toString()
 
