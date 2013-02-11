@@ -112,7 +112,7 @@ Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used
 module.exports = (robot) ->
   robot.router.post "/hubot/gh-commits", (req, res) ->
   	#code goes here
-    robot.emit "deploy", {
+    robot.emit "commit", {
         user    : {}, #hubot user object
         repo    : 'https://github.com/github/hubot',
         hash  : '2e1951c089bd865839328592ff673d2f08153643'
@@ -121,7 +121,7 @@ module.exports = (robot) ->
 ```coffeescript
 # src/scripts/heroku.coffee
 module.exports = (robot) ->
-  robot.events.on "commit", (commit) ->
+  robot.on "commit", (commit) ->
     robot.send commit.user, "Will now deploy #{commit.hash} from #{commit.repo}!"
     #deploy code goes here
 ```
