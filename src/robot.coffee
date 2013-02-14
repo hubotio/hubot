@@ -333,20 +333,18 @@ class Robot
   #            when event happens.
   #
   # Returns nothing.
-  on: (args...) ->
-    @events.on args...
+  on: (event, args...) ->
+    @events.on event, args...
 
   # Public: A wrapper around the EventEmitter API to make usage 
   # semanticly better.
   #
   # event   - The event name.
-  # [arg1]  - Event argument one (optional).
-  # [arg2]  - Event argument two (optional).
-  # [....]  - Event argument n (optional).
+  # args...  - Arguments emitted by the event
   #
   # Returns nothing.
-  emit: (args...) ->
-    @events.emit args...
+  emit: (event, args...) ->
+    @events.emit event, args...
 
   # Public: Kick off the event loop for the adapter
   #
