@@ -17,6 +17,7 @@ Switches = [
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
   [ "-r", "--require PATH",    "Alternative scripts path" ],
+  [ "-w", "--where",           "Display path where hubot execute" ]
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
 
@@ -56,6 +57,10 @@ Parser.on "name", (opt, value) ->
 Parser.on "require", (opt, value) ->
   Options.scripts.push(value)
 
+Parser.on "where", (opt, value) ->
+  console.log __dirname
+  process.exit 0
+
 Parser.on "version", (opt, value) ->
   Options.version = true
 
@@ -77,6 +82,7 @@ else
   if Options.version
     console.log robot.version
     process.exit 0
+
 
   robot.alias = Options.alias
 
