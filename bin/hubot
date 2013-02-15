@@ -21,13 +21,13 @@ Switches = [
 ]
 
 Options =
-  adapter: "shell"
-  alias: false
-  create: false
-  enableHttpd: true
-  scripts: []
-  name: "Hubot"
-  path: "."
+  adapter:     process.env.HUBOT_ADAPTER or "shell"
+  alias:       process.env.HUBOT_ALIAS   or false
+  create:      process.env.HUBOT_CREATE  or false
+  enableHttpd: process.env.HUBOT_HTTPD   or true
+  scripts:     process.env.HUBOT_SCRIPTS or []
+  name:        process.env.HUBOT_NAME    or "Hubot"
+  path:        process.env.HUBOT_PATH    or "."
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
