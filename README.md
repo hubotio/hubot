@@ -103,7 +103,7 @@ callback function that accepts a request and a response.
 In addition, if you set `CONNECT_STATIC`, the HTTP listener will serve static
 files from this directory.
 
-## Eventsystem
+## Events System
 
 Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used for data exchange between scripts.
 
