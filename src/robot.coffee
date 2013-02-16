@@ -1,7 +1,8 @@
-Fs         = require 'fs'
-Log        = require 'log'
-Path       = require 'path'
-HttpClient = require 'scoped-http-client'
+Fs           = require 'fs'
+Log          = require 'log'
+Path         = require 'path'
+HttpClient   = require 'scoped-http-client'
+EventEmitter = require('events').EventEmitter;
 
 User                                                    = require './user'
 Brain                                                   = require './brain'
@@ -36,6 +37,7 @@ class Robot
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
     @name         = name
     @brain        = new Brain
+    @events      = new EventEmitter
     @alias        = false
     @adapter      = null
     @Response     = Response
@@ -322,6 +324,27 @@ class Robot
   messageRoom: (room, strings...) ->
     user = { room: room }
     @adapter.send user, strings...
+
+  # Public: A wrapper around the EventEmitter API to make usage 
+  # semanticly better.
+  #
+  # event    - The event name.
+  # listener - A Function that is called with the event parameter
+  #            when event happens.
+  #
+  # Returns nothing.
+  on: (event, args...) ->
+    @events.on event, args...
+
+  # Public: A wrapper around the EventEmitter API to make usage 
+  # semanticly better.
+  #
+  # event   - The event name.
+  # args...  - Arguments emitted by the event
+  #
+  # Returns nothing.
+  emit: (event, args...) ->
+    @events.emit event, args...
 
   # Public: Kick off the event loop for the adapter
   #
