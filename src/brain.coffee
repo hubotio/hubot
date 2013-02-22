@@ -51,7 +51,7 @@ class Brain extends EventEmitter
   #
   # Returns an Array of User objects.
   users: ->
-    @brain.data.users
+    @data.users
 
   # Public: Get a User object given a unique identifier.
   #
