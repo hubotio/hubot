@@ -1,5 +1,7 @@
 {TextMessage} = require './message'
 
+inspect = require('util').inspect;
+
 class Listener
   # Listeners receive every message from the chat source and decide if they
   # want to act on it.
