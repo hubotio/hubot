@@ -64,6 +64,7 @@ class Creator
       "README.md",
       ".gitignore",
       "bin/hubot",
+      "bin/hubot.cmd",
       "hubot-scripts.json",
       "external-scripts.json"
     ]
