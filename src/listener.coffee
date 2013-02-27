@@ -1,4 +1,5 @@
 {TextMessage} = require './message'
+Util = require 'util'
 
 inspect = require('util').inspect;
 
@@ -21,7 +22,7 @@ class Listener
   # Returns a boolean of whether the matcher matched.
   call: (message) ->
     if match = @matcher message
-      @robot.logger.debug "Message '#{message}' matched regex /#{inspect @regex}/" if @regex
+      @robot.logger.debug "Message '#{message}' matched regex /#{Util.inspect @regex}/" if @regex
       @callback new @robot.Response(@robot, message, match)
       true
     else
