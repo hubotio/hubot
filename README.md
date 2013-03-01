@@ -14,8 +14,8 @@ Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node v0.6.
 
 Download the [latest version of hubot][hubot-latest].
 
-Then follow the instructions in the [README][readme] in the extracted `hubot`
-directory.
+Then follow the instructions in the [README][readme] in the extracted `hubot/src/templates`
+directory. The `templates` directory is an example runnable hubot.
 
 [nodejs]: http://nodejs.org
 [npmjs]: http://npmjs.org
