@@ -19,6 +19,12 @@ class Campfire extends Adapter
     @bot.Room(envelope.room).topic strings.join(" / "), (err, data) =>
       @robot.logger.error "Campfire error: #{err}" if err?
 
+  play: (envelope, strings...) ->
+    if strings.length > 0
+      @bot.Room(envelope.room).sound strings.shift(), (err, data) =>
+        @robot.logger.error "Campfire error: #{err}" if err?
+        @play envelope, strings...
+
   run: ->
     self = @
 

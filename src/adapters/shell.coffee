@@ -16,6 +16,10 @@ class Shell extends Adapter
     strings = strings.map (s) -> "#{envelope.user.name}: #{s}"
     @send envelope.user, strings...
 
+  play: (envelope, strings...) ->
+    strings = strings.map (s) -> "/play #{s}"
+    @send envelope.user, strings...
+
   run: ->
     self = @
     stdin = process.openStdin()
