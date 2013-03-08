@@ -18,7 +18,7 @@ class Adapter extends EventEmitter
   # source. Extend this.
   #
   # envelope - A Object with message, room and user details.
-  # strings - One or more Strings for each reply to send.
+  # strings  - One or more Strings for each reply to send.
   #
   # Returns nothing.
   reply: (envelope, strings...) ->
@@ -26,7 +26,7 @@ class Adapter extends EventEmitter
   # Public: Raw method for setting a topic on the chat source. Extend this.
   #
   # envelope - A Object with message, room and user details.
-  # strings - One more more Strings to set as the topic.
+  # strings  - One more more Strings to set as the topic.
   #
   # Returns nothing.
   topic: (envelope, strings...) ->
@@ -34,7 +34,7 @@ class Adapter extends EventEmitter
   # Public: Raw method for playing a sound in the chat source. Extend this.
   #
   # envelope - A Object with message, room and user details.
-  # strings - One or more strings for each play message to send.
+  # strings  - One or more strings for each play message to send.
   #
   # Returns nothing
   play: (envelope, strings...) ->
