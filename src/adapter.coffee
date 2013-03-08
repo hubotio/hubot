@@ -31,6 +31,15 @@ class Adapter extends EventEmitter
   # Returns nothing.
   topic: (envelope, strings...) ->
 
+  # Public: Raw method for playing a sound in the chat source. Extend this.
+  #
+  # envelope - A Object with message, room and user details.
+  # strings - One or more strings for each play message to send.
+  #
+  # Returns nothing
+  play: (envelope, strings...) ->
+    @robot.logger.warning "Adapter does not support the play function."
+
   # Public: Raw method for invoking the bot to run. Extend this.
   #
   # Returns nothing.

@@ -46,7 +46,7 @@ class Response
   #
   # Returns nothing
   play: (strings...) ->
-    @robot.adapter.play? @envelope, strings...
+    @robot.adapter.play @envelope, strings...
 
   # Public: Picks a random item from the given items.
   #
