@@ -82,7 +82,7 @@ Go addon (this requires a verified account).
     % heroku addons:add redistogo:nano
 
 Please note that the `nano` plan does not include persistence. Your data will
-be retained between restarts of hubot.
+_NOT_ be retained between restarts of hubot.
 
 ## Configuring the Heroku Application
 
