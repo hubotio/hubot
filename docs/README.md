@@ -1,6 +1,14 @@
-## Getting Started with Hubot
+# Hubot
+
+## Getting Started With Hubot
+
+This documentation is designed to help you get your own hubot up and running.
 
 ### Deploying
+
+You can deploy hubot to Heroku, which is the officially supported method.
+Additionally you are able to deploy hubot to a UNIX-like system or Windows.
+Please note the support for deploying to Windows isn't officially supported.
 
 * [Deploying Hubot onto Heroku](deploying/heroku.md)
 * [Deploying Hubot onto UNIX](deploying/unix.md)
@@ -8,20 +16,20 @@
 
 ## Adapters
 
-Adapters are the interface to the service you want your hubot to run on.
+Adapters are the part of hubot which interfaces with the service you wish to
+communicate with hubot on. Hubot has two built in adapters for Campfire and
+shell. There are also many community provided adapters for a variety of other
+services.
 
-## Available Adapters
-
-### Built-in
-
-These adapters are ones which are built into the hubot core.
+### Core
 
 * [Campfire](adapters/campfire.md)
 * [Shell](adapters/shell.md)
 
-### Third Party
+### Community Provided
 
-These adapters are ones which are separate packages available with `npm`.
+For more information on community provided adapters you should visit the
+repositories and read the provided documentation.
 
 * [Flowdock](https://github.com/flowdock/hubot-flowdock)
 * [HipChat](https://github.com/hipchat/hubot-hipchat)
