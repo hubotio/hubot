@@ -1,22 +1,24 @@
-[Campfire](http://campfirenow.com) is the web based chat application built by
-[37 Signals](http://37signals.com). The Campfire adapter is one of the original
-adapters in Hubot.
+# Adapter: Campfire
+
+Campfire is a web based chat application built by 37 Sigansl. The Campfire
+adapter is one of the original adapters in Hubot.
 
 ## Getting Started
 
 First you will need a Campfire account, you can sign up for
 [a free account](https://signup.37signals.com/campfire/free/signup/new).
 
-Next you will need to create an account on Campfire for your Hubot and allow it
-to connect to your rooms.
+Next you will need to create another account on Campfire for your Hubot and
+allow it to join to your rooms. You may need to create a room if you haven't
+already.
 
-To use the Campfire adapter you will need to specify `campfire` as the option
-to the `-a` flag when running hubot. If you're deploying to Heroku you will
-need to make sure the `-a` option is followed by `campfire` in the `Procfile`.
+To use the adapter you will need to specify `campfire` as the option to the `-a`
+flag when running hubot. If you're deploying to Heroku you will need to make
+sure the `-a` option is followed by `campfire` in the `Procfile`.
 
-## Configuring the Adapter
+## Configuring
 
-The Campfire adapter requires only the following environment variables.
+The adapter requires only the following environment variables.
 
 * `HUBOT_CAMPFIRE_ACCOUNT`
 * `HUBOT_CAMPFIRE_TOKEN`
@@ -33,7 +35,7 @@ If you join the rooms you want your hubot to join will see notice a numerical
 ID for the room in the URL. Make a note of each ID for the rooms you want your
 hubot to join.
 
-### Campfire Subdomain
+### Campfire Account
 
 This is simply the first part of the domain you visit for your Campfire
 account. For example if your Campfire was at `hubot.campfirenow.com` your
@@ -57,7 +59,7 @@ subdomain is `hubot`. Make a note of the subdomain.
 
 ### Configuring the variables on Windows
 
-From Powershell:
+Using PowerShell:
 
     setx HUBOT_CAMPFIRE_TOKEN "..." /m
 
