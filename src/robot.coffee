@@ -142,7 +142,8 @@ class Robot
         require(full) @
         @parseHelp "#{path}/#{file}"
       catch error
-        @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
+        @logger.error "Unable to load #{full}: #{error.stack}"
+        process.exit(1)
 
   # Public: Loads every script in the given path.
   #
@@ -180,6 +181,7 @@ class Robot
         require(pkg) @
       catch error
         @logger.error "Error loading scripts from npm package - #{error}"
+        process.exit(1)
 
   # Setup the Connect server's defaults.
   #
@@ -246,6 +248,7 @@ class Robot
       @adapter = require(path).use @
     catch err
       @logger.error "Cannot load adapter #{adapter} - #{err}"
+      process.exit(1)
 
   # Public: Help Commands for Running Scripts.
   #
