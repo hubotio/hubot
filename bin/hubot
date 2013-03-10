@@ -98,6 +98,7 @@ else
               robot.loadHubotScripts scriptsPath, scripts
             catch err
               console.error "Error parsing JSON data from hubot-scripts.json: #{err}"
+              process.exit(1)
 
     externalScripts = Path.resolve ".", "external-scripts.json"
     Fs.exists externalScripts, (exists) ->
