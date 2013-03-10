@@ -142,7 +142,8 @@ class Robot
         require(full) @
         @parseHelp "#{path}/#{file}"
       catch error
-        @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
+        @logger.error "Unable to load #{full}: #{error.stack}"
+        process.exit(1)
 
   # Public: Loads every script in the given path.
   #
