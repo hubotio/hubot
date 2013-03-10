@@ -107,10 +107,10 @@ else
           if data.length > 0
             try
               scripts = JSON.parse data
-              robot.loadExternalScripts scripts
             catch err
               console.error "Error parsing JSON data from external-scripts.json: #{err}"
               process.exit(1)
+            robot.loadExternalScripts scripts
 
     for path in Options.scripts
       if path[0] == '/'

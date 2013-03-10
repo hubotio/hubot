@@ -181,6 +181,7 @@ class Robot
         require(pkg) @
       catch error
         @logger.error "Error loading scripts from npm package - #{error}"
+        process.exit(1)
 
   # Setup the Connect server's defaults.
   #
