@@ -1,3 +1,8 @@
+v2.4.8
+======
+
+* Exit on startup for a variety of critical failures.
+
 v2.3.4
 ======
 
@@ -8,7 +13,7 @@ v2.3.4
 v2.3.3
 ======
 
-* Fix help parsing of javascript iles - ferlores in #322 
+* Fix help parsing of javascript iles - ferlores in #322
 
 * Roles will correctly semicolon-delimit the list of roles if one (or more) roles contain a comma. - futuraprime in #327
 
