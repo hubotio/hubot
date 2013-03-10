@@ -248,6 +248,7 @@ class Robot
       @adapter = require(path).use @
     catch err
       @logger.error "Cannot load adapter #{adapter} - #{err}"
+      process.exit(1)
 
   # Public: Help Commands for Running Scripts.
   #
