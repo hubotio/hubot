@@ -102,13 +102,25 @@ class Robot
   leave: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
 
+  # Public: Adds a Listener that triggers when anyone changes the topic.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  topic: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof TopicMessage), callback)
+
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
   catchAll: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
+    @listeners.push new Listener(
+      @,
+      ((msg) -> msg instanceof CatchAllMessage),
+      ((msg) -> msg.message = msg.message.message; callback msg)
+    )
 
   # Public: Passes the given message to any interested Listeners.
   #
