@@ -8,14 +8,16 @@ Instead this repo provides a library that's distributed by `npm` that you
 simply require in your project. Follow the instructions below and get your own
 hubot ready to deploy.
 
-## Getting your own
+## Getting Your Own
 
-Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node v0.6.3+) installed.
+Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node
+v0.6.3+) installed.
 
 Download the [latest version of hubot][hubot-latest].
 
-Then follow the instructions in the [README][readme] in the extracted `hubot/src/templates`
-directory. The `templates` directory is an example runnable hubot.
+Then follow the instructions in the [README][readme] in the extracted
+`hubot/src/templates` directory. The `templates` directory is an example
+runnable hubot.
 
 [nodejs]: http://nodejs.org
 [npmjs]: http://npmjs.org
@@ -34,7 +36,7 @@ repo, not this repo (unless it's the Campfire or Shell adapter).
 
 [hubot-wiki]: https://github.com/github/hubot/wiki
 
-## hubot-scripts
+## Hubot Scripts
 
 Hubot ships with a number of default scripts, but there's a growing number of
 extras in the [hubot-scripts][hubot-scripts] repository. `hubot-scripts` is a
@@ -46,7 +48,7 @@ individual scripts.
 [hubot-scripts]: https://github.com/github/hubot-scripts
 [hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
 
-## external-scripts
+## External Scripts
 
 This functionality allows users to enable scripts from `npm` packages which
 don't have to be included in the `hubot-scripts` repository.
@@ -60,7 +62,7 @@ To enable third-party scripts that you've added you will need to add the package
 name as a double quoted string to the `external-scripts.json` file for your
 hubot.
 
-### Creating a script package
+### Creating A Script Package
 
 Creating a script package for hubot is very simple. Start by creating a normal
 `npm` package. Make sure you add a main file for the entry point (e.g.
@@ -103,9 +105,10 @@ callback function that accepts a request and a response.
 In addition, if you set `CONNECT_STATIC`, the HTTP listener will serve static
 files from this directory.
 
-## Events System
+## Events
 
-Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used for data exchange between scripts.
+Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used
+for data exchange between scripts.
 
 ```coffeescript
 # src/scripts/github-commits.coffee
@@ -126,20 +129,7 @@ module.exports = (robot) ->
     #deploy code goes here
 ```
 
-If you'll provide an event, it's very recommended to include a hubot user object in data. In case of other reacting scripts want to respond to chat.
+If you'll provide an event, it's very recommended to include a hubot user object
+in data. In case of other reacting scripts want to respond to chat.
 
 [event-emitter]: http://nodejs.org/api/events.html#events_class_events_eventemitter 
-
-## Testing hubot locally
-
-Install all of the required dependencies by running `npm install`.
-
-It's easy to test scripts locally with an interactive shell:
-
-    % export PATH="node_modules/.bin:$PATH"
-    % bin/hubot
-
-... and to run unit tests:
-
-    % make test
-
