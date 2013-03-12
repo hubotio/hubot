@@ -42,6 +42,13 @@ class EnterMessage extends Message
 # id   - A String of the message ID.
 class LeaveMessage extends Message
 
+# Represents an incoming topic change notification.
+#
+# user - A User instance for the user who changed the topic.
+# text - A String of the new topic
+# id   - A String of the message ID.
+class TopicMessage extends Message
+
 class CatchAllMessage extends Message
   # Represents a message that no matchers matched.
   #
@@ -53,5 +60,6 @@ module.exports = {
   TextMessage
   EnterMessage
   LeaveMessage
+  TopicMessage
   CatchAllMessage
 }

@@ -102,13 +102,25 @@ class Robot
   leave: (callback) ->
     @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
 
+  # Public: Adds a Listener that triggers when anyone changes the topic.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  topic: (callback) ->
+    @listeners.push new Listener(@, ((msg) -> msg instanceof TopicMessage), callback)
+
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
   catchAll: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof CatchAllMessage), ((msg) -> msg.message = msg.message.message; callback msg))
+    @listeners.push new Listener(
+      @,
+      ((msg) -> msg instanceof CatchAllMessage),
+      ((msg) -> msg.message = msg.message.message; callback msg)
+    )
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -142,7 +154,8 @@ class Robot
         require(full) @
         @parseHelp "#{path}/#{file}"
       catch error
-        @logger.error "Unable to load #{full}: #{error}\n#{error.stack}"
+        @logger.error "Unable to load #{full}: #{error.stack}"
+        process.exit(1)
 
   # Public: Loads every script in the given path.
   #
@@ -180,6 +193,7 @@ class Robot
         require(pkg) @
       catch error
         @logger.error "Error loading scripts from npm package - #{error}"
+        process.exit(1)
 
   # Setup the Connect server's defaults.
   #
@@ -246,6 +260,7 @@ class Robot
       @adapter = require(path).use @
     catch err
       @logger.error "Cannot load adapter #{adapter} - #{err}"
+      process.exit(1)
 
   # Public: Help Commands for Running Scripts.
   #
