@@ -12,7 +12,7 @@ hubot ready to deploy.
 
 Coming soon...
 
-## Hacking
+## Hacking
 
 Coming soon...
 
