@@ -4,25 +4,25 @@ Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
 
-User                                                    = require './user'
-Brain                                                   = require './brain'
-Response                                                = require './response'
-{Listener,TextListener}                                 = require './listener'
-{TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
+User                                        = require './user'
+Brain                                       = require './brain'
+Response                                    = require './response'
+{Listener,TextListener}                     = require './listener'
+{EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
 
 HUBOT_DEFAULT_ADAPTERS = [
-  'campfire',
+  'campfire'
   'shell'
 ]
 
 HUBOT_DOCUMENTATION_SECTIONS = [
-  'description',
-  'dependencies',
-  'configuration',
-  'commands',
-  'notes',
-  'author',
-  'examples',
+  'description'
+  'dependencies'
+  'configuration'
+  'commands'
+  'notes'
+  'author'
+  'examples'
   'urls'
 ]
 
@@ -34,20 +34,22 @@ class Robot
   # adapter     - A String of the adapter name.
   # httpd       - A Boolean whether to enable the HTTP daemon.
   # name        - A String of the robot name, defaults to Hubot.
+  #
+  # Returns nothing.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
-    @name         = name
-    @brain        = new Brain
-    @events      = new EventEmitter
-    @alias        = false
-    @adapter      = null
-    @Response     = Response
-    @commands     = []
-    @listeners    = []
-    @logger       = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @name      = name
+    @brain     = new Brain
+    @events    = new EventEmitter
+    @alias     = false
+    @adapter   = null
+    @Response  = Response
+    @commands  = []
+    @listeners = []
+    @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
     @setupConnect() if httpd
-    @loadAdapter adapterPath, adapter if adapter?
+    @loadAdapter adapterPath, adapter
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -69,20 +71,27 @@ class Robot
   # Returns nothing.
   respond: (regex, callback) ->
     re = regex.toString().split('/')
-    re.shift()           # remove empty first item
-    modifiers = re.pop() # pop off modifiers
+    re.shift()
+    modifiers = re.pop()
 
     if re[0] and re[0][0] is '^'
-      @logger.warning "Anchors don't work well with respond, perhaps you want to use 'hear'"
+      @logger.warning \
+        "Anchors don't work well with respond, perhaps you want to use 'hear'"
       @logger.warning "The regex in question was #{regex.toString()}"
 
-    pattern = re.join('/') # combine the pattern back again
+    pattern = re.join('/')
 
     if @alias
-      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') # escape alias for regexp
-      newRegex = new RegExp("^[@]?(?:#{alias}[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
+      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+      newRegex = new RegExp(
+        "^[@]?(?:#{alias}[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})"
+        modifiers
+      )
     else
-      newRegex = new RegExp("^[@]?#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
+      newRegex = new RegExp(
+        "^[@]?#{@name}[:,]?\\s*(?:#{pattern})",
+        modifiers
+      )
 
     @listeners.push new TextListener(@, newRegex, callback)
 
@@ -92,7 +101,11 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof EnterMessage), callback)
+    @listeners.push new Listener(
+      @,
+      ((msg) -> msg instanceof EnterMessage),
+      callback
+    )
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
@@ -100,7 +113,11 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof LeaveMessage), callback)
+    @listeners.push new Listener(
+      @,
+      ((msg) -> msg instanceof LeaveMessage),
+      callback
+    )
 
   # Public: Adds a Listener that triggers when anyone changes the topic.
   #
@@ -108,7 +125,11 @@ class Robot
   #
   # Returns nothing.
   topic: (callback) ->
-    @listeners.push new Listener(@, ((msg) -> msg instanceof TopicMessage), callback)
+    @listeners.push new Listener(
+      @,
+      ((msg) -> msg instanceof TopicMessage),
+      callback
+    )
 
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
@@ -237,9 +258,8 @@ class Robot
     if herokuUrl
       herokuUrl += '/' unless /\/$/.test herokuUrl
       setInterval =>
-        HttpClient.create("#{herokuUrl}hubot/ping")
-          .post() (err, res, body) =>
-            @logger.info 'keep alive ping!'
+        HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
+          @logger.info 'keep alive ping!'
       , 1200000
 
   # Load the adapter Hubot is going to use.
@@ -340,7 +360,7 @@ class Robot
     user = { room: room }
     @adapter.send user, strings...
 
-  # Public: A wrapper around the EventEmitter API to make usage 
+  # Public: A wrapper around the EventEmitter API to make usage
   # semanticly better.
   #
   # event    - The event name.
@@ -351,7 +371,7 @@ class Robot
   on: (event, args...) ->
     @events.on event, args...
 
-  # Public: A wrapper around the EventEmitter API to make usage 
+  # Public: A wrapper around the EventEmitter API to make usage
   # semanticly better.
   #
   # event   - The event name.
