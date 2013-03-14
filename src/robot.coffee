@@ -1,8 +1,8 @@
-Fs           = require 'fs'
-Log          = require 'log'
-Path         = require 'path'
-HttpClient   = require 'scoped-http-client'
-EventEmitter = require('events').EventEmitter;
+Fs             = require 'fs'
+Log            = require 'log'
+Path           = require 'path'
+HttpClient     = require 'scoped-http-client'
+{EventEmitter} = require 'events'
 
 User                                                    = require './user'
 Brain                                                   = require './brain'
