@@ -209,6 +209,7 @@ class Robot
     @connect = Connect()
 
     @connect.use Connect.basicAuth(user, pass) if user and pass
+    @connect.use Connect.query()
     @connect.use Connect.bodyParser()
     @connect.use Connect.static(stat) if stat
     @connect.use Connect.router (app) =>
