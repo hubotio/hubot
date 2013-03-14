@@ -34,30 +34,38 @@ class Campfire extends Adapter
 
     bot = new CampfireStreaming(options, @robot)
 
-    withAuthor = (callback) -> (id, created, room, user, body) ->
-      bot.User user, (err, userData) ->
-        if userData.user
-          author = self.userForId(userData.user.id, userData.user)
-          self.robot.brain.data.users[userData.user.id].name = userData.user.name
-          self.robot.brain.data.users[userData.user.id].email_address = userData.user.email_address
-          author.room = room
-          callback id, created, room, user, body, author
+    withAuthor = (callback) ->
+      (id, created, room, user, body) ->
+        bot.User user, (err, userData) ->
+          if userData.user
+            author = self.userForId(userData.user.id, userData.user)
+            userId = userData.user.id
+            self.robot.brain.data
+              .users[userId].name = userData.user.name
+            self.robot.brain.data
+              .users[userId].email_address = userData.user.email_address
+            author.room = room
+            callback id, created, room, user, body, author
 
-    bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new TextMessage(author, body, id)
+    bot.on "TextMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new TextMessage author, body, id
 
-    bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new EnterMessage(author, null, id)
+    bot.on "EnterMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new EnterMessage author, null, id
 
-    bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new LeaveMessage(author, null, id)
+    bot.on "LeaveMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new LeaveMessage author, null, id
 
-    bot.on "TopicChangeMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new TopicMessage(author, body, id)
+    bot.on "TopicChangeMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new TopicMessage author, body, id
 
     bot.Me (err, data) ->
       bot.info = data.user
@@ -82,7 +90,8 @@ exports.use = (robot) ->
 class CampfireStreaming extends EventEmitter
   constructor: (options, @robot) ->
     unless options.token? and options.rooms? and options.account?
-      @robot.logger.error "Not enough parameters provided. I need a token, rooms and account"
+      @robot.logger.error \
+        "Not enough parameters provided. I need a token, rooms and account"
       process.exit(1)
 
     @token         = options.token
@@ -162,7 +171,6 @@ class CampfireStreaming extends EventEmitter
             # campfire api sends a ' ' heartbeat every 3s
 
           else if chunk.match(/^\s*Access Denied/)
-            # errors are not json formatted
             logger.error "Campfire error on room #{id}: #{chunk}"
 
           else
@@ -177,15 +185,22 @@ class CampfireStreaming extends EventEmitter
               if part
                 try
                   data = JSON.parse part
-                  self.emit data.type, data.id, data.created_at, data.room_id, data.user_id, data.body
+                  self.emit(
+                    data.type,
+                    data.id,
+                    data.created_at,
+                    data.room_id,
+                    data.user_id,
+                    data.body
+                  )
                 catch error
                   logger.error "Campfire error: #{error}\n#{error.stack}"
 
         response.on "end", ->
           logger.error "Streaming connection closed for room #{id}. :("
-          setTimeout (->
+          setTimeout ->
             self.emit "reconnect", id
-          ), 5000
+          , 5000
 
         response.on "error", (err) ->
           logger.error "Campfire response error: #{err}"
@@ -195,7 +210,6 @@ class CampfireStreaming extends EventEmitter
 
       request.end()
 
-  # Convenience HTTP Methods for posting on behalf of the token"d user
   get: (path, callback) ->
     @request "GET", path, null, callback
 
@@ -238,7 +252,7 @@ class CampfireStreaming extends EventEmitter
         if response.statusCode >= 400
           switch response.statusCode
             when 401
-              throw new Error "Invalid access token provided, campfire refused the authentication"
+              throw new Error "Invalid access token provided"
             else
               logger.error "Campfire error: #{response.statusCode}"
 

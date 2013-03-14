@@ -1,6 +1,6 @@
-{TextMessage} = require './message'
+{inspect} = require 'util'
 
-inspect = require('util').inspect;
+{TextMessage} = require './message'
 
 class Listener
   # Listeners receive every message from the chat source and decide if they
@@ -21,15 +21,17 @@ class Listener
   # Returns a boolean of whether the matcher matched.
   call: (message) ->
     if match = @matcher message
-      @robot.logger.debug "Message '#{message}' matched regex /#{inspect @regex}/" if @regex
+      @robot.logger.debug \
+        "Message '#{message}' matched regex /#{inspect @regex}/" if @regex
+
       @callback new @robot.Response(@robot, message, match)
       true
     else
       false
 
 class TextListener extends Listener
-  # TextListeners receive every message from the chat source and decide if they want
-  # to act on it.
+  # TextListeners receive every message from the chat source and decide if they
+  # want to act on it.
   #
   # robot    - A Robot instance.
   # regex    - A Regex that determines if this listener should trigger the
