@@ -26,6 +26,10 @@
     "connect_router":     "1.8.7"
   },
 
+  "devDependencies": {
+    "docco": ">= 0.6.0"
+  },
+
   "engines": {
     "node": ">= 0.8.x",
     "npm":  ">= 1.1.x"
