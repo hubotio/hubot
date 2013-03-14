@@ -2,7 +2,6 @@
 
 User = require './user'
 
-# http://www.the-isb.com/images/Nextwave-Aaron01.jpg
 class Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot. Extend this.
   #
@@ -11,7 +10,8 @@ class Brain extends EventEmitter
     @data = users: { }
     @resetSaveInterval 5
 
-  # Public: Emits the 'save' event so that 'brain' scripts can handle persisting.
+  # Public: Emits the 'save' event so that 'brain' scripts can handle
+  # persisting.
   #
   # Returns nothing.
   save: ->
