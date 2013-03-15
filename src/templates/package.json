@@ -15,13 +15,13 @@
   },
 
   "dependencies": {
-    "hubot": ">=2.4.8",
+    "hubot":         ">=2.4.8",
     "hubot-scripts": ">= 2.4.1",
-    "optparse": "1.0.3"
+    "optparse":      "1.0.3"
   },
 
   "engines": {
     "node": ">= 0.8.x",
-    "npm": "1.1.x"
+    "npm":  ">=1.1.x"
   }
 }
