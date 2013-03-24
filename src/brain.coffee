@@ -7,9 +7,36 @@ class Brain extends EventEmitter
   #
   # Returns a new Brain with no external storage.
   constructor: ->
-    @data = users: { }
+    @data =
+      users:    { }
+      _private: { }
+      
     @resetSaveInterval 5
 
+  # Public: Store key-value pair under the private namespace and extend
+  # existing @data before emitting the 'loaded' event.
+  #
+  # Returns the instance for chaining.
+  set: (key, value) ->
+    # Parse key if key is object.
+    if isObject key
+      pair = key
+    else
+      pair = {}
+      pair[key] = value
+
+    # Store key-value pair.
+    extend @data._private, pair
+    @emit 'loaded', @data
+
+    @
+
+  # Public: Get value by key from the private namespace in @data
+  # or return null if not found.
+  #
+  # Returns the value.
+  get: (key) -> @data._private[key] ? null
+  
   # Public: Emits the 'save' event so that 'brain' scripts can handle
   # persisting.
   #
@@ -105,39 +132,7 @@ class Brain extends EventEmitter
       return [user] if user.name.toLowerCase() is lowerFuzzyName
 
     matchedUsers
-
-# Extending Brain to expose a simple key-value store for scripts to use.
-class Store extends Brain
-  # Call super to kick off initialization and then
-  # initialize private namespace for storage.
-  constructor: ->
-    super()
-    extend @data, _private: { }
-
-  # Public: Store key-value pair under the private namespace and extend
-  # existing @data before emiiting the 'loaded' event.
-  #
-  # Returns the instance for chaining.
-  set: (key, value) ->
-    # Parse key if key is object.
-    if isObject key
-      pair = key
-    else
-      pair = {}
-      pair[key] = value
-
-    # Store key-value pair.
-    extend @data._private, pair
-    @emit 'loaded', @data
-
-    @
-
-  # Public: Get value by key from the private namespace in @data
-  # or return null if not found.
-  #
-  # Returns the value.
-  get: (key) -> @data._private[key] ? null
-
+  
 # Private: Extend obj with objects passed as additional args.
 #
 # Returns the original object with updated changes.
@@ -152,4 +147,4 @@ extend = (obj, sources...) ->
 # Returns true/false.
 isObject = (obj) -> obj is Object obj
 
-module.exports = Store
+module.exports = Brain
