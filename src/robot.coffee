@@ -48,7 +48,7 @@ class Robot
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
-    @setupConnect() if httpd
+    @setupExpress() if httpd
     @loadAdapter adapterPath, adapter
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -216,43 +216,37 @@ class Robot
         @logger.error "Error loading scripts from npm package - #{error}"
         process.exit(1)
 
-  # Setup the Connect server's defaults.
+  # Setup the Express server's defaults.
   #
   # Returns nothing.
-  setupConnect: ->
-    user = process.env.CONNECT_USER
-    pass = process.env.CONNECT_PASSWORD
-    stat = process.env.CONNECT_STATIC
+  setupExpress: ->
+    # Load config.
+    user    = process.env.EXPRESS_USER
+    pass    = process.env.EXPRESS_PASSWORD
 
-    Connect        = require 'connect'
-    Connect.router = require 'connect_router'
+    stat    = process.env.EXPRESS_STATIC
+    sockets = process.env.EXPRESS_SOCKETS
 
-    @connect = Connect()
+    # Require express.
+    express = require 'express'
 
-    @connect.use Connect.basicAuth(user, pass) if user and pass
-    @connect.use Connect.query()
-    @connect.use Connect.bodyParser()
-    @connect.use Connect.static(stat) if stat
-    @connect.use Connect.router (app) =>
+    # Initialize server and middleware.
+    app = express()
 
-      @router =
-        get: (route, callback) =>
-          @logger.debug "Registered route: GET #{route}"
-          app.get route, callback
+    app.use express.basicAuth user, pass if user and pass
+    app.use express.query()
+    app.use express.bodyParser()
+    app.use express.static stat if stat
 
-        post: (route, callback) =>
-          @logger.debug "Registered route: POST #{route}"
-          app.post route, callback
+    # Listen to incoming requests.
+    server = app.listen process.env.PORT || 8080
 
-        put: (route, callback) =>
-          @logger.debug "Registered route: PUT #{route}"
-          app.put route, callback
+    # Attach socket.io to server if predicate has been set.
+    if sockets
+      @io = (require 'socket.io').listen server
 
-        delete: (route, callback) =>
-          @logger.debug "Registered route: DELETE #{route}"
-          app.delete route, callback
-
-    @server = @connect.listen process.env.PORT || 8080
+    # Expose express app as router.
+    @router = app
 
     herokuUrl = process.env.HEROKU_URL
 
