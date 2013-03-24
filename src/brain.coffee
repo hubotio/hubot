@@ -130,7 +130,7 @@ class Store extends Brain
     extend @data._private, pair
     @emit 'loaded', @data
 
-    this
+    @
 
   # Public: Get value by key from the private namespace in @data
   # or return null if not found.
@@ -138,7 +138,6 @@ class Store extends Brain
   # Returns the value.
   get: (key) -> @data._private[key] ? null
 
-# - Utils -
 # Private: Extend obj with objects passed as additional args.
 #
 # Returns the original object with updated changes.
@@ -146,7 +145,6 @@ extend = (obj, sources...) ->
   for source in sources
     obj[key] = value for own key, value of source
 
-  # Result
   obj
 
 # Private: Check if argument is an object.
