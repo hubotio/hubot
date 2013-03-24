@@ -102,8 +102,18 @@ module.exports = (robot) ->
 There are functions for GET, POST, PUT and DELETE, which all take a route and
 callback function that accepts a request and a response.
 
-In addition, if you set `CONNECT_STATIC`, the HTTP listener will serve static
+In addition, if you set `EXPRESS_STATIC`, the HTTP listener will serve static
 files from this directory.
+
+Also, set `EXPRESS_SOCKETS` to true to setup sokect.io; you can configure it in your scripts using the `io` property on `robot`.
+
+```coffeescript
+module.exports = (robot) ->
+  io = robot.router.io
+  io.sockets.on 'connection', (socket) ->
+    socket.emit 'news', hello: 'world'
+    socket.on 'event', (data) -> console.log data
+```
 
 ## Events
 
@@ -132,4 +142,4 @@ module.exports = (robot) ->
 If you'll provide an event, it's very recommended to include a hubot user object
 in data. In case of other reacting scripts want to respond to chat.
 
-[event-emitter]: http://nodejs.org/api/events.html#events_class_events_eventemitter 
+[event-emitter]: http://nodejs.org/api/events.html#events_class_events_eventemitter
