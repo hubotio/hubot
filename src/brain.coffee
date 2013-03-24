@@ -106,4 +106,52 @@ class Brain extends EventEmitter
 
     matchedUsers
 
-module.exports = Brain
+# Extending Brain to expose a simple key-value store for scripts to use.
+class Store extends Brain
+  # Call super to kick off initialization and then
+  # initialize private namespace for storage.
+  constructor: ->
+    super()
+    extend @data, _private: { }
+
+  # Public: Store key-value pair under the private namespace and extend
+  # existing @data before emiiting the 'loaded' event.
+  #
+  # Returns the instance for chaining.
+  set: (key, value) ->
+    # Parse key if key is object.
+    if isObject key
+      pair = key
+    else
+      pair = {}
+      pair[key] = value
+
+    # Store key-value pair.
+    extend @data._private, pair
+    @emit 'loaded', @data
+
+    this
+
+  # Public: Get value by key from the private namespace in @data
+  # or return null if not found.
+  #
+  # Returns the value.
+  get: (key) -> @data._private[key] ? null
+
+# - Utils -
+# Private: Extend obj with objects passed as additional args.
+#
+# Returns the original object with updated changes.
+extend = (obj, sources...) ->
+  for source in sources
+    obj[key] = value for own key, value of source
+
+  # Result
+  obj
+
+# Private: Check if argument is an object.
+#
+# Returns true/false.
+isObject = (obj) -> obj is Object obj
+
+module.exports = Store
