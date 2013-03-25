@@ -105,16 +105,6 @@ callback function that accepts a request and a response.
 In addition, if you set `EXPRESS_STATIC`, the HTTP listener will serve static
 files from this directory.
 
-Also, set `EXPRESS_SOCKETS` to true to setup sokect.io; you can configure it in your scripts using the `io` property on `robot`.
-
-```coffeescript
-module.exports = (robot) ->
-  io = robot.router.io
-  io.sockets.on 'connection', (socket) ->
-    socket.emit 'news', hello: 'world'
-    socket.on 'event', (data) -> console.log data
-```
-
 ## Events
 
 Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used
