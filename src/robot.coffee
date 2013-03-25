@@ -239,11 +239,7 @@ class Robot
     app.use express.static stat if stat
 
     # Listen to incoming requests.
-    server = app.listen process.env.PORT || 8080
-
-    # Attach socket.io to server if predicate has been set.
-    if sockets
-      @io = (require 'socket.io').listen server
+    @server = app.listen process.env.PORT || 8080
 
     # Expose express app as router.
     @router = app
