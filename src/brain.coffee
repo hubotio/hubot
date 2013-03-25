@@ -18,24 +18,22 @@ class Brain extends EventEmitter
   #
   # Returns the instance for chaining.
   set: (key, value) ->
-    # Parse key if key is object.
-    if isObject key
+    if key is Object(key)
       pair = key
     else
       pair = {}
       pair[key] = value
 
-    # Store key-value pair.
     extend @data._private, pair
     @emit 'loaded', @data
-
     @
 
   # Public: Get value by key from the private namespace in @data
   # or return null if not found.
   #
   # Returns the value.
-  get: (key) -> @data._private[key] ? null
+  get: (key) ->
+    @data._private[key] ? null
   
   # Public: Emits the 'save' event so that 'brain' scripts can handle
   # persisting.
@@ -126,8 +124,6 @@ class Brain extends EventEmitter
   usersForFuzzyName: (fuzzyName) ->
     matchedUsers = @usersForRawFuzzyName(fuzzyName)
     lowerFuzzyName = fuzzyName.toLowerCase()
-    # We can scan matchedUsers rather than all users since usersForRawFuzzyName
-    # will include exact matches
     for user in matchedUsers
       return [user] if user.name.toLowerCase() is lowerFuzzyName
 
@@ -139,12 +135,6 @@ class Brain extends EventEmitter
 extend = (obj, sources...) ->
   for source in sources
     obj[key] = value for own key, value of source
-
   obj
-
-# Private: Check if argument is an object.
-#
-# Returns true/false.
-isObject = (obj) -> obj is Object obj
 
 module.exports = Brain
