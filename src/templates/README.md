@@ -49,7 +49,7 @@ about redis at all.
 
 You can test your hubot by running the following.
 
-    % bin/hubot
+    % PATH="node_modules/.bin:$PATH" bin/hubot
 
 You'll see some start up output about where your scripts come from and a
 prompt.
