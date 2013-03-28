@@ -35,6 +35,13 @@ class Brain extends EventEmitter
   get: (key) ->
     @data._private[key] ? null
   
+  # Public: Remove value by key from the private namespace in @data
+  # if it exists
+  #
+  # Returns the instance for chaining.
+  remove: (key) ->
+    delete @data._private[key] if @data._private[key]?
+  
   # Public: Emits the 'save' event so that 'brain' scripts can handle
   # persisting.
   #
