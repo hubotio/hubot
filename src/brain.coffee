@@ -41,6 +41,7 @@ class Brain extends EventEmitter
   # Returns the instance for chaining.
   remove: (key) ->
     delete @data._private[key] if @data._private[key]?
+    @
   
   # Public: Emits the 'save' event so that 'brain' scripts can handle
   # persisting.
