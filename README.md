@@ -4,15 +4,6 @@ This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
 **You'll probably never have to hack on this repo directly.**
 
-Instead this repo provides a [hubot](https://npmjs.org/package/hubot) library that's distributed by `npm` that you
-simply require in your project to satisfy dependencies. Example:
-
-    $ git clone git@github.com:github/hubot.git
-    $ cd hubot
-    $ npm install hubot
-    $ export PATH="node_modules/.bin:$PATH"
-    $ bin/hubot
-    
 Follow the instructions below and get your own hubot ready to deploy.
 
 ## Getting Your Own
@@ -30,6 +21,15 @@ runnable hubot.
 [npmjs]: http://npmjs.org
 [hubot-latest]: https://github.com/github/hubot/archive/master.zip
 [readme]: https://github.com/github/hubot/blob/master/src/templates/README.md
+
+You should install dependencies and then use `bin/hubot -c` to create a
+deployable hubot.
+
+    $ npm install
+    $ bin/hubot -c ~/my_hubot
+
+Then the directory `my_hubot` contains a deployable hubot that you're able to
+deploy to heroku or run locally.
 
 ## Adapters
 
