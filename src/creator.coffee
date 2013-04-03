@@ -75,7 +75,7 @@ class Creator
     ]
 
     for bin in bins
-      @copy "#{@templateDir}/#{file}", "#{@path}/#{file}"
-      Fs.chmodSync "#{@path}/#{file}", 0o755
+      @copy "#{@templateDir}/#{bin}", "#{@path}/#{bin}"
+      Fs.chmodSync "#{@path}/#{bin}", 0o755
 
 module.exports = Creator
