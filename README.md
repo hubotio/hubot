@@ -22,13 +22,13 @@ runnable hubot.
 [hubot-latest]: https://github.com/github/hubot/archive/master.zip
 [readme]: https://github.com/github/hubot/blob/master/src/templates/README.md
 
-You should install dependencies and then use `bin/hubot -c` to create a
+You should install dependencies and then use `make package` to create a
 deployable hubot.
 
     $ npm install
-    $ bin/hubot -c ~/my_hubot
+    $ make package
 
-Then the directory `my_hubot` contains a deployable hubot that you're able to
+Then the directory `./hubot` contains a deployable hubot that you're able to
 deploy to heroku or run locally.
 
 ## Adapters
