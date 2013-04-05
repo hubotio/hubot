@@ -58,6 +58,9 @@ module.exports = (robot) ->
       cmds = cmds.filter (cmd) ->
         cmd.match new RegExp(msg.match[1], 'i')
 
+      if cmds.length == 0
+        msg.send "No available commands match #{msg.match[1]}"
+        return
     emit = cmds.join "\n"
 
     unless robot.name.toLowerCase() is 'hubot'
