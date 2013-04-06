@@ -1,25 +1,23 @@
-# Description:
-#   Inspect the data in redis easily
-#
-# Commands:
-#   hubot show users - Display all users that hubot knows about
-#   hubot show storage - Display the contents that are persisted in the brain
-
-
-Util = require "util"
+util = require "util"
 
 module.exports = (robot) ->
-  robot.respond /show storage$/i, (msg) ->
-    output = Util.inspect(robot.brain.data, false, 4)
-    msg.send output
 
-  robot.respond /show users$/i, (msg) ->
-    response = ""
+  robot.respond
+    description: 'Display all the contents that are persisted to the brain'
+    example: 'hubot show storage'
+    match: /show storage$/i
+    handler: (msg, user, room, matches) ->
+      output = util.inspect(robot.brain.data, false, 4)
+      room.send output
 
-    for own key, user of robot.brain.data.users
-      response += "#{user.id} #{user.name}"
-      response += " <#{user.email_address}>" if user.email_address
-      response += "\n"
-
-    msg.send response
-
+  robot.respond
+    description: 'Display all the user that hubot knows about'
+    example: 'hubot show users'
+    match: /show users$/i
+    handler: (msg, user, room, matches) ->
+      response = ""
+      for own key, user of robot.brain.data.users
+        response += "#{user.id} #{user.name}"
+        response += " <#{user.email_address}>" if user.email_address
+        response += "\n"
+      room.send response

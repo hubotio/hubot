@@ -1,23 +1,30 @@
-# Description:
-#   Utility commands surrounding Hubot uptime.
-#
-# Commands:
-#   hubot ping - Reply with pong
-#   hubot echo <text> - Reply back with <text>
-#   hubot time - Reply with current time
-#   hubot die - End hubot process
-
 module.exports = (robot) ->
-  robot.respond /PING$/i, (msg) ->
-    msg.send "PONG"
 
-  robot.respond /ECHO (.*)$/i, (msg) ->
-    msg.send msg.match[1]
+  robot.respond
+    description: 'Reply with pong'
+    example: 'hubot ping'
+    match: /PING$/i
+    handler: (msg, user, room, matches) ->
+      room.send 'PONG'
 
-  robot.respond /TIME$/i, (msg) ->
-    msg.send "Server time is: #{new Date()}"
+  robot.respond
+    description: 'Reply back with <text>'
+    example: 'hubot echo <text>'
+    match: /ECHO (.*)$/i
+    handler: (msg, user, room, matches) ->
+      room.send matches[1]
 
-  robot.respond /DIE$/i, (msg) ->
-    msg.send "Goodbye, cruel world."
-    process.exit 0
+  robot.respond
+    description: 'Reply with the current time'
+    example: 'hubot time'
+    match: /TIME$/i
+    handler: (msg, user, room, matches) ->
+      room.send "Server time is: #{new Date}"
 
+  robot.respond
+    description: 'End the hubot process'
+    example: 'hubot die'
+    match: /DIE$/i
+    handler: (msg, user, room, matches) ->
+      room.send "Goodbye, cruel world."
+      process.exit 0
