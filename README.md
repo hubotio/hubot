@@ -8,27 +8,15 @@ Follow the instructions below and get your own hubot ready to deploy.
 
 ## Getting Your Own
 
-Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node
-v0.6.3+) installed.
+Make sure you have [node.js][nodejs] and [npm][npmjs] installed.
 
-Download the [latest version of hubot][hubot-latest].
+You can install the `hubot` npm package globally and you will be able to run
+`hubot --create <PATH>` if you've setup npm packages to be in your `PATH`.
 
-Then follow the instructions in the [README][readme] in the extracted
-`hubot/src/templates` directory. The `templates` directory is an example
-runnable hubot.
+    $ npm install -g hubot
+    $ hubot --create <path>
 
-[nodejs]: http://nodejs.org
-[npmjs]: http://npmjs.org
-[hubot-latest]: https://github.com/github/hubot/archive/master.zip
-[readme]: https://github.com/github/hubot/blob/master/src/templates/README.md
-
-You should install dependencies and then use `make package` to create a
-deployable hubot.
-
-    $ npm install
-    $ make package
-
-Then the directory `./hubot` contains a deployable hubot that you're able to
+Then the directory at `<path>` contains a deployable hubot that you're able to
 deploy to heroku or run locally.
 
 ## Adapters
@@ -39,9 +27,7 @@ adapters that the community have contributed. Check the
 [hubot wiki][hubot-wiki] for the available ones and how to create your own.
 
 Please submit issues and pull requests for third party adapters to the adapter
-repo, not this repo (unless it's the Campfire or Shell adapter).
-
-[hubot-wiki]: https://github.com/github/hubot/wiki
+repository, not this one (unless it's the Campfire or shell adapter).
 
 ## Hubot Scripts
 
@@ -51,9 +37,6 @@ way to share scripts with the entire community.
 
 Check out the [README][hubot-scripts-readme] for more help on installing
 individual scripts.
-
-[hubot-scripts]: https://github.com/github/hubot-scripts
-[hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
 
 ## External Scripts
 
@@ -68,6 +51,9 @@ To enable to functionality you can follow the following steps.
 To enable third-party scripts that you've added you will need to add the package
 name as a double quoted string to the `external-scripts.json` file for your
 hubot.
+
+**Please note that external scripts may become the default for hubot scripts in
+future releases.**
 
 ### Creating A Script Package
 
@@ -114,8 +100,7 @@ files from this directory.
 
 ## Events
 
-Hubot has also an node.js [EventEmitter][event-emitter] attached. It can be used
-for data exchange between scripts.
+Hubot can also respond to events which can be used to pass data between scripts.
 
 ```coffeescript
 # src/scripts/github-commits.coffee
@@ -136,14 +121,12 @@ module.exports = (robot) ->
     #deploy code goes here
 ```
 
-If you'll provide an event, it's very recommended to include a hubot user object
+If you provide an event, it's very recommended to include a hubot user object
 in data. In case of other reacting scripts want to respond to chat.
-
-[event-emitter]: http://nodejs.org/api/events.html#events_class_events_eventemitter
 
 ## Persistence
 
-Hubot also has an in-memory key-value store exposed as `robot.brain` that can be
+Hubot has an in-memory key-value store exposed as `robot.brain` that can be
 used to store and retrieve data by scripts.
 
 ```coffeescript
@@ -163,12 +146,6 @@ module.exports = (robot) ->
       # Or robot.brain.set totalBeers: beersHad+1
 ```
 
-Look in [storage.coffee](src/scripts/storage.coffee) for more examples.
-
-You may also install the script `redis-brain.coffee`
-(instructions [here](https://github.com/github/hubot-scripts/blob/master/src/scripts/redis-brain.coffee))
-for persisting the key-value store in a redis database.
-
 If the script needs to store user data, `robot.brain` has a built-in interface
 for it.
 
@@ -186,4 +163,8 @@ module.exports = (robot) ->
       msg.send "#{name} is user - #{user}"
 ```
 
-More examples in [roles.coffee](src/scripts/roles.coffee)
+[nodejs]: http://nodejs.org
+[npmjs]: http://npmjs.org
+[hubot-wiki]: https://github.com/github/hubot/wiki
+[hubot-scripts]: https://github.com/github/hubot-scripts
+[hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
