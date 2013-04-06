@@ -1,15 +1,21 @@
 {
-  "name":        "hubot",
-  "version":     "2.4.8",
+  "name": "hubot",
+  "version": "2.4.8",
 
-  "author":      "hubot",
+  "author": "hubot",
 
-  "keywords":    ["github","hubot","campfire","bot"],
-  "description": "A simple helpful Robot for your Company",
+  "keywords": [
+    "github",
+    "hubot",
+    "campfire",
+    "bot"
+  ],
 
-  "licenses":     [{
-    "type":       "MIT",
-    "url":        "http://github.com/github/hubot/raw/master/LICENSE"
+  "description": "A simple helpful robot for your Company",
+
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://github.com/github/hubot/raw/master/LICENSE"
   }],
 
   "repository" : {
@@ -18,11 +24,11 @@
   },
 
   "dependencies": {
-    "coffee-script":      "1.6.1",
+    "coffee-script":      "1.6.2",
     "optparse":           "1.0.4",
     "scoped-http-client": "0.9.8",
     "log":                "1.3.1",
-    "express":            "3.1.0"
+    "express":            "3.1.1"
   },
 
   "engines": {
