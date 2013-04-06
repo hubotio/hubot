@@ -69,6 +69,7 @@ class Response
   #
   # Returns a ScopedClient instance.
   http: (url) ->
+    @robot.log.warn '@http() is going to be deprecated in 3.0.0 use @robot.http()'
     @robot.http(url)
 
 module.exports = Response

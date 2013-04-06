@@ -59,18 +59,21 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User objects.
   users: ->
+    @robot.log.warn '@users() is going to be deprecated in 3.0.0 use @robot.brain.users()'
     @robot.brain.users()
 
   # Public: Get a User object given a unique identifier.
   #
   # Returns a User instance of the specified user.
   userForId: (id, options) ->
+    @robot.log.warn '@userForId() is going to be deprecated in 3.0.0 use @robot.brain.userForId()'
     @robot.brain.userForId id, options
 
   # Public: Get a User object given a name.
   #
   # Returns a User instance for the user with the specified name.
   userForName: (name) ->
+    @robot.log.warn '@userForName() is going to be deprecated in 3.0.0 use @robot.brain.userForName()'
     @robot.brain.userForName name
 
   # Public: Get all users whose names match fuzzyName. Currently, match
@@ -79,6 +82,7 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User instances matching the fuzzy name.
   usersForRawFuzzyName: (fuzzyName) ->
+    @robot.log.warn '@userForRawFuzzyName() is going to be deprecated in 3.0.0 use @robot.brain.userForRawFuzzyName()'
     @robot.brain.usersForRawFuzzyName fuzzyName
 
   # Public: If fuzzyName is an exact match for a user, returns an array with
@@ -87,6 +91,7 @@ class Adapter extends EventEmitter
   #
   # Returns an Array of User instances matching the fuzzy name.
   usersForFuzzyName: (fuzzyName) ->
+    @robot.log.warn '@userForFuzzyName() is going to be deprecated in 3.0.0 use @robot.brain.userForFuzzyName()'
     @robot.brain.usersForFuzzyName fuzzyName
 
   # Public: Creates a scoped http client with chainable methods for
@@ -96,6 +101,7 @@ class Adapter extends EventEmitter
   #
   # Returns a ScopedClient instance.
   http: (url) ->
+    @robot.log.warn '@http() is going to be deprecated in 3.0.0 use @robot.http()'
     @robot.http(url)
 
 module.exports = Adapter
