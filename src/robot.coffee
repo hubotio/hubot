@@ -36,6 +36,8 @@ class Robot
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
+  #
+  # TODO: reduce the amount of parameters?
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
     @name      = name
     @brain     = new Brain
@@ -58,6 +60,8 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
+  #
+  # TODO: update to work with the new script format and backcompat
   hear: (regex, callback) ->
     @listeners.push new TextListener(@, regex, callback)
 
@@ -69,6 +73,8 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
+  #
+  # TODO: update to work with the new script format, and backcompat
   respond: (regex, callback) ->
     re = regex.toString().split('/')
     re.shift()
@@ -136,6 +142,8 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
+  #
+  # TODO: not really a fan of this, remove or keep?
   catchAll: (callback) ->
     @listeners.push new Listener(
       @,
@@ -167,6 +175,8 @@ class Robot
   # file - A String filename in path on the filesystem.
   #
   # Returns nothing.
+  #
+  # TODO: consider finding a way to simplify file loading
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
@@ -183,6 +193,8 @@ class Robot
   # path - A String path on the filesystem.
   #
   # Returns nothing.
+  #
+  # TODO: consider finding a way to simplify file loading
   load: (path) ->
     @logger.debug "Loading scripts from #{path}"
     Fs.exists path, (exists) =>
@@ -196,6 +208,8 @@ class Robot
   # scripts - An Array of scripts to load.
   #
   # Returns nothing.
+  #
+  # TODO: consider finding a way to simplify file loading
   loadHubotScripts: (path, scripts) ->
     @logger.debug "Loading hubot-scripts from #{path}"
     for script in scripts
@@ -207,6 +221,8 @@ class Robot
   # packages - An Array of packages containing hubot scripts to load.
   #
   # Returns nothing.
+  #
+  # TODO: consider finding a way to simplify file loading
   loadExternalScripts: (packages) ->
     @logger.debug "Loading external-scripts from npm packages"
     for pkg in packages
@@ -219,6 +235,8 @@ class Robot
   # Setup the Express server's defaults.
   #
   # Returns nothing.
+  #
+  # TODO: maybe move the entire connect part into a third-party package?
   setupExpress: ->
     # Load config.
     user    = process.env.EXPRESS_USER
@@ -276,6 +294,8 @@ class Robot
   # Public: Help Commands for Running Scripts.
   #
   # Returns an Array of help commands for running scripts.
+  #
+  # TODO: maybe remove this method and just have scripts use @commands
   helpCommands: ->
     @commands.sort()
 
@@ -284,6 +304,8 @@ class Robot
   # path - A String path to the file on disk.
   #
   # Returns nothing.
+  #
+  # TODO: update to use new script format and backcompat
   parseHelp: (path) ->
     @logger.debug "Parsing help for #{path}"
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
@@ -328,6 +350,8 @@ class Robot
   # strings - One or more Strings for each message to send.
   #
   # Returns nothing.
+  #
+  # TODO: update as may clash with new script format
   send: (user, strings...) ->
     @adapter.send user, strings...
 
@@ -338,6 +362,8 @@ class Robot
   # strings - One or more Strings for each message to send.
   #
   # Returns nothing.
+  #
+  # TODO: update as may clash with new script format
   reply: (user, strings...) ->
     @adapter.reply user, strings...
 
@@ -347,6 +373,8 @@ class Robot
   # strings - One or more Strings for each message to send.
   #
   # Returns nothing.
+  #
+  # TODO: maybe be redundant depending on new script format functions
   messageRoom: (room, strings...) ->
     user = { room: room }
     @adapter.send user, strings...

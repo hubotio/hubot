@@ -1,34 +1,29 @@
-# pug me - Receive a pug
-# pug bomb N - get N pugs
-
-# Description:
-#   Pugme is the most important thing in your life
-#
-# Dependencies:
-#   None
-#
-# Configuration:
-#   None
-#
-# Commands:
-#   hubot pug me - Receive a pug
-#   hubot pug bomb N - get N pugs
-
 module.exports = (robot) ->
 
-  robot.respond /pug me/i, (msg) ->
-    msg.http("http://pugme.herokuapp.com/random")
-      .get() (err, res, body) ->
-        msg.send JSON.parse(body).pug
+  robot.respond
+    description: 'Receive a pug'
+    example: 'hubot pug me'
+    match: /pug me/i
+    handler: (msg, user, room, matches) ->
+      robot.http("http://pugme.herokuapp.com/random")
+        .get() (err, res, body) ->
+          room.send JSON.parse(body).pug
 
-  robot.respond /pug bomb( (\d+))?/i, (msg) ->
-    count = msg.match[2] || 5
-    msg.http("http://pugme.herokuapp.com/bomb?count=" + count)
-      .get() (err, res, body) ->
-        msg.send pug for pug in JSON.parse(body).pugs
+  robot.respond
+    description: 'Receive <amount> pugs'
+    example: 'hubot pug bomb <amount>'
+    match: /pug bomb( (\d+))?/i
+    handler: (msg, user, room, matches) ->
+      count = matches[2] || 5
+      robot.http("http://pugme.herokuapp.com/bomb?count=#{count}")
+        .get() (err, res, body) ->
+          room.send pug for pug in JSON.parse(body).pugs
 
-  robot.respond /how many pugs are there/i, (msg) ->
-    msg.http("http://pugme.herokuapp.com/count")
-      .get() (err, res, body) ->
-        msg.send "There are #{JSON.parse(body).pug_count} pugs."
-
+  robot.respond
+    description: 'Get how many pugs are available'
+    example: 'hubot how many pugs are there'
+    match: /how many pugs are there/i
+    handler: (msg, user, room, matches) ->
+      robot.http("http://pugme.herokuapp.com/count")
+        .get() (err, res, body) ->
+          room.send "There are #{JSON.parse(body).pug_count} pugs."
