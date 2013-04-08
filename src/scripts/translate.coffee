@@ -65,7 +65,7 @@ languages =
   "te": "Telugu",
   "th": "Thai",
   "tr": "Turkish",
-  "uk": "Ukranian",
+  "uk": "Ukrainian",
   "ur": "Urdu",
   "vi": "Vietnamese",
   "cy": "Welsh",
