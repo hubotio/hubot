@@ -220,28 +220,19 @@ class Robot
   #
   # Returns nothing.
   setupExpress: ->
-    # Load config.
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
-
     stat    = process.env.EXPRESS_STATIC
-    sockets = process.env.EXPRESS_SOCKETS
 
-    # Require express.
     express = require 'express'
 
-    # Initialize server and middleware.
     app = express()
-
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    # Listen to incoming requests.
     @server = app.listen process.env.PORT || 8080
-
-    # Expose express app as router.
     @router = app
 
     herokuUrl = process.env.HEROKU_URL
