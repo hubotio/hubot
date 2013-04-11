@@ -124,6 +124,42 @@ module.exports = (robot) ->
 If you provide an event, it's very recommended to include a hubot user object
 in data. In case of other reacting scripts want to respond to chat.
 
+## Authentication
+
+Hubot has first class support for specify roles which a user must have to run
+specific commands. If you wish you use this support you must set the the
+following environment variables:
+
+    * `HUBOT_AUTH_ADMINS` a comma separated list of admin IDs
+
+You can find the user IDs by running the `show users` command. The admin IDs
+specify which users can add and remove roles from users. Please note you can
+only assign the admin role using the environment variable.
+
+### Assigning a Role
+
+You can assign a role to the user using the following command:
+
+    hubot Joe Bloggs has developer role
+    hubot John Doe has ops role
+
+The name must be the exact name as stored in hubot's brain.
+
+### Removing a Role
+
+You can remove a role from the user using the following command:
+
+    hubot Joe Bloggs doesn't have developer role
+    hubot John Doe does not have ops role
+
+### Viewing a Users Roles
+
+You can view the roles a user has or see which users have the admin role with
+the following commands:
+
+    hubot what roles does Joe Bloggs have?
+    hubot who has admin role?
+
 ## Persistence
 
 Hubot has an in-memory key-value store exposed as `robot.brain` that can be
