@@ -31,7 +31,7 @@
 module.exports = (robot) ->
 
   unless process.env.HUBOT_AUTH_ADMIN?
-    robot.logger.warn 'The HUBOT_AUTH_ADMIN environment variable not set'
+    robot.logger.warning 'The HUBOT_AUTH_ADMIN environment variable not set'
 
   admins = (process.env.HUBOT_AUTH_ADMIN or []).split ','
 
