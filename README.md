@@ -130,7 +130,7 @@ Hubot has first class support for specify roles which a user must have to run
 specific commands. If you wish you use this support you must set the the
 following environment variables:
 
-    * `HUBOT_AUTH_ADMINS` a comma separated list of admin IDs
+    * `HUBOT_AUTH_ADMIN` a comma separated list of admin IDs
 
 You can find the user IDs by running the `show users` command. The admin IDs
 specify which users can add and remove roles from users. Please note you can
