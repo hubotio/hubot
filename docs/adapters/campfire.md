@@ -1,24 +1,23 @@
 # Adapter: Campfire
 
-Campfire is a web based chat application built by 37 Sigansl. The Campfire
+[Campfire](http://campfirenow.com/) is a web based chat application built by [37signals](http://37signals.com]/). The Campfire
 adapter is one of the original adapters in Hubot.
 
 ## Getting Started
 
-First you will need a Campfire account, you can sign up for
-[a free account](https://signup.37signals.com/campfire/free/signup/new).
+You will need a Campfire account to to start, which you can [sign up for
+free](https://signup.37signals.com/campfire/free/signup/new).
 
-Next you will need to create another account on Campfire for your Hubot and
-allow it to join to your rooms. You may need to create a room if you haven't
+Next, you will need to create a user on your Campfire account for your Hubot, then 
+give it access so it can join to your rooms. You will need to create a room if you haven't
 already.
 
-To use the adapter you will need to specify `campfire` as the option to the `-a`
-flag when running hubot. If you're deploying to Heroku you will need to make
-sure the `-a` option is followed by `campfire` in the `Procfile`.
+Hubot defaults to using its [shell](shell.md), so to use Campfire instead, you can run hubot with `-a campfire`. If you are deploying to Heroku or using foreman, you need to make
+sure the hubot is called with `-a campfire` in the `Procfile`.
 
 ## Configuring
 
-The adapter requires only the following environment variables.
+The adapter requires the following environment variables.
 
 * `HUBOT_CAMPFIRE_ACCOUNT`
 * `HUBOT_CAMPFIRE_TOKEN`
