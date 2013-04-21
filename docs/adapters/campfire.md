@@ -12,8 +12,14 @@ Next, you will need to create a user on your Campfire account for your Hubot, th
 give it access so it can join to your rooms. You will need to create a room if you haven't
 already.
 
-Hubot defaults to using its [shell](shell.md), so to use Campfire instead, you can run hubot with `-a campfire`. If you are deploying to Heroku or using foreman, you need to make
-sure the hubot is called with `-a campfire` in the `Procfile`.
+Hubot defaults to using its [shell](shell.md), so to use Campfire instead, you can run hubot with `-a campfire`:
+
+    % bin/hubot -a campfire
+
+If you are deploying to Heroku or using foreman, you need to make
+sure the hubot is called with `-a campfire` in the `Procfile`:
+
+    web: bin/hubot -a campfire -n Hubot
 
 ## Configuring
 
