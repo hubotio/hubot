@@ -42,7 +42,7 @@ module.exports = (robot) ->
     hasRole: (user, roles) ->
       user = robot.brain.userForId(user.id)
       if user? and user.roles?
-        roles = [roles] if roles typeof String
+        roles = [roles] if typeof roles is 'string'
         for role in roles
           return true if role in user.roles
       return false
