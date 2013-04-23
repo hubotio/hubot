@@ -38,7 +38,7 @@ class Campfire extends Adapter
       (id, created, room, user, body) ->
         bot.User user, (err, userData) ->
           if userData.user
-            author = self.userForId(userData.user.id, userData.user)
+            author = self.robot.brain.userForId(userData.user.id, userData.user)
             userId = userData.user.id
             self.robot.brain.data
               .users[userId].name = userData.user.name
