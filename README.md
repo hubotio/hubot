@@ -9,7 +9,7 @@ simply require in your project.  See the [documentation](docs/README.md) for mor
 
 ## Contributing
 
-Coming soon...
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## License
 
