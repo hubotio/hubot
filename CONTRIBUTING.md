@@ -1,6 +1,6 @@
 We love pull requests. Here's a quick guide:
 
-1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/tree/master)
+1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/commits/master)
 2. Fork the repo, and clone it locally
 3. `npm link` to make your cloned repo available to npm
 4. `hubot --create testbot` to create a bot to test againt (no automated tests yet :sob:)
@@ -12,7 +12,7 @@ accept, pull requests within a few days. We may suggest some changes or improvem
 
 Some things that will increase the chance that your pull request is accepted:
 
-* Use Coffeescript idioms
+* Use Coffeescript [idioms](http://arcturo.github.io/library/coffeescript/04_idioms.html) and [style guide](https://github.com/polarmobile/coffeescript-style-guide)
 * Update the documentation, the surrounding one, examples elsewhere, guides,
   whatever is affected by your contribution
 * Include any information that would be relevant to reproducing bugs, use cases for new features, etc
