@@ -16,6 +16,7 @@ Some things that will increase the chance that your pull request is accepted:
 * Update the documentation, the surrounding one, examples elsewhere, guides,
   whatever is affected by your contribution
 * Include any information that would be relevant to reproducing bugs, use cases for new features, etc
+* Impact on existing [hubot installs](docs/README.md), [hubot adapters](docs/adapters.md), and [hubot scripts](docs/scripting.md) (ie backwards compatability)
 
 Syntax:
 
