@@ -15,7 +15,7 @@
 
   "licenses": [{
     "type": "MIT",
-    "url": "http://github.com/github/hubot/raw/master/LICENSE"
+    "url": "http://github.com/github/hubot/raw/master/LICENSE.md"
   }],
 
   "repository" : {
