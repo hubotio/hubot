@@ -63,12 +63,19 @@ class Creator
       "package.json",
       "README.md",
       ".gitignore",
-      "bin/hubot",
-      "bin/hubot.cmd",
       "hubot-scripts.json",
       "external-scripts.json"
     ]
 
     @copy "#{@templateDir}/#{file}", "#{@path}/#{file}" for file in files
+
+    bins = [
+      "bin/hubot",
+      "bin/hubot.cmd"
+    ]
+
+    for bin in bins
+      @copy "#{@templateDir}/#{bin}", "#{@path}/#{bin}"
+      Fs.chmodSync "#{@path}/#{bin}", 0o755
 
 module.exports = Creator
