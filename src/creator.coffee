@@ -26,10 +26,12 @@ class Creator
   # to   - A String destination file to write to.
   #
   # Returns nothing.
-  copy: (from, to) ->
+  copy: (from, to, callback) ->
     Fs.readFile from, "utf8", (err, data) ->
       console.log "Copying #{Path.resolve(from)} -> #{Path.resolve(to)}"
       Fs.writeFileSync to, data, "utf8"
+
+      callback(err, to) if callback?
 
   # Copy the default scripts hubot ships with to the scripts folder
   # This allows people to easily remove scripts hubot defaults to if
@@ -75,7 +77,7 @@ class Creator
     ]
 
     for bin in bins
-      @copy "#{@templateDir}/#{bin}", "#{@path}/#{bin}"
-      Fs.chmodSync "#{@path}/#{bin}", 0o755
+      @copy "#{@templateDir}/#{bin}", "#{@path}/#{bin}", (err, binPath) =>
+        Fs.chmodSync binPath, 0o755
 
 module.exports = Creator
