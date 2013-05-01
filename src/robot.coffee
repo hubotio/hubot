@@ -416,6 +416,6 @@ class Robot
   # Returns a ScopedClient instance.
   http: (url) ->
     HttpClient.create(url)
-      .header('User-Agent', "Hubot/#{@robot.version}")
+      .header('User-Agent', "Hubot/#{@version}")
 
 module.exports = Robot
