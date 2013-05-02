@@ -19,7 +19,7 @@ If you are using git, the generated bot includes a .gitignore, so you can initia
     % git add .
     % git commit -m "Initial commit"
 
-You have have your own runnable instance of hubot! There's a `bin/hubot` command for convience, to handle installing npm dependencies, loading scripts, and then launching your hubot.
+You have have your own runnable instance of hubot! There's a `bin/hubot` command for convenience, to handle installing npm dependencies, loading scripts, and then launching your hubot.
 
     % bin/hubot
     Hubot>
@@ -61,7 +61,7 @@ You almost definitely will want to change his name. bin/hubot takes a `--name` o
     % bin/hubot --name myhubot
     myhubot> 
 
-Now your hubot will respond to `myhobot`. It's worth noting that this is case-insensitive, and that you can prefix with `@` or suffix with `:`. That means these are equivilant:
+Now your hubot will respond to `myhobot`. It's worth noting that this is case-insensitive, and that you can prefix with `@` or suffix with `:`. That means these are equivalent:
 
     MYHUBOT help
     myhubot help

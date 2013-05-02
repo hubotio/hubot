@@ -1,6 +1,6 @@
 # Deploying Hubot to Heroku
 
-Once you have [gotten started](../deploying.md) with Hubot, it's time to deploy so you can use it outside of your local machine. [Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubots.
+Once you have [gotten started](../deploying.md) with Hubot, it's time to deploy so you can use it outside of your local machine. [Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubot.
 
 To start, install the [Heroku Toolbelt](https://toolbelt.heroku.com/) if you haven't already. Follow their `Getting Started' instructions, including logging in:
 
@@ -15,7 +15,7 @@ Generating new SSH public key.
 Uploading ssh public key /Users/technicalpickles/.ssh/id_rsa.pub
 ```
 
-Inside your new hubot instance, you'll need to create a heroku app for it. Make sure it is a git repository first and commit anything you've done so far, then you can create the app:
+Inside your new hubot instance, you'll need to create a Heroku application for it. Make sure it is a git repository first and commit anything you've done so far, then you can create the app:
 
 ```
 % heroku create
@@ -36,7 +36,7 @@ In addition is one special environment variable for Heroku. The default hubot [P
 
     % heroku config:add HUBOT_HEROKU_URL=http://stark-fog-398.herokuapp.com
 
-At this point, you are ready to deploy and start chatting. With heroku, that's a git push away:
+At this point, you are ready to deploy and start chatting. With Heroku, that's a git push away:
 
     % git push heroku master
 

@@ -10,11 +10,11 @@ There's 3 primary things to deploying and running hubot:
 
 ## node and npm
 
-To start, your unix server will need node and npm. Check out the node.js wiki for [installing Node.js via package manager](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager), [Building on GNU/Linux and other UNIX](https://github.com/joyent/node/wiki/Installation#building-on-gnulinux-and-other-unix).
+To start, your UNIX server will need node and npm. Check out the node.js wiki for [installing Node.js via package manager](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager), [Building on GNU/Linux and other UNIX](https://github.com/joyent/node/wiki/Installation#building-on-gnulinux-and-other-unix).
 
 ## Updating code on the server
 
-The simplest way to update your hubot's code is going to be to have a git checkout of your hubot's source code, and just git pull to get change. This may feel dirty and hacky, but it works when you are starting out.
+The simplest way to update your hubot's code is going to be to have a git checkout of your hubot's source code, and just git pull to get change. This may feel a dirty hack, but it works when you are starting out.
 
 If you have a Ruby background, you might be more comfortable using [capistrano](https://github.com/capistrano/capistrano).
 
@@ -32,7 +32,7 @@ For handling you disconnecting, you can start with running `bin/hubot` in [scree
 
 For handling hubot dying, and restarting it automatically, you can imagine running `bin/hubot` in a [bash while loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html#ss7.3). But really, you probably want some process monitoring using tools like [monit](http://mmonit.com/monit/), [god](http://godrb.com/), [bluepill](https://github.com/arya/bluepill), [upstart](http://upstart.ubuntu.com/).
 
-For starting at boot, you can create an init script for appropriate your unix distribution, or if you are using one the process monitoring tools above, make sure it boots at startup.
+For starting at boot, you can create an init script for appropriate your UNIX distribution, or if you are using one the process monitoring tools above, make sure it boots at startup.
 
 ## Recommendations
 
