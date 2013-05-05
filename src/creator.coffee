@@ -14,7 +14,7 @@ class Creator
   # Create a folder if it doesn't already exist.
   #
   # Returns nothing.
-  mkdirDashP: (path) ->
+  mkdir: (path) ->
     Fs.exists path, (exists) ->
       unless exists
         Fs.mkdirSync path, 0o0755
@@ -53,9 +53,9 @@ class Creator
   run: ->
     console.log "Creating a hubot install at #{@path}"
 
-    @mkdirDashP(@path)
-    @mkdirDashP("#{@path}/bin")
-    @mkdirDashP("#{@path}/scripts")
+    @mkdir(@path)
+    @mkdir("#{@path}/bin")
+    @mkdir("#{@path}/scripts")
 
     @copyDefaultScripts("#{@path}/scripts")
 
