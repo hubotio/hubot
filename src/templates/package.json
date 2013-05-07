@@ -1,6 +1,6 @@
 {
   "name":        "hosted-hubot",
-  "version":     "2.5.0",
+  "version":     "2.5.1",
 
   "author":      "GitHub Inc.",
 
@@ -24,7 +24,7 @@
   },
 
   "dependencies": {
-    "hubot":         ">= 2.5.0",
+    "hubot":         ">= 2.5.1",
     "hubot-scripts": ">= 2.4.2"
   },
 

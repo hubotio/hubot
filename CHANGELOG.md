@@ -1,3 +1,13 @@
+v2.5.1
+======
+
+* Add the auth script as a default script - tombell
+* Updated @userForId uses for deprecation - kch
+* Fix hubot respond bug - shiwano
+* Default user-agent for HTTP requests - aroben
+* Fix copying executable files - brntbeer
+* Fix issues with mkdirDashP - Ronald Evers
+
 v2.5.0
 ======
 
