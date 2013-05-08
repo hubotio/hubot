@@ -213,6 +213,7 @@ class Robot
     for pkg in packages
       try
         require(pkg) @
+        @parseHelp require.resolve(pkg)
       catch error
         @logger.error "Error loading scripts from npm package - #{error}"
         process.exit(1)
