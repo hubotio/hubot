@@ -1,6 +1,3 @@
-# pug me - Receive a pug
-# pug bomb N - get N pugs
-
 # Description:
 #   Pugme is the most important thing in your life
 #
