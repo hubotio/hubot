@@ -14,7 +14,7 @@ class Shell extends Adapter
 
   reply: (envelope, strings...) ->
     strings = strings.map (s) -> "#{envelope.user.name}: #{s}"
-    @send envelope.user, strings...
+    @send envelope, strings...
 
   run: ->
     self = @
