@@ -1,4 +1,17 @@
-# Tests hubot listeners
+# Description:
+#   None
+#
+# Dependencies:
+#   None
+#
+# Configuration:
+#   None
+#
+# Commands:
+#   hubot !! - Repeat the last command directed at hubot
+#
+# Author:
+#   None
 module.exports = (robot) ->
   assert = require 'assert'
   robot.hear /static/i, (msg) ->
