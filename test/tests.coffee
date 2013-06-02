@@ -45,6 +45,9 @@ class Helper extends Robot
     @adapter = new Danger @
     @alias = 'alias'
 
+  loadAdapter: (path, adapter) ->
+    # Don't need to actually load the adapter in tests
+
   stop: ->
     process.exit 0
 
