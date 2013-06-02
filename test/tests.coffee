@@ -71,5 +71,5 @@ if not process.env.HUBOT_LIVE
   class Helper.Response extends Response
     # This changes ever HTTP request to hit the danger server above
     http: (url) ->
-      super(url).host('127.0.0.1').port(9001)
+      @robot.http(url).host('127.0.0.1').port(9001)
 
