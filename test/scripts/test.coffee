@@ -1,8 +1,21 @@
-# Tests hubot listeners
+# Description:
+#   None
+#
+# Dependencies:
+#   None
+#
+# Configuration:
+#   None
+#
+# Commands:
+#   hubot !! - Repeat the last command directed at hubot
+#
+# Author:
+#   None
 module.exports = (robot) ->
   assert = require 'assert'
   robot.hear /static/i, (msg) ->
-    msg.http('http://127.0.0.1/test').port(process.env.PORT or 8080)
+    robot.http('http://127.0.0.1/test').port(process.env.PORT or 8080)
       .get() (err, res, body) ->
         msg.send body
 
@@ -19,7 +32,7 @@ module.exports = (robot) ->
     msg.send msg.random([1,2]).toString()
 
   robot.hear /http/i, (msg) ->
-    msg.http('http://127.0.0.1').port(9001)
+    robot.http('http://127.0.0.1').port(9001)
       .get() (err, res, body) ->
         msg.send body
 
