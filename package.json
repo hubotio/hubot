@@ -40,5 +40,8 @@
 
   "bin": {
     "hubot": "./bin/hubot"
+  },
+  "scripts": {
+    "test": "make"
   }
 }
