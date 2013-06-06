@@ -5,7 +5,7 @@
 #   hubot math me <expression> - Calculate the given expression.
 #   hubot convert me <expression> to <units> - Convert expression to given units.
 module.exports = (robot) ->
-  robot.respond /(calc|calculate|convert|math)( me)? (.*)/i, (msg) ->
+  robot.respond /(calc|calculate|convert|math|maths)( me)? (.*)/i, (msg) ->
     msg
       .http('https://www.google.com/ig/calculator')
       .query
