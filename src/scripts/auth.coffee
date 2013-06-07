@@ -65,7 +65,7 @@ module.exports = (robot) ->
           msg.reply "Sorry, the 'admin' role can only be defined in the HUBOT_AUTH_ADMIN env variable."
         else
           myRoles = msg.message.user.roles or []
-          if msg.message.user.id.toString() in admins
+          if msg.message.user.name.toString() in admins
             user.roles.push(newRole)
             msg.reply "Ok, #{name} has the '#{newRole}' role."
 
@@ -82,7 +82,7 @@ module.exports = (robot) ->
         msg.reply "Sorry, the 'admin' role can only be removed from the HUBOT_AUTH_ADMIN env variable."
       else
         myRoles = msg.message.user.roles or []
-        if msg.message.user.id.toString() in admins
+        if msg.message.user.name.toString() in admins
           user.roles = (role for role in user.roles when role isnt newRole)
           msg.reply "Ok, #{name} doesn't have the '#{newRole}' role."
 
@@ -92,7 +92,7 @@ module.exports = (robot) ->
     return msg.reply "#{name} does not exist" unless user?
     user.roles or= []
 
-    if user.id.toString() in admins
+    if user.name.toString() in admins
       isAdmin = ' and is also an admin'
     else
       isAdmin = ''
@@ -101,7 +101,7 @@ module.exports = (robot) ->
   robot.respond /who has admin role\?*$/i, (msg) ->
     adminNames = []
     for admin in admins
-      user = robot.brain.userForId(admin)
+      user = robot.brain.userForName(admin)
       adminNames.push user.name if user?
 
     msg.reply "The following people have the 'admin' role: #{adminNames.join(', ')}"
