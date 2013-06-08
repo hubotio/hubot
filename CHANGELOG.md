@@ -1,3 +1,11 @@
+v2.5.2
+======
+
+* Parse help from external script package scripts - aaronj1335
+* Remove bad script header from pugme - maxgoedjen
+* Fix exception when sending multiple messages - aroben
+* Add 'maths' to math me regex - jacksonhull
+
 v2.5.1
 ======
 
