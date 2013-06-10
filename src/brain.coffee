@@ -37,7 +37,7 @@ class Brain extends EventEmitter
   # Returns the value.
   get: (key) ->
     @data._private[key] ? null
-  
+
   # Public: Remove value by key from the private namespace in @data
   # if it exists
   #
@@ -45,7 +45,7 @@ class Brain extends EventEmitter
   remove: (key) ->
     delete @data._private[key] if @data._private[key]?
     @
-  
+
   # Public: Emits the 'save' event so that 'brain' scripts can handle
   # persisting.
   #
@@ -62,9 +62,9 @@ class Brain extends EventEmitter
     @emit 'close'
 
   # Public: Enable or disable the automatic saving
-  # 
+  #
   # enabled - A boolean whether to autosave or not
-  # 
+  #
   # Returns nothing
   setAutoSave: (enabled) ->
     @autoSave = enabled
@@ -147,7 +147,7 @@ class Brain extends EventEmitter
       return [user] if user.name.toLowerCase() is lowerFuzzyName
 
     matchedUsers
-  
+
 # Private: Extend obj with objects passed as additional args.
 #
 # Returns the original object with updated changes.
