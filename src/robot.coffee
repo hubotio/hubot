@@ -38,8 +38,8 @@ class Robot
   # Returns nothing.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
     @name      = name
-    @brain     = new Brain
     @events    = new EventEmitter
+    @brain     = new Brain @
     @alias     = false
     @adapter   = null
     @Response  = Response
@@ -369,6 +369,7 @@ class Robot
   #
   # Returns nothing.
   run: ->
+    @emit "running"
     @adapter.run()
 
   # Public: Gracefully shutdown the robot process

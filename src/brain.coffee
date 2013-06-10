@@ -6,12 +6,15 @@ class Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot. Extend this.
   #
   # Returns a new Brain with no external storage.
-  constructor: ->
+  constructor: (robot) ->
     @data =
       users:    { }
       _private: { }
-      
-    @resetSaveInterval 5
+
+    @autoSave = true
+
+    robot.on "running", =>
+      @resetSaveInterval 5
 
   # Public: Store key-value pair under the private namespace and extend
   # existing @data before emitting the 'loaded' event.
@@ -58,6 +61,14 @@ class Brain extends EventEmitter
     @save()
     @emit 'close'
 
+  # Public: Enable or disable the automatic saving
+  # 
+  # enabled - A boolean whether to autosave or not
+  # 
+  # Returns nothing
+  setAutoSave: (enabled) ->
+    @autoSave = enabled
+
   # Public: Reset the interval between save function calls.
   #
   # seconds - An Integer of seconds between saves.
@@ -66,7 +77,7 @@ class Brain extends EventEmitter
   resetSaveInterval: (seconds) ->
     clearInterval @saveInterval if @saveInterval
     @saveInterval = setInterval =>
-      @save()
+      @save() if @autoSave
     , seconds * 1000
 
   # Public: Merge keys loaded from a DB against the in memory representation.
