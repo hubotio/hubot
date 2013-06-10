@@ -77,8 +77,7 @@ class Brain extends EventEmitter
   resetSaveInterval: (seconds) ->
     clearInterval @saveInterval if @saveInterval
     @saveInterval = setInterval =>
-      if @autoSave
-        @save()
+      @save() if @autoSave
     , seconds * 1000
 
   # Public: Merge keys loaded from a DB against the in memory representation.

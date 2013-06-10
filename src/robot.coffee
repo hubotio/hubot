@@ -369,7 +369,7 @@ class Robot
   #
   # Returns nothing.
   run: ->
-    @emit "running", {}
+    @emit "running"
     @adapter.run()
 
   # Public: Gracefully shutdown the robot process
