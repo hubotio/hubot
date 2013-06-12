@@ -1,6 +1,31 @@
 {EventEmitter} = require 'events'
 
+HUBOT_DEFAULT_ADAPTERS = [
+  'campfire'
+  'shell'
+]
+
 class Adapter extends EventEmitter
+  # Load the adapter Hubot is going to use.
+  #
+  # path    - A String of the path to adapter if local.
+  # adapter - A String of the adapter name to use.
+  #
+  # Returns nothing.
+  @load: (robot, path, adapter) ->
+    robot.logger.debug "Loading adapter #{adapter}"
+
+    try
+      path = if adapter in HUBOT_DEFAULT_ADAPTERS
+        "#{path}/#{adapter}"
+      else
+        "hubot-#{adapter}"
+
+      robot.adapter = require(path).use robot
+    catch err
+      robot.logger.error "Cannot load adapter #{adapter}:\n#{err.stack}"
+      process.exit 1
+
   # An adapter is a specific interface to a chat source for robots.
   #
   # robot - A Robot instance.

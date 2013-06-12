@@ -1,19 +1,16 @@
-Fs             = require 'fs'
-Log            = require 'log'
-Path           = require 'path'
-HttpClient     = require 'scoped-http-client'
+Fs = require 'fs'
+Log = require 'log'
+Path = require 'path'
+HttpClient = require 'scoped-http-client'
 {EventEmitter} = require 'events'
 
-User                                        = require './user'
-Brain                                       = require './brain'
-Response                                    = require './response'
-{Listener,TextListener}                     = require './listener'
+User = require './user'
+Brain = require './brain'
+Scripts = require './scripts'
+Adapter = require './adapter'
+Response  = require './response'
+{Listener,TextListener} = require './listener'
 {EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
-
-HUBOT_DEFAULT_ADAPTERS = [
-  'campfire'
-  'shell'
-]
 
 HUBOT_DOCUMENTATION_SECTIONS = [
   'description'
@@ -37,18 +34,21 @@ class Robot
   #
   # Returns nothing.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
-    @name      = name
-    @events    = new EventEmitter
-    @brain     = new Brain @
-    @alias     = false
-    @adapter   = null
-    @Response  = Response
+    @logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+
+    @name = name
+    @alias = false
+    @brain = new Brain @
+    @events = new EventEmitter
+
+    @adapter = null
+    Adapter.load @, adapterPath, adapter
+
+    @Response = Response
     @listeners = []
-    @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
     @setupExpress() if httpd
-    @loadAdapter adapterPath, adapter
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -221,9 +221,9 @@ class Robot
   #
   # Returns nothing.
   setupExpress: ->
-    user    = process.env.EXPRESS_USER
-    pass    = process.env.EXPRESS_PASSWORD
-    stat    = process.env.EXPRESS_STATIC
+    user = process.env.EXPRESS_USER
+    pass = process.env.EXPRESS_PASSWORD
+    stat = process.env.EXPRESS_STATIC
 
     express = require 'express'
 
