@@ -29,6 +29,17 @@ class Campfire extends Adapter
       @robot.logger.error "Campfire error: #{err}" if err?
       @play envelope, strings...
 
+  locked: (envelope, strings...) ->
+    if envelope.message.private
+      @send envelope, strings...
+    else
+      @bot.Room(envelope.room).lock (args...) =>
+        strings.push =>
+          # campfire won't send messages from just before a room unlock. 3000
+          # is the 3-second poll.
+          setTimeout (=> @bot.Room(envelope.room).unlock()), 3000
+        @send envelope, strings...
+
   run: ->
     self = @
 

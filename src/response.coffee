@@ -48,6 +48,15 @@ class Response
   play: (strings...) ->
     @robot.adapter.play @envelope, strings...
 
+  # Public: Posts a message in an unlogged room
+  #
+  # strings - One or more strings to be posted. The order of these strings
+  #           should be kept intact.
+  #
+  # Returns nothing
+  locked: (strings...) ->
+    @robot.adapter.locked @envelope, strings...
+
   # Public: Picks a random item from the given items.
   #
   # items - An Array of items.
