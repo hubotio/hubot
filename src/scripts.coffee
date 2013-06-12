@@ -13,6 +13,11 @@ HUBOT_DOCUMENTATION_SECTIONS = [
 ]
 
 class Scripts
+  # Loads scripts and manages their documentation.
+  #
+  # robot - A instance of the Robot class.
+  #
+  # Returns nothing.
   constructor: (@robot) ->
     @commands = []
 
