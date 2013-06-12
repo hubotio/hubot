@@ -43,7 +43,6 @@ class Robot
     @alias     = false
     @adapter   = null
     @Response  = Response
-    @commands  = []
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
