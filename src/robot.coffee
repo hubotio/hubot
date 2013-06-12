@@ -16,22 +16,19 @@ class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
-  # adapterPath - A String of the path to local adapters.
-  # adapter     - A String of the adapter name.
-  # httpd       - A Boolean whether to enable the HTTP daemon.
-  # name        - A String of the robot name, defaults to Hubot.
+  # args - An Object of arguments for creating a robot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
+  constructor: (args) ->
     @logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
-    @name = name
-    @alias = false
+    @name = args.name or 'Hubot'
+    @alias = args.alias
     @brain = new Brain @
     @events = new EventEmitter
 
     @adapter = null
-    Adapter.load @, adapterPath, adapter
+    Adapter.load @, args.adapterPath, args.adapter
 
     @scripts = new Scripts @
 
@@ -39,7 +36,7 @@ class Robot
     @listeners = []
 
     @parseVersion()
-    @setupExpress() if httpd
+    @setupExpress() if args.httpd
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.

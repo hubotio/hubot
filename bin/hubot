@@ -67,16 +67,17 @@ if options.create
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot(
-    adapterPath,
-    options.adapter,
-    options.enableHttpd,
-    options.name
-  )
+  args =
+    adapterPath: adapterPath
+    adapter: options.adapter
+    name: options.name
+    alias: options.alias
+    httpd: options.enableHttpd
+
+  robot = Hubot.loadBot args
 
   if options.version
     console.log robot.version
     process.exit()
 
-  robot.alias = options.alias
   robot.run()
