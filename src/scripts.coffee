@@ -29,6 +29,17 @@ class Scripts
 
       @load path for path in scriptPaths
 
+  # Public: Loads every script in the given path.
+  #
+  # path - A String path on the filesystem.
+  #
+  # Returns nothing.
+  load: (path) ->
+    @robot.logger.debug "Loading scripts from #{path}"
+    Fs.exists path, (exists) =>
+      if exists
+        @loadFile path, file for file in Fs.readdirSync(path)
+
   # Public: Loads a file in path.
   #
   # path - A String path on the filesystem.
@@ -45,17 +56,6 @@ class Scripts
       catch err
         @robot.logger.error "Unable to load #{full}:\n#{err.stack}"
         process.exit 1
-
-  # Public: Loads every script in the given path.
-  #
-  # path - A String path on the filesystem.
-  #
-  # Returns nothing.
-  load: (path) ->
-    @robot.logger.debug "Loading scripts from #{path}"
-    Fs.exists path, (exists) =>
-      if exists
-        @loadFile path, file for file in Fs.readdirSync(path)
 
   # Public: Load scripts specfied in the `hubot-scripts.json` file.
   #
