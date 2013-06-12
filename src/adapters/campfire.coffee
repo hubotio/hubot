@@ -283,10 +283,11 @@ class CampfireStreaming extends EventEmitter
             else
               logger.error "Campfire error: #{response.statusCode}"
 
-        try
-          callback null, JSON.parse(data)
-        catch error
-          callback null, data or { }
+        if callback
+          try
+            callback null, JSON.parse(data)
+          catch error
+            callback null, data or { }
 
       response.on "error", (err) ->
         logger.error "Campfire response error: #{err}"
