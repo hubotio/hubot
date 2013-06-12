@@ -52,7 +52,7 @@ helpContents = (name, commands) ->
 
 module.exports = (robot) ->
   robot.respond /help\s*(.*)?$/i, (msg) ->
-    cmds = robot.helpCommands()
+    cmds = robot.scripts.helpCommands()
 
     if msg.match[1]
       cmds = cmds.filter (cmd) ->
@@ -69,7 +69,7 @@ module.exports = (robot) ->
     msg.send emit
 
   robot.router.get "/#{robot.name}/help", (req, res) ->
-    cmds = robot.helpCommands().map (cmd) ->
+    cmds = robot.scripts.helpCommands().map (cmd) ->
       cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 
     emit = "<p>#{cmds.join '</p><p>'}</p>"

@@ -1,4 +1,5 @@
 #!/usr/bin/env coffee
+#
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
@@ -9,27 +10,26 @@ Fs       = require 'fs'
 OptParse = require 'optparse'
 Path     = require 'path'
 
-Switches = [
-  [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-c", "--create PATH",     "Create a deployable hubot" ],
-  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
-  [ "-h", "--help",            "Display the help information" ],
-  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
-  [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-r", "--require PATH",    "Alternative scripts path" ],
-  [ "-v", "--version",         "Displays the version of hubot installed" ]
+switches = [
+  [ '-a', '--adapter ADAPTER', 'Adapter name for hubot to use' ],
+  [ '-c', '--create PATH',     'Path to create your new hubot' ],
+  [ '-d', '--disable-httpd',   'Disable the internal HTTP server' ],
+  [ '-h', '--help',            'Display hubot usage' ],
+  [ '-l', '--alias ALIAS',     'Alias name for your hubot' ],
+  [ '-n', '--name NAME',       'Name for your hubot' ],
+  [ '-v', '--version',         'Display hubot version' ]
 ]
 
 options =
-  adapter:     process.env.HUBOT_ADAPTER or "shell"
-  alias:       process.env.HUBOT_ALIAS   or false
-  create:      process.env.HUBOT_CREATE  or false
-  enableHttpd: process.env.HUBOT_HTTPD   or true
-  scripts:     process.env.HUBOT_SCRIPTS or []
-  name:        process.env.HUBOT_NAME    or "Hubot"
-  path:        process.env.HUBOT_PATH    or "."
+  adapter: "shell"
+  alias: false
+  create: false
+  enableHttpd: true
+  scripts: []
+  name: "Hubot"
+  path: "."
 
-parser = new OptParse.OptionParser(Switches)
+parser = new OptParse.OptionParser(switches)
 parser.banner = "Usage hubot [options]"
 
 parser.on "adapter", (opt, value) ->
@@ -61,64 +61,22 @@ parser.on "version", (opt, value) ->
 
 parser.parse process.argv
 
-unless process.platform is "win32"
-  process.on 'SIGTERM', ->
-    process.exit 0
-
 if options.create
   creator = new Creator(options.path)
   creator.run()
-
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath, options.adapter, options.enableHttpd, options.name
+  robot = Hubot.loadBot(
+    adapterPath,
+    options.adapter,
+    options.enableHttpd,
+    options.name
+  )
 
   if options.version
     console.log robot.version
-    process.exit 0
+    process.exit()
 
   robot.alias = options.alias
-
-  loadScripts = ->
-    scriptsPath = Path.resolve ".", "scripts"
-    robot.load scriptsPath
-
-    scriptsPath = Path.resolve ".", "src", "scripts"
-    robot.load scriptsPath
-
-    hubotScripts = Path.resolve ".", "hubot-scripts.json"
-    Fs.exists hubotScripts, (exists) ->
-      if exists
-        Fs.readFile hubotScripts, (err, data) ->
-          if data.length > 0
-            try
-              scripts = JSON.parse data
-              scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-              robot.loadHubotScripts scriptsPath, scripts
-            catch err
-              console.error "Error parsing JSON data from hubot-scripts.json: #{err}"
-              process.exit(1)
-
-    externalScripts = Path.resolve ".", "external-scripts.json"
-    Fs.exists externalScripts, (exists) ->
-      if exists
-        Fs.readFile externalScripts, (err, data) ->
-          if data.length > 0
-            try
-              scripts = JSON.parse data
-            catch err
-              console.error "Error parsing JSON data from external-scripts.json: #{err}"
-              process.exit(1)
-            robot.loadExternalScripts scripts
-
-    for path in options.scripts
-      if path[0] == '/'
-        scriptsPath = path
-      else
-        scriptsPath = Path.resolve ".", path
-      robot.load scriptsPath
-
-  robot.adapter.on 'connected', loadScripts
-
   robot.run()
