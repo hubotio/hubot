@@ -73,18 +73,28 @@ languages =
 
 getCode = (language,languages) ->
   for code, lang of languages
-      return code if lang.toLowerCase() is language.toLowerCase()
+    return code if lang.toLowerCase() is language.toLowerCase()
 
 module.exports = (robot) ->
   language_choices = (language for _, language of languages).sort().join('|')
-  pattern = new RegExp('translate(?: me)?' +
-                       "(?: from (#{language_choices}))?" +
-                       "(?: (?:in)?to (#{language_choices}))?" +
-                       '(.*)', 'i')
+  pattern = new RegExp(
+    'translate(?: me)?' +
+    "(?: from (#{language_choices}))?" +
+    "(?: (?:in)?to (#{language_choices}))?" +
+    '(.*)',
+    'i'
+  )
+
   robot.respond pattern, (msg) ->
     term   = "\"#{msg.match[3]}\""
-    origin = if msg.match[1] isnt undefined then getCode(msg.match[1], languages) else 'auto'
-    target = if msg.match[2] isnt undefined then getCode(msg.match[2], languages) else 'en'
+    origin = if msg.match[1] isnt undefined
+      getCode(msg.match[1], languages)
+    else
+      'auto'
+    target = if msg.match[2] isnt undefined
+      getCode(msg.match[2], languages)
+    else
+      'en'
     
     msg.http("https://translate.google.com/translate_a/t")
       .query({
