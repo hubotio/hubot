@@ -29,37 +29,37 @@ Options =
   name:        process.env.HUBOT_NAME    or "Hubot"
   path:        process.env.HUBOT_PATH    or "."
 
-Parser = new OptParse.OptionParser(Switches)
-Parser.banner = "Usage hubot [options]"
+parser = new OptParse.OptionParser(Switches)
+parser.banner = "Usage hubot [options]"
 
-Parser.on "adapter", (opt, value) ->
+parser.on "adapter", (opt, value) ->
   Options.adapter = value
 
-Parser.on "create", (opt, value) ->
+parser.on "create", (opt, value) ->
   Options.path = value
   Options.create = true
 
-Parser.on "disable-httpd", (opt) ->
+parser.on "disable-httpd", (opt) ->
   Options.enableHttpd = false
 
-Parser.on "help", (opt, value) ->
-  console.log Parser.toString()
+parser.on "help", (opt, value) ->
+  console.log parser.toString()
   process.exit 0
 
-Parser.on "alias", (opt, value) ->
+parser.on "alias", (opt, value) ->
   value or= '/'
   Options.alias = value
 
-Parser.on "name", (opt, value) ->
+parser.on "name", (opt, value) ->
   Options.name = value
 
-Parser.on "require", (opt, value) ->
+parser.on "require", (opt, value) ->
   Options.scripts.push(value)
 
-Parser.on "version", (opt, value) ->
+parser.on "version", (opt, value) ->
   Options.version = true
 
-Parser.parse process.argv
+parser.parse process.argv
 
 unless process.platform is "win32"
   process.on 'SIGTERM', ->
