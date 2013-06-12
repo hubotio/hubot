@@ -50,7 +50,9 @@ class Campfire extends Adapter
     bot.on "TextMessage",
       withAuthor (id, created, room, user, body, author) ->
         unless bot.info.id is author.id
-          self.receive new TextMessage author, body, id
+          message = new TextMessage author, body, id
+          message.private = bot.private[room]
+          self.receive message
 
     bot.on "EnterMessage",
       withAuthor (id, created, room, user, body, author) ->
@@ -66,6 +68,14 @@ class Campfire extends Adapter
       withAuthor (id, created, room, user, body, author) ->
         unless bot.info.id is author.id
           self.receive new TopicMessage author, body, id
+
+    bot.on "LockMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        bot.private[room] = true
+
+    bot.on "UnlockMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        bot.private[room] = false
 
     bot.Me (err, data) ->
       bot.info = data.user
@@ -99,6 +109,7 @@ class CampfireStreaming extends EventEmitter
     @account       = options.account
     @host          = @account + ".campfirenow.com"
     @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    @private       = {}
 
   Rooms: (callback) ->
     @get "/rooms", callback
