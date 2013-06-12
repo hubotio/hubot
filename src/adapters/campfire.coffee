@@ -8,9 +8,14 @@ Adapter                                              = require '../adapter'
 class Campfire extends Adapter
   send: (envelope, strings...) ->
     if strings.length > 0
-      @bot.Room(envelope.room).speak strings.shift(), (err, data) =>
-        @robot.logger.error "Campfire error: #{err}" if err?
+      string = strings.shift()
+      if typeof(string) == 'function'
+        string()
         @send envelope, strings...
+      else
+        @bot.Room(envelope.room).speak string, (err, data) =>
+          @robot.logger.error "Campfire error: #{err}" if err?
+          @send envelope, strings...
 
   reply: (envelope, strings...) ->
     @send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
@@ -23,6 +28,17 @@ class Campfire extends Adapter
     @bot.Room(envelope.room).sound strings.shift(), (err, data) =>
       @robot.logger.error "Campfire error: #{err}" if err?
       @play envelope, strings...
+
+  locked: (envelope, strings...) ->
+    if envelope.message.private
+      @send envelope, strings...
+    else
+      @bot.Room(envelope.room).lock (args...) =>
+        strings.push =>
+          # campfire won't send messages from just before a room unlock. 3000
+          # is the 3-second poll.
+          setTimeout (=> @bot.Room(envelope.room).unlock()), 3000
+        @send envelope, strings...
 
   run: ->
     self = @
@@ -50,7 +66,9 @@ class Campfire extends Adapter
     bot.on "TextMessage",
       withAuthor (id, created, room, user, body, author) ->
         unless bot.info.id is author.id
-          self.receive new TextMessage author, body, id
+          message = new TextMessage author, body, id
+          message.private = bot.private[room]
+          self.receive message
 
     bot.on "EnterMessage",
       withAuthor (id, created, room, user, body, author) ->
@@ -66,6 +84,14 @@ class Campfire extends Adapter
       withAuthor (id, created, room, user, body, author) ->
         unless bot.info.id is author.id
           self.receive new TopicMessage author, body, id
+
+    bot.on "LockMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        bot.private[room] = true
+
+    bot.on "UnlockMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        bot.private[room] = false
 
     bot.Me (err, data) ->
       bot.info = data.user
@@ -99,6 +125,7 @@ class CampfireStreaming extends EventEmitter
     @account       = options.account
     @host          = @account + ".campfirenow.com"
     @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    @private       = {}
 
   Rooms: (callback) ->
     @get "/rooms", callback
@@ -256,10 +283,11 @@ class CampfireStreaming extends EventEmitter
             else
               logger.error "Campfire error: #{response.statusCode}"
 
-        try
-          callback null, JSON.parse(data)
-        catch error
-          callback null, data or { }
+        if callback
+          try
+            callback null, JSON.parse(data)
+          catch error
+            callback null, data or { }
 
       response.on "error", (err) ->
         logger.error "Campfire response error: #{err}"
