@@ -96,7 +96,7 @@ module.exports = (robot) ->
     else
       'en'
     
-    msg.http("https://translate.google.com/translate_a/t")
+    robot.http("https://translate.google.com/translate_a/t")
       .query({
         client: 't'
         hl: 'en'
@@ -109,7 +109,6 @@ module.exports = (robot) ->
         uptl: "en"
         text: term
       })
-      .header('User-Agent', 'Mozilla/5.0')
       .get() (err, res, body) ->
         data   = body
         if data.length > 4 and data[0] == '['
@@ -121,4 +120,3 @@ module.exports = (robot) ->
               msg.send "#{term} is #{language} for #{parsed}"
             else
               msg.send "The #{language} #{term} translates as #{parsed} in #{languages[target]}"
-

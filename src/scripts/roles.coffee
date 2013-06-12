@@ -11,7 +11,6 @@
 #   hubot holman is not an ego surfer
 
 module.exports = (robot) ->
-
   getAmbiguousUserText = (users) ->
     "Be more specific, I know #{users.length} people named like that: #{(user.name for user in users).join(", ")}"
 
@@ -82,4 +81,3 @@ module.exports = (robot) ->
         msg.send getAmbiguousUserText users
       else
         msg.send "I don't know anything about #{name}."
-

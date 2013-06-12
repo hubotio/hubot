@@ -5,7 +5,6 @@
 #   hubot map me <query> - Returns a map view of the area returned by `query`.
 
 module.exports = (robot) ->
-
   robot.respond /(?:(satellite|terrain|hybrid)[- ])?map me (.+)/i, (msg) ->
     mapType  = msg.match[1] or "roadmap"
     location = msg.match[2]
@@ -23,4 +22,3 @@ module.exports = (robot) ->
 
     msg.send mapUrl
     msg.send url
-
