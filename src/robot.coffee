@@ -27,7 +27,6 @@ class Robot
     @brain = new Brain @
     @events = new EventEmitter
 
-    @adapter = null
     Adapter.load @, args.adapterPath, args.adapter
 
     @scripts = new Scripts @
