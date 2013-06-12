@@ -1,5 +1,6 @@
 v2.5.3
 ======
+
 * Fix race condition in brain loading
 * Fixup translate scripts for spaces in languages
 
