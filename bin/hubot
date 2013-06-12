@@ -20,7 +20,7 @@ Switches = [
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
 
-Options =
+options =
   adapter:     process.env.HUBOT_ADAPTER or "shell"
   alias:       process.env.HUBOT_ALIAS   or false
   create:      process.env.HUBOT_CREATE  or false
@@ -33,14 +33,14 @@ parser = new OptParse.OptionParser(Switches)
 parser.banner = "Usage hubot [options]"
 
 parser.on "adapter", (opt, value) ->
-  Options.adapter = value
+  options.adapter = value
 
 parser.on "create", (opt, value) ->
-  Options.path = value
-  Options.create = true
+  options.path = value
+  options.create = true
 
 parser.on "disable-httpd", (opt) ->
-  Options.enableHttpd = false
+  options.enableHttpd = false
 
 parser.on "help", (opt, value) ->
   console.log parser.toString()
@@ -48,16 +48,16 @@ parser.on "help", (opt, value) ->
 
 parser.on "alias", (opt, value) ->
   value or= '/'
-  Options.alias = value
+  options.alias = value
 
 parser.on "name", (opt, value) ->
-  Options.name = value
+  options.name = value
 
 parser.on "require", (opt, value) ->
-  Options.scripts.push(value)
+  options.scripts.push(value)
 
 parser.on "version", (opt, value) ->
-  Options.version = true
+  options.version = true
 
 parser.parse process.argv
 
@@ -65,20 +65,20 @@ unless process.platform is "win32"
   process.on 'SIGTERM', ->
     process.exit 0
 
-if Options.create
-  creator = new Creator(Options.path)
+if options.create
+  creator = new Creator(options.path)
   creator.run()
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
+  robot = Hubot.loadBot adapterPath, options.adapter, options.enableHttpd, options.name
 
-  if Options.version
+  if options.version
     console.log robot.version
     process.exit 0
 
-  robot.alias = Options.alias
+  robot.alias = options.alias
 
   loadScripts = ->
     scriptsPath = Path.resolve ".", "scripts"
@@ -112,7 +112,7 @@ else
               process.exit(1)
             robot.loadExternalScripts scripts
 
-    for path in Options.scripts
+    for path in options.scripts
       if path[0] == '/'
         scriptsPath = path
       else
