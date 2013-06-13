@@ -24,12 +24,12 @@
   },
 
   "dependencies": {
-    "hubot":         ">= 2.5.1",
+    "hubot":         ">= 2.5.3",
     "hubot-scripts": ">= 2.4.2"
   },
 
   "engines": {
-    "node": ">= 0.8.x",
-    "npm":  ">= 1.1.x"
+    "node": ">= 0.10.x",
+    "npm":  ">= 1.2.x"
   }
 }
