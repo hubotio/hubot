@@ -4,12 +4,10 @@ User = require './user'
 
 class Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot. Extend this.
-  #
-  # Returns a new Brain with no external storage.
   constructor: ->
     @data =
-      users:    { }
-      _private: { }
+      users: {}
+      _private: {}
 
     @on 'connected', =>
       @resetSaveInterval 5
@@ -76,7 +74,7 @@ class Brain extends EventEmitter
   #
   # Caveats: Deeply nested structures don't merge well.
   mergeData: (data) ->
-    for k of (data or { })
+    for k of (data or {})
       @data[k] = data[k]
     @emit 'loaded', @data
 

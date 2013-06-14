@@ -17,8 +17,6 @@ class Robot
   # dispatch them to matching listeners.
   #
   # args - An Object of arguments for creating a robot.
-  #
-  # Returns nothing.
   constructor: (args) ->
     @logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 

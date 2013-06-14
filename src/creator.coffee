@@ -60,18 +60,18 @@ class Creator
     @copyDefaultScripts("#{@path}/scripts")
 
     files = [
-      "Procfile",
-      "package.json",
-      "README.md",
-      ".gitignore",
-      "hubot-scripts.json",
+      "Procfile"
+      "package.json"
+      "README.md"
+      ".gitignore"
+      "hubot-scripts.json"
       "external-scripts.json"
     ]
 
     @copy "#{@templateDir}/#{file}", "#{@path}/#{file}" for file in files
 
     bins = [
-      "bin/hubot",
+      "bin/hubot"
       "bin/hubot.cmd"
     ]
 
