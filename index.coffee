@@ -20,6 +20,3 @@ module.exports = {
   TopicMessage
   CatchAllMessage
 }
-
-module.exports.loadBot = (args) ->
-  new Robot args

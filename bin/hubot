@@ -4,7 +4,7 @@
 # -*- mode:coffee -*-
 
 Creator  = require '../src/creator'
-Hubot    = require '..'
+Robot    = require '../src/robot'
 
 Fs       = require 'fs'
 OptParse = require 'optparse'
@@ -74,7 +74,7 @@ else
     alias: options.alias
     httpd: options.enableHttpd
 
-  robot = Hubot.loadBot args
+  robot = new Robot args
 
   if options.version
     console.log robot.version
