@@ -9,8 +9,8 @@ Brain = require './brain'
 Scripts = require './scripts'
 Adapter = require './adapter'
 Response  = require './response'
-{Listener,TextListener} = require './listener'
-{EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
+Listener = require './listener'
+{TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -43,7 +43,8 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    @listeners.push new TextListener(@, regex, callback)
+    matcher = -> true
+    @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin
@@ -78,7 +79,11 @@ class Robot
         modifiers
       )
 
-    @listeners.push new TextListener(@, newRegex, callback)
+    matcher = (msg) ->
+      if msg instanceof TextMessage
+        msg.match newRegex
+
+    @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
@@ -86,11 +91,9 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof EnterMessage),
-      callback
-    )
+    matcher = (msg) ->
+      msg instanceof EnterMessage
+    @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
@@ -98,11 +101,9 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof LeaveMessage),
-      callback
-    )
+    matcher = (msg) ->
+      msg instanceof LeaveMessage
+    @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that triggers when anyone changes the topic.
   #
@@ -110,23 +111,9 @@ class Robot
   #
   # Returns nothing.
   topic: (callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof TopicMessage),
-      callback
-    )
-
-  # Public: Adds a Listener that triggers when no other text matchers match.
-  #
-  # callback - A Function that is called with a Response object.
-  #
-  # Returns nothing.
-  catchAll: (callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof CatchAllMessage),
-      ((msg) -> msg.message = msg.message.message; callback msg)
-    )
+    matcher = (msg) ->
+      msg instanceof TopicMessage
+    @listeners.push new Listener(@, matcher, callback)
 
   # Public: Passes the given message to any interested Listeners.
   #
@@ -143,8 +130,6 @@ class Robot
       catch error
         @logger.error "Unable to call the listener: #{error}\n#{error.stack}"
         false
-    if message not instanceof CatchAllMessage and results.indexOf(true) is -1
-      @receive new CatchAllMessage(message)
 
   # Setup the Express server's defaults.
   #
