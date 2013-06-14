@@ -22,7 +22,7 @@ class Listener
   call: (message) ->
     if match = @matcher message
       response = new @robot.Response(@robot, message, match)
-      @callback response
+      @callback.call response, response
       true
     else
       false
