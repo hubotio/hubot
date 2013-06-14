@@ -26,6 +26,61 @@ class Scripts
       ]
 
       @load path for path in scriptPaths
+      @parseHubotScripts Path.resolve('.', 'hubot-scripts.json')
+      @parseExternalScripts Path.resolve('.', 'external-scripts.json')
+
+  # Public: Parse hubot-scripts.json and load specified scripts.
+  #
+  # path - A String path to the hubot-scripts.json file.
+  #
+  # Returns nothing.
+  parseHubotScripts: (path) ->
+    return unless Fs.existsSync path
+
+    Fs.readFile path, (err, data) =>
+      if err?
+        @robot.logger.error "Unable to read hubot-scripts.json:\n" +
+          "#{err.stack}"
+        process.exit 1
+
+      try
+        return if data.length is 0
+
+        scripts = JSON.parse(data)
+        scriptsPath = Path.resolve(
+          'node_modules',
+          'hubot-scripts',
+          'src',
+          'scripts'
+        )
+        @loadHubotScripts scriptsPath, scripts
+      catch err
+        @robot.logger.error "Unable to parse hubot-scripts JSON:\n" +
+          "#{err.stack}"
+        process.exit 1
+
+  # Public: Parse external-scripts.json and load specified packages.
+  #
+  # path - A String path to the external-scripts.json file.
+  #
+  # Returns nothing.
+  parseExternalScripts: (path) ->
+    return unless Fs.existsSync path
+
+    Fs.readFile path, (err, data) =>
+      if err?
+        @robot.logger.error "Unable to read external-scripts.json:\n" +
+          "#{err.stack}"
+        process.exit 1
+
+      try
+        return if data.length is 0
+        scripts = JSON.parse(data)
+        @loadExternalScripts scripts
+      catch err
+        @robot.logger.error "Unable to parse external-scripts JSON:\n" +
+          "#{err.stack}"
+        process.exit 1
 
   # Public: Loads every script in the given path.
   #
