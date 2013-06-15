@@ -1,10 +1,10 @@
 {
-  "name":        "hosted-hubot",
-  "version":     "2.5.3",
+  "name": "hosted-hubot",
+  "version": "3.0.0-beta1",
 
-  "author":      "GitHub Inc.",
+  "author": "GitHub Inc.",
 
-  "keywords":    [
+  "keywords": [
     "github",
     "hubot",
     "campfire",
@@ -24,12 +24,12 @@
   },
 
   "dependencies": {
-    "hubot":         ">= 2.5.3",
+    "hubot": ">= 2.5.3",
     "hubot-scripts": ">= 2.4.2"
   },
 
   "engines": {
     "node": ">= 0.10.x",
-    "npm":  ">= 1.2.x"
+    "npm": ">= 1.2.x"
   }
 }
