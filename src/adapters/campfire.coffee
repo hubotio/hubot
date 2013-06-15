@@ -9,7 +9,7 @@ class Campfire extends Adapter
   send: (envelope, strings...) ->
     if strings.length > 0
       string = strings.shift()
-      if typeof(string) == 'function'
+      if typeof string is 'function'
         string()
         @send envelope, strings...
       else
@@ -44,8 +44,8 @@ class Campfire extends Adapter
     self = @
 
     options =
-      token:   process.env.HUBOT_CAMPFIRE_TOKEN
-      rooms:   process.env.HUBOT_CAMPFIRE_ROOMS
+      token: process.env.HUBOT_CAMPFIRE_TOKEN
+      rooms: process.env.HUBOT_CAMPFIRE_ROOMS
       account: process.env.HUBOT_CAMPFIRE_ACCOUNT
 
     bot = new CampfireStreaming(options, @robot)
@@ -118,14 +118,14 @@ class CampfireStreaming extends EventEmitter
     unless options.token? and options.rooms? and options.account?
       @robot.logger.error \
         "Not enough parameters provided. I need a token, rooms and account"
-      process.exit(1)
+      process.exit 1
 
-    @token         = options.token
-    @rooms         = options.rooms.split(",")
-    @account       = options.account
-    @host          = @account + ".campfirenow.com"
+    @token = options.token
+    @rooms = options.rooms.split(",")
+    @account = options.account
+    @host = @account + ".campfirenow.com"
     @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
-    @private       = {}
+    @private = {}
 
   Rooms: (callback) ->
     @get "/rooms", callback
@@ -155,7 +155,6 @@ class CampfireStreaming extends EventEmitter
     unlock: (callback) ->
       self.post "/room/#{id}/unlock", "", callback
 
-    # say things to this channel on behalf of the token user
     paste: (text, callback) ->
       @message text, "PasteMessage", callback
 
@@ -174,19 +173,18 @@ class CampfireStreaming extends EventEmitter
       body = { message: { "body":text, "type":type } }
       self.post "/room/#{id}/speak", body, callback
 
-    # listen for activity in channels
     listen: ->
       headers =
-        "Host"          : "streaming.campfirenow.com"
-        "Authorization" : self.authorization
+        "Host": "streaming.campfirenow.com"
+        "Authorization": self.authorization
 
       options =
-        "agent"  : false
-        "host"   : "streaming.campfirenow.com"
-        "port"   : 443
-        "path"   : "/room/#{id}/live.json"
-        "method" : "GET"
-        "headers": headers
+        agent: false
+        host: "streaming.campfirenow.com"
+        port: 443
+        path: "/room/#{id}/live.json"
+        method: "GET"
+        headers: headers
 
       request = HTTPS.request options, (response) ->
         response.setEncoding("utf8")
@@ -250,17 +248,17 @@ class CampfireStreaming extends EventEmitter
     logger = @robot.logger
 
     headers =
-      "Authorization" : @authorization
-      "Host"          : @host
-      "Content-Type"  : "application/json"
+      "Authorization": @authorization
+      "Host": @host
+      "Content-Type": "application/json"
 
     options =
-      "agent"  : false
-      "host"   : @host
-      "port"   : 443
-      "path"   : path
-      "method" : method
-      "headers": headers
+      agent: false
+      host: @host
+      port: 443
+      path: path
+      method: method
+      headers: headers
 
     if method is "POST" || method is "PUT"
       if typeof(body) isnt "string"
@@ -279,7 +277,8 @@ class CampfireStreaming extends EventEmitter
         if response.statusCode >= 400
           switch response.statusCode
             when 401
-              throw new Error "Invalid access token provided"
+              logger.error "Invalid access token provided"
+              process.exit 1
             else
               logger.error "Campfire error: #{response.statusCode}"
 
@@ -287,11 +286,11 @@ class CampfireStreaming extends EventEmitter
           try
             callback null, JSON.parse(data)
           catch error
-            callback null, data or { }
+            callback null, data or {}
 
       response.on "error", (err) ->
         logger.error "Campfire response error: #{err}"
-        callback err, { }
+        callback err, {}
 
     if method is "POST" || method is "PUT"
       request.end(body, 'binary')
