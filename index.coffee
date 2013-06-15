@@ -1,10 +1,10 @@
-User                                                                 = require './src/user'
-Brain                                                                = require './src/brain'
-Robot                                                                = require './src/robot'
-Adapter                                                              = require './src/adapter'
-Response                                                             = require './src/response'
-{Listener,TextListener}                                              = require './src/listener'
-{TextMessage,EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './src/message'
+User = require './src/user'
+Brain = require './src/brain'
+Robot = require './src/robot'
+Adapter = require './src/adapter'
+Response = require './src/response'
+Listener = require './src/listener'
+Message = require './src/message'
 
 module.exports = {
   User
@@ -13,10 +13,5 @@ module.exports = {
   Adapter
   Response
   Listener
-  TextListener
-  TextMessage
-  EnterMessage
-  LeaveMessage
-  TopicMessage
-  CatchAllMessage
+  Message
 }

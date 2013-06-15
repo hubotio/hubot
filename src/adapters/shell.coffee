@@ -1,8 +1,8 @@
 Readline = require 'readline'
 
-Robot         = require '../robot'
-Adapter       = require '../adapter'
-{TextMessage} = require '../message'
+Robot = require '../robot'
+Adapter = require '../adapter'
+Message = require '../message'
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
@@ -35,7 +35,7 @@ class Shell extends Adapter
       @repl.close() if buffer.toLowerCase() is 'exit'
       @repl.prompt()
       user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
-      @receive new TextMessage user, buffer, 'messageId'
+      @receive new Message 'text', user: user, text: buffer, id: 'id'
 
     self.emit 'connected'
 

@@ -10,7 +10,7 @@ Scripts = require './scripts'
 Adapter = require './adapter'
 Response  = require './response'
 Listener = require './listener'
-{TextMessage,EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
+Message = require './message'
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -80,9 +80,7 @@ class Robot
       )
 
     matcher = (msg) ->
-      if msg instanceof TextMessage
-        msg.match newRegex
-
+      if msg.type is 'text' then msg.match newRegex
     @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
@@ -91,8 +89,7 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    matcher = (msg) ->
-      msg instanceof EnterMessage
+    matcher = (msg) -> msg.type is 'enter'
     @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
@@ -101,8 +98,7 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    matcher = (msg) ->
-      msg instanceof LeaveMessage
+    matcher = (msg) -> msg.type is 'leave'
     @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that triggers when anyone changes the topic.
@@ -111,8 +107,7 @@ class Robot
   #
   # Returns nothing.
   topic: (callback) ->
-    matcher = (msg) ->
-      msg instanceof TopicMessage
+    matcher = (msg) -> msg.type is 'topic'
     @listeners.push new Listener(@, matcher, callback)
 
   # Public: Passes the given message to any interested Listeners.
