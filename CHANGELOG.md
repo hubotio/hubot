@@ -1,3 +1,34 @@
+v3.0.0-beta1
+============
+
+* Fix brain to begin saving after receiving the 'connected' event - tombell
+* Removed deprecated functions from Adapter and Response - tombell
+* Fixup default scripts - tombell
+* Extracted script loading into a new class - tombell
+* Improved startup process of a robot - tombell
+* Reduced Listeners into a single class - tombell
+* Reduced Messages into a single class - tombell
+* Updated context of listener calls to be the response object - tombell
+
+Updating Adapters
+-----------------
+Due to the changes with `Messages` adapters will need to be updated. Messages
+are now an instance of `Message` but with a `type` property.
+
+Old:
+
+    message = new TextMessage author, body, id
+
+New:
+
+    message = new Message 'text', user: author, text: body, id: id
+
+* TextMessage is now type 'text'
+* EnterMessage is now type 'enter'
+* LeaveMessage is now type 'leave'
+* TopicMessage is now type 'topic'
+* CatchAllMessage has been deprecated and removed
+
 v2.5.3
 ======
 
