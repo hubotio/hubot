@@ -43,7 +43,8 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    matcher = -> true
+    matcher = (msg) ->
+      if msg.type is 'text' then msg.match regex
     @listeners.push new Listener(@, matcher, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
