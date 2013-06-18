@@ -256,7 +256,7 @@ class Robot
   #       .post(data) (err, res, body) ->
   #         console.log body
   #
-  # Returns a ScopedClient instance.
+  # Returns a ScopedClient.
   http: (url) ->
     HttpClient.create(url)
       .header('User-Agent', "Hubot/#{@version}")

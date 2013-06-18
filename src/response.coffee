@@ -71,4 +71,15 @@ class Response
   finish: ->
     @message.finish()
 
+  # Public: Creates a scoped http client with chainable methods for
+  # modifying the request. This doesn't actually make a request though.
+  # Once your request is assembled, you can call `get()`/`post()`/etc to
+  # send the request.
+  #
+  # url - String URL to access.
+  #
+  # Returns a ScopedClient.
+  http: (url) ->
+    @robot.http(url)
+
 module.exports = Response
