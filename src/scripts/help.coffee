@@ -58,6 +58,9 @@ module.exports = (robot) ->
       cmds = cmds.filter (cmd) ->
         cmd.match new RegExp(msg.match[1], 'i')
 
+      if cmds.length == 0
+        msg.send "No available commands match #{msg.match[1]}"
+        return
     emit = cmds.join "\n"
 
     unless robot.name.toLowerCase() is 'hubot'
@@ -65,7 +68,7 @@ module.exports = (robot) ->
 
     msg.send emit
 
-  robot.router.get '/hubot/help', (req, res) ->
+  robot.router.get "/#{robot.name}/help", (req, res) ->
     cmds = robot.helpCommands().map (cmd) ->
       cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 

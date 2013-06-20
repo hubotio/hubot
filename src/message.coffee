@@ -54,6 +54,7 @@ class CatchAllMessage extends Message
   #
   # message - The original message.
   constructor: (@message) ->
+    super @message.user
 
 module.exports = {
   Message

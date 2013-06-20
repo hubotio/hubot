@@ -48,6 +48,15 @@ class Response
   play: (strings...) ->
     @robot.adapter.play @envelope, strings...
 
+  # Public: Posts a message in an unlogged room
+  #
+  # strings - One or more strings to be posted. The order of these strings
+  #           should be kept intact.
+  #
+  # Returns nothing
+  locked: (strings...) ->
+    @robot.adapter.locked @envelope, strings...
+
   # Public: Picks a random item from the given items.
   #
   # items - An Array of items.
@@ -69,6 +78,7 @@ class Response
   #
   # Returns a ScopedClient instance.
   http: (url) ->
+    @robot.logger.warning '@http() is going to be deprecated in 3.0.0 use @robot.http()'
     @robot.http(url)
 
 module.exports = Response

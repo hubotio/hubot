@@ -1,3 +1,48 @@
+v2.5.5
+======
+
+* Fix an issue with the version being out of sync with the version specified in
+  the generated package.json
+
+v2.5.4
+======
+
+* Add the ability for hubot to lock/unlock rooms in Campfire
+
+v2.5.3
+======
+* Fix race condition in brain loading
+* Fixup translate scripts for spaces in languages
+
+v2.5.2
+======
+
+* Parse help from external script package scripts - aaronj1335
+* Remove bad script header from pugme - maxgoedjen
+* Fix exception when sending multiple messages - aroben
+* Add 'maths' to math me regex - jacksonhull
+
+v2.5.1
+======
+
+* Add the auth script as a default script - tombell
+* Updated @userForId uses for deprecation - kch
+* Fix hubot respond bug - shiwano
+* Default user-agent for HTTP requests - aroben
+* Fix copying executable files - brntbeer
+* Fix issues with mkdirDashP - Ronald Evers
+
+v2.5.0
+======
+
+* Add the ability to listen for topic changes - wingrunr21 and tombell
+* Register default HTTP routes with robot.name - kashyapp
+* Swap connect out for express - creatorr
+* Brain has become more key-value store-like - creatorr
+* Google Image script improvements - kyleslattery
+* Help script fixes - Abraham
+* Add deprecation messages to functions - tombell
+
 v2.4.8
 ======
 
@@ -7,32 +52,23 @@ v2.3.4
 ======
 
 * Add 'examples' and 'urls' to list of known documentation sections
-
 * Improve mustache results - marsam in #341
 
 v2.3.3
 ======
 
 * Fix help parsing of javascript iles - ferlores in #322
-
 * Roles will correctly semicolon-delimit the list of roles if one (or more) roles contain a comma. - futuraprime in #327
-
 * Updated translations of supported languages as of 20120801 - sopel in #328
-
 * Escape brackets in html view of help - tombell, technicalpickles
-
 * More coffee-like translate.coffee - elmoeleven in #336
-
 * Fixed reference to when npm was included w/ node - technicalpickles in #347
-
 * Backwards-compatible help parsing, and tracking all documentation instead of just commands - technicalpickles
 
 v2.3.2
 ======
 * New route `/hubot/help` to display command help - tombell
-
 * Role script fix - ferlores
-
 * Store connect server - tombell
 
 v2.3.0
@@ -44,40 +80,31 @@ use the following code snippet for requiring classes from hubot.
 
     {Adapter,Robot} = require 'hubot'
 
-* Update the formatting of documentation comments at the top of
-  scripts - technicalpickles
-
+* Update the formatting of documentation comments at the top of scripts - technicalpickles
 * Update the parsing of the documentation comments - tombell
 
 v2.2.0
 ======
 * Fixed keep alive ping, requires `HEROKU_URL` - tombell and jimeh
-
 * Updated dependency versions - tombell and jimeh
 
 v2.1.4
 ======
-* Hubot now keeps himself alive due to Heroku's web processes shutting down
-  when idle - tombell
-
+* Hubot now keeps himself alive due to Heroku's web processes shutting down when idle - tombell
 * Hubot's image search is now defaulted to safe search - kylev
-
-* Hubot now emits a 'connected' event when he connects to the chosen
-  adapter - sbryant
+* Hubot now emits a 'connected' event when he connects to the chosen adapter - sbryant
 
 * Fix the roles.coffee not to respond to empty names - christierney
 
 v2.1.3 - The Heat Stroke Release
 ================================
-* Hubot now has a web interface and supports connect middleware, examples in
-  httpd.coffee - atmos / tombell
+* Hubot now has a web interface and supports connect middleware, examples in httpd.coffee - atmos / tombell
 
     module.exports = (robot) ->
       robot.router.get "/hubot/version", (req, res) ->
         res.end robot.version
 
-* Add a catchAll callback that handles responses that match nothing
-  else - titanous / ejfinnerman
+* Add a catchAll callback that handles responses that match nothing else - titanous / ejfinnerman
 
     module.exports = (robot) ->
       robot.catchAll (msg) ->
@@ -96,8 +123,7 @@ v2.1.1
 
 v2.1.0
 ======
-* Introduce Response.finish() to indicate that a message should not be
-  passed on to any other listeners
+* Introduce Response.finish() to indicate that a message should not be passed on to any other listeners
 * Scripts are evaluated in the following order
   * `./scripts` is loaded alphabetically
   * The contents of `./hubot-scripts.json` is loaded in order
@@ -229,4 +255,3 @@ v1.0.3
 * Ensure people are running node 0.4.x - Corey Donohoe <atmos@atmos.org>
 * Doc fixups - Aitor García Rey <aitor@linkingpaths.com>
 * Twilio adapter support - Tom Bell <tomb@tombell.org.uk>
-

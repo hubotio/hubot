@@ -14,7 +14,7 @@ class Shell extends Adapter
 
   reply: (envelope, strings...) ->
     strings = strings.map (s) -> "#{envelope.user.name}: #{s}"
-    @send envelope.user, strings...
+    @send envelope, strings...
 
   run: ->
     self = @
@@ -34,7 +34,7 @@ class Shell extends Adapter
     @repl.on 'line', (buffer) =>
       @repl.close() if buffer.toLowerCase() is 'exit'
       @repl.prompt()
-      user = @userForId '1', name: 'Shell', room: 'Shell'
+      user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
       @receive new TextMessage user, buffer, 'messageId'
 
     self.emit 'connected'
