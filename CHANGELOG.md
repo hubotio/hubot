@@ -1,3 +1,14 @@
+v2.5.5
+======
+
+* Fix an issue with the version being out of sync with the version specified in
+  the generated package.json
+
+v2.5.4
+======
+
+* Add the ability for hubot to lock/unlock rooms in Campfire
+
 v2.5.3
 ======
 * Fix race condition in brain loading
