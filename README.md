@@ -13,7 +13,7 @@ Make sure you have [node.js][nodejs] and [npm][npmjs] installed.
 You can install the `hubot` npm package globally and you will be able to run
 `hubot --create <PATH>` if you've setup npm packages to be in your `PATH`.
 
-    $ npm install -g hubot coffee-script
+    $ npm install -g hubot@2.5.4 coffee-script
     $ hubot --create <path>
 
 Then the directory at `<path>` contains a deployable hubot that you're able to
