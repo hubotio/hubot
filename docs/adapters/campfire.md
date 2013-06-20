@@ -1,18 +1,20 @@
 # Adapter: Campfire
 
-[Campfire](http://campfirenow.com/) is a web based chat application built by [37signals](http://37signals.com). The Campfire
-adapter is one of the original adapters in Hubot.
+[Campfire](http://campfirenow.com/) is a web based chat application built by
+[37signals](http://37signals.com). The Campfire adapter is one of the original
+adapters in Hubot.
 
 ## Getting Started
 
-You will need a Campfire account to to start, which you can [sign up for
-free](https://signup.37signals.com/campfire/free/signup/new).
+You will need a Campfire account to to start, which you can
+[sign up for free](https://signup.37signals.com/campfire/free/signup/new).
 
-Next, you will need to create a user on your Campfire account for your Hubot, then 
-give it access so it can join to your rooms. You will need to create a room if you haven't
-already.
+Next, you will need to create a user on your Campfire account for your Hubot,
+then give it access so it can join to your rooms. You will need to create a room
+if you haven't already.
 
-Hubot defaults to using its [shell](shell.md), so to use Campfire instead, you can run hubot with `-a campfire`:
+Hubot defaults to using its [shell](shell.md), so to use Campfire instead, you
+can run hubot with `-a campfire`:
 
     % bin/hubot -a campfire
 

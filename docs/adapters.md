@@ -11,7 +11,9 @@ Hubot includes two official adapters:
 
 ## Third Party Adapters
 
-Third party adapters are available as `npm` packages. Here is a list of known adapters, but please [submit an issue](https://github.com/github/hubot/issues) to have yours added to the list:
+Third party adapters are available as `npm` packages. Here is a list of known
+adapters, but please [submit an issue](https://github.com/github/hubot/issues)
+to have yours added to the list:
 
 * [Flowdock](https://github.com/flowdock/hubot-flowdock)
 * [HipChat](https://github.com/hipchat/hubot-hipchat)
@@ -32,5 +34,5 @@ Third party adapters are available as `npm` packages. Here is a list of known ad
 ## Writing Your Own adapter
 
 The best place to start is `src/adapter.coffee`, and inheriting from `Adapter`.
-There is not as much documentation as could exist (yet!), so it is worth reviewing
-existing adapters as well as how hubot internally uses an adapter.
+There is not as much documentation as could exist (yet!), so it is worth
+reviewing existing adapters as well as how hubot internally uses an adapter.

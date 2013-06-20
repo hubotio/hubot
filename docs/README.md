@@ -2,29 +2,38 @@
 
 ## Getting Started With Hubot
 
-You will need [node.js](nodejs.org/) and [npm](https://npmjs.org/). Joyent has an [excellent blog post on how to those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit detailing that here for right now.
+You will need [node.js](nodejs.org/) and [npm](https://npmjs.org/). Joyent has
+an [excellent blog post on how to those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit detailing that here for right now.
 
 Once node and npm are ready, we can install hubot and coffeescript:
 
     % npm install -g hubot coffeescript
     
-This will give us the `hubot` script, which is used for running a hubot, but more importantly to start, generating your own hubot. The name of the new bot is the last argument, and will be created in the directory of the same name. For example, to create a new bot named myhubot:
+This will give us the `hubot` script, which is used for running a hubot, but
+more importantly to start, generating your own hubot. The name of the new bot is
+the last argument, and will be created in the directory of the same name. For
+example, to create a new bot named myhubot:
 
     % hubot --create myhubot
 
-If you are using git, the generated bot includes a .gitignore, so you can initialize and add everything:
+If you are using git, the generated bot includes a .gitignore, so you can
+initialize and add everything:
 
     % cd bender
     % git init
     % git add .
     % git commit -m "Initial commit"
 
-You have have your own runnable instance of hubot! There's a `bin/hubot` command for convenience, to handle installing npm dependencies, loading scripts, and then launching your hubot.
+You have have your own runnable instance of hubot! There's a `bin/hubot`
+command for convenience, to handle installing npm dependencies, loading scripts,
+and then launching your hubot.
 
     % bin/hubot
     Hubot>
 
-This has loaded hubot using the [shell adapter](docs/adapters/shell.md), which is very useful for development. Note the `Hubot>` though. This is the name he'll `respond` to with commands. For example, to list available commands:
+This has loaded hubot using the [shell adapter](docs/adapters/shell.md), which
+is very useful for development. Note the `Hubot>` though. This is the name he'll
+`respond` to with commands. For example, to list available commands:
 
     % bin/hubot
     Hubot> hubot: help
@@ -56,12 +65,15 @@ This has loaded hubot using the [shell adapter](docs/adapters/shell.md), which i
     pug me - Receive a pug
     ship it - Display a motivation squirrel
 
-You almost definitely will want to change his name. bin/hubot takes a `--name` option towards this end:
+You almost definitely will want to change his name. bin/hubot takes a `--name`
+option towards this end:
 
     % bin/hubot --name myhubot
     myhubot> 
 
-Now your hubot will respond to `myhobot`. It's worth noting that this is case-insensitive, and that you can prefix with `@` or suffix with `:`. That means these are equivalent:
+Now your hubot will respond to `myhobot`. It's worth noting that this is
+case-insensitive, and that you can prefix with `@` or suffix with `:`. That
+means these are equivalent:
 
     MYHUBOT help
     myhubot help
