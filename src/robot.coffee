@@ -33,13 +33,8 @@ class Robot
     @listeners = []
 
     @parseVersion()
-<<<<<<< HEAD
     @setupExpress() if args.httpd
-=======
-    @setupExpress() if httpd
     @pingIntervalId = null
-    @loadAdapter adapterPath, adapter
->>>>>>> master
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
