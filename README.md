@@ -152,7 +152,7 @@ You can remove a role from the user using the following command:
     hubot Joe Bloggs doesn't have developer role
     hubot John Doe does not have ops role
 
-### Viewing a Users Roles
+### Viewing a User's Roles
 
 You can view the roles a user has or see which users have the admin role with
 the following commands:

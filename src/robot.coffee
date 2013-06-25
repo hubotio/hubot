@@ -33,7 +33,13 @@ class Robot
     @listeners = []
 
     @parseVersion()
+<<<<<<< HEAD
     @setupExpress() if args.httpd
+=======
+    @setupExpress() if httpd
+    @pingIntervalId = null
+    @loadAdapter adapterPath, adapter
+>>>>>>> master
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -150,7 +156,7 @@ class Robot
 
     if herokuUrl
       herokuUrl += '/' unless /\/$/.test herokuUrl
-      setInterval =>
+      @pingIntervalId = setInterval =>
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
       , 1200000
@@ -217,6 +223,7 @@ class Robot
   #
   # Returns nothing.
   shutdown: ->
+    clearInterval @pingIntervalId if @pingIntervalId?
     @adapter.close()
     @brain.close()
 

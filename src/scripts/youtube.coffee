@@ -17,8 +17,12 @@ module.exports = (robot) ->
       .get() (err, res, body) ->
         videos = JSON.parse(body)
         videos = videos.feed.entry
-        video  = msg.random videos
 
+        unless videos?
+          msg.send "No video results for \"#{query}\""
+          return
+
+        video  = msg.random videos
         video.link.forEach (link) ->
           if link.rel is "alternate" and link.type is "text/html"
             msg.send link.href
