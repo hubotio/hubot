@@ -7,7 +7,7 @@ an [excellent blog post on how to those installed](http://joyent.com/blog/instal
 
 Once node and npm are ready, we can install hubot and coffeescript:
 
-    % npm install -g hubot coffeescript
+    % npm install -g hubot coffee-script
     
 This will give us the `hubot` script, which is used for running a hubot, but
 more importantly to start, generating your own hubot. The name of the new bot is
