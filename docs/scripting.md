@@ -215,7 +215,6 @@ module.exports = (robot) ->
 
 ## TODO
 
-* [ ] catch all
 * [ ] environment variables and configuration
 * [ ] dependencies
 * [ ] http client
