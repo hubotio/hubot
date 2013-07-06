@@ -213,6 +213,56 @@ module.exports = (robot) ->
     msg.send msg.random leaveReplies
 ```
 
+## Environment variables
+
+Hubot can access the environment he's running in, just like any other node program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `HUBOT_` prefix.
+
+```coffeescript
+answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+
+module.exports = (robot) ->
+  robot.respond /what is the answer to the ultimate question of life/, (msg)
+    msg.send "#{answer}, but what is the question?"
+```
+
+Care should be taken to make sure the script can load if it's not defined,  give the Hubot developer notes on how to define it, or default to something . It's up to the script writer to decide if that should be a fatal error (ie hubot exits), or not (make any script that relies on it to say it needs to be configured. When possible and when it makes sense to, having a script work without any other configuration is preferred.
+
+Here we can default to something:
+
+```coffeescript
+answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING or 42
+
+module.exports = (robot) ->
+  robot.respond /what is the answer to the ultimate question of life/, (msg)
+    msg.send "#{answer}, but what is the question?"
+```
+
+Here we exit if it's not defined:
+
+```coffeescript
+answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+unless answer?
+  console.log "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
+  process.exit(1)
+
+module.exports = (robot) ->
+  robot.respond /what is the answer to the ultimate question of life/, (msg)
+    msg.send "#{answer}, but what is the question?"
+```
+
+And lastly, we update the `robot.respond` to check it:
+
+```coffeescript
+answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+
+module.exports = (robot) ->
+  robot.respond /what is the answer to the ultimate question of life/, (msg)
+    unless answer?
+      msg.send "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
+      return
+    msg.send "#{answer}, but what is the question?"
+```
+
 ## TODO
 
 * [ ] environment variables and configuration
