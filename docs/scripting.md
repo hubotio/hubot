@@ -178,10 +178,43 @@ For those times that there isn't an API, there's always the possibility of scree
 * [cheerio](https://github.com/MatthewMueller/cheerio) (familiar syntax and API to jQuery)
 * [jsdom](https://github.com/tmpvar/jsdom) (JavaScript implementation of the W3C DOM)
 
+## Random
+
+A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. It's annoying to do this in javascript and coffeescript out of the box, so Hubot includes a convenience method:
+
+```coffeescript
+lulz = ['lol', 'rofl', 'lmao']
+
+msg.send msg.random lulz
+```
+
+## Topic
+
+Hubot can react to a room's topic changing, assuming that the adapter supports it.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.topic (msg) ->
+    msg.send "#{msg.message.text}? That's a Paddlin'"
+```
+
+## Entering and leaving
+
+Hubot can to user's entering and leaving, assuming that the adapter supports it.
+
+```coffeescript
+enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I see you']
+leaveReplies = ['Are you still there?', 'Target lost', 'Searching']
+
+module.exports = (robot) ->
+  robot.enter (msg) ->
+    msg.send msg.random enterReplies
+  robot.leave (msg) ->
+    msg.send msg.random leaveReplies
+```
+
 ## TODO
 
-* [ ] enter & leave
-* [ ] topic
 * [ ] catch all
 * [ ] environment variables and configuration
 * [ ] dependencies
