@@ -70,7 +70,7 @@ If Dave says "HAL: open the pod bay doors", then `msg.match[0]` is "open the pod
 ```coffeescript
   robot.respond /open the (.*) doors/i, (msg) ->
     doorType = msg.match[1]
-    if doorType == "pod bay"
+    if doorType is "pod bay"
       msg.reply "I'm afraid I can't let you do that."
     else
       msg.reply "Opening #{doorType} doors"
