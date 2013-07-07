@@ -275,7 +275,7 @@ Hubot uses [npm](https://github.com/isaacs/npm) to manage it's dependencies. To 
   },
 ```
 
-If you are using scripts form hubot-scripts, take note of the `Dependencies` documentation in the script to add. They are listed in a format that can be copy & pasted into `package.json`, just make sure to add commas as necessary to make it valid JSON.
+If you are using scripts from hubot-scripts, take note of the `Dependencies` documentation in the script to add. They are listed in a format that can be copy & pasted into `package.json`, just make sure to add commas as necessary to make it valid JSON.
 
 # Timeouts and Intervals
 
