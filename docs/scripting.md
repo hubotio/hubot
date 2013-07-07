@@ -277,8 +277,55 @@ Hubot uses [npm](https://github.com/isaacs/npm) to manage it's dependencies. To 
 
 If you are using scripts form hubot-scripts, take note of the `Dependencies` documentation in the script to add. They are listed in a format that can be copy & pasted into `package.json`, just make sure to add commas as necessary to make it valid JSON.
 
+# Timeouts and Intervals
+
+Hubot can run code later using JavaScript's builtin [setTimeout](http://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg). It takes a callback method, and the amount of time to wait before calling it:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.respond /you are a little slow/, (msg)
+    setTimeout () ->
+      msg.send "Who you calling 'slow'?"
+    , 60 * 1000
+```
+
+Additionally, Hubot can run code on an interval using [setInterval](http://nodejs.org/api/timers.html#timers_setinterval_callback_delay_arg). It takes a callback method, and the amount of time to wait between calls:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.respond /annoy me/, (msg)
+    msg.send "Hey, want to hear the most annoying sound in the world?"
+    setInterval () ->
+      msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+    , 1000
+```
+
+Both `setTimeout` and `setInterval` return the ID of the timeout or interval it created. This can be used to to `clearTimeout` and `clearInterval`.
+
+```coffeescript
+module.exports = (robot) ->
+  annoyIntervalId = null
+
+  robot.respond /annoy me/, (msg)
+    if annoyIntervalId
+      msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+      return
+
+    msg.send "Hey, want to hear the most annoying sound in the world?"
+    annoyIntervalId = setInterval () ->
+      msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+    , 1000
+
+  robot.respond /unannoy me/, (msg)
+    if annoyIntervalId
+      msg.send "GUYS, GUYS, GUYS!"
+      clearInterval(annoyIntervalId)
+      annoyIntervalId = null
+    else
+      msg.send "Not annoying you right now, am I?"
+```
+
 ## TODO
 
-* [ ] interval and timeout
 * [ ] http end points
 * [ ] events
