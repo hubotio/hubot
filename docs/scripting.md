@@ -405,6 +405,10 @@ When documenting commands, here are some best practices:
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all relevant 
 
+
 ## TODO
 
-* [ ] sharing code
+* [ ] using hubot-scripts
+* [ ] using npm packgaged scripts
+* [ ] packaging as npm packages
+* [ ] persistence
