@@ -325,7 +325,21 @@ module.exports = (robot) ->
       msg.send "Not annoying you right now, am I?"
 ```
 
+## Handling HTTP requests
+
+Hubot comes with support for the [express](http://expressjs.com/guide.html) web framework to server up HTTP requests. The most common use of this is for providing HTTP end points for services with webhooks to push to, and have those show up in chat.
+
+
+```
+module.exports = (robot) ->
+  robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
+    room = req.params.room
+    data = JSON.parse req.body.payload
+    secret = data.secret
+
+    robot.messageRoom "I have a secret: #{secret}"
+```
+
 ## TODO
 
-* [ ] http end points
 * [ ] events
