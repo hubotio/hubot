@@ -342,8 +342,34 @@ module.exports = (robot) ->
     robot.messageRoom "I have a secret: #{secret}"
 ```
 
+## Events
+
+Hubot can also respond to events which can be used to pass data between scripts. This is done by encapsulating node.js's [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with `robot.emit` and `robot.on`.
+
+One use case for this would be to have one script for handling interactions with a service, and then emitting events as they come up. For example, we could have a script that receives data from a GitHub post-commit hook, make that emit commits as they come in, and then have another script act on those commits.
+
+```coffeescript
+# src/scripts/github-commits.coffee
+module.exports = (robot) ->
+  robot.router.post "/hubot/gh-commits", (req, res) ->
+    robot.emit "commit", {
+        user    : {}, #hubot user object
+        repo    : 'https://github.com/github/hubot',
+        hash  : '2e1951c089bd865839328592ff673d2f08153643'
+    }
+```
+
+```coffeescript
+# src/scripts/heroku.coffee
+module.exports = (robot) ->
+  robot.on "commit", (commit) ->
+    robot.send commit.user, "Will now deploy #{commit.hash} from #{commit.repo}!"
+    #deploy code goes here
+```
+
+If you provide an event, it's very recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
+
 ## TODO
 
-* [ ] events
 * [ ] documenting scripts
 * [ ] sharing code
