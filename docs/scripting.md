@@ -369,7 +369,42 @@ module.exports = (robot) ->
 
 If you provide an event, it's very recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
 
+## Documenting Scripts
+
+Hubot scripts can be documented with a comments at the top of their file, for example:
+
+```coffeescript
+# Description
+#   <description of the scripts functionality>
+#
+# Dependencies:
+#   "<module name>": "<module version>"
+#
+# Configuration:
+#   LIST_OF_ENV_VARS_TO_SET
+#
+# Commands:
+#   hubot <trigger> - <what the respond trigger does>
+#   <trigger> - <what the hear trigger does>
+#
+# Notes:
+#   <optional notes required for the script>
+#
+# Author:
+#   <github username of the original script author>
+```
+
+The most important and user facing of these is `Commands`. At load time, Hubot looks at the `Commands` section of each scripts, and build a list of all commands. The included `help.coffee` lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
+
+When documenting commands, here are some best practices:
+
+* Stay on one line. Help commands get sorted, so would insert the second line at an unexpected location, where it probably won't make sense.
+* Refer to the Hubot as hubot, even if your hubot is named something else. It will automatically be replaced with the correct name. This makes it easier to share scripts without having to update docs.
+* For `robot.respond` documentation, always prefix with `hubot`. Hubot will automatically replace this with your robot's name, or the robot's alias if it has one
+* Check out how man pages document themselves. In particular, brackets indicate optional parts, '...' for any number of arguments, etc.
+
+The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all relevant 
+
 ## TODO
 
-* [ ] documenting scripts
 * [ ] sharing code
