@@ -343,3 +343,5 @@ module.exports = (robot) ->
 ## TODO
 
 * [ ] events
+* [ ] documenting scripts
+* [ ] sharing code
