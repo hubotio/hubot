@@ -263,11 +263,22 @@ module.exports = (robot) ->
     msg.send "#{answer}, but what is the question?"
 ```
 
+## Dependencies
+
+Hubot uses [npm](https://github.com/isaacs/npm) to manage it's dependencies. To additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+
+```json
+  "dependencies": {
+    "hubot":         "2.5.5",
+    "hubot-scripts": "2.4.6",
+    "lolimadeupthispackage": "1.2.3"
+  },
+```
+
+If you are using scripts form hubot-scripts, take note of the `Dependencies` documentation in the script to add. They are listed in a format that can be copy & pasted into `package.json`, just make sure to add commas as necessary to make it valid JSON.
+
 ## TODO
 
-* [ ] environment variables and configuration
-* [ ] dependencies
-* [ ] http client
 * [ ] interval and timeout
 * [ ] http end points
 * [ ] events
