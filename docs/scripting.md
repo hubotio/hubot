@@ -403,7 +403,7 @@ When documenting commands, here are some best practices:
 * For `robot.respond` documentation, always prefix with `hubot`. Hubot will automatically replace this with your robot's name, or the robot's alias if it has one
 * Check out how man pages document themselves. In particular, brackets indicate optional parts, '...' for any number of arguments, etc.
 
-The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all relevant 
+The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
 
 ## TODO
