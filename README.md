@@ -1,6 +1,6 @@
 # Hubot
 
-This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
+This is a version of GitHub's Campfire bot, hubot. He's pretty awesome.
 
 **You'll probably never have to hack on this repo directly.**
 
