@@ -227,9 +227,8 @@ class Robot
   # Returns a String of the version number.
   parseVersion: ->
     package_path = Path.join __dirname, '..', 'package.json'
-    data = Fs.readFileSync package_path, 'utf8'
-    content = JSON.parse data
-    @version = content.version
+    pkg = require package_path
+    @version = pkg.version
 
   # Public: Creates a scoped http client with chainable methods for
   # modifying the request. This doesn't actually make a request though.
