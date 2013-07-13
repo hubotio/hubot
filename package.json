@@ -15,21 +15,20 @@
 
   "licenses": [{
     "type": "MIT",
-    "url": "http://github.com/github/hubot/raw/master/LICENSE.md"
+    "url": "https://github.com/github/hubot/raw/master/LICENSE.md"
   }],
 
   "repository" : {
     "type": "git",
-    "url":  "https://github.com/github/hubot.git"
+    "url": "https://github.com/github/hubot.git"
   },
 
   "dependencies": {
-    "coffee-script": "1.6.3",
-
-    "optparse": "1.0.4",
+    "coffee-script":      "1.6.3",
+    "optparse":           "1.0.4",
     "scoped-http-client": "0.9.8",
-    "log": "1.3.1",
-    "express": "3.1.1"
+    "log":                "1.4.0",
+    "express":            "3.3.4"
   },
 
   "engines": {

@@ -1,6 +1,7 @@
 {
   "name": "hosted-hubot",
   "version": "3.0.0-beta2",
+
   "author": "GitHub Inc.",
 
   "keywords": [
@@ -14,17 +15,17 @@
 
   "licenses": [{
     "type": "MIT",
-    "url": "http://github.com/github/hubot/raw/master/LICENSE"
+    "url": "https://github.com/github/hubot/raw/master/LICENSE"
   }],
 
   "repository" : {
     "type": "git",
-    "url":  "https://github.com/github/hubot.git"
+    "url": "https://github.com/github/hubot.git"
   },
 
   "dependencies": {
-    "hubot": "3.0.0-beta2",
-    "hubot-scripts": "3.0.0-beta1"
+    "hubot":         ">= 3.0.0 < 4.0.0",
+    "hubot-scripts": ">= 3.0.0 < 4.0.0"
   },
 
   "engines": {

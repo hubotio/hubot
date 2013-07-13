@@ -29,6 +29,15 @@ New:
 * TopicMessage is now type 'topic'
 * CatchAllMessage has been deprecated and removed
 
+v2.6.0
+======
+
+* Clear ping timeout when shutting down - tombell
+* Don't load roles.coffee if using auth.coffee - tombell
+* Removed tweet.coffee from default hubot-scripts - tombell
+* Removed Response#http deprecation warning - tombell
+* Updated version range for hubot and hubot-scripts - tombell
+
 v2.5.5
 ======
 
