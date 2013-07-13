@@ -1,10 +1,10 @@
 {
-  "name":        "hosted-hubot",
-  "version":     "2.5.5",
+  "name": "hosted-hubot",
+  "version": "2.6.0",
 
-  "author":      "GitHub Inc.",
+  "author": "GitHub Inc.",
 
-  "keywords":    [
+  "keywords": [
     "github",
     "hubot",
     "campfire",
@@ -15,17 +15,17 @@
 
   "licenses": [{
     "type": "MIT",
-    "url": "http://github.com/github/hubot/raw/master/LICENSE"
+    "url": "https://github.com/github/hubot/raw/master/LICENSE"
   }],
 
   "repository" : {
     "type": "git",
-    "url":  "https://github.com/github/hubot.git"
+    "url": "https://github.com/github/hubot.git"
   },
 
   "dependencies": {
-    "hubot":         "2.5.5",
-    "hubot-scripts": "2.4.6"
+    "hubot":         ">= 2.6.0 < 3.0.0",
+    "hubot-scripts": ">= 2.5.0 < 3.0.0"
   },
 
   "engines": {
