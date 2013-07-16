@@ -1,11 +1,11 @@
-Url           = require 'url'
-Path          = require 'path'
+Url = require 'url'
+Path = require 'path'
 
-Robot         = require '../src/robot'
-Adapter       = require '../src/adapter'
-User          = require '../src/user'
-Response      = require '../src/response'
-{TextMessage} = require '../src/message'
+Robot = require '../src/robot'
+Adapter = require '../src/adapter'
+User = require '../src/user'
+Response = require '../src/response'
+TextMessage = require '../src/message'
 
 # A programmer's best friend.
 # http://timenerdworld.files.wordpress.com/2010/12/joint-venture-s1e3_1.jpg
