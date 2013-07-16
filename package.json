@@ -31,6 +31,10 @@
     "express":            "3.3.4"
   },
 
+  "devDependencies": {
+    "nodeunit":           "0.8.1"
+  },
+
   "engines": {
     "node": ">= 0.10.x",
     "npm": ">= 1.2.x"
