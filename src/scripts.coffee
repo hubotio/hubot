@@ -75,8 +75,8 @@ class Scripts
 
       try
         return if data.length is 0
-        scripts = JSON.parse(data)
-        @loadExternalScripts scripts
+        packages = JSON.parse(data)
+        @loadExternalScripts packages
       catch err
         @robot.logger.error "Unable to parse external-scripts JSON:\n" +
           "#{err.stack}"
