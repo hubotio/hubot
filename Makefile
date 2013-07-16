@@ -3,7 +3,7 @@ NPM_EXECUTABLE_HOME := node_modules/.bin
 PATH := ${NPM_EXECUTABLE_HOME}:${PATH}
 
 test: deps
-	@echo ERROR: the tests are currently being reworked to be simpler
+	@./node_modules/nodeunit/bin/nodeunit --reporter minimal test
 
 package:
 	@bin/hubot -c hubot
