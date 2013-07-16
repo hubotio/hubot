@@ -26,4 +26,11 @@ suite =
     test.ok user.name is user.id
     test.done()
 
+  'can create a user with multiple key value pairs': (test) ->
+    user = new User 1, name: 'Hubot', email: 'hubot@github.com'
+    test.ok user
+    test.ok user.name is 'Hubot'
+    test.ok user.email is 'hubot@github.com'
+    test.done()
+
 module.exports = suite
