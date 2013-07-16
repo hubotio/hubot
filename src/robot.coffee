@@ -175,7 +175,7 @@ class Robot
     if ext is '.coffee' or ext is '.js'
       try
         require(full) @
-        @parseHelp "#{path}/#{file}"
+        @parseHelp Path.join(path, file)
       catch error
         @logger.error "Unable to load #{full}: #{error.stack}"
         process.exit(1)
@@ -214,7 +214,6 @@ class Robot
     for pkg in packages
       try
         require(pkg) @
-        @parseHelp require.resolve(pkg)
       catch error
         @logger.error "Error loading scripts from npm package - #{error}"
         process.exit(1)

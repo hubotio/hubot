@@ -73,7 +73,9 @@ module.exports = (robot) ->
   path = Path.resolve __dirname, 'scripts'
   Fs.exists path, (exists) ->
     if exists
-      robot.loadFile path, file for file in Fs.readdirSync(path)
+      for file in Fs.readdirSync(path)
+        robot.loadFile path, file
+        robot.parseHelp Path.join(path, file)
 ```
 
 After you've built your `npm` package you can publish it to [npmjs][npmjs].
@@ -171,13 +173,13 @@ module.exports = (robot) ->
   robot.respond /have a beer/i, (msg) ->
     # Get number of beers had (coerced to a number).
     beersHad = robot.brain.get('totalBeers') * 1 or 0
-    
+
     if beersHad > 4
       msg.respond "I'm too drunk.."
-    
+
     else
       msg.respond 'Sure!'
-      
+
       robot.brain.set 'totalBeers', beersHad+1
       # Or robot.brain.set totalBeers: beersHad+1
 ```
