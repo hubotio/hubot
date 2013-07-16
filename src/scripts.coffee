@@ -131,7 +131,6 @@ class Scripts
     for pkg in packages
       try
         require(pkg) @robot
-        @parseHelp require.resolve(pkg)
       catch err
         @robot.logger.error "Error loading scripts from npm package:\n" +
           "#{err.stack}"
