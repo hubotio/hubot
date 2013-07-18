@@ -3,20 +3,19 @@
 ## Getting Started With Hubot
 
 You will need [node.js](nodejs.org/) and [npm](https://npmjs.org/). Joyent has
-an [excellent blog post on how to those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit detailing that here for right now.
+an [excellent blog post on how to those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
 
 Once node and npm are ready, we can install hubot and coffeescript:
 
     % npm install -g hubot coffee-script
     
-This will give us the `hubot` script, which is used for running a hubot, but
-more importantly to start, generating your own hubot. The name of the new bot is
+This will give us the `hubot` command, which is used for running a hubot, and more importantly now, generating your own hubot. The name of the new bot is
 the last argument, and will be created in the directory of the same name. For
 example, to create a new bot named myhubot:
 
     % hubot --create myhubot
 
-If you are using git, the generated bot includes a .gitignore, so you can
+If you are using git, the generated directory includes a .gitignore, so you can
 initialize and add everything:
 
     % cd bender
@@ -24,15 +23,15 @@ initialize and add everything:
     % git add .
     % git commit -m "Initial commit"
 
-You have have your own runnable instance of hubot! There's a `bin/hubot`
+You have have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
 and then launching your hubot.
 
     % bin/hubot
     Hubot>
 
-This has loaded hubot using the [shell adapter](docs/adapters/shell.md), which
-is very useful for development. Note the `Hubot>` though. This is the name he'll
+This starts hubot using the [shell adapter](docs/adapters/shell.md), which
+is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
 `respond` to with commands. For example, to list available commands:
 
     % bin/hubot
@@ -65,22 +64,37 @@ is very useful for development. Note the `Hubot>` though. This is the name he'll
     pug me - Receive a pug
     ship it - Display a motivation squirrel
 
-You almost definitely will want to change his name. bin/hubot takes a `--name`
-option towards this end:
+You almost definitely will want to change his name to give him some more character. bin/hubot takes a `--name`:
 
     % bin/hubot --name myhubot
     myhubot> 
 
-Now your hubot will respond to `myhobot`. It's worth noting that this is
-case-insensitive, and that you can prefix with `@` or suffix with `:`. That
-means these are equivalent:
+Your hubot will now respond as `myhobot`. This is
+case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are equivalent:
 
     MYHUBOT help
     myhubot help
     @myhubot help
     myhubot: help
 
-### Deploying
+## Scripting
+
+Hubot's power comes through scripting. Read [docs/scripting.md](scripting.md) for the deal on bending hubot to your will with code.
+
+There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use load scripts from hubot-scripts:
+
+* Make sure hubot-scripts is listed as a dependency in `package.json` (it should by default)
+* Update `hubot-scripts.json` to include the script you want in the list. Make sure the file is still valid JSON!
+* Review the script to see if there's dependencies or configuration to add 
+
+In addition to hubot-scripts, scripts can be loaded as npm packages:
+
+1. Add the packages as dependencies into your `package.json`
+2. `npm install` to make sure those packages are installed
+
+**Please note that external scripts may become the default for hubot scripts in future releases.**
+
+## Deploying
 
 You can deploy hubot to Heroku, which is the officially supported method.
 Additionally you are able to deploy hubot to a UNIX-like system or Windows.

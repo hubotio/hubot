@@ -405,7 +405,6 @@ When documenting commands, here are some best practices:
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
-
 ## TODO
 
 * [ ] using hubot-scripts
