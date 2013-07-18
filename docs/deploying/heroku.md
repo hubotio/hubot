@@ -10,20 +10,20 @@ in:
 
     % heroku login
     Enter your Heroku credentials.
-    Email: josh@technicalpickles.com
+    Email: youremail@example.com
     Password:
     Could not find an existing public key.
     Would you like to generate one? [Yn]
     Generating new SSH public key.
-    Uploading ssh public key /Users/technicalpickles/.ssh/id_rsa.pub
+    Uploading ssh public key /Users/you/.ssh/id_rsa.pub
 
 Inside your new hubot instance, you'll need to create a Heroku application for
 it. Make sure it is a git repository first and commit anything you've done so
 far, then you can create the app:
 
     % heroku create
-    Creating stark-fog-398... done, stack is cedar
-    http://stark-fog-398.herokuapp.com/ | git@heroku.com:stark-fog-398.git
+    Creating rosemary-britches-123... done, stack is cedar
+    http://rosemary-britches-123.herokuapp.com/ | git@heroku.com:rosemary-britches-123.git
     Git remote heroku added
 
 Before you deploy the application, you'll need to configure some environment
@@ -44,10 +44,10 @@ That means your hubot would leave after an hour, assuming you don't hit the web
 interface, and only rejoin when it does get traffic. This is extremely
 inconvenient, since most interaction is done through chat. To mitigate this,
 there's a special environment variable to make hubot regularly ping itself. If
-the app is deployed to http://stark-fog-398.herokuapp.com/, then you'd
+the app is deployed to http://rosemary-britches-123.herokuapp.com/, then you'd
 configure:
 
-    % heroku config:add HUBOT_HEROKU_URL=http://stark-fog-398.herokuapp.com
+    % heroku config:add HUBOT_HEROKU_URL=http://rosemary-britches-123.herokuapp.com
 
 At this point, you are ready to deploy and start chatting. With Heroku, that's a
 git push away:
