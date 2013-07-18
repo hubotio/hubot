@@ -31,9 +31,9 @@ variables for hubot to use. The variables you need depends on which
 [adapter](../adapters.md) and scripts you are using. For Campfire, with no other
 scripts, you'd need to at least:
 
-  % heroku config:add HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
-  % heroku config:add HUBOT_CAMPFIRE_TOKEN=yourcampfiretoken
-  % heroku config:add HUBOT_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
+    % heroku config:add HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
+    % heroku config:add HUBOT_CAMPFIRE_TOKEN=yourcampfiretoken
+    % heroku config:add HUBOT_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
 
 In addition is one special environment variable for Heroku. The default hubot
 [Procfile](https://devcenter.heroku.com/articles/procfile) marks the process as
