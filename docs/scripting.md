@@ -406,6 +406,45 @@ When documenting commands, here are some best practices:
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
 
+
+## Persistence
+
+Hubot has an in-memory key-value store exposed as `robot.brain` that can be
+used to store and retrieve data by scripts.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.respond /have a beer/i, (msg) ->
+    # Get number of beers had (coerced to a number).
+    beersHad = robot.brain.get('totalBeers') * 1 or 0
+
+    if beersHad > 4
+      msg.respond "I'm too drunk.."
+
+    else
+      msg.respond 'Sure!'
+
+      robot.brain.set 'totalBeers', beersHad+1
+      # Or robot.brain.set totalBeers: beersHad+1
+```
+
+If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
+
+```coffeescript
+module.exports = (robot) ->
+
+  robot.respond /who is @?([\w .\-]+)\?*$/i, (msg) ->
+    name = msg.match[1].trim()
+
+    users = robot.brain.usersForFuzzyName(name)
+    if users.length is 1
+      user = users[0]
+      # Do something interesting here..
+
+      msg.send "#{name} is user - #{user}"
+```
+
+
 ## Creating A Script Package
 
 Creating a script package for hubot is very simple. Start by creating a normal
@@ -429,8 +468,4 @@ module.exports = (robot) ->
         robot.parseHelp Path.join(path, file)
 ```
 
-After you've built your `npm` package you can publish it to [npmjs][npmjs].
-
-## TODO
-
-* [ ] persistence
+After you've built your `npm` package you can publish it to [npmjs][http://npmjs.org].
