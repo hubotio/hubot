@@ -1,12 +1,9 @@
 # Deploying Hubot to Heroku
 
-Once you have [gotten started](../deploying.md) with Hubot, it's time to deploy
-so you can use it outside of your local machine.
+If you've been following along with [Getting Started](../README.md), it's time to deploy so you can use it beyond just your local machine.
 [Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubot.
 
-To start, install the [Heroku Toolbelt](https://toolbelt.heroku.com/) if you
-haven't already. Follow their `Getting Started' instructions, including logging
-in:
+To start, install the [Heroku Toolbelt](https://toolbelt.heroku.com/). Follow their 'Getting Started' instructions, including logging in the first time:
 
     % heroku login
     Enter your Heroku credentials.
@@ -17,9 +14,13 @@ in:
     Generating new SSH public key.
     Uploading ssh public key /Users/you/.ssh/id_rsa.pub
 
-Inside your new hubot instance, you'll need to create a Heroku application for
-it. Make sure it is a git repository first and commit anything you've done so
-far, then you can create the app:
+Inside your new hubot directory, make sure you've created a git repository, and that your work is committed:
+
+    % git init
+    % git add .
+    % git commit -m "Initial commit"
+
+Then create a Heroku application:
 
     % heroku create
     Creating rosemary-britches-123... done, stack is cedar
@@ -27,7 +28,7 @@ far, then you can create the app:
     Git remote heroku added
 
 Before you deploy the application, you'll need to configure some environment
-variables for hubot to use. The variables you need depends on which
+variables for hubot to use. Some variables you need depends on which
 [adapter](../adapters.md) and scripts you are using. For Campfire, with no other
 scripts, you'd need to at least:
 
@@ -40,10 +41,9 @@ In addition is one special environment variable for Heroku. The default hubot
 a 'web' process type, in order to support serving up http requests (more on that
 in the [scripting docs](../scripting.md). The downside of this is that dynos
 will [idle after an hour of inactivity](https://devcenter.heroku.com/articles/dynos#dyno-idling).
-That means your hubot would leave after an hour, assuming you don't hit the web
-interface, and only rejoin when it does get traffic. This is extremely
-inconvenient, since most interaction is done through chat. To mitigate this,
-there's a special environment variable to make hubot regularly ping itself. If
+That means your hubot would leave after an hour of idle web traffic, and only rejoin when it does get traffic. This is extremely
+inconvenient since most interaction is done through chat, and hubot has to be online and in the room this. To get around this this,
+there's a special environment variable to make hubot regularly ping itself over http. If
 the app is deployed to http://rosemary-britches-123.herokuapp.com/, then you'd
 configure:
 
