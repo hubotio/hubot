@@ -6,7 +6,7 @@ adapters in Hubot.
 
 ## Getting Started
 
-You will need a Campfire account to to start, which you can
+You will need a Campfire account to start, which you can
 [sign up for free](https://signup.37signals.com/campfire/free/signup/new).
 
 Next, you will need to create a user on your Campfire account for your Hubot,

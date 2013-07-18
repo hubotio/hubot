@@ -5,7 +5,7 @@ difficult for the hubot team to have canonical documentation for installing and
 deploying it to every version out there. So, this is an attempt to give an
 overview of what's needed to get deploying.
 
-There's 3 primary things to deploying and running hubot:
+There are 3 primary things to deploying and running hubot:
 
   * node and npm
   * a way to get source code updated on the server
@@ -33,8 +33,7 @@ deployments.
 ## Starting, stopping, and restarting hubot
 
 Every hubot install has a `bin/hubot` script to handle starting up the hubot.
-You can just run this command from your git checkout on the server, but there's
-problems:
+You can run this command from your git checkout on the server, but there are some problems you can encounter:
 
 * you disconnect, and hubot dies
 * hubot dies, for any reason, and doesn't start again

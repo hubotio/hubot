@@ -9,9 +9,9 @@ Hubot includes two official adapters:
 * [Shell](adapters/shell.md), i.e. for use with development
 * [Campfire](adapters/campfire.md)
 
-## Third Party Adapters
+## Third-party Adapters
 
-Third party adapters are available as `npm` packages. Here is a list of known
+Third-party adapters are available as `npm` packages. Here is a list of known
 adapters, but please [submit an issue](https://github.com/github/hubot/issues)
 to have yours added to the list:
 

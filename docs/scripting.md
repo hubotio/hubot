@@ -2,7 +2,7 @@
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
 
-## Anantomy of a script
+## Anatomy of a script
 
 When you created your hubot, the generator also creates a `scripts` directory. If you peak around there, you can see some examples of scripts. For a script to be a script, it needs to:
 
@@ -36,7 +36,7 @@ module.exports = (robot) ->
 
 The `robot.hear /badgers/`'s callback is called for messages containing text like "Stop badgering the witness", or "badger me", or "what exactly is a badger anyways"? As long as the message's text matches, the callback is called.
 
-The `robot.respond /open the pod bay doors/i` callback is only called for messages that are immediately preceeded by the robot's name or alias. If the robot's name is HAL and alias is /, then this callback would be triggered for "hal open the pod bay doors", "HAL: open the pod bay doors", "@HAL open the pod bay doors", "/open the pod bay doors". It wouldn't be called for "HAL: please open the pod bay doors" (because it's `respond` is bound to the text immediately following the robot name) or "has anyone ever mentioned how lovely you are when you open pod bay doors?" (because it lacks the robot's name).
+The `robot.respond /open the pod bay doors/i` callback is only called for messages that are immediately preceded by the robot's name or alias. If the robot's name is HAL and alias is /, then this callback would be triggered for "hal open the pod bay doors", "HAL: open the pod bay doors", "@HAL open the pod bay doors", "/open the pod bay doors". It wouldn't be called for "HAL: please open the pod bay doors" (because its `respond` is bound to the text immediately following the robot name) or "has anyone ever mentioned how lovely you are when you open pod bay doors?" (because it lacks the robot's name).
 
 ## Send & reply
 
@@ -57,7 +57,7 @@ If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod 
 
 ## Capturing data
 
-So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [javascript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated in the other indexes. For example, if we update a script like:
+So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated in the other indexes. For example, if we update a script like:
 
 
 ```coffeescript
@@ -165,7 +165,7 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
 
 ### XML
 
-XML APIs are harder because there's not a bundled XML parsing library. It's beyond the scope of this documentation to go into detail, but here's a few libraries to check out:
+XML APIs are harder because there's not a bundled XML parsing library. It's beyond the scope of this documentation to go into detail, but here are a few libraries to check out:
 
 * [xml2json](https://github.com/buglabs/node-xml2json) (simplest to use, but has some limitations)
 * [jsdom](https://github.com/tmpvar/jsdom) (JavaScript implementation of the W3C DOM)
@@ -180,7 +180,7 @@ For those times that there isn't an API, there's always the possibility of scree
 
 ## Random
 
-A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. It's annoying to do this in javascript and coffeescript out of the box, so Hubot includes a convenience method:
+A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. It's annoying to do this in JavaScript and CoffeeScript out of the box, so Hubot includes a convenience method:
 
 ```coffeescript
 lulz = ['lol', 'rofl', 'lmao']
@@ -200,7 +200,7 @@ module.exports = (robot) ->
 
 ## Entering and leaving
 
-Hubot can to user's entering and leaving, assuming that the adapter supports it.
+Hubot can see users entering and leaving, assuming that the adapter supports it.
 
 ```coffeescript
 enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I see you']
@@ -225,7 +225,7 @@ module.exports = (robot) ->
     msg.send "#{answer}, but what is the question?"
 ```
 
-Care should be taken to make sure the script can load if it's not defined,  give the Hubot developer notes on how to define it, or default to something . It's up to the script writer to decide if that should be a fatal error (ie hubot exits), or not (make any script that relies on it to say it needs to be configured. When possible and when it makes sense to, having a script work without any other configuration is preferred.
+Take care to make sure the script can load if it's not defined, give the Hubot developer notes on how to define it, or default to something. It's up to the script writer to decide if that should be a fatal error (e.g. hubot exits), or not (make any script that relies on it to say it needs to be configured. When possible and when it makes sense to, having a script work without any other configuration is preferred.
 
 Here we can default to something:
 
@@ -265,7 +265,7 @@ module.exports = (robot) ->
 
 ## Dependencies
 
-Hubot uses [npm](https://github.com/isaacs/npm) to manage it's dependencies. To additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
 
 ```json
   "dependencies": {
@@ -279,7 +279,7 @@ If you are using scripts from hubot-scripts, take note of the `Dependencies` doc
 
 # Timeouts and Intervals
 
-Hubot can run code later using JavaScript's builtin [setTimeout](http://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg). It takes a callback method, and the amount of time to wait before calling it:
+Hubot can run code later using JavaScript's built-in [setTimeout](http://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg). It takes a callback method, and the amount of time to wait before calling it:
 
 ```coffeescript
 module.exports = (robot) ->
@@ -367,11 +367,11 @@ module.exports = (robot) ->
     #deploy code goes here
 ```
 
-If you provide an event, it's very recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
+If you provide an event, it's highly recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
 
 ## Documenting Scripts
 
-Hubot scripts can be documented with a comments at the top of their file, for example:
+Hubot scripts can be documented with comments at the top of their file, for example:
 
 ```coffeescript
 # Description
