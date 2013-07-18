@@ -32,7 +32,8 @@
   },
 
   "devDependencies": {
-    "nodeunit":           "0.8.1"
+    "chai": "*",
+    "mocha": "*" 
   },
 
   "engines": {
