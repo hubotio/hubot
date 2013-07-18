@@ -79,18 +79,18 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
 
 ## Scripting
 
-Hubot's power comes through scripting. Read [docs/scripting.md](scripting.md) for the deal on bending hubot to your will with code.
+Hubot's power comes through scripting. Read [docs/scripting.md](scripting.md) for the deal on bending hubot to your will using code.
 
-There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use load scripts from hubot-scripts:
+There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use scripts from it:
 
-* Make sure hubot-scripts is listed as a dependency in `package.json` (it should by default)
+* Make sure `hubot-scripts` is listed as a dependency in `package.json` (it should by default)
 * Update `hubot-scripts.json` to include the script you want in the list. Make sure the file is still valid JSON!
 * Review the script to see if there's dependencies or configuration to add 
 
-In addition to hubot-scripts, scripts can be loaded as npm packages:
+In addition, there are scripts released as npm packages. If you find one you want to use:
 
-1. Add the packages as dependencies into your `package.json`
-2. `npm install` to make sure those packages are installed
+1. Add the package to the list of `dependencies` into your `package.json`
+2. `npm install` to make sure its installed
 
 **Please note that external scripts may become the default for hubot scripts in future releases.**
 
