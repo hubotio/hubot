@@ -63,5 +63,5 @@ at the logs to try to debug:
 If you make any changes to your hubot, just commit them, and push them as
 before:
 
-  % git ci -a -m "Awesome scripts OMG"
-  % git push heroku master
+    % git ci -a -m "Awesome scripts OMG"
+    % git push heroku master
