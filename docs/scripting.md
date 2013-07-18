@@ -405,9 +405,32 @@ When documenting commands, here are some best practices:
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
+
+## Creating A Script Package
+
+Creating a script package for hubot is very simple. Start by creating a normal
+`npm` package. Make sure you add a main file for the entry point (e.g.
+`index.js` or `index.coffee`).
+
+In this entry point file you're going to have to export a function that hubot
+will use to load the scripts in your package. Below is a simple example for
+loading each script in a `./scripts` directory in your package.
+
+```coffeescript
+Fs   = require 'fs'
+Path = require 'path'
+
+module.exports = (robot) ->
+  path = Path.resolve __dirname, 'scripts'
+  Fs.exists path, (exists) ->
+    if exists
+      for file in Fs.readdirSync(path)
+        robot.loadFile path, file
+        robot.parseHelp Path.join(path, file)
+```
+
+After you've built your `npm` package you can publish it to [npmjs][npmjs].
+
 ## TODO
 
-* [ ] using hubot-scripts
-* [ ] using npm packgaged scripts
-* [ ] packaging as npm packages
 * [ ] persistence
