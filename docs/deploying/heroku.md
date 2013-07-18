@@ -3,7 +3,7 @@
 If you've been following along with [Getting Started](../README.md), it's time to deploy so you can use it beyond just your local machine.
 [Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubot.
 
-To start, install the [Heroku Toolbelt](https://toolbelt.heroku.com/). Follow their 'Getting Started' instructions, including logging in the first time:
+Install the [Heroku Toolbelt](https://toolbelt.heroku.com/) to start, then follow their 'Getting Started' instructions, including logging in the first time:
 
     % heroku login
     Enter your Heroku credentials.
