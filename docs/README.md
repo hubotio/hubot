@@ -94,6 +94,10 @@ In addition, there are scripts released as npm packages. If you find one you wan
 
 **Please note that external scripts may become the default for hubot scripts in future releases.**
 
+## Adapters
+
+Hubot uses the adapter pattern to support multiple chat-backends. Read available adapters in [docs/adapters.md](adapters.md), along with how to configure them.
+
 ## Deploying
 
 You can deploy hubot to Heroku, which is the officially supported method.
