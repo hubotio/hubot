@@ -18,7 +18,7 @@ example, to create a new bot named myhubot:
 If you are using git, the generated directory includes a .gitignore, so you can
 initialize and add everything:
 
-    % cd bender
+    % cd myhubot
     % git init
     % git add .
     % git commit -m "Initial commit"
@@ -69,7 +69,7 @@ You almost definitely will want to change his name to give him some more charact
     % bin/hubot --name myhubot
     myhubot> 
 
-Your hubot will now respond as `myhobot`. This is
+Your hubot will now respond as `myhubot`. This is
 case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are equivalent:
 
     MYHUBOT help
