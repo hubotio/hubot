@@ -4,7 +4,7 @@ Hubot out of the box doesn't do too much, but it is an extensible, scriptable ro
 
 ## Anatomy of a script
 
-When you created your hubot, the generator also creates a `scripts` directory. If you peak around there, you can see some examples of scripts. For a script to be a script, it needs to:
+When you created your hubot, the generator also created a `scripts` directory. If you peak around there, you will see some examples of scripts. For a script to be a script, it needs to:
 
 * live in a directory on the hubot script load path (`src/scripts` and `scripts` by default)
 * be a `.coffee` or `.js` file
@@ -19,11 +19,9 @@ module.exports = (robot) ->
 
 The `robot` parameter is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
 
-
 ## Hearing and responding
 
 Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
-
 
 ```coffeescript
 module.exports = (robot) ->
@@ -34,13 +32,29 @@ module.exports = (robot) ->
     # your code here
 ```
 
-The `robot.hear /badgers/`'s callback is called for messages containing text like "Stop badgering the witness", or "badger me", or "what exactly is a badger anyways"? As long as the message's text matches, the callback is called.
+The `robot.hear /badgers/` callback is called anytime a message's text matches. For example:
 
-The `robot.respond /open the pod bay doors/i` callback is only called for messages that are immediately preceded by the robot's name or alias. If the robot's name is HAL and alias is /, then this callback would be triggered for "hal open the pod bay doors", "HAL: open the pod bay doors", "@HAL open the pod bay doors", "/open the pod bay doors". It wouldn't be called for "HAL: please open the pod bay doors" (because its `respond` is bound to the text immediately following the robot name) or "has anyone ever mentioned how lovely you are when you open pod bay doors?" (because it lacks the robot's name).
+* Stop badgering the witness
+* badger me
+* what exactly is a badger anyways
+
+The `robot.respond /open the pod bay doors/i` callback is only called for messages that are immediately preceded by the robot's name or alias. If the robot's name is HAL and alias is /, then this callback would be triggered for:
+
+*  hal open the pod bay doors
+* HAL: open the pod bay doors
+* @HAL open the pod bay doors
+* /open the pod bay doors
+
+It wouldn't be called for:
+
+* HAL: please open the pod bay doors
+   *  because its `respond` is bound to the text immediately following the robot name
+*  has anyone ever mentioned how lovely you are when you open pod bay doors?
+   * because it lacks the robot's name
 
 ## Send & reply
 
-The `msg` parameter is, despite the name, an instance of [Message](../src/response.coffee). With it, you can `send` a message back to the room the `msg` came from, or `reply` to the person that sent the message. For example:
+The `msg` parameter is, despite the name, an instance of [Response](../src/response.coffee). With it, you can `send` a message back to the room the `msg` came from, or `reply` to the person that sent the message. For example:
 
 ```coffeescript
 module.exports = (robot) ->
@@ -51,14 +65,13 @@ module.exports = (robot) ->
     msg.reply "I'm afraid I can't let you do that."
 ```
 
-`robot.hear /badgers/`'s callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS". 
+The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS". 
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
 
 ## Capturing data
 
-So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated in the other indexes. For example, if we update a script like:
-
+So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `msg.match`. For example, if we update a script like:
 
 ```coffeescript
   robot.respond /open the (.*) doors/i, (msg) ->
@@ -87,7 +100,7 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
       # your code here
 ```
 
-`err` is any errors encountered on the way. You'll generally want to check for this and handle accordingly:
+`err` is an error encountered on the way, if one was encountered. You'll generally want to check for this and handle accordingly:
 
 ```coffeescript
   robot.http("https://midnight-train")
@@ -129,7 +142,6 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
 ### JSON
 
 If you are talking to APIs, the easiest way is going to be JSON because it doesn't require any extra dependencies. When making the `robot.http` call, you should usually set the  `Accept` header to give the API a clue that's what you are expecting back. Once you get the `body` back, you can parse it with `JSON.parse`:
-
 
 ```coffeescript
   robot.http("https://midnight-train")
@@ -468,4 +480,4 @@ module.exports = (robot) ->
         robot.parseHelp Path.join(path, file)
 ```
 
-After you've built your `npm` package you can publish it to [npmjs][http://npmjs.org].
+After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
