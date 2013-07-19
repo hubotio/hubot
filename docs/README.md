@@ -23,7 +23,7 @@ initialize and add everything:
     % git add .
     % git commit -m "Initial commit"
 
-You have have your own functional hubot! There's a `bin/hubot`
+You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
 and then launching your hubot.
 
