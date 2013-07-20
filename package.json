@@ -33,7 +33,9 @@
 
   "devDependencies": {
     "chai": "*",
-    "mocha": "*" 
+    "mocha": "*",
+    "sinon-chai": "*",
+    "sinon": "*"
   },
 
   "engines": {
