@@ -24,7 +24,6 @@ describe 'Response', ->
       room: 123
       user: "thisguy"
 
-
     @envelope =
       message: @message
       room: @message.room
@@ -48,7 +47,6 @@ describe 'Response', ->
       expect(@response.envelope.room).to.equal(123)
       expect(@response.envelope.user).to.equal("thisguy")
       expect(@response.envelope.message).to.equal(@message)
-
 
   describe 'send', ->
     it 'calls the adapter', ->
