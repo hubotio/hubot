@@ -43,6 +43,10 @@
     "npm": ">= 1.2.x"
   },
 
+  "scripts": {
+    "test": "script/test"
+  },
+
   "main": "./index",
 
   "bin": {
