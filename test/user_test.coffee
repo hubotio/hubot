@@ -1,36 +1,20 @@
-User = require '../src/user'
+{expect} = require 'chai'
+User = require '../src/user.coffee'
 
-suite =
+describe 'User', ->
+  describe 'new', ->
+    it 'uses id as the default name', ->
+      user = new User('hubot')
 
-  'can create a user': (test) ->
-    user = new User 1
-    test.ok user
-    test.ok user.id is 1
-    test.done()
+      expect(user.name).to.equal('hubot')
 
-  'can create a user with optional key value pairs': (test) ->
-    user = new User 1, location: 'San Francisco'
-    test.ok user
-    test.ok user.location is 'San Francisco'
-    test.done()
+    it 'sets attributes passed in', ->
+      user = new User('hubot', foo: 1, bar: 2)
 
-  'can create a user with a name': (test) ->
-    user = new User 1, name: 'Hubot'
-    test.ok user
-    test.ok user.name is 'Hubot'
-    test.done()
+      expect(user.foo).to.equal(1)
+      expect(user.bar).to.equal(2)
 
-  'can create a user without a name, defaults name to id': (test) ->
-    user = new User 1
-    test.ok user
-    test.ok user.name is user.id
-    test.done()
+    it 'uses name attribute when passed in, not id', ->
+      user = new User('hubot', name: 'tobuh')
 
-  'can create a user with multiple key value pairs': (test) ->
-    user = new User 1, name: 'Hubot', email: 'hubot@github.com'
-    test.ok user
-    test.ok user.name is 'Hubot'
-    test.ok user.email is 'hubot@github.com'
-    test.done()
-
-module.exports = suite
+      expect(user.name).to.equal('tobuh')

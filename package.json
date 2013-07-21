@@ -32,12 +32,19 @@
   },
 
   "devDependencies": {
-    "nodeunit":           "0.8.1"
+    "chai": "*",
+    "mocha": "*",
+    "sinon-chai": "*",
+    "sinon": "*"
   },
 
   "engines": {
     "node": ">= 0.10.x",
     "npm": ">= 1.2.x"
+  },
+
+  "scripts": {
+    "test": "script/test"
   },
 
   "main": "./index",
