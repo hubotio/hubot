@@ -169,7 +169,6 @@ class Scripts
   #
   # Returns an Array of sorted hubot commands with descriptions.
   helpCommands: ->
-    @logger.warning '@helpCommands() is going to be deprecated in 4.0.0, use @robot.scripts.helpCommands()'
     @commands.sort()
 
 module.exports = Scripts
