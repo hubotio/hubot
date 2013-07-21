@@ -169,6 +169,7 @@ class Scripts
   #
   # Returns an Array of sorted hubot commands with descriptions.
   helpCommands: ->
+    # TODO deprecate?
     @commands.sort()
 
 module.exports = Scripts

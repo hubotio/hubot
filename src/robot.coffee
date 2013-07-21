@@ -262,4 +262,10 @@ class Robot
     HttpClient.create(url)
       .header('User-Agent', "Hubot/#{@version}")
 
+  # Public: Get a sorted Array of hubot commands with descriptions. Dispatches to Scripts.
+  #
+  # Returns an Array of sorted hubot commands with descriptions.
+  helpCommands: ->
+    @scripts.helpCommands()
+
 module.exports = Robot
