@@ -17,7 +17,6 @@ describe "Brain", ->
   describe 'new', ->
     beforeEach ->
       @brain = new Brain
-      @brain.resetSaveInterval = sinon.spy()
 
     it 'has data for users and private', ->
       expect(@brain.data).to.have.keys('users', '_private')
@@ -26,6 +25,8 @@ describe "Brain", ->
       expect(@brain.saveInterval).to.not.exist
 
     it 'sets save interval to 5 seconds after being connected', ->
+      @brain.resetSaveInterval = sinon.spy()
+
       expect(@brain.resetSaveInterval).to.not.have.been.called
       @brain.emit('connected')
       expect(@brain.resetSaveInterval).to.have.been.calledWith(5)
