@@ -12,6 +12,9 @@ describe 'Adapter', ->
     @robot =
       receive: sinon.spy()
 
+  # this one is hard, as it requires files
+  it "can load adapter by name"
+
   describe 'Public API', ->
     beforeEach ->
       @adapter = new Adapter(@robot)
