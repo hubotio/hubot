@@ -2,10 +2,12 @@ class Message
   # Represents an incoming message from the chat.
   #
   constructor: (@type, options) ->
+    options ?= {}
     @user = options.user
-    @room = @user.room
+    @room = @user?.room
     @text = options.text
     @id = options.id
+    @done = false
 
   # Indicates that no other Listener should be called on this object
   #
