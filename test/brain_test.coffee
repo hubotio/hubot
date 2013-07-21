@@ -74,3 +74,30 @@ describe "Brain", ->
       @brain.save()
 
       expect(save).to.have.been.called
+
+  describe 'closing a connected brain', ->
+    beforeEach ->
+      @brain = new Brain
+      @brain.emit 'connected'
+      
+      @closeSpy = sinon.spy()
+      @brain.on 'close', @closeSpy
+
+      @saveSpy = sinon.spy()
+      @brain.on 'save', @saveSpy
+
+    it 'clears the interval', ->
+      @brain.close()
+
+      expect(@clock.timeouts).to.not.have.property(@brain.saveInterval)
+
+    it 'saves', ->
+      @brain.close()
+
+      expect(@saveSpy).to.have.been.called
+
+    it 'emits close', ->
+      @brain.close()
+
+      expect(@closeSpy).to.have.been.called
+
