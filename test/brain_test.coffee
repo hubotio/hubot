@@ -62,3 +62,15 @@ describe "Brain", ->
 
       @clock.tick(2)
       expect(@saveSpy).to.have.been.called
+
+  describe 'saving', ->
+    beforeEach ->
+      @brain = new Brain
+
+    it 'emits save', ->
+      save = sinon.spy()
+      @brain.on 'save', save
+
+      @brain.save()
+
+      expect(save).to.have.been.called
