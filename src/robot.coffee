@@ -269,4 +269,8 @@ class Robot
     @logger.warning '@helpCommands() is going to be deprecated in 4.0.0, use @robot.scripts.helpCommands()'
     @scripts.helpCommands()
 
+  # TODO would be nice to deprecate the object model, but not sure how that would work
+  # maybe an overridden Array that rewrites all methods to throw warning?
+  commands: "robot.commands has moved to robot.scripts.commands"
+
 module.exports = Robot
