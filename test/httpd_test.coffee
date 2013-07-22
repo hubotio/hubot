@@ -1,4 +1,4 @@
-process.env.CONNECT_STATIC = 'test/static/'
+process.env.EXPRESS_STATIC = 'test/static/'
 Tests = require './tests'
 assert = require 'assert'
 helper = Tests.helper()
