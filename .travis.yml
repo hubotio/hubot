@@ -3,7 +3,7 @@ node_js:
   - "0.11"
   - "0.10"
 branches:
-  except:
-    - master
+  only:
+    - vthree-rethink
 notifications:
   email: false
