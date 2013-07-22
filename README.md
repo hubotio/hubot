@@ -1,4 +1,4 @@
-# Hubot
+# Hubot [![Travis](https://secure.travis-ci.org/github/hubot.png)](http://travis-ci.org/github/hubot)
 
 Hubot is a chat bot, modeled after GitHub's Campfire bot, hubot. He's pretty
 cool. He's extendable with

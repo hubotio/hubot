@@ -1,12 +1,13 @@
 assert = require 'assert'
-
+Tests = require './tests'
+helper = Tests.helper()
 Brain  = require '../src/brain'
 
 saved   = false
 closing = false
 closed  = false
 
-brain = new Brain
+brain = new Brain(helper)
 
 brain.on 'save', (data) ->
   is_closing = closing
@@ -17,9 +18,10 @@ brain.on 'save', (data) ->
 brain.on 'close', ->
   closed = true
 
-brain.data.abc = 1
-brain.resetSaveInterval 0.1
-
 process.on 'exit', ->
   assert.ok saved
   assert.ok closed
+
+brain.data.abc = 1
+brain.save()
+helper.stop()
