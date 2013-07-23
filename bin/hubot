@@ -3,13 +3,12 @@
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Creator  = require '../src/creator'
-Robot    = require '../src/robot'
-Options  = require '../src/options'
+Fs = require 'fs'
+Path = require 'path'
 
-Fs       = require 'fs'
-OptParse = require 'optparse'
-Path     = require 'path'
+Creator = require '../src/creator'
+Robot = require '../src/robot'
+Options = require '../src/options'
 
 options = new Options process.argv
 

@@ -54,17 +54,19 @@ module.exports = (robot) ->
   robot.respond /help\s*(.*)?$/i, (msg) ->
     cmds = robot.scripts.helpCommands()
 
-    if msg.match[1]
+    if filter
       cmds = cmds.filter (cmd) ->
-        cmd.match new RegExp(msg.match[1], 'i')
-
+        cmd.match new RegExp(filter, 'i')
       if cmds.length == 0
-        msg.send "No available commands match #{msg.match[1]}"
+        msg.send "No available commands match #{filter}"
         return
-    emit = cmds.join "\n"
 
-    unless robot.name.toLowerCase() is 'hubot'
-      emit = emit.replace /hubot/ig, robot.name
+    prefix = robot.alias or "#{robot.name} "
+    cmds = cmds.map (cmd) ->
+      cmd = cmd.replace /^hubot /, prefix
+      cmd.replace /hubot/ig, robot.name
+
+    emit = cmds.join "\n"
 
     msg.send emit
 
