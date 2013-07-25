@@ -47,7 +47,7 @@ there's a special environment variable to make hubot regularly ping itself over 
 the app is deployed to http://rosemary-britches-123.herokuapp.com/, then you'd
 configure:
 
-    % heroku config:add HUBOT_HEROKU_URL=http://rosemary-britches-123.herokuapp.com
+    % heroku config:add HEROKU_URL=http://rosemary-britches-123.herokuapp.com
 
 At this point, you are ready to deploy and start chatting. With Heroku, that's a
 git push away:
