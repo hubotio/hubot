@@ -14,6 +14,16 @@ class Adapter extends EventEmitter
   # Returns nothing.
   send: (envelope, strings...) ->
 
+  # Public: Raw method for sending emote data back to the chat source.
+  # Defaults as an alias for send
+  #
+  # envelope - A Object with message, room and user details.
+  # strings  - One or more Strings for each message to send.
+  #
+  # Returns nothing.
+  emote: (envelope, strings...) ->
+    @send envelope, strings...
+
   # Public: Raw method for building a reply and sending it back to the chat
   # source. Extend this.
   #

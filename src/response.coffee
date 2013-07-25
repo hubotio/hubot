@@ -21,6 +21,15 @@ class Response
   send: (strings...) ->
     @robot.adapter.send @envelope, strings...
 
+  # Public: Posts an emote back to the chat source
+  #
+  # strings - One or more strings to be posted. The order of these strings
+  #           should be kept intact.
+  #
+  # Returns nothing.
+  emote: (strings...) ->
+    @robot.adapter.emote @envelope, strings...
+
   # Public: Posts a message mentioning the current user.
   #
   # strings - One or more strings to be posted. The order of these strings
