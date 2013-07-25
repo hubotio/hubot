@@ -3,7 +3,7 @@
 ## Getting Started With Hubot
 
 You will need [node.js](nodejs.org/) and [npm](https://npmjs.org/). Joyent has
-an [excellent blog post on how to those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
+an [excellent blog post on how to get those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
 
 Once node and npm are ready, we can install hubot and coffeescript:
 
