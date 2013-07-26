@@ -91,7 +91,7 @@ class Robot
       )
     else
       newRegex = new RegExp(
-        "^[@]?#{@name}[:,]?\\s*(?:#{pattern})",
+        "^[@]?#{name}[:,]?\\s*(?:#{pattern})",
         modifiers
       )
 
