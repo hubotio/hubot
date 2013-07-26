@@ -14,7 +14,7 @@ Switches = [
   [ "-c", "--create PATH",     "Create a deployable hubot" ],
   [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-h", "--help",            "Display the help information" ],
-  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
+  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias (can add multiple)" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
   [ "-r", "--require PATH",    "Alternative scripts path" ],
   [ "-v", "--version",         "Displays the version of hubot installed" ]
@@ -22,7 +22,7 @@ Switches = [
 
 Options =
   adapter:     process.env.HUBOT_ADAPTER or "shell"
-  alias:       process.env.HUBOT_ALIAS   or false
+  aliases:     process.env.HUBOT_ALIAS   or []
   create:      process.env.HUBOT_CREATE  or false
   enableHttpd: process.env.HUBOT_HTTPD   or true
   scripts:     process.env.HUBOT_SCRIPTS or []
@@ -48,7 +48,7 @@ Parser.on "help", (opt, value) ->
 
 Parser.on "alias", (opt, value) ->
   value or= '/'
-  Options.alias = value
+  Options.aliases.push value
 
 Parser.on "name", (opt, value) ->
   Options.name = value
@@ -78,7 +78,7 @@ else
     console.log robot.version
     process.exit 0
 
-  robot.alias = Options.alias
+  robot.aliases = Options.aliases
 
   loadScripts = ->
     scriptsPath = Path.resolve ".", "scripts"
