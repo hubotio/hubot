@@ -86,7 +86,7 @@ class Robot
     if @aliases.length > 0
       aliases = (a.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') for a in @aliases)
       newRegex = new RegExp(
-        "^[@]?(?:(#{aliases.join('|')})[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})"
+        "^[@]?(?:(#{aliases.join('|')})[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
         modifiers
       )
     else
