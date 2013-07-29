@@ -4,6 +4,6 @@ node_js:
   - "0.10"
 branches:
   only:
-    - vthree-rethink
+    - /^vthree-rethink/
 notifications:
   email: false
