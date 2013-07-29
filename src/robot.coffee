@@ -4,11 +4,11 @@ Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
 
-User                                        = require './user'
-Brain                                       = require './brain'
-Response                                    = require './response'
-{Listener,TextListener}                     = require './listener'
-{EnterMessage,LeaveMessage,CatchAllMessage} = require './message'
+User = require './user'
+Brain = require './brain'
+Response = require './response'
+{Listener,TextListener} = require './listener'
+{EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
