@@ -106,7 +106,7 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
   robot.http("https://midnight-train")
     .get() (err, res, body) ->
       if err
-        msg.send "Encountered an error :( #{err}
+        msg.send "Encountered an error :( #{err}"
         return
       # your code here, knowing it was successful
 ```
