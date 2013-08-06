@@ -35,6 +35,16 @@ class Robot extends EventEmitter
     @setupExpress() if args.httpd
     @pingIntervalId = null
 
+    process.on 'uncaughtException', @uncaughtExceptionHandler
+
+  # Private: Uncaught exception event listener.
+  #
+  # err - An Error object of the uncaught exception.
+  #
+  # Returns nothing.
+  uncaughtExceptionHandler: (err) =>
+    @emit 'error', err
+
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
   #
