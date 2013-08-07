@@ -12,7 +12,7 @@ Response  = require './response'
 Listener = require './listener'
 Message = require './message'
 
-class Robot
+class Robot extends EventEmitter
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
@@ -23,7 +23,6 @@ class Robot
     @name = args.name or 'Hubot'
     @alias = args.alias
     @brain = new Brain @
-    @events = new EventEmitter
 
     Adapter.load @, args.adapterPath, args.adapter
 
@@ -185,27 +184,6 @@ class Robot
   messageRoom: (room, strings...) ->
     user = { room: room }
     @adapter.send user, strings...
-
-  # Public: A wrapper around the EventEmitter API to make usage
-  # semanticly better.
-  #
-  # event    - The event name.
-  # listener - A Function that is called with the event parameter
-  #            when event happens.
-  #
-  # Returns nothing.
-  on: (event, args...) ->
-    @events.on event, args...
-
-  # Public: A wrapper around the EventEmitter API to make usage
-  # semanticly better.
-  #
-  # event   - The event name.
-  # args...  - Arguments emitted by the event
-  #
-  # Returns nothing.
-  emit: (event, args...) ->
-    @events.emit event, args...
 
   # Public: Kick off the event loop for the adapter
   #
