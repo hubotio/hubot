@@ -55,8 +55,8 @@ about redis at all.
 
 Adapters are the interface to the service you want your hubot to run on. This
 can be something like Campfire or IRC. There are a number of third party
-adapters that the community have contributed. Check the
-[hubot wiki][hubot-wiki] for the available ones.
+adapters that the community have contributed. Check
+[Hubot Adapters][hubot-adapters] for the available ones.
 
 If you would like to run a non-Campfire or shell adapter you will need to add
 the adapter package as a dependency to the `package.json` file in the
@@ -69,7 +69,7 @@ then run hubot with the adapter.
 
 Where `<adapter>` is the name of your adapter without the `hubot-` prefix.
 
-[hubot-wiki]: https://github.com/github/hubot/wiki
+[hubot-adapters]: https://github.com/github/hubot/blob/master/docs/adapters.md
 
 ## hubot-scripts
 
@@ -131,7 +131,7 @@ Please check out the [deploying hubot onto UNIX][deploy-unix] and
 
 If you are using the Campfire adapter you will need to set some environment
 variables. Refer to the documentation for other adapters and the configuraiton
-of those, links to the adapters can be found on the [hubot wiki][hubot-wiki].
+of those, links to the adapters can be found on [Hubot Adapters][hubot-adapters].
 
 Create a separate Campfire user for your bot and get their token from the web
 UI.
@@ -149,7 +149,7 @@ Add the subdomain hubot should connect to. If you web URL looks like
 
     % heroku config:add HUBOT_CAMPFIRE_ACCOUNT="mysubdomain"
 
-[hubot-wiki]: https://github.com/github/hubot/wiki
+[hubot-adapters]: https://github.com/github/hubot/blob/master/docs/adapters.md
 
 ## Restart the bot
 
