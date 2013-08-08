@@ -40,14 +40,6 @@ class Robot extends EventEmitter
     @on 'error', @invokeErrorHandlers
     process.on 'uncaughtException', @invokeErrorhandlers
 
-  # Private: Calls and passes any registered error handlers for unhandled
-  # exceptions or user emitted error events.
-  #
-  # err - An Error object.
-  #
-  # Returns nothing.
-  invokeErrorHandlers: (err) ->
-    errorHandler err for errorHandler in @errorHandlers
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -124,6 +116,24 @@ class Robot extends EventEmitter
   topic: (callback) ->
     matcher = (msg) -> msg.type is 'topic'
     @listeners.push new Listener(@, matcher, callback)
+
+  # Public: Adds an error handler when an uncaught exception or user emitted
+  # error event occurs.
+  #
+  # callback - A Function that is called with the error object.
+  #
+  # Returns nothing.
+  addErrorHandler: (callback) ->
+    @errorHandlers.push callback
+
+  # Private: Calls and passes any registered error handlers for unhandled
+  # exceptions or user emitted error events.
+  #
+  # err - An Error object.
+  #
+  # Returns nothing.
+  invokeErrorHandlers: (err) ->
+    errorHandler err for errorHandler in @errorHandlers
 
   # Public: Passes the given message to any interested Listeners.
   #
