@@ -123,7 +123,7 @@ class Robot extends EventEmitter
   # callback - A Function that is called with the error object.
   #
   # Returns nothing.
-  addErrorHandler: (callback) ->
+  error: (callback) ->
     @errorHandlers.push callback
 
   # Private: Calls and passes any registered error handlers for unhandled
