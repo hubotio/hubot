@@ -4,14 +4,15 @@ class Options
   constructor: (argv) ->
     argv or= []
 
-    @adapter= "shell"
-    @alias= false
-    @create= false
-    @enableHttpd= true
-    @scripts= []
-    @name= "Hubot"
-    @path= "."
-    @help= false
+    @adapter = 'shell'
+    @brain = false
+    @create = false
+    @enableHttpd = true
+    @help = false
+    @alias = false
+    @name = 'Hubot'
+    @scripts = []
+    @path = '.'
 
     switches = [
       [ '-a', '--adapter ADAPTER', 'Adapter name for hubot to use' ]
@@ -24,33 +25,36 @@ class Options
       [ '-v', '--version', 'Display hubot version' ]
     ]
     parser = new OptParse.OptionParser(switches)
-    parser.banner = "Usage hubot [options]"
+    parser.banner = 'Usage hubot [options]'
 
-    parser.on "adapter", (opt, value) =>
+    parser.on 'adapter', (opt, value) =>
       @adapter = value
 
-    parser.on "create", (opt, value) =>
+    parser.on 'brain', (opt, value) =>
+      @brain = value
+
+    parser.on 'create', (opt, value) =>
       @path = value if value
       @create = true
 
-    parser.on "disable-httpd", (opt) =>
+    parser.on 'disable-httpd', (opt) =>
       @enableHttpd = false
 
     # FIXME don't exit here
     parser.on "help", (opt, value) =>
       @help= parser.toString()
 
-    parser.on "alias", (opt, value) =>
+    parser.on 'alias', (opt, value) =>
       value or= '/'
       @alias = value
 
-    parser.on "name", (opt, value) =>
+    parser.on 'name', (opt, value) =>
       @name = value
 
-    parser.on "require", (opt, value) =>
+    parser.on 'require', (opt, value) =>
       @scripts.push(value)
 
-    parser.on "version", (opt, value) =>
+    parser.on 'version', (opt, value) =>
       @version = true
 
     parser.parse argv
