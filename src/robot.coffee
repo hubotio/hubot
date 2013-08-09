@@ -38,8 +38,8 @@ class Robot extends EventEmitter
     @errorHandlers = []
 
     @on 'error', @invokeErrorHandlers
-    process.on 'uncaughtException', @invokeErrorhandlers
-
+    process.on 'uncaughtException', (err) =>
+      @invokeErrorhandlers(err)
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
