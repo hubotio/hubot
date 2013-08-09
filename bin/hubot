@@ -35,4 +35,7 @@ else
     console.log robot.version
     process.exit()
 
-  robot.run()
+  robot.brain.on 'ready', ->
+    robot.run()
+
+  Brain.load robot, options.brain or 'memory'
