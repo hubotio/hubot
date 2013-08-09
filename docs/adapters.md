@@ -20,7 +20,7 @@ to have yours added to the list:
 * [IRC](https://github.com/nandub/hubot-irc)
 * [Partychat](https://github.com/iangreenleaf/hubot-partychat-hooks)
 * [Talker](https://github.com/unixcharles/hubot-talker)
-* [Twilio](https://github.com/egparedes/hubot-twilio)
+* [Twilio](https://github.com/jkarmel/hubot-twilio)
 * [Twitter](https://github.com/MathildeLemee/hubot-twitter)
 * [XMPP](https://github.com/markstory/hubot-xmpp)
 * [Gtalk](https://github.com/atmos/hubot-gtalk)
