@@ -62,7 +62,7 @@ module.exports = (robot) ->
         msg.send "No available commands match #{filter}"
         return
 
-    prefix = robot.alias or "#{robot.name} "
+    prefix = if robot.alias then "#{robot.alias} " else "#{robot.name} "
     cmds = cmds.map (cmd) ->
       cmd = cmd.replace /^hubot /, prefix
       cmd.replace /hubot/ig, robot.name
