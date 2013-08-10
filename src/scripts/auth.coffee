@@ -46,6 +46,12 @@ module.exports = (robot) ->
         for role in roles
           return true if role in user.roles
       return false
+    usersWithRole: (role) ->
+      users = []
+      for own key, user of robot.brain.data.users
+        if robot.auth.hasRole(msg.envelope.user, role)
+          users.push(user)
+      users
 
   robot.auth = new Auth
 
