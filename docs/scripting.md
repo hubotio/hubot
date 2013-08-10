@@ -2,6 +2,41 @@
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
 
+## Anatomy of scripts load
+
+There is three main sources to load scripts from: community scripts shipped in `hubot-scripts` npm package, scripts bundled with your hubot installation and scripts loaded from external npm packages.
+
+To specify, what scripts should be loaded from community scripts package - you need to place their names to `hubot-scripts.json` file.
+Something like that:
+
+```coffeescript
+["redis-brain.coffee", "shipit.coffee", "whatis.coffee"]
+```
+
+(please check [catalog][script-catalog] and [hubot-scripts repo][src-scripts] for scripts carefully crafted for you by lots of nice folks)
+
+Another way is to install additional scripts shipped via npm package (you can check some of them [here][npmjs-hubot])
+To load those scripts to your hubot installation, you'd like to place them to `external-scripts.json` file after adding required npm packages to `package.json` dependency section
+
+Here is an example of adding [hubot-botriot][hubot-botriot] npm package:
+```json
+{
+ ...
+
+  "dependencies": {
+    "hubot":         ">= 2.6.0 < 3.0.0",
+    "hubot-scripts": ">= 2.5.0 < 3.0.0",
+    "hubot-botriot": "",
+  },
+
+...
+}
+```
+
+The last but not least option is to put your own scripts under `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
+
+How to write your own script you could check below
+
 ## Anatomy of a script
 
 When you created your hubot, the generator also created a `scripts` directory. If you peak around there, you will see some examples of scripts. For a script to be a script, it needs to:
@@ -10,7 +45,7 @@ When you created your hubot, the generator also created a `scripts` directory. I
 * be a `.coffee` or `.js` file
 * export a function
 
-By export a function, we just mean: 
+By export a function, we just mean:
 
 ```coffeescript
 module.exports = (robot) ->
@@ -68,7 +103,7 @@ module.exports = (robot) ->
     msg.emote "makes a freshly baked pie"
 ```
 
-The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS". 
+The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
 
@@ -484,3 +519,9 @@ module.exports = (robot) ->
 ```
 
 After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
+
+
+[script-catalog]: http://hubot-script-catalog.herokuapp.com
+[src-scripts]: https://github.com/github/hubot-scripts/tree/master/src/scripts
+[npmjs-hubot]: https://npmjs.org/search?q=hubot
+[hubot-botriot]: https://npmjs.org/package/hubot-botriot
