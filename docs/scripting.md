@@ -2,23 +2,32 @@
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
 
-## Anatomy of scripts load
+## Anatomy of script loading
 
-There is three main sources to load scripts from: community scripts shipped in `hubot-scripts` npm package, scripts bundled with your hubot installation and scripts loaded from external npm packages.
+There are three main sources to load scripts from: 
 
-To specify, what scripts should be loaded from community scripts package - you need to place their names to `hubot-scripts.json` file.
-Something like that:
+- __community scripts__ shipped in the `hubot-scripts` npm package
+- scripts __bundled__ with your hubot installation
+- scripts loaded from external __npm packages__
+
+### Community Scripts
+
+To use community scripts, place the name of the script in the `hubot-scripts.json` file. For example:
 
 ```coffeescript
-["redis-brain.coffee", "shipit.coffee", "whatis.coffee"]
+["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
 ```
 
-(please check [catalog][script-catalog] and [hubot-scripts repo][src-scripts] for scripts carefully crafted for you by lots of nice folks)
+(Please check the [script catalog][script-catalog] and the [hubot-scripts repo][src-scripts] for scripts carefully crafted for you by lots of nice folks)
 
-Another way is to install additional scripts shipped via npm package (you can check some of them [here][npmjs-hubot])
-To load those scripts to your hubot installation, you'd like to place them to `external-scripts.json` file after adding required npm packages to `package.json` dependency section
+### NPM Packages
 
-Here is an example of adding [hubot-botriot][hubot-botriot] npm package:
+Another way is to install scripts via an npm package (you can check some of them [here][npmjs-hubot]).
+
+To load those scripts to your hubot installation, you need to place them in the `external-scripts.json` file after adding the required npm packages to the `package.json` dependency section.
+
+Here is an example of adding the [hubot-botriot][hubot-botriot] npm package:
+
 ```json
 {
  ...
@@ -33,9 +42,13 @@ Here is an example of adding [hubot-botriot][hubot-botriot] npm package:
 }
 ```
 
-The last but not least option is to put your own scripts under `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
+### Bundled Scripts
 
-How to write your own script you could check below
+Last but not least, you can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
+
+You can also use this for customizing scripts from other sources. Just copy the *.coffee file into this directory and make whatever changes you'd like.
+
+Instructions for writing your own scripts can be found below.
 
 ## Anatomy of a script
 
