@@ -2,6 +2,54 @@
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
 
+## Anatomy of script loading
+
+There are three main sources to load scripts from: 
+
+- __community scripts__ shipped in the `hubot-scripts` npm package
+- scripts __bundled__ with your hubot installation
+- scripts loaded from external __npm packages__
+
+### Community Scripts
+
+To use community scripts, place the name of the script in the `hubot-scripts.json` file. For example:
+
+```coffeescript
+["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
+```
+
+(Please check the [script catalog][script-catalog] and the [hubot-scripts repo][src-scripts] for scripts carefully crafted for you by lots of nice folks)
+
+### NPM Packages
+
+Another way is to install scripts via an npm package (you can check some of them [here][npmjs-hubot]).
+
+To load those scripts to your hubot installation, you need to place them in the `external-scripts.json` file after adding the required npm packages to the `package.json` dependency section.
+
+Here is an example of adding the [hubot-botriot][hubot-botriot] npm package:
+
+```json
+{
+ ...
+
+  "dependencies": {
+    "hubot":         ">= 2.6.0 < 3.0.0",
+    "hubot-scripts": ">= 2.5.0 < 3.0.0",
+    "hubot-botriot": "",
+  },
+
+...
+}
+```
+
+### Bundled Scripts
+
+Last but not least, you can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
+
+You can also use this for customizing scripts from other sources. Just copy the *.coffee file into this directory and make whatever changes you'd like.
+
+Instructions for writing your own scripts can be found below.
+
 ## Anatomy of a script
 
 When you created your hubot, the generator also created a `scripts` directory. If you peak around there, you will see some examples of scripts. For a script to be a script, it needs to:
@@ -10,7 +58,7 @@ When you created your hubot, the generator also created a `scripts` directory. I
 * be a `.coffee` or `.js` file
 * export a function
 
-By export a function, we just mean: 
+By export a function, we just mean:
 
 ```coffeescript
 module.exports = (robot) ->
@@ -68,7 +116,7 @@ module.exports = (robot) ->
     msg.emote "makes a freshly baked pie"
 ```
 
-The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS". 
+The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
 
@@ -484,3 +532,9 @@ module.exports = (robot) ->
 ```
 
 After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
+
+
+[script-catalog]: http://hubot-script-catalog.herokuapp.com
+[src-scripts]: https://github.com/github/hubot-scripts/tree/master/src/scripts
+[npmjs-hubot]: https://npmjs.org/search?q=hubot
+[hubot-botriot]: https://npmjs.org/package/hubot-botriot
