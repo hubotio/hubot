@@ -28,7 +28,7 @@ describe "Brain", ->
       @brain.resetSaveInterval = sinon.spy()
 
       expect(@brain.resetSaveInterval).to.not.have.been.called
-      @brain.emit('connected')
+      @brain.emit 'ready'
       expect(@brain.resetSaveInterval).to.have.been.calledWith(5)
 
   describe 'resetSaveInterval', ->
@@ -78,7 +78,7 @@ describe "Brain", ->
   describe 'closing a connected brain', ->
     beforeEach ->
       @brain = new Brain
-      @brain.emit 'connected'
+      @brain.emit 'ready'
       
       @closeSpy = sinon.spy()
       @brain.on 'close', @closeSpy
