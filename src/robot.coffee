@@ -22,10 +22,9 @@ class Robot extends EventEmitter
 
     @name = args.name or 'Hubot'
     @alias = args.alias
-    @brain = new Brain @
+    @brain = new Brain
 
     Adapter.load @, args.adapterPath, args.adapter
-
     @scripts = new Scripts @
 
     @Response = Response
@@ -212,9 +211,12 @@ class Robot extends EventEmitter
   # Public: Kick off the event loop for the adapter
   #
   # Returns nothing.
-  run: ->
-    @emit 'running'
-    @adapter.run()
+  run: (brain) ->
+    @brain.on 'ready', =>
+      @adapter.run()
+      @emit 'running'
+
+    Brain.load @, brain
 
   # Public: Gracefully shutdown the robot process
   #

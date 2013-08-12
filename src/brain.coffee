@@ -3,13 +3,25 @@
 User = require './user'
 
 class Brain extends EventEmitter
-  # Represents somewhat persistent storage for the robot. Extend this.
+
+  @load: (robot, brain) ->
+    robot.logger.debug "Loading brain #{brain}"
+
+    try
+      if brain is 'memory'
+        robot.brain.emit 'ready'
+      else
+        require("hubot-brain-#{brain}")(robot)
+    catch err
+      robot.logger.error "Cannot load brain #{brain}:\n#{err.stack}"
+      process.exit 1
+
   constructor: ->
     @data =
       users: {}
       _private: {}
 
-    @on 'connected', =>
+    @on 'ready', =>
       @resetSaveInterval 5
 
   # Public: Store key-value pair under the private namespace and extend
