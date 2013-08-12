@@ -211,9 +211,12 @@ class Robot extends EventEmitter
   # Public: Kick off the event loop for the adapter
   #
   # Returns nothing.
-  run: ->
-    @adapter.run()
-    @emit 'running'
+  run: (brain) ->
+    @brain.on 'ready', =>
+      @adapter.run()
+      @emit 'running'
+
+    Brain.load @, brain
 
   # Public: Gracefully shutdown the robot process
   #

@@ -33,9 +33,6 @@ else
 
   if options.version
     console.log robot.version
-    process.exit()
+    process.exit 0
 
-  robot.brain.on 'ready', ->
-    robot.run()
-
-  Brain.load robot, options.brain or 'memory'
+  robot.run options.brain or 'memory'
