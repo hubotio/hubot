@@ -4,7 +4,7 @@ Hubot out of the box doesn't do too much, but it is an extensible, scriptable ro
 
 ## Anatomy of script loading
 
-There are three main sources to load scripts from: 
+There are three main sources to load scripts from:
 
 - __community scripts__ shipped in the `hubot-scripts` npm package
 - scripts __bundled__ with your hubot installation
@@ -18,15 +18,15 @@ To use community scripts, place the name of the script in the `hubot-scripts.jso
 ["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
 ```
 
-(Please check the [script catalog][script-catalog] and the [hubot-scripts repo][src-scripts] for scripts carefully crafted for you by lots of nice folks)
+(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts repo](https://github.com/github/hubot-scripts/tree/master/src/scripts) for scripts carefully crafted for you by lots of nice folks)
 
 ### NPM Packages
 
-Another way is to install scripts via an npm package (you can check some of them [here][npmjs-hubot]).
+Another way is to install scripts via an npm package (you can check some of them [here](https://npmjs.org/search?q=hubot)).
 
 To load those scripts to your hubot installation, you need to place them in the `external-scripts.json` file after adding the required npm packages to the `package.json` dependency section.
 
-Here is an example of adding the [hubot-botriot][hubot-botriot] npm package:
+Here is an example of adding the [hubot-botriot](https://npmjs.org/package/hubot-botriot) npm package:
 
 ```json
 {
@@ -534,7 +534,3 @@ module.exports = (robot) ->
 After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
 
 
-[script-catalog]: http://hubot-script-catalog.herokuapp.com
-[src-scripts]: https://github.com/github/hubot-scripts/tree/master/src/scripts
-[npmjs-hubot]: https://npmjs.org/search?q=hubot
-[hubot-botriot]: https://npmjs.org/package/hubot-botriot
