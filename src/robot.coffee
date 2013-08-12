@@ -213,7 +213,7 @@ class Robot extends EventEmitter
   #
   # Returns nothing.
   run: ->
-    @emit "running"
+    @emit 'running'
     @adapter.run()
 
   # Public: Gracefully shutdown the robot process
@@ -275,6 +275,6 @@ class Robot extends EventEmitter
   # TODO would be nice to deprecate the object model, but not sure how that
   # would work maybe an overridden Array that rewrites all methods to throw
   # warning?
-  commands: "robot.commands has moved to robot.scripts.commands"
+  commands: 'robot.commands has moved to robot.scripts.commands'
 
 module.exports = Robot
