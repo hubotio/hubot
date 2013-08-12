@@ -77,7 +77,7 @@ class Robot extends EventEmitter
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
       newRegex = new RegExp(
-        "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
+        "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})",
         modifiers
       )
     else
