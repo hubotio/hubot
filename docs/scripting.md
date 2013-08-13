@@ -10,7 +10,7 @@ When you created your hubot, the generator also created a `scripts` directory. I
 * be a `.coffee` or `.js` file
 * export a function
 
-By export a function, we just mean: 
+By export a function, we just mean:
 
 ```coffeescript
 module.exports = (robot) ->
@@ -32,7 +32,7 @@ module.exports = (robot) ->
     # your code here
 ```
 
-The `robot.hear /badgers/` callback is called anytime a message's text matches. For example:
+The `robot.hear /badger/` callback is called anytime a message's text matches. For example:
 
 * Stop badgering the witness
 * badger me
@@ -68,7 +68,7 @@ module.exports = (robot) ->
     msg.emote "makes a freshly baked pie"
 ```
 
-The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS". 
+The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
 
