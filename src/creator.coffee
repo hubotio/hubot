@@ -32,6 +32,18 @@ class Creator
 
       callback(err, to) if callback?
 
+  # Rename a file.
+  #
+  # from - A String source file to rename, must exist on disk.
+  # to   - A String destination file to write to.
+  #
+  # Returns nothing.
+  rename: (from, to, callback) ->
+    Fs.rename from, to, (err, data) ->
+      console.log "Renaming #{Path.resolve(from)} -> #{Path.resolve(to)}"
+
+      callback(err, to) if callback?
+
   # Copy the default scripts hubot ships with to the scripts folder
   # This allows people to easily remove scripts hubot defaults to if
   # they want. It also provides them with a few examples and a top
@@ -60,15 +72,16 @@ class Creator
     @copyDefaultScripts("#{@path}/scripts")
 
     files = [
-      "Procfile"
-      "package.json"
-      "README.md"
-      ".gitignore"
-      "hubot-scripts.json"
+      "Procfile",
+      "package.json",
+      "README.md",
+      "gitignore",
+      "hubot-scripts.json",
       "external-scripts.json"
     ]
-
-    @copy "#{@templateDir}/#{file}", "#{@path}/#{file}" for file in files
+    for file in files
+      @copy "#{@templateDir}/#{file}", "#{@path}/#{file}", (err, to)=>
+        @rename "#{@path}/gitignore", "#{@path}/.gitignore" if to == "#{@path}/gitignore"
 
     bins = [
       "bin/hubot"
