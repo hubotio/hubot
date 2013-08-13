@@ -24,6 +24,6 @@ Syntax:
   * No trailing whitespace. Blank lines should not have any space.
   * Prefer `and` and `or` over `&&` and `||`
   * Prefer single quotes over double quotes unless interpolating strings.
-  * `MyClass.myMethod(my_arg)` not `my_method( my_arg )` or `my_method my_arg`.
+  * `MyClass.myMethod(my_arg)` not `myMethod( my_arg )` or `myMethod my_arg`.
   * `a = b` and not `a=b`.
   * Follow the conventions you see used in the source already.
