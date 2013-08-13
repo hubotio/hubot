@@ -17,6 +17,9 @@ class Campfire extends Adapter
           @robot.logger.error "Campfire error: #{err}" if err?
           @send envelope, strings...
 
+  emote: (envelope, strings...) ->
+    @send envelope, strings.map((str) -> "*#{str}*")...
+
   reply: (envelope, strings...) ->
     @send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
 

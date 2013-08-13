@@ -29,6 +29,18 @@ New:
 * TopicMessage is now type 'topic'
 * CatchAllMessage has been deprecated and removed
 
+v2.6.1
+======
+
+* Show robot.alias in help commands if defined - technicalpickles
+* Epic documentation update - technicalpickels
+* Remove tweet.coffee from generated hubot-scripts.json since it has a npm dependency - tombell
+* Don't load roles.coffee if using auth.coffee - tombell
+* Make sure to clear interval for pinging Heroku URL - tombell
+* Fix deprecation warning in youtube.coffee - timclipsham
+* Fix youtube results bug - timclipsham
+>>>>>>> master
+
 v2.6.0
 ======
 
