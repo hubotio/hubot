@@ -6,9 +6,9 @@ Hubot out of the box doesn't do too much, but it is an extensible, scriptable ro
 
 There are three main sources to load scripts from:
 
-- __community scripts__ shipped in the `hubot-scripts` npm package
-- scripts __bundled__ with your hubot installation
-- scripts loaded from external __npm packages__
+* all scripts __bundled__ with your hubot installation under `scripts/` dir
+* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
+* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
 
 ### Community Scripts
 
