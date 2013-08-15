@@ -224,7 +224,7 @@ class Robot
   # Setup the Express server's defaults.
   #
   # Returns nothing.
-  setupExpress: ()->
+  setupExpress: ->
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
@@ -252,7 +252,7 @@ class Robot
   # Setup an empty router object
   #
   # returns nothing
-  setupNullRouter: ()->
+  setupNullRouter: ->
     msg = "Some of your scipts reports: please run hubot without --disable-httpd"
     @router =
       get: ()=> @logger.warning msg
