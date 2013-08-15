@@ -48,7 +48,7 @@ class Robot
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
-    @setupExpress() if httpd
+    @setupExpress(httpd)
     @pingIntervalId = null
     @loadAdapter adapterPath, adapter
 
@@ -221,7 +221,7 @@ class Robot
   # Setup the Express server's defaults.
   #
   # Returns nothing.
-  setupExpress: ->
+  setupExpress: (httpd)->
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
@@ -234,7 +234,7 @@ class Robot
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen process.env.PORT || 8080
+    @server = app.listen process.env.PORT || 8080 if httpd
     @router = app
 
     herokuUrl = process.env.HEROKU_URL
