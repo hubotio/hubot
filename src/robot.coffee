@@ -48,7 +48,10 @@ class Robot
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
-    @setupExpress(httpd)
+    if httpd
+      @setupExpress()
+    else
+      @setupNullRouter()
     @pingIntervalId = null
     @loadAdapter adapterPath, adapter
 
@@ -221,7 +224,7 @@ class Robot
   # Setup the Express server's defaults.
   #
   # Returns nothing.
-  setupExpress: (httpdEnabled)->
+  setupExpress: ()->
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
@@ -234,7 +237,7 @@ class Robot
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen(process.env.PORT || 8080) if httpdEnabled
+    @server = app.listen(process.env.PORT || 8080)
     @router = app
 
     herokuUrl = process.env.HEROKU_URL
@@ -245,6 +248,16 @@ class Robot
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
       , 1200000
+
+  # Setup an empty router object
+  #
+  # returns nothing
+  setupNullRouter: ()->
+    msg = "Some of your scipts reports: please run hubot without --disable-httpd"
+    @router =
+      get: ()=> @logger.warning msg
+      post: ()=> @logger.warning msg
+
 
   # Load the adapter Hubot is going to use.
   #
