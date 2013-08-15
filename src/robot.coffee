@@ -253,7 +253,7 @@ class Robot
   #
   # returns nothing
   setupNullRouter: ->
-    msg = "Some of your scipts reports: please run hubot without --disable-httpd"
+    msg = "A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd."
     @router =
       get: ()=> @logger.warning msg
       post: ()=> @logger.warning msg
