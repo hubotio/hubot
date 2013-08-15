@@ -257,6 +257,8 @@ class Robot
     @router =
       get: ()=> @logger.warning msg
       post: ()=> @logger.warning msg
+      put: ()=> @logger.warning msg
+      delete: ()=> @logger.warning msg
 
 
   # Load the adapter Hubot is going to use.
