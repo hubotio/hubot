@@ -221,7 +221,7 @@ class Robot
   # Setup the Express server's defaults.
   #
   # Returns nothing.
-  setupExpress: (httpd)->
+  setupExpress: (httpdEnabled)->
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
@@ -234,7 +234,7 @@ class Robot
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen(process.env.PORT || 8080) if httpd
+    @server = app.listen(process.env.PORT || 8080) if httpdEnabled
     @router = app
 
     herokuUrl = process.env.HEROKU_URL
