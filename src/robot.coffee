@@ -48,7 +48,10 @@ class Robot
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
-    @setupExpress() if httpd
+    if httpd
+      @setupExpress()
+    else
+      @setupNullRouter()
     @pingIntervalId = null
     @loadAdapter adapterPath, adapter
 
@@ -234,7 +237,7 @@ class Robot
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen process.env.PORT || 8080
+    @server = app.listen(process.env.PORT || 8080)
     @router = app
 
     herokuUrl = process.env.HEROKU_URL
@@ -245,6 +248,18 @@ class Robot
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
       , 1200000
+
+  # Setup an empty router object
+  #
+  # returns nothing
+  setupNullRouter: ->
+    msg = "A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd."
+    @router =
+      get: ()=> @logger.warning msg
+      post: ()=> @logger.warning msg
+      put: ()=> @logger.warning msg
+      delete: ()=> @logger.warning msg
+
 
   # Load the adapter Hubot is going to use.
   #
