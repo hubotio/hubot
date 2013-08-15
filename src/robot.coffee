@@ -234,7 +234,7 @@ class Robot
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen process.env.PORT || 8080 if httpd
+    @server = app.listen(process.env.PORT || 8080) if httpd
     @router = app
 
     herokuUrl = process.env.HEROKU_URL
