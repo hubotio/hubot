@@ -1,3 +1,15 @@
+v2.6.3
+======
+
+* Fix issues with disabling the HTTP server - balbeko
+* Add usersWithRole to auth.coffee - jhubert
+
+v2.6.2
+======
+
+* Destructure TopicMessage in robot.coffee to fix a bug - tombell
+* Update math.coffee to respond to calculator - bartolsthoorn
+
 v2.6.1
 ======
 
