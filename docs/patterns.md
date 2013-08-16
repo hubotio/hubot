@@ -4,7 +4,7 @@ Shared patterns for dealing with common Hubot scenarios.
 
 ## Renaming the Hubot instance
 
-When you rename Hubot, he will no longer respond to his former name. In order to train you users on the new name, you may choose to add a deprecation notice when they try to se the old name. The pattern logic is:
+When you rename Hubot, he will no longer respond to his former name. In order to train your users on the new name, you may choose to add a deprecation notice when they try to se the old name. The pattern logic is:
 
 * listen to all messages that start with the old name
 * reply to the user letting them know about the new name
