@@ -4,7 +4,7 @@ Hubot out of the box doesn't do too much, but it is an extensible, scriptable ro
 
 ## Anatomy of a script
 
-When you created your hubot, the generator also created a `scripts` directory. If you peak around there, you will see some examples of scripts. For a script to be a script, it needs to:
+When you created your hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples of scripts. For a script to be a script, it needs to:
 
 * live in a directory on the hubot script load path (`src/scripts` and `scripts` by default)
 * be a `.coffee` or `.js` file
