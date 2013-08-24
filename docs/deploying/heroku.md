@@ -65,3 +65,7 @@ before:
 
     % git commit -am "Awesome scripts OMG"
     % git push heroku master
+    
+Some scripts needs Redis to work, Heroku offers an addon called [RedisToGo](https://addons.heroku.com/RedisToGo), which has a free nano plan. To use it:
+
+    % heroku addons:add redistogo:nano
