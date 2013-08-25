@@ -41,7 +41,7 @@ class Robot
     @name      = name
     @events    = new EventEmitter
     @brain     = new Brain @
-    @alias     = false
+    @aliases   = []
     @adapter   = null
     @Response  = Response
     @commands  = []
@@ -87,10 +87,10 @@ class Robot
     pattern = re.join('/')
     name = @name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 
-    if @alias
-      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+    if @aliases.length > 0
+      aliases = (a.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') for a in @aliases)
       newRegex = new RegExp(
-        "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
+        "^[@]?(?:(#{aliases.join('|')})[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
         modifiers
       )
     else
