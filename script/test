@@ -20,6 +20,4 @@ else
 	REPORTER=""
 fi
 
-
-
 mocha --compilers coffee:coffee-script ${REPORTER}

@@ -6,7 +6,6 @@ expect = chai.expect
 
 Adapter = require '../src/adapter.coffee'
 
-
 describe 'Adapter', ->
   beforeEach ->
     @robot =
@@ -18,6 +17,9 @@ describe 'Adapter', ->
   describe 'Public API', ->
     beforeEach ->
       @adapter = new Adapter(@robot)
+
+    it 'assigns robot', ->
+      expect(@adapter.robot).to.equal(@robot)
 
     describe 'send', ->
       it 'is a function', ->
