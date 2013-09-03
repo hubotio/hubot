@@ -13,7 +13,7 @@ Listener = require './listener'
 Message = require './message'
 
 class Robot extends EventEmitter
-  # Robots receive messages from a chat source (Campfire, irc, etc), and
+  # Public: Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
   # args - An Object of arguments for creating a robot.
@@ -128,8 +128,8 @@ class Robot extends EventEmitter
   error: (callback) ->
     @errorHandlers.push callback
 
-  # Private: Calls and passes any registered error handlers for unhandled
-  # exceptions or user emitted error events.
+  # Calls and passes any registered error handlers for unhandled exceptions or
+  # user emitted error events.
   #
   # err - An Error object.
   #
