@@ -101,3 +101,20 @@ describe "Brain", ->
 
       expect(@closeSpy).to.have.been.called
 
+  describe 'key/value interface', ->
+    describe 'get', ->
+      it 'works'
+    describe 'set', ->
+      it 'works'
+    describe 'remove', ->
+      it 'works'
+
+  describe 'user lookup', ->
+    describe 'users', ->
+      it 'works'
+    describe 'userForId', ->
+      it 'works'
+    describe 'userForName', ->
+      it 'works'
+    describe 'usersForFuzzyName', ->
+      it 'works'
