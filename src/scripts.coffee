@@ -136,7 +136,7 @@ class Scripts
           "#{err.stack}"
         process.exit 1
 
-  # Private: load help info from a loaded script.
+  # Load help info from a loaded script.
   #
   # path - A String path to the file on disk.
   #

@@ -147,7 +147,7 @@ class Brain extends EventEmitter
 
     matchedUsers
 
-# Private: Extend obj with objects passed as additional args.
+# Extend obj with objects passed as additional args.
 #
 # Returns the original object with updated changes.
 extend = (obj, sources...) ->
