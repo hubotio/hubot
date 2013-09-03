@@ -31,7 +31,10 @@ class Robot extends EventEmitter
     @listeners = []
 
     @parseVersion()
-    @setupExpress() if args.httpd
+    if args.httpd
+      @setupExpress()
+    else
+      @setupNullRouter()
     @pingIntervalId = null
 
     @errorHandlers = []
@@ -177,6 +180,21 @@ class Robot extends EventEmitter
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
       , 1200000
+
+  # Setup an empty router object
+  #
+  # returns nothing
+  setupNullRouter: ->
+    msg = "A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd."
+    @router =
+      get: =>
+        @logger.warning msg
+      post: =>
+        @logger.warning msg
+      put: =>
+        @logger.warning msg
+      delete: =>
+        @logger.warning msg
 
   # Public: A helper send function which delegates to the adapter's send
   # function.

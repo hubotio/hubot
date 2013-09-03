@@ -28,23 +28,23 @@ Then create a Heroku application:
     Git remote heroku added
 
 Before you deploy the application, you'll need to configure some environment
-variables for hubot to use. Some variables you need depends on which
+variables for hubot to use. The specific variables you'll need depends on which
 [adapter](../adapters.md) and scripts you are using. For Campfire, with no other
-scripts, you'd need to at least:
+scripts, you'd need to set the following environment variables:
 
     % heroku config:add HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
     % heroku config:add HUBOT_CAMPFIRE_TOKEN=yourcampfiretoken
     % heroku config:add HUBOT_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
 
-In addition is one special environment variable for Heroku. The default hubot
+In addition, there is one special environment variable for Heroku. The default hubot
 [Procfile](https://devcenter.heroku.com/articles/procfile) marks the process as
-a 'web' process type, in order to support serving up http requests (more on that
-in the [scripting docs](../scripting.md). The downside of this is that dynos
+a 'web' process type, in order to support serving http requests (more on that
+in the [scripting docs](../scripting.md)). The downside of this is that dynos
 will [idle after an hour of inactivity](https://devcenter.heroku.com/articles/dynos#dyno-idling).
 That means your hubot would leave after an hour of idle web traffic, and only rejoin when it does get traffic. This is extremely
-inconvenient since most interaction is done through chat, and hubot has to be online and in the room this. To get around this this,
+inconvenient since most interaction is done through chat, and hubot has to be online and in the room to respond to messages. To get around this,
 there's a special environment variable to make hubot regularly ping itself over http. If
-the app is deployed to http://rosemary-britches-123.herokuapp.com/, then you'd
+the app is deployed to http://rosemary-britches-123.herokuapp.com/, you'd
 configure:
 
     % heroku config:add HEROKU_URL=http://rosemary-britches-123.herokuapp.com
@@ -60,8 +60,12 @@ at the logs to try to debug:
 
     % heroku logs
 
-If you make any changes to your hubot, just commit them, and push them as
+If you make any changes to your hubot, just commit and push them as
 before:
 
-    % git ci -a -m "Awesome scripts OMG"
+    % git commit -am "Awesome scripts OMG"
     % git push heroku master
+    
+Some scripts needs Redis to work, Heroku offers an addon called [RedisToGo](https://addons.heroku.com/RedisToGo), which has a free nano plan. To use it:
+
+    % heroku addons:add redistogo:nano
