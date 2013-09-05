@@ -215,12 +215,16 @@ class Robot
   # Returns nothing.
   loadExternalScripts: (packages) ->
     @logger.debug "Loading external-scripts from npm packages"
-    for pkg in packages
-      try
-        require(pkg) @
-      catch error
-        @logger.error "Error loading scripts from npm package - #{error}"
-        process.exit(1)
+    try
+      if packages instanceof Array
+        for pkg in packages
+          require(pkg)(@)
+      else
+        for pkg, scripts of packages
+          require(pkg)(@, scripts)
+    catch err
+      @logger.error "Error loading scripts from npm package - #{err.stack}"
+      process.exit(1)
 
   # Setup the Express server's defaults.
   #
