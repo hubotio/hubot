@@ -128,13 +128,16 @@ class Scripts
   # Returns nothing.
   loadExternalScripts: (packages) ->
     @robot.logger.debug "Loading external-scripts from npm packages"
-    for pkg in packages
-      try
-        require(pkg) @robot
-      catch err
-        @robot.logger.error "Error loading scripts from npm package:\n" +
-          "#{err.stack}"
-        process.exit 1
+    try
+      if packages instanceof Array
+        for pkg in packages
+          require(pkg)(@robot)
+      else
+        for pkg, scripts of packages
+          require(pkg)(@robot, scripts)
+    catch err
+      @robot.logger.error "Error loading scripts from npm package - #{err.stack}"
+      process.exit(1)
 
   # Load help info from a loaded script.
   #
