@@ -3,6 +3,7 @@
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
   'shell'
+  'test'
 ]
 
 class Adapter extends EventEmitter
