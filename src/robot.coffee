@@ -16,22 +16,22 @@ class Robot extends EventEmitter
   # Public: Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
-  # args - An Object of arguments for creating a robot.
-  constructor: (args) ->
+  # options - An Object of options for creating a robot.
+  constructor: (options) ->
     @logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
-    @name = args.name or 'Hubot'
-    @alias = args.alias
+    @name = options.name or 'Hubot'
+    @alias = options.alias
     @brain = new Brain
 
-    Adapter.load @, args.adapterPath, args.adapter
+    Adapter.load @, options.adapterPath, options.adapter
     @scripts = new Scripts @
 
     @Response = Response
     @listeners = []
 
     @parseVersion()
-    if args.httpd
+    if options.httpd
       @setupExpress()
     else
       @setupNullRouter()
