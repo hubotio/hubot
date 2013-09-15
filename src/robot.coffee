@@ -405,8 +405,7 @@ class Robot
   #
   # Returns a String of the version number.
   parseVersion: ->
-    package_path = Path.join __dirname, '..', 'package.json'
-    pkg = require package_path
+    pkg = require Path.join __dirname, '..', 'package.json'
     @version = pkg.version
 
   # Public: Creates a scoped http client with chainable methods for
