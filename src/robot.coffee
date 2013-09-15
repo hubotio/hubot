@@ -243,8 +243,12 @@ class Robot
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen(process.env.PORT || 8080)
-    @router = app
+    try
+      @server = app.listen(process.env.PORT || 8080)
+      @router = app
+    catch err
+      @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
+      process.exit(1)
 
     herokuUrl = process.env.HEROKU_URL
 
