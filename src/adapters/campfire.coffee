@@ -14,7 +14,7 @@ class Campfire extends Adapter
         @send envelope, strings...
       else
         @bot.Room(envelope.room).speak string, (err, data) =>
-          @robot.logger.error "Campfire error: #{err}" if err?
+          @robot.logger.error "Campfire send error: #{err}" if err?
           @send envelope, strings...
 
   emote: (envelope, strings...) ->
@@ -25,11 +25,11 @@ class Campfire extends Adapter
 
   topic: (envelope, strings...) ->
     @bot.Room(envelope.room).topic strings.join(" / "), (err, data) =>
-      @robot.logger.error "Campfire error: #{err}" if err?
+      @robot.logger.error "Campfire topic error: #{err}" if err?
 
   play: (envelope, strings...) ->
     @bot.Room(envelope.room).sound strings.shift(), (err, data) =>
-      @robot.logger.error "Campfire error: #{err}" if err?
+      @robot.logger.error "Campfire sound error: #{err}" if err?
       @play envelope, strings...
 
   locked: (envelope, strings...) ->
@@ -224,7 +224,7 @@ class CampfireStreaming extends EventEmitter
                     data.body
                   )
                 catch error
-                  logger.error "Campfire error: #{error}\n#{error.stack}"
+                  logger.error "Campfire data error: #{error}\n#{error.stack}"
 
         response.on "end", ->
           logger.error "Streaming connection closed for room #{id}. :("
@@ -233,10 +233,10 @@ class CampfireStreaming extends EventEmitter
           , 5000
 
         response.on "error", (err) ->
-          logger.error "Campfire response error: #{err}"
+          logger.error "Campfire listen response error: #{err}"
 
       request.on "error", (err) ->
-        logger.error "Campfire request error: #{err}"
+        logger.error "Campfire listen request error: #{err}"
 
       request.end()
 
@@ -284,7 +284,8 @@ class CampfireStreaming extends EventEmitter
             when 401
               throw new Error "Invalid access token provided"
             else
-              logger.error "Campfire error: #{response.statusCode}"
+              logger.error "Campfire HTTPS status code: #{response.statusCode}"
+              logger.error "Campfire HTTPS response data: #{data}"
 
         if callback
           try
@@ -293,7 +294,7 @@ class CampfireStreaming extends EventEmitter
             callback null, data or { }
 
       response.on "error", (err) ->
-        logger.error "Campfire response error: #{err}"
+        logger.error "Campfire HTTPS response error: #{err}"
         callback err, { }
 
     if method is "POST" || method is "PUT"
