@@ -8,6 +8,7 @@ HUBOT_DOCUMENTATION_SECTIONS = [
   'commands'
   'notes'
   'author'
+  'authors'
   'examples'
   'urls'
 ]

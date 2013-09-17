@@ -169,8 +169,12 @@ class Robot extends EventEmitter
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen process.env.PORT or 8080
-    @router = app
+    try
+      @server = app.listen(process.env.PORT || 8080)
+      @router = app
+    catch err
+      @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
+      process.exit(1)
 
     herokuUrl = process.env.HEROKU_URL
 
@@ -248,8 +252,7 @@ class Robot extends EventEmitter
   #
   # Returns a String of the version number.
   parseVersion: ->
-    package_path = Path.join __dirname, '..', 'package.json'
-    pkg = require package_path
+    pkg = require Path.join __dirname, '..', 'package.json'
     @version = pkg.version
 
   # Public: Creates a scoped http client with chainable methods for
