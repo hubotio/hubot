@@ -285,6 +285,7 @@ class CampfireStreaming extends EventEmitter
               throw new Error "Invalid access token provided"
             else
               logger.error "Campfire HTTPS status code: #{response.statusCode}"
+              logger.error "Campfire HTTPS response data: #{data}"
 
         if callback
           try
