@@ -60,9 +60,9 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
     hubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
     hubot who is <user> - see what roles a user has
     hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
-    pug bomb N - get N pugs
-    pug me - Receive a pug
-    ship it - Display a motivation squirrel
+    hubot pug bomb N - get N pugs
+    hubot pug me - Receive a pug
+    hubot ship it - Display a motivation squirrel
 
 You almost definitely will want to change his name to give him some more character. bin/hubot takes a `--name`:
 
