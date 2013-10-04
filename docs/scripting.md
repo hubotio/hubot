@@ -52,7 +52,7 @@ Instructions for writing your own scripts can be found below.
 
 ## Anatomy of a script
 
-When you created your hubot, the generator also created a `scripts` directory. If you peak around there, you will see some examples of scripts. For a script to be a script, it needs to:
+When you created your hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples of scripts. For a script to be a script, it needs to:
 
 * live in a directory on the hubot script load path (`src/scripts` and `scripts` by default)
 * be a `.coffee` or `.js` file
@@ -129,7 +129,7 @@ So far, our scripts have had static responses, which while amusing, are boring f
     # your code here
 ```
 
-If Dave says "HAL: open the pod bay doors", then `msg.match[0]` is "open the pod bay doors", and `msg.match[1]` is just "pod bay" doors. Now we can start doing more dynamic things:
+If Dave says "HAL: open the pod bay doors", then `msg.match[0]` is "open the pod bay doors", and `msg.match[1]` is just "pod bay". Now we can start doing more dynamic things:
 
 ```coffeescript
   robot.respond /open the (.*) doors/i, (msg) ->
@@ -162,7 +162,7 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
       # your code here, knowing it was successful
 ```
 
-`res` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using node-scoped-http-client, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peaking at the header, for example to check for rate limiting:
+`res` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using node-scoped-http-client, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
 
 ```coffeescript
   robot.http("https://midnight-train")
