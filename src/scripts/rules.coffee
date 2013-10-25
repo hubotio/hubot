@@ -21,6 +21,7 @@ otherRules = [
 
 module.exports = (robot) ->
   robot.respond /(what are )?the (three |3 )?(rules|laws)/i, (msg) ->
+    console.log "rules.coffee"
     text = msg.message.text
     if text.match(/apple/i) or text.match(/dev/i)
       msg.send otherRules.join('\n')

@@ -17,6 +17,8 @@ class Listener
   # Returns a boolean of whether the matcher matched.
   call: (message) ->
     if match = @matcher message
+      console.log "robot.receive #{require('util').inspect message}"
+      
       response = new @robot.Response(@robot, message, match)
       @callback.call response, response
       true

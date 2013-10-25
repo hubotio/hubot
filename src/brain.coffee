@@ -8,7 +8,7 @@ class Brain extends EventEmitter
     robot.logger.debug "Loading brain #{brain}"
 
     try
-      if brain is 'memory'
+      if brain is 'memory' or brain is undefined
         robot.brain.emit 'ready'
       else
         require("hubot-brain-#{brain}")(robot)

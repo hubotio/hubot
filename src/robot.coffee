@@ -64,6 +64,8 @@ class Robot extends EventEmitter
   #
   # Returns nothing.
   respond: (regex, callback) ->
+    #    console.log "robot.respond #{require('util').inspect regex}"
+
     re = regex.toString().split('/')
     re.shift()
     modifiers = re.pop()
@@ -144,6 +146,8 @@ class Robot extends EventEmitter
   #
   # Returns nothing.
   receive: (message) ->
+    console.log "robot.receive #{require('util').inspect message}"
+
     results = []
     for listener in @listeners
       try
@@ -230,6 +234,7 @@ class Robot extends EventEmitter
   #
   # Returns nothing.
   run: (brain) ->
+    console.log "Robot#run"
     @brain.on 'ready', =>
       @adapter.run()
       @emit 'running'

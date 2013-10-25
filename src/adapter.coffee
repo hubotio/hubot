@@ -89,6 +89,8 @@ class Adapter extends EventEmitter
   #
   # Returns nothing.
   receive: (message) ->
+    console.log "adapter.receive #{require('util').inspect message}"
+
     @robot.receive message
 
 module.exports = Adapter
