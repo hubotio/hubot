@@ -194,7 +194,7 @@ class Robot
     @logger.debug "Loading scripts from #{path}"
     Fs.exists path, (exists) =>
       if exists
-        for file in Fs.readdirSync(path)
+        for file in Fs.readdirSync(path).sort()
           @loadFile path, file
 
   # Public: Load scripts specfied in the `hubot-scripts.json` file.
