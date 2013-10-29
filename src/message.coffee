@@ -47,7 +47,7 @@ class LeaveMessage extends Message
 # user - A User instance for the user who changed the topic.
 # text - A String of the new topic
 # id   - A String of the message ID.
-class TopicMessage extends Message
+class TopicMessage extends TextMessage
 
 class CatchAllMessage extends Message
   # Represents a message that no matchers matched.
