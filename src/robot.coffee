@@ -244,7 +244,7 @@ class Robot
     app.use express.static stat if stat
 
     try
-      @server = app.listen(process.env.PORT || 8080)
+      @server = app.listen(process.env.PORT || 8080, process.env.HOSTNAME || '0.0.0.0')
       @router = app
     catch err
       @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
