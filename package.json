@@ -28,6 +28,14 @@
     "express": "3.18.1",
     "readline-history": "~1.2.0"
   },
+
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "sinon-chai": "*",
+    "sinon": "*"
+  },
+
   "engines": {
     "node": ">= 0.8.x",
     "npm": ">= 1.1.x"
