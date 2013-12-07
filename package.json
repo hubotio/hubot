@@ -47,5 +47,9 @@
 
   "bin": {
     "hubot": "./bin/hubot"
+  },
+
+  "scripts": {
+    "test": "./script/test"
   }
 }
