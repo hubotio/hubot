@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# bootstrap environment
+source script/bootstrap
+
+for arg in "$@"; do
+    case "$arg" in
+        -*) echo "error: option argument not allowed: '$arg'"
+            exit 1
+            ;;
+    esac
+done
+
+if test $# -gt 1; then
+        echo "too many arguments, expected none or one (for a reporter)" 1>&2
+        exit 1
+elif test $# -eq 1; then
+        REPORTER="--reporter ${1}"
+else
+        REPORTER=""
+fi
+
+mocha --compilers coffee:coffee-script ${REPORTER}
