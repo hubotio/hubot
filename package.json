@@ -31,6 +31,13 @@
     "express":            "3.3.4"
   },
 
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "sinon-chai": "*",
+    "sinon": "*"
+  },
+
   "engines": {
     "node": ">= 0.8.x",
     "npm":  ">= 1.1.x"
