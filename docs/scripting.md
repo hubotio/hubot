@@ -80,7 +80,7 @@ module.exports = (robot) ->
     # your code here
 ```
 
-The `robot.hear /badgers/` callback is called anytime a message's text matches. For example:
+The `robot.hear /badger/` callback is called anytime a message's text matches. For example:
 
 * Stop badgering the witness
 * badger me
