@@ -29,7 +29,7 @@ to have yours added to the list:
 * [Jabbr](https://github.com/smoak/hubot-jabbr)
 * [iMessage](https://github.com/lazerwalker/hubot-imessage)
 * [Hall](https://github.com/Hall/hubot-hall)
-
+* [ChatWork](https://github.com/akiomik/hubot-chatwork)
 
 ## Writing Your Own adapter
 
