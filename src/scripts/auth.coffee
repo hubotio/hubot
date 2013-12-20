@@ -98,12 +98,15 @@ module.exports = (robot) ->
     user = robot.brain.userForName(name)
     return msg.reply "#{name} does not exist" unless user?
     user.roles or= []
+    displayRoles = user.roles
 
     if user.id.toString() in admins
-      isAdmin = ' and is also an admin'
+      displayRoles.push('admin')
+
+    if displayRoles.length == 0
+      msg.reply "#{name} has no roles."
     else
-      isAdmin = ''
-    msg.reply "#{name} has the following roles: #{user.roles.join(', ')}#{isAdmin}."
+      msg.reply "#{name} has the following roles: #{displayRoles.join(', ')}."
 
   robot.respond /who has admin role\?*$/i, (msg) ->
     adminNames = []
@@ -111,4 +114,7 @@ module.exports = (robot) ->
       user = robot.brain.userForId(admin)
       adminNames.push user.name if user?
 
-    msg.reply "The following people have the 'admin' role: #{adminNames.join(', ')}"
+    if adminNames.length > 0
+      msg.reply "The following people have the 'admin' role: #{adminNames.join(', ')}"
+    else
+      msg.reply "There are no people that have the 'admin' role."
