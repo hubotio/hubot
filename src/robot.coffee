@@ -100,7 +100,10 @@ class Robot
         modifiers
       )
 
-    @listeners.push new TextListener(@, newRegex, callback)
+    try
+      @listeners.push new TextListener(@, newRegex, callback)
+    catch err
+      @logger.error "One of the scripts failed.\n#{err}"
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
