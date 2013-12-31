@@ -432,6 +432,50 @@ module.exports = (robot) ->
 
 If you provide an event, it's highly recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
 
+## Error Handling
+
+No code is perfect, and errors and exceptions are to be expected. Previously, an uncaught exceptions would crash your hubot instance. Hubot now includes an `uncaughtException` handler, which provides hooks for scripts to do something about exceptions.
+
+```coffeescript
+# src/scripts/does-not-compute.coffee
+module.exports = (robot) ->
+  robot.error (err, msg) ->
+    robot.logger.error "DOES NOT COMPUTE"
+
+    if msg?
+      msg.reply "DOES NOT COMPUTE"
+```
+
+You can do anything you want here, but you will want to take extra precaution of rescuing and logging errors, particularly with asynchronous code. Otherwise, you might find yourself with recursive errors and not know what is going on.
+
+Under the hood, there is an 'error' event emitted, with the error handlers consuming that event. The uncaughtException handler [technically leaves the process in an unknown state](http://nodejs.org/api/process.html#process_event_uncaughtexception). Therefore, you should rescue your own exceptions whenever possible, and emit them yourself. The first argument is the error emitted, and the second argument is an optional message that generated the error.
+
+Using previous examples:
+
+```coffeescript
+  robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
+    room = req.params.room
+    data = null
+    try
+      data = JSON.parse req.body.payload
+    catch err
+      robot.emit 'error', error
+
+    # rest of the code here
+
+
+  robot.hear /midnight train/i, (msg)
+    robot.http("https://midnight-train")
+      .get() (err, res, body) ->
+        if err
+          msg.reply "Had problems taking the midnight train"
+          robot.emit 'error', err, msg
+          return
+        # rest of code here
+```
+
+For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom
+
 ## Documenting Scripts
 
 Hubot scripts can be documented with comments at the top of their file, for example:
