@@ -195,7 +195,7 @@ class Robot
         results.push listener.call(message)
         break if message.done
       catch error
-        @emit('error', error)
+        @emit('error', error, message)
         false
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
