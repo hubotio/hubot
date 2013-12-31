@@ -55,7 +55,16 @@ class Robot
     else
       @setupNullRouter()
     @pingIntervalId = null
+
     @loadAdapter adapterPath, adapter
+
+    @errorHandlers = []
+
+    @on 'error', (err, msg) =>
+      @invokeErrorHandlers(err, msg)
+    process.on 'uncaughtException', (err) =>
+      @emit 'error', err
+
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -138,6 +147,29 @@ class Robot
       callback
     )
 
+  # Public: Adds an error handler when an uncaught exception or user emitted
+  # error event occurs.
+  #
+  # callback - A Function that is called with the error object.
+  #
+  # Returns nothing.
+  error: (callback) ->
+    @errorHandlers.push callback
+
+  # Calls and passes any registered error handlers for unhandled exceptions or
+  # user emitted error events.
+  #
+  # err - An Error object.
+  # msg - An optional Response object that generated the error
+  #
+  # Returns nothing.
+  invokeErrorHandlers: (err, msg) ->
+    for errorHandler in @errorHandlers
+     try
+       errorHandler(err, msg)
+     catch errErr
+       @logger.error "while invoking error handler: #{errErr}\n#{errErr.stack}"
+
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
@@ -163,7 +195,7 @@ class Robot
         results.push listener.call(message)
         break if message.done
       catch error
-        @logger.error "Unable to call the listener: #{error}\n#{error.stack}"
+        @emit('error', error)
         false
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
