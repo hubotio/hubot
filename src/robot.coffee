@@ -261,7 +261,6 @@ class Robot
 
   requireHubSignature: (req, res, next) ->
     return next new Error "Invalid Hub Signature" unless req.hubVerified
-    @logger.debug "x-hub-signature verified"
     next()
 
   # Setup the Express server's defaults.
