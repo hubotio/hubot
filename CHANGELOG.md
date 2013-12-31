@@ -1,9 +1,15 @@
+v2.7.1
+======
+
+* Update error handling API to pass along `msg` object in more cases - technicalpickles
+
+
 v2.7.0
 ======
 
 * Support binding to a specific IP address - smerrill
 * Add error handling API - technicalpickles
-* Remove math.coffee since it uses a now-removed Google service
+* Remove math.coffee since it uses a now-removed Google service - technicalpickles
 * MOAR MUSTACHES - cannikin
 
 v2.6.5
