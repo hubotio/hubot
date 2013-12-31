@@ -62,7 +62,7 @@ class Robot
 
     @on 'error', @invokeErrorHandlers
     process.on 'uncaughtException', (err) =>
-      @invokeErrorhandlers(err)
+      @invokeErrorHandlers(err)
 
 
   # Public: Adds a Listener that attempts to match incoming messages based on
