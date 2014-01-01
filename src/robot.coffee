@@ -271,6 +271,11 @@ class Robot
     express = require 'express'
 
     app = express()
+
+    app.use (req, res, next) =>
+      res.setHeader "X-Powered-By", @name
+      next()
+
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
     app.use express.bodyParser()
