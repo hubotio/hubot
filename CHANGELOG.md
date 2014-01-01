@@ -1,3 +1,33 @@
+v2.7.1
+======
+
+* Update error handling API to pass along `msg` object in more cases - technicalpickles
+
+
+v2.7.0
+======
+
+* Support binding to a specific IP address - smerrill
+* Add error handling API - technicalpickles
+* Remove math.coffee since it uses a now-removed Google service - technicalpickles
+* MOAR MUSTACHES - cannikin
+
+v2.6.5
+======
+
+* Fix new bot template to get the latest version of the bot - technicalpickles
+
+v2.6.4
+======
+
+* Fix documentation for setting up Redis on Heroku - thiagopnts
+* Document script load ordering - balbeko
+* Fix extra space in help messages - vanetix
+* Parse 'Authors' section in script documentation - spajus
+* Differentiate the different types of Campfire errors - simonsj
+* Consistently load files across platform - technicalpickles
+* Fix topic handler to be able to access the text of its body - wingrunr21
+
 v2.6.3
 ======
 
