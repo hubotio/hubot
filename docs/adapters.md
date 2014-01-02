@@ -30,6 +30,7 @@ to have yours added to the list:
 * [iMessage](https://github.com/lazerwalker/hubot-imessage)
 * [Hall](https://github.com/Hall/hubot-hall)
 * [ChatWork](https://github.com/akiomik/hubot-chatwork)
+* [QQ](https://github.com/xhan/qqbot)
 
 ## Writing Your Own adapter
 
