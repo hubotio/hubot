@@ -49,6 +49,27 @@ configure:
 
     % heroku config:add HEROKU_URL=http://rosemary-britches-123.herokuapp.com
 
+If your hubot will be listening for http connections and you would like to
+verify [x-hub-signature headers](http://pubsubhubbub.googlecode.com/svn/trunk/pubsubhubbub-core-0.3.html#authednotify)
+you can also set this environment variable:
+
+    % heroku config:add HUB_SECRET=<YOUR_SECRET_HERE>
+
+Setting this will cause any requests with the `x-hub-signature` header set to
+fail unless the signature is validated. Requests not containing this header
+will always succeed.
+
+Scripts can ensure that requests that have been validated by checking
+`req.hubVerified`. However, for convenience, if you have a particular script
+that you want to require a valid `x-hub-signature` for, you can so do like this:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.router.post "/some/url",
+                    robot.requireHubSignature,
+                    fn
+```
+
 At this point, you are ready to deploy and start chatting. With Heroku, that's a
 git push away:
 
