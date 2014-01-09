@@ -390,7 +390,7 @@ module.exports = (robot) ->
 
 ## HTTP Listener
 
-Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to server up HTTP requests. It listens on the port specified by the `PORT` environment variable, and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EPXRESS_PASSWORD`. It can automatically server static files by setting `EXPRESS_STATIC`.
+Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to server up HTTP requests. It listens on the port specified by the `PORT` environment variable, and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EPXRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
 
 The most common use of this is for providing HTTP end points for services with webhooks to push to, and have those show up in chat.
 
@@ -403,6 +403,20 @@ module.exports = (robot) ->
     secret = data.secret
 
     robot.messageRoom room, "I have a secret: #{secret}"
+```
+
+### HTTP Request verification
+If your hubot will be listening for http connections and you would like to verify [x-hub-signature headers](http://pubsubhubbub.googlecode.com/svn/trunk/pubsubhubbub-core-0.3.html#authednotify) you can set the `HUB_SECRET` environment variable.
+
+Setting this will cause any requests with the `x-hub-signature` header set to fail unless the signature is validated. Requests not containing this header will always succeed.
+
+Scripts can ensure that requests that have been validated by checking `req.hubVerified`. However, for convenience, if you have a particular script that you want to require a valid `x-hub-signature` for, you can so do like this:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.router.post "/some/url",
+                    robot.requireHubSignature,
+                    fn
 ```
 
 ## Events
