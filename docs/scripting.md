@@ -526,10 +526,10 @@ module.exports = (robot) ->
     beersHad = robot.brain.get('totalBeers') * 1 or 0
 
     if beersHad > 4
-      msg.respond "I'm too drunk.."
+      msg.reply "I'm too drunk.."
 
     else
-      msg.respond 'Sure!'
+      msg.reply 'Sure!'
 
       robot.brain.set 'totalBeers', beersHad+1
       # Or robot.brain.set totalBeers: beersHad+1
