@@ -481,7 +481,7 @@ For the second example, it's worth thinking about what messages the user would s
 Hubot scripts can be documented with comments at the top of their file, for example:
 
 ```coffeescript
-# Description
+# Description:
 #   <description of the scripts functionality>
 #
 # Dependencies:
