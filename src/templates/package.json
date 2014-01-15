@@ -1,6 +1,7 @@
 {
   "name": "hosted-hubot",
   "version": "2.7.1",
+  "private": true,
 
   "author": "GitHub Inc.",
 
