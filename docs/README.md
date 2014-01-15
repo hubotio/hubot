@@ -5,15 +5,19 @@
 You will need [node.js](http://nodejs.org/) and [npm](https://npmjs.org/). Joyent has
 an [excellent blog post on how to get those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
 
-Once node and npm are ready, we can install hubot and coffeescript:
+Once node and npm are ready, we can install the hubot generator tools:
 
-    % npm install -g hubot coffee-script
+    % npm install -g yo generator-hubot-bot
 
-This will give us the `hubot` command, which is used for running a hubot, and more importantly now, generating your own hubot. The name of the new bot is
-the last argument, and will be created in the directory of the same name. For
-example, to create a new bot named myhubot:
+[Yeoman](http://yeoman.io/), summoned via the `yo` command, is a
+scaffolding tool that we use to generate our hubot. By default, the name
+of the new bot is the name of the directory we create it in. For
+example, to create a new bot named "myhubot":
 
-    % hubot --create myhubot
+    % mkdir myhubot && cd $_
+    % yo hubot-bot
+
+A setup wizard that will walk you through the customization process.
 
 If you are using git, the generated directory includes a .gitignore, so you can
 initialize and add everything:
