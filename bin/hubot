@@ -10,6 +10,7 @@ Path     = require 'path'
 
 Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
+  [ "-c", "--create PATH",     "DEPRECATED. See https://github.com/github/generator-hubot-bot" ],
   [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
@@ -21,6 +22,7 @@ Switches = [
 Options =
   adapter:     process.env.HUBOT_ADAPTER or "shell"
   alias:       process.env.HUBOT_ALIAS   or false
+  create:      process.env.HUBOT_CREATE  or false
   enableHttpd: process.env.HUBOT_HTTPD   or true
   scripts:     process.env.HUBOT_SCRIPTS or []
   name:        process.env.HUBOT_NAME    or "Hubot"
@@ -30,6 +32,9 @@ Parser.banner = "Usage hubot [options]"
 
 Parser.on "adapter", (opt, value) ->
   Options.adapter = value
+
+Parser.on "create", (opt, value) ->
+  Options.create = true
 
 Parser.on "disable-httpd", (opt) ->
   Options.enableHttpd = false
@@ -56,6 +61,14 @@ Parser.parse process.argv
 unless process.platform is "win32"
   process.on 'SIGTERM', ->
     process.exit 0
+
+if Options.create
+  output = [
+    "The `hubot --create` command has been deprecated.",
+    "Please see https://github.com/github/generator-hubot-bot"
+  ]
+  console.error output.join "\n"
+  process.exit(1)
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
