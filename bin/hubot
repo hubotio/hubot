@@ -10,7 +10,7 @@ Path     = require 'path'
 
 Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-c", "--create PATH",     "DEPRECATED. See https://github.com/github/generator-hubot-bot" ],
+  [ "-c", "--create PATH",     "REMOVED. See https://github.com/github/hubot/blob/master/docs/README.md" ],
   [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
@@ -64,8 +64,8 @@ unless process.platform is "win32"
 
 if Options.create
   output = [
-    "The `hubot --create` command has been deprecated.",
-    "Please see https://github.com/github/generator-hubot-bot"
+    "The `hubot --create` command has been removed.",
+    "Please see https://github.com/github/hubot/blob/master/docs/README.md"
   ]
   console.error output.join "\n"
   process.exit(1)
