@@ -14,6 +14,7 @@
 helpContents = (name, commands) ->
 
   """
+<!DOCTYPE html>
 <html>
   <head>
   <title>#{name} Help</title>
