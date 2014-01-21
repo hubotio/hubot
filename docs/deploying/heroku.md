@@ -32,9 +32,9 @@ variables for hubot to use. The specific variables you'll need depends on which
 [adapter](../adapters.md) and scripts you are using. For Campfire, with no other
 scripts, you'd need to set the following environment variables:
 
-    % heroku config:add HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
-    % heroku config:add HUBOT_CAMPFIRE_TOKEN=yourcampfiretoken
-    % heroku config:add HUBOT_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
+    % heroku config:set HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
+    % heroku config:set HUBOT_CAMPFIRE_TOKEN=yourcampfiretoken
+    % heroku config:set HUBOT_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
 
 In addition, there is one special environment variable for Heroku. The default hubot
 [Procfile](https://devcenter.heroku.com/articles/procfile) marks the process as
@@ -47,7 +47,7 @@ there's a special environment variable to make hubot regularly ping itself over 
 the app is deployed to http://rosemary-britches-123.herokuapp.com/, you'd
 configure:
 
-    % heroku config:add HEROKU_URL=http://rosemary-britches-123.herokuapp.com
+    % heroku config:set HEROKU_URL=http://rosemary-britches-123.herokuapp.com
 
 At this point, you are ready to deploy and start chatting. With Heroku, that's a
 git push away:
