@@ -14,5 +14,5 @@ are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTI
 
 ## License
 
-Copyright (c) 2011-2013 GitHub, Inc. See the LICENSE file for license rights and
+Copyright (c) 2011-2014 GitHub, Inc. See the LICENSE file for license rights and
 limitations (MIT).
