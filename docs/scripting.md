@@ -151,6 +151,18 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
       # your code here
 ```
 
+A post looks like:
+
+```coffeescript
+  data = JSON.stringify({
+    foo: 'bar'
+  })
+  robot.http("https://midnight-train")
+    .post(data) (err, res, body) ->
+      # your code here
+```
+
+
 `err` is an error encountered on the way, if one was encountered. You'll generally want to check for this and handle accordingly:
 
 ```coffeescript
