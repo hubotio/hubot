@@ -47,6 +47,9 @@ module.exports = (robot) ->
           return true if role in user.roles
       return false
 
+    isAdmin: (user) ->
+      return user.id.toString() in admins
+
     usersWithRole: (role) ->
       users = []
       for own key, user of robot.brain.data.users
@@ -98,7 +101,7 @@ module.exports = (robot) ->
     user = robot.brain.userForName(name)
     return msg.reply "#{name} does not exist" unless user?
     user.roles or= []
-    displayRoles = user.roles
+    displayRoles = user.roles.slice(0)
 
     if user.id.toString() in admins
       displayRoles.push('admin')
