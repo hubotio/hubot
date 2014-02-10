@@ -18,7 +18,7 @@ module.exports = (robot) ->
     msg.send "Server time is: #{new Date()}"
 
   robot.respond /DIE$/i, (msg) ->
-    if !process.env.HUBOT_AUTH_ADMIN? || robot.auth.isAdmin(msg.envelope.user)
+    if not process.env.HUBOT_AUTH_ADMIN? or robot.auth.isAdmin(msg.envelope.user)
       msg.send "Goodbye, cruel world."
       process.exit 0
     else
