@@ -43,7 +43,7 @@ If you are going to use the `redis-brain.coffee` script from `hubot-scripts`
 account or you can create an account at [Redis to Go][redistogo] and manually
 set the `REDISTOGO_URL` variable.
 
-    % heroku config:add REDISTOGO_URL="..."
+    % heroku config:set REDISTOGO_URL="..."
 
 If you don't require any persistence feel free to remove the
 `redis-brain.coffee` from `hubot-scripts.json` and you don't need to worry
@@ -136,18 +136,18 @@ of those, links to the adapters can be found on [Hubot Adapters][hubot-adapters]
 Create a separate Campfire user for your bot and get their token from the web
 UI.
 
-    % heroku config:add HUBOT_CAMPFIRE_TOKEN="..."
+    % heroku config:set HUBOT_CAMPFIRE_TOKEN="..."
 
 Get the numeric IDs of the rooms you want the bot to join, comma delimited. If
 you want the bot to connect to `https://mysubdomain.campfirenow.com/room/42` 
 and `https://mysubdomain.campfirenow.com/room/1024` then you'd add it like this:
 
-    % heroku config:add HUBOT_CAMPFIRE_ROOMS="42,1024"
+    % heroku config:set HUBOT_CAMPFIRE_ROOMS="42,1024"
 
 Add the subdomain hubot should connect to. If you web URL looks like
 `http://mysubdomain.campfirenow.com` then you'd add it like this:
 
-    % heroku config:add HUBOT_CAMPFIRE_ACCOUNT="mysubdomain"
+    % heroku config:set HUBOT_CAMPFIRE_ACCOUNT="mysubdomain"
 
 [hubot-adapters]: https://github.com/github/hubot/blob/master/docs/adapters.md
 

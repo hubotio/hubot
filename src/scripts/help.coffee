@@ -14,8 +14,10 @@
 helpContents = (name, commands) ->
 
   """
+<!DOCTYPE html>
 <html>
   <head>
+  <meta charset="utf-8">
   <title>#{name} Help</title>
   <style type="text/css">
     body {
