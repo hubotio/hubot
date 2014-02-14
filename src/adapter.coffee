@@ -41,6 +41,14 @@ class Adapter extends EventEmitter
   # Returns nothing.
   topic: (envelope, strings...) ->
 
+  # Public: Raw method for sending custom data back to the chat source. Extend this.
+  #
+  # envelope - A Object with message, room and user details.
+  # objects  - One or more custom Objects for each message to send.
+  #
+  # Returns nothing.
+  custom: (envelope, objects...) ->
+
   # Public: Raw method for playing a sound in the chat source. Extend this.
   #
   # envelope - A Object with message, room and user details.
