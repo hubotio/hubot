@@ -40,7 +40,8 @@ Hubot> Shell: shell has the following roles:  and is also an admin.
 Hubot>
 ```
 
-You now have a first user locally that has the admin rights. If you have a running hubot, your unique ids from `Hubot show users` and export the list with commas and restart hubot.
+You now have a first user locally that has the admin rights. If you have a running external hubot, your unique ids from `Hubot show users` will be different, export the list with commas and
+restart hubot.
 
 ## Setting up the first role
 
