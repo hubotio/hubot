@@ -21,7 +21,7 @@ Hubot> Hubot show users
 ```
 
 It should come back with `1 Shell` which is the default user that Hubot knows about. Take note of that number 1. Go ahead and exit out of 
-hubot and open up your `bin/hubot`. 
+hubot and open up your `bin/hubot`.
 
 Add the following something like this:
 
@@ -40,12 +40,11 @@ Hubot> Shell: shell has the following roles:  and is also an admin.
 Hubot>
 ```
 
-Good, you now have a first user locally that has the admin rights. If you would like to skip this for local changes, and have a running hubot someplace, is add the unique id
-from `Hubot show users` and export the list with commas and restart hubot.
+You now have a first user locally that has the admin rights. If you have a running hubot, your unique ids from `Hubot show users` and export the list with commas and restart hubot.
 
 ## Setting up the first role
 
-Hubot admins are the only ones that can give out roles. So after you make yourself an admin you still need to test out a giving and taking away roles.
+Hubot admins are the only ones that can give out roles. So after you make yourself an admin, you still need to test out giving and taking away roles.
 Follow the following commands on your shell version of hubot and you should see the expected results:
 
 ```
@@ -58,13 +57,13 @@ Hubot> Shell: shell has the following roles: ping and is also an admin.
 Hubot>
 ```
 
-As you can see `shell` only has the admin right like expected. Then we gave `shell` the ping role, and confirmed it got that role.  Remember roles are the basis of grouping 
+As you can see `shell` is the only user that has the admin rights. Then we gave `shell` the ping role and confirmed it got that role.  Remember roles are the basis of grouping
 specific users into groups.
 
 ## Setting up your first script with authorization
 
-In order to have authorization to work you'll need to edit some of your scripts. I'm going to start with [ping.coffee](https://github.com/github/hubot/blob/master/src/scripts/ping.coffee) in my 
-`scripts/` directory. 
+In order to have authorization to work, you'll need to edit some of your scripts. I'm going to start with [ping.coffee](https://github.com/github/hubot/blob/master/src/scripts/ping.coffee) in my
+`scripts/` directory.
 
 Go ahead and open up your ping.coffee. It should look like the following snippet:
 
