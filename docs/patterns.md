@@ -61,3 +61,8 @@ module.exports = (robot) ->
     return
 
 ```
+
+## Setting up authorization for Hubot
+
+As you start running Hubot in your company, you'll start to find that you'll have certain people to be able to do certain commands and others without that access. This is where authorization, 
+comes into play and the tutorial how to set up basic authorization is [here](patterns/authorization_tutorial.md).
