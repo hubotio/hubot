@@ -120,7 +120,7 @@ class Brain extends EventEmitter
     lowerName = name.toLowerCase()
     for k of (@data.users or { })
       userName = @data.users[k]['name']
-      if userName? and userName.toLowerCase() is lowerName
+      if userName? and userName.toString().toLowerCase() is lowerName
         result = @data.users[k]
     result
 
