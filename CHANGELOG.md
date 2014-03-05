@@ -1,3 +1,8 @@
+v2.7.2
+======
+
+* Expose the robot adapter name as `robot.adapterName`.
+
 v2.7.1
 ======
 
