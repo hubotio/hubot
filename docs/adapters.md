@@ -32,6 +32,7 @@ to have yours added to the list:
 * [ChatWork](https://github.com/akiomik/hubot-chatwork)
 * [QQ](https://github.com/xhan/qqbot)
 * [AIM](https://github.com/shaundubuque/hubot-aim)
+* [Slack](https://github.com/tinyspeck/hubot-slack)
 
 ## Writing Your Own adapter
 
