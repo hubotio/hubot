@@ -254,6 +254,7 @@ class Robot
       if packages instanceof Array
         for pkg in packages
           require(pkg)(@)
+          @parseHelp pkg if Fs.existsSync pkg
       else
         for pkg, scripts of packages
           require(pkg)(@, scripts)
