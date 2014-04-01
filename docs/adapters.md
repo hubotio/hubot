@@ -33,6 +33,7 @@ to have yours added to the list:
 * [QQ](https://github.com/xhan/qqbot)
 * [AIM](https://github.com/shaundubuque/hubot-aim)
 * [Slack](https://github.com/tinyspeck/hubot-slack)
+* [Lingr](https://github.com/miyagawa/hubot-lingr)
 
 ## Writing Your Own adapter
 
