@@ -63,8 +63,7 @@ class Robot
 
     @on 'error', (err, msg) =>
       @invokeErrorHandlers(err, msg)
-    process.on 'uncaughtException', (err) =>
-      @emit 'error', err
+    process.on 'uncaughtException', @emitError
 
 
   # Public: Adds a Listener that attempts to match incoming messages based on
@@ -336,6 +335,12 @@ class Robot
   helpCommands: ->
     @commands.sort()
 
+  # Private: reference function used to emit an error
+  #
+  # Returns nothing.
+  emitError: (err) =>
+    @emit 'error', err
+
   # Private: load help info from a loaded script.
   #
   # path - A String path to the file on disk.
@@ -441,6 +446,7 @@ class Robot
   # Returns nothing.
   shutdown: ->
     clearInterval @pingIntervalId if @pingIntervalId?
+    process.removeListener 'uncaughtException', @emitError
     @adapter.close()
     @brain.close()
 
