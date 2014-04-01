@@ -563,6 +563,13 @@ module.exports = (robot) ->
       msg.send "#{name} is user - #{user}"
 ```
 
+## Script Load Order
+
+Scripts are loaded from the `scripts/` directory. They are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
+
+* `scripts/1-first.coffee`
+* `scripts/_second.coffee`
+* `scripts/third.coffee
 
 ## Creating A Script Package
 
