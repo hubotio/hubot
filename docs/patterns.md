@@ -78,13 +78,13 @@ module.exports = (robot) ->
     lock = robot.brain.get('yourLockName')
 
     if lock?
-      msg.send "I'm sorry, " + msg.message.user.name + ", I'm afraid I can't do that.  I'm busy doing something for " + lock.user.name
+      msg.send "I'm sorry, #{msg.message.user.name}, I'm afraid I can't do that. I'm busy doing something for #{lock.user.name}."
       return
 
-    robot.brain.set('yourLockName', msg.message);  # includes user, room, etc about who locked
+    robot.brain.set('yourLockName', msg.message)  # includes user, room, etc about who locked
 
     yourLongClobberingAsyncThing (err, response) ->
       # Clear the lock
-      robot.brain.remove('yourLockName');
+      robot.brain.remove('yourLockName')
       msg.reply "Finally Done"
 ```
