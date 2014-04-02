@@ -61,3 +61,30 @@ module.exports = (robot) ->
     return
 
 ```
+
+## Preventing Hubot from Running Scripts Concurrently
+
+Sometimes you have scripts that take several minutes to execute.  If these scripts are doing something that could be interfered
+with by running subsequent commands, you may wish to code your scripts to prevent concurrent access.
+
+To do this, you can set up a lock in the Hubot [brain](scripting.md#persistence) object.  The lock is set up here so that different scripts
+can share the same lock if necessary.
+
+Setting up the lock looks something like this:
+
+```coffeescript
+module.exports = (robot) ->
+  lock = robot.brain.get('yourLockName')
+
+  robot.respond /longrunningthing/i, (msg) ->
+    if lock?
+      msg.send "I'm sorry, " + msg.message.user.name + ", I'm afraid I can't do that.  I'm busy doing something for " + lock.user.name
+      return
+
+    robot.brain.set('yourLockName', msg.message);  # includes user, room, etc about who locked
+
+    yourLongClobberingAsyncThing (err, response) ->
+      # Clear the lock
+      robot.brain.remove('yourLockName');
+      msg.reply "Finally Done"
+```
