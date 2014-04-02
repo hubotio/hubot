@@ -74,9 +74,9 @@ Setting up the lock looks something like this:
 
 ```coffeescript
 module.exports = (robot) ->
-  lock = robot.brain.get('yourLockName')
-
   robot.respond /longrunningthing/i, (msg) ->
+    lock = robot.brain.get('yourLockName')
+
     if lock?
       msg.send "I'm sorry, " + msg.message.user.name + ", I'm afraid I can't do that.  I'm busy doing something for " + lock.user.name
       return
