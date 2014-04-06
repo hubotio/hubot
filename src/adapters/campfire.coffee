@@ -6,6 +6,10 @@ Adapter                                              = require '../adapter'
 {TextMessage,EnterMessage,LeaveMessage,TopicMessage} = require '../message'
 
 class Campfire extends Adapter
+  constructor: (@robot) ->
+    super @robot
+    @locks = new CampfireLockCounter
+
   send: (envelope, strings...) ->
     if strings.length > 0
       string = strings.shift()
@@ -33,15 +37,20 @@ class Campfire extends Adapter
       @play envelope, strings...
 
   locked: (envelope, strings...) ->
-    if envelope.message.private
+    @locks.increment envelope.room
+    @bot.Room(envelope.room).lock (args...) =>
+      strings.push =>
+        unlock = () =>
+          # Handle the case where multiple `locked` messages are sent in close
+          # proximity. We don't want to unlock until the final one has sent
+          if @locks.decrement(envelope.room) == 0
+            @bot.Room(envelope.room).unlock()
+
+        # campfire won't send messages from just before a room unlock. 3000
+        # is the 3-second poll.
+        setTimeout unlock, 3000
+
       @send envelope, strings...
-    else
-      @bot.Room(envelope.room).lock (args...) =>
-        strings.push =>
-          # campfire won't send messages from just before a room unlock. 3000
-          # is the 3-second poll.
-          setTimeout (=> @bot.Room(envelope.room).unlock()), 3000
-        @send envelope, strings...
 
   run: ->
     self = @
@@ -112,6 +121,21 @@ class Campfire extends Adapter
     @bot = bot
 
     self.emit "connected"
+
+class CampfireLockCounter
+  constructor: ->
+    @counts = Object.create(null)
+
+  # Increments the lock count for a room, returning the current count after
+  # incrementing
+  increment: (roomId) ->
+    @counts[roomId] = (@counts[roomId] ? 0) + 1
+
+  # Decrements the lock count for a room, returning the current count after
+  # decrementing. `0` is returned if the number of locks now matches the
+  # number of unlocks.
+  decrement: (roomId) ->
+    @counts[roomId] = Math.max(0, (@counts[roomId] ? 0) - 1)
 
 exports.use = (robot) ->
   new Campfire robot
