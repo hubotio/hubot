@@ -3,6 +3,11 @@ Log            = require 'log'
 Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
+queue          = require 'queue'
+q              = queue(
+                    timeout: 100
+                    concurrency: 65
+                 )
 
 User = require './user'
 Brain = require './brain'
@@ -212,12 +217,15 @@ class Robot
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
     if ext is '.coffee' or ext is '.js'
-      try
-        require(full) @
-        @parseHelp Path.join(path, file)
-      catch error
-        @logger.error "Unable to load #{full}: #{error.stack}"
-        process.exit(1)
+      q.push((cb) =>
+        try
+          require(full) @
+          @parseHelp Path.join(path, file)
+        catch error
+          @logger.error "Unable to load #{full}: #{error.stack}"
+          process.exit(1)
+      )
+    q.start()
 
   # Public: Loads every script in the given path.
   #
