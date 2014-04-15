@@ -1,3 +1,10 @@
+v2.7.3
+======
+
+* Updated list of adapters in documentation
+* Document script load order
+* Support any file extension for script that node supports
+
 v2.7.2
 ======
 
