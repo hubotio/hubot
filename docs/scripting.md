@@ -569,7 +569,7 @@ Scripts are loaded from the `scripts/` directory. They are loaded in alphabetica
 
 * `scripts/1-first.coffee`
 * `scripts/_second.coffee`
-* `scripts/third.coffee
+* `scripts/third.coffee`
 
 ## Creating A Script Package
 
