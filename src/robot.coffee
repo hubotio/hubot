@@ -4,11 +4,19 @@ Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
 
-User = require './user'
-Brain = require './brain'
-Response = require './response'
-{Listener,TextListener} = require './listener'
-{EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+User           = require './user'
+Brain          = require './brain'
+Response       = require './response'
+{
+  Listener
+  TextListener
+}              = require './listener'
+{
+  EnterMessage
+  LeaveMessage
+  TopicMessage
+  CatchAllMessage
+}              = require './message'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
@@ -33,13 +41,12 @@ class Robot
   # dispatch them to matching listeners.
   #
   # adapterPath - A String of the path to local adapters.
-  # adapter     - A String of the adapter name.
+  # adapterName - A String of the adapter name.
   # httpd       - A Boolean whether to enable the HTTP daemon.
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
-    @name      = name
+  constructor: (adapterPath, @adapterName, httpd, @name = 'Hubot') ->
     @events    = new EventEmitter
     @brain     = new Brain @
     @alias     = false
@@ -56,9 +63,8 @@ class Robot
       @setupNullRouter()
     @pingIntervalId = null
 
-    @loadAdapter adapterPath, adapter
+    @loadAdapter adapterPath, adapterName
 
-    @adapterName   = adapter
     @errorHandlers = []
 
     @on 'error', (err, msg) =>
@@ -96,10 +102,13 @@ class Robot
       @logger.warning "The regex in question was #{regex.toString()}"
 
     pattern = re.join('/')
-    name = @name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+    escapeRegExp = (str) ->
+      str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+
+    name = escapeRegExp @name
 
     if @alias
-      alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+      alias = escapeRegExp @alias
       newRegex = new RegExp(
         "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
         modifiers
