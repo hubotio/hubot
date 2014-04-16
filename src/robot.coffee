@@ -28,6 +28,8 @@ HUBOT_DOCUMENTATION_SECTIONS = [
   'urls'
 ]
 
+LISTENER_CURSOR = 0
+
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
@@ -46,7 +48,7 @@ class Robot
     @adapter   = null
     @Response  = Response
     @commands  = []
-    @listeners = []
+    @listeners = {}
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
@@ -75,7 +77,7 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, callback) ->
-    @listeners.push new TextListener(@, regex, callback)
+    @listeners[LISTENER_CURSOR++] = new TextListener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin
@@ -110,7 +112,7 @@ class Robot
         modifiers
       )
 
-    @listeners.push new TextListener(@, newRegex, callback)
+    @listeners[LISTENER_CURSOR++] = new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
@@ -118,7 +120,7 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    @listeners.push new Listener(
+    @listeners[LISTENER_CURSOR++] = new Listener(
       @,
       ((msg) -> msg instanceof EnterMessage),
       callback
@@ -130,7 +132,7 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    @listeners.push new Listener(
+    @listeners[LISTENER_CURSOR++] = new Listener(
       @,
       ((msg) -> msg instanceof LeaveMessage),
       callback
@@ -142,7 +144,7 @@ class Robot
   #
   # Returns nothing.
   topic: (callback) ->
-    @listeners.push new Listener(
+    @listeners[LISTENER_CURSOR++] = new Listener(
       @,
       ((msg) -> msg instanceof TopicMessage),
       callback
@@ -177,7 +179,7 @@ class Robot
   #
   # Returns nothing.
   catchAll: (callback) ->
-    @listeners.push new Listener(
+    @listeners[LISTENER_CURSOR++] = new Listener(
       @,
       ((msg) -> msg instanceof CatchAllMessage),
       ((msg) -> msg.message = msg.message.message; callback msg)
@@ -191,7 +193,7 @@ class Robot
   # Returns nothing.
   receive: (message) ->
     results = []
-    for listener in @listeners
+    for key, listener in @listeners
       try
         results.push listener.call(message)
         break if message.done
