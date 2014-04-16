@@ -74,6 +74,10 @@ Setting up the lock looks something like this:
 
 ```coffeescript
 module.exports = (robot) ->
+  # Clear the lock on startup in case Hubot has restarted and Hubot's brain has persistence (e.g. redis).
+  # We don't want any orphaned locks preventing us from running commands.
+  robot.brain.remove('yourLockName')
+
   robot.respond /longrunningthing/i, (msg) ->
     lock = robot.brain.get('yourLockName')
 
