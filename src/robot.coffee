@@ -69,15 +69,29 @@ class Robot
       @emit 'error', err
 
 
+  # Private: Adds a Listener to the robot's internal list of listeners
+  #
+  # listener  - The Listener to add
+  #
+  # Returns a handle to the Listener to permit the stopping and restarting of the Listener
+  _addListener: (listener) ->
+    key = LISTENER_CURSOR++
+    @listeners[key] = listener
+    stop: =>
+      delete @listeners[key]
+    restart: =>
+      @listeners[key] = listener
+
+
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
   #
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
   #
-  # Returns nothing.
+  # Returns a handle to the Listener
   hear: (regex, callback) ->
-    @listeners[LISTENER_CURSOR++] = new TextListener(@, regex, callback)
+    @_addListener new TextListener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin
@@ -86,7 +100,7 @@ class Robot
   # regex    - A Regex that determines if the callback should be called.
   # callback - A Function that is called with a Response object.
   #
-  # Returns nothing.
+  # Returns a handle to the Listener
   respond: (regex, callback) ->
     re = regex.toString().split('/')
     re.shift()
@@ -112,15 +126,15 @@ class Robot
         modifiers
       )
 
-    @listeners[LISTENER_CURSOR++] = new TextListener(@, newRegex, callback)
+    @_addListener new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
   # callback - A Function that is called with a Response object.
   #
-  # Returns nothing.
+  # Returns a handle to the Listener
   enter: (callback) ->
-    @listeners[LISTENER_CURSOR++] = new Listener(
+    @_addListener new Listener(
       @,
       ((msg) -> msg instanceof EnterMessage),
       callback
@@ -130,9 +144,9 @@ class Robot
   #
   # callback - A Function that is called with a Response object.
   #
-  # Returns nothing.
+  # Returns a handle to the Listener
   leave: (callback) ->
-    @listeners[LISTENER_CURSOR++] = new Listener(
+    @_addListener new Listener(
       @,
       ((msg) -> msg instanceof LeaveMessage),
       callback
@@ -142,9 +156,9 @@ class Robot
   #
   # callback - A Function that is called with a Response object.
   #
-  # Returns nothing.
+  # Returns a handle to the Listener
   topic: (callback) ->
-    @listeners[LISTENER_CURSOR++] = new Listener(
+    @_addListener new Listener(
       @,
       ((msg) -> msg instanceof TopicMessage),
       callback
@@ -177,9 +191,9 @@ class Robot
   #
   # callback - A Function that is called with a Response object.
   #
-  # Returns nothing.
+  # Returns a handle to the Listener
   catchAll: (callback) ->
-    @listeners[LISTENER_CURSOR++] = new Listener(
+    @_addListener new Listener(
       @,
       ((msg) -> msg instanceof CatchAllMessage),
       ((msg) -> msg.message = msg.message.message; callback msg)
@@ -193,7 +207,7 @@ class Robot
   # Returns nothing.
   receive: (message) ->
     results = []
-    for key, listener in @listeners
+    for key, listener of @listeners
       try
         results.push listener.call(message)
         break if message.done
