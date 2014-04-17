@@ -207,7 +207,8 @@ class Robot
   # Returns nothing.
   receive: (message) ->
     results = []
-    for key, listener of @listeners
+    for key in (keys for keys of @listeners).sort()
+      listener = @listeners[key]
       try
         results.push listener.call(message)
         break if message.done
