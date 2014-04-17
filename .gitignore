@@ -1,1 +1,5 @@
 node_modules
+
+# WebStorm files
+/.idea
+atlassian-ide-plugin.xml
