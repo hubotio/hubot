@@ -440,7 +440,7 @@ class Robot
   #
   # Returns nothing.
   shutdown: ->
-    @emit "shutdown"
+    @emit "stopping"
     clearInterval @pingIntervalId if @pingIntervalId?
     @adapter.close()
     @brain.close()
