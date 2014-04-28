@@ -117,5 +117,7 @@ module.exports = (robot) ->
 
     if adminNames.length > 0
       msg.reply "The following people have the 'admin' role: #{adminNames.join(', ')}"
+    else if robot.auth.hasRole(msg.envelope.user,'admin')
+      msg.reply "Looks like you're the only admin!"
     else
       msg.reply "There are no people that have the 'admin' role."
