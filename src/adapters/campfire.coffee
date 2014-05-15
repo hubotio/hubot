@@ -257,6 +257,7 @@ class CampfireStreaming extends EventEmitter
       "Authorization" : @authorization
       "Host"          : @host
       "Content-Type"  : "application/json"
+      "User-Agent"    : "Hubot/#{@robot.version} (#{@robot.name})"
 
     options =
       "agent"  : false
