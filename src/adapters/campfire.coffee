@@ -238,6 +238,7 @@ class CampfireStreaming extends EventEmitter
                     data.body
                   )
                 catch error
+                  @robot.emit 'error', error
                   logger.error "Campfire data error: #{error}\n#{error.stack}"
 
         response.on "end", ->
