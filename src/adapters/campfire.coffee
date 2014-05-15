@@ -182,6 +182,7 @@ class CampfireStreaming extends EventEmitter
       headers =
         "Host"          : "streaming.campfirenow.com"
         "Authorization" : self.authorization
+        "User-Agent"    : "Hubot/#{@robot.version} (#{@robot.name})"
 
       options =
         "agent"  : false
