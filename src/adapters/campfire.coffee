@@ -56,6 +56,10 @@ class Campfire extends Adapter
     withAuthor = (callback) ->
       (id, created, room, user, body) ->
         bot.User user, (err, userData) ->
+          if err?
+            @robot.emit 'error', err
+            @robot.logger.error "Campfire data error: #{error}\n#{error.stack}"
+            return
           if userData.user
             author = self.robot.brain.userForId(userData.user.id, userData.user)
             userId = userData.user.id
@@ -97,12 +101,21 @@ class Campfire extends Adapter
         bot.private[room] = false
 
     bot.Me (err, data) ->
+      if err?
+        @robot.emit 'error', err
+        @robot.logger.error "Campfire data error: #{err}\n#{err.stack}"
+        return
+
       bot.info = data.user
       bot.name = bot.info.name
 
       for roomId in bot.rooms
         do (roomId) ->
           bot.Room(roomId).join (err, callback) ->
+            if err?
+              @robot.emit 'error', err
+              @robot.logger.error "Campfire data error: #{err}\n#{err.stack}"
+              return
             bot.Room(roomId).listen()
 
     bot.on "reconnect", (roomId) ->
@@ -234,9 +247,11 @@ class CampfireStreaming extends EventEmitter
           , 5000
 
         response.on "error", (err) ->
+          @robot.emit 'error', err
           logger.error "Campfire listen response error: #{err}"
 
       request.on "error", (err) ->
+        @robot.emit 'error', err
         logger.error "Campfire listen request error: #{err}"
 
       request.end()
