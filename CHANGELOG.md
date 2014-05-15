@@ -1,6 +1,11 @@
 v2.7.4
 ======
 
+* Fix Campfire adapter to specify a User-Agent
+
+v2.7.4
+======
+
 * Update Campfire adapter to specify a User-Agent
 
 v2.7.3
