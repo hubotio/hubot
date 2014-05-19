@@ -1,4 +1,4 @@
-v2.7.4
+v2.7.5
 ======
 
 * Fix Campfire adapter to specify a User-Agent
