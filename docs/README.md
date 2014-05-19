@@ -92,6 +92,9 @@ In addition, there are scripts released as npm packages. If you find one you wan
 1. Add the package to the list of `dependencies` into your `package.json`
 2. `npm install` to make sure its installed
 
+To enable third-party scripts that you've added you will need to add the package
+name as a double quoted string to the `external-scripts.json` file in this repo.
+
 **Please note that external scripts may become the default for hubot scripts in future releases.**
 
 ## Adapters
