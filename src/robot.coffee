@@ -323,7 +323,10 @@ class Robot
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
         "#{path}/#{adapter}"
       else
-        "hubot-#{adapter}"
+        if path.indexOf("/") == 0
+          "#{path}/#{adapter}"
+        else
+          "hubot-#{adapter}"
 
       @adapter = require(path).use @
     catch err
