@@ -13,7 +13,6 @@ Response = require './response'
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
   'shell'
-  'test'
 ]
 
 HUBOT_DOCUMENTATION_SECTIONS = [
@@ -324,7 +323,10 @@ class Robot
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
         "#{path}/#{adapter}"
       else
-        "hubot-#{adapter}"
+        if Fs.existsSync(path)
+          "#{path}/#{adapter}"
+        else
+          "hubot-#{adapter}"
 
       @adapter = require(path).use @
     catch err
