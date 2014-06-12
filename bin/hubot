@@ -2,7 +2,6 @@
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Creator  = require '../src/creator'
 Hubot    = require '..'
 
 Fs       = require 'fs'
@@ -11,7 +10,7 @@ Path     = require 'path'
 
 Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-c", "--create PATH",     "Create a deployable hubot" ],
+  [ "-c", "--create PATH",     "REMOVED. See https://github.com/github/hubot/blob/master/docs/README.md" ],
   [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
@@ -27,7 +26,6 @@ Options =
   enableHttpd: process.env.HUBOT_HTTPD   or true
   scripts:     process.env.HUBOT_SCRIPTS or []
   name:        process.env.HUBOT_NAME    or "Hubot"
-  path:        process.env.HUBOT_PATH    or "."
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -36,7 +34,6 @@ Parser.on "adapter", (opt, value) ->
   Options.adapter = value
 
 Parser.on "create", (opt, value) ->
-  Options.path = value
   Options.create = true
 
 Parser.on "disable-httpd", (opt) ->
@@ -66,8 +63,12 @@ unless process.platform is "win32"
     process.exit 0
 
 if Options.create
-  creator = new Creator(Options.path)
-  creator.run()
+  output = [
+    "The `hubot --create` command has been removed.",
+    "Please see https://github.com/github/hubot/blob/master/docs/README.md"
+  ]
+  console.error output.join "\n"
+  process.exit(1)
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
