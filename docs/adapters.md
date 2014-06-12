@@ -4,9 +4,10 @@ Adapters are the interface to the service you want your hubot to run on.
 
 ## Official Adapters
 
-Hubot includes two official adapters:
+Hubot includes three official adapters:
 
 * [Shell](adapters/shell.md), i.e. for use with development
+* [Test](adapters/test.md), i.e. for use with testing
 * [Campfire](adapters/campfire.md)
 
 ## Third-party Adapters
