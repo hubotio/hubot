@@ -281,6 +281,7 @@ class Robot
     app.use express.query()
     app.use express.bodyParser()
     app.use express.static stat if stat
+    app.use express.static Path.normalize("#{__dirname}/#{stat}") if stat
 
     try
       @server = app.listen(process.env.PORT || 8080, process.env.BIND_ADDRESS || '0.0.0.0')
