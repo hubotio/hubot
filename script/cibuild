@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -ex
+
+find test -name '*_test.coffee' | xargs -n 1 -t coffee
