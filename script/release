@@ -34,4 +34,4 @@ git fetch -t origin
 # Tag it and bag it.
 
 npm publish && git tag "$tag" &&
-  git push origin master && git push origin "$tag"
+  git push origin master --tags
