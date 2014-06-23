@@ -22,6 +22,13 @@ npm update && script/smoke-test
 
 tag=v`node -e 'console.log(require("./package.json").version)'`
 
+# Ensure there's a line in the CHANGELOG
+
+grep "$tag" CHANGELOG.md || {
+  echo "No entry for '$tag' found in the CHANGELOG."
+  exit 1
+}
+
 # Make sure we haven't released this version before.
 
 git fetch -t origin
