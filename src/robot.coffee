@@ -3,6 +3,7 @@ Log            = require 'log'
 Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
+async          = require 'async'
 
 User = require './user'
 Brain = require './brain'
@@ -74,8 +75,8 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  hear: (regex, callback) ->
-    @listeners.push new TextListener(@, regex, callback)
+  hear: (regex, options, callback) ->
+    @listeners.push new TextListener(@, regex, options, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin
@@ -85,7 +86,7 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  respond: (regex, callback) ->
+  respond: (regex, options, callback) ->
     re = regex.toString().split('/')
     re.shift()
     modifiers = re.pop()
@@ -110,7 +111,7 @@ class Robot
         modifiers
       )
 
-    @listeners.push new TextListener(@, newRegex, callback)
+    @listeners.push new TextListener(@, newRegex, options, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
@@ -190,17 +191,27 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    results = []
-    for listener in @listeners
-      try
-        results.push listener.call(message)
-        break if message.done
-      catch error
-        @emit('error', error, new @Response(@, message, []))
+    # Try executing all registered Listeners in order of registration
+    # and return after message is done being processed
+    anyListenersExecuted = false
+    async.detectSeries(
+      @listeners,
+      (listener, cb) =>
+        try
+          listener.call message, (listenerExecuted) ->
+            anyListenersExecuted = anyListenersExecuted || listenerExecuted
+            cb(message.done)
+        catch err
+          # TODO provide useful info after catching an error (like a stacktrace!)
+          @emit('error', err, new @Response(@, message, []))
+      ,
+      (result) =>
+        # If no registered Listener matched the message
+        if message not instanceof CatchAllMessage and not anyListenersExecuted
+          @logger.debug 'No listeners executed; falling back to catch-all'
+          @receive new CatchAllMessage(message)
+    )
 
-        false
-    if message not instanceof CatchAllMessage and results.indexOf(true) is -1
-      @receive new CatchAllMessage(message)
 
   # Public: Loads a file in path.
   #
