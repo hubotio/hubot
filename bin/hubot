@@ -81,26 +81,26 @@ else
   robot.alias = Options.alias
 
   loadScripts = ->
-    scriptsPath = Path.resolve ".", "scripts"
+    scriptsPath = Path.resolve Options.path, "scripts"
     robot.load scriptsPath
 
-    scriptsPath = Path.resolve ".", "src", "scripts"
+    scriptsPath = Path.resolve Options.path, "src", "scripts"
     robot.load scriptsPath
 
-    hubotScripts = Path.resolve ".", "hubot-scripts.json"
+    hubotScripts = Path.resolve Options.path, "hubot-scripts.json"
     Fs.exists hubotScripts, (exists) ->
       if exists
         Fs.readFile hubotScripts, (err, data) ->
           if data.length > 0
             try
               scripts = JSON.parse data
-              scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+              scriptsPath = Path.resolve Options.path, "node_modules", "hubot-scripts", "src", "scripts"
               robot.loadHubotScripts scriptsPath, scripts
             catch err
               console.error "Error parsing JSON data from hubot-scripts.json: #{err}"
               process.exit(1)
 
-    externalScripts = Path.resolve ".", "external-scripts.json"
+    externalScripts = Path.resolve Options.path, "external-scripts.json"
     Fs.exists externalScripts, (exists) ->
       if exists
         Fs.readFile externalScripts, (err, data) ->
@@ -116,7 +116,7 @@ else
       if path[0] == '/'
         scriptsPath = path
       else
-        scriptsPath = Path.resolve ".", path
+        scriptsPath = Path.resolve Options.path, path
       robot.load scriptsPath
 
   robot.adapter.on 'connected', loadScripts
