@@ -37,7 +37,9 @@ class Shell extends Adapter
     @repl.on 'line', (buffer) =>
       @repl.close() if buffer.toLowerCase() is 'exit'
       @repl.prompt()
-      user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
+      user_id = parseInt(process.ENV.HUBOT_SHELL_USER_ID or '1')
+      user_name = process.ENV.HUBOT_SHELL_USER_NAME or 'Shell'
+      user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
       @receive new TextMessage user, buffer, 'messageId'
 
     self.emit 'connected'
