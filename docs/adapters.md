@@ -34,6 +34,7 @@ to have yours added to the list:
 * [AIM](https://github.com/shaundubuque/hubot-aim)
 * [Slack](https://github.com/tinyspeck/hubot-slack)
 * [Lingr](https://github.com/miyagawa/hubot-lingr)
+* [Gitter](https://github.com/huafu/hubot-gitter2)
 
 ## Writing Your Own adapter
 
