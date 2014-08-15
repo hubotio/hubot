@@ -47,7 +47,7 @@ class Robot
     @Response  = Response
     @commands  = []
     @listeners = []
-    @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @logger    = @createLogger()
 
     @parseVersion()
     if httpd
@@ -482,5 +482,14 @@ class Robot
   http: (url) ->
     HttpClient.create(url)
       .header('User-Agent', "Hubot/#{@version}")
+
+  # Private: Creates a Log instance, the Log level and Output stream
+  # are determined by Environment variables
+  #
+  # Returns a Log instance
+  createLogger: () ->
+    logLevel = process.env.HUBOT_LOG_LEVEL or 'info'
+    outStream = Fs.createWriteStream process.env.HUBOT_LOG_FILE, { flags: 'a' } if process.env.HUBOT_LOG_FILE?
+    new Log logLevel, outStream
 
 module.exports = Robot
