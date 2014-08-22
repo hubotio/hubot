@@ -13,7 +13,6 @@ module.exports = (robot) ->
   robot.respond /(boo+m)(?: (emit with(?:out)? msg|timeout|throw))?/i, (msg) ->
     boom = msg.match[1]
     how = msg.match[2]
-    err = boomError(boom, how)
 
     switch msg.match[1]
       when 'emit with msg'
@@ -32,4 +31,4 @@ module.exports = (robot) ->
     robot.logger.error "BOOM"
 
     if msg?
-      msg.reply "BOOM"
+      msg.reply err.stack, "BOOM"
