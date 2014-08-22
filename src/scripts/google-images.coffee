@@ -22,10 +22,10 @@ module.exports = (robot) ->
     imagery = msg.match[1]
 
     if imagery.match /^https?:\/\//i
-      msg.send "#{mustachify}#{imagery}"
+      msg.send "#{mustachify}#{encodeURIComponent imagery}"
     else
       imageMe msg, imagery, false, true, (url) ->
-        msg.send "#{mustachify}#{url}"
+        msg.send "#{mustachify}#{encodeURIComponent url}"
 
 imageMe = (msg, query, animated, faces, cb) ->
   cb = animated if typeof animated == 'function'
