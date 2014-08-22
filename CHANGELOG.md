@@ -1,6 +1,7 @@
 v2.8.1
 ======
 
+* Include link to https://github.com/hubot-scripts in addition to hubot-scripts repo
 * Remove auth.coffee. https://github.com/hubot-scripts/hubot-auth is recommended instead
 
 v2.8.0
