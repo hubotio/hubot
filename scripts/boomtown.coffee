@@ -26,3 +26,10 @@ module.exports = (robot) ->
         ), 0
       else
         throw boomError(boom, how)
+
+
+  robot.error (err, msg) ->
+    robot.logger.error "BOOM"
+
+    if msg?
+      msg.reply "BOOM"
