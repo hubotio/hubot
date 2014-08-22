@@ -2,11 +2,9 @@
 #   Trys to crash Hubot on purpose
 #
 # Commands:
-#   hubot boom - try to crash Hubot
+#   hubot boom [other text]- try to crash Hubot
 #   hubot boom emit with msg - try to crash Hubot by emitting an error with a msg
 #   hubot boom emit without msg - try to crash Hubot by emitting an error without a msg
-#   hubot boom throw- try to crash Hubot with a throw
-#
 
 boomError = (boom, string) ->
   new Error "Trying to #{boom} because you told me to #{string}"
