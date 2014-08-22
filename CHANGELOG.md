@@ -1,3 +1,8 @@
+v2.8.1
+======
+
+* Remove auth.coffee. https://github.com/hubot-scripts/hubot-auth is recommended instead
+
 v2.8.0
 ======
 
