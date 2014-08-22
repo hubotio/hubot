@@ -13,16 +13,16 @@ module.exports = (robot) ->
   robot.respond /(boo+m)(?: (emit with(?:out)? msg|timeout|throw))?/i, (msg) ->
     boom = msg.match[1]
     how = msg.match[2]
-    err = boomError(how)
+    err = boomError(boom, how)
 
     switch msg.match[1]
       when 'emit with msg'
-        robot.emit 'error', boomError(how), msg
+        robot.emit 'error', boomError(boom, how), msg
       when 'emit without msg'
-        robot.emit 'error', boomError(how)
+        robot.emit 'error', boomError(boom, how)
       when 'timeout'
         setTimeout (->
-          throw boomError(how)
+          throw boomError(boom, how)
         ), 0
       else
-        throw boomError(how)
+        throw boomError(boom, how)
