@@ -148,6 +148,30 @@ class Brain extends EventEmitter
 
     matchedUsers
 
+  # Public: Override the base EventEmitter.on method to handle the 'loaded'
+  # event even if it was emitted before registering the event listener. This is
+  # needed to avoid timing issues. See:
+  # https://github.com/github/hubot/issues/619
+  #
+  # Returns nothing.
+  on: (event, listener) ->
+    if event is 'loaded' and @loadedEventEmitted
+      listener(@data)
+    else
+      EventEmitter.prototype.on.call this, event, listener
+
+  # Public: Override the base EventEmitter.emit method to handle the 'loaded'
+  # event even if it was emitted before registering the event listener. This is
+  # needed to avoid timing issues. See:
+  # https://github.com/github/hubot/issues/619
+  #
+  # Returns nothing.
+  emit: (args...) ->
+    event = args[0]
+    EventEmitter.prototype.emit.apply this, args
+    if event is 'loaded'
+      @loadedEventEmitted = true
+
 # Private: Extend obj with objects passed as additional args.
 #
 # Returns the original object with updated changes.
