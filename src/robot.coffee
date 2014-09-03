@@ -269,7 +269,12 @@ class Robot
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
 
+    sessionOptions =
+      secret: @name + Date.now()
+
     express = require 'express'
+    cookieParser = require 'cookie-parser'
+    session = require 'express-session'
 
     app = express()
 
@@ -280,7 +285,9 @@ class Robot
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
     app.use express.bodyParser()
-    app.use express.static stat if stat
+    app.use cookieParser()
+    app.use session sessionOptions
+    app.use express.static Path.normalize("#{__dirname}/#{stat}") if stat
 
     try
       @server = app.listen(process.env.PORT || 8080, process.env.BIND_ADDRESS || '0.0.0.0')
