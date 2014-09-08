@@ -20,7 +20,7 @@ module.exports = (robot) ->
 
   robot.respond /DELAYEDECHO (\d+) (.*)$/i, (msg) ->
     timeout = parseInt(msg.match[1], 10)
-    sendResponse = () -> msg.send msg.match[2]
+    sendResponse = -> msg.send msg.match[2]
     setTimeout(sendResponse, timeout)
 
   robot.respond /TIME$/i, (msg) ->
