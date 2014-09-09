@@ -81,7 +81,7 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
 
 Hubot will print useful logging information to standard output window by default, and the default log level is set to 'info'. 
 
-While you may change the log level by a global variable `HUBOT_LOG_LEVEL`, the value could be one of the following depending on your requirement:
+While you may change the log level by a global variable `HUBOT_LOG_LEVEL` or command line option `--log-level` or `-p`, the value could be one of the following depending on your requirement:
 
 - emergency
 - alert
@@ -92,7 +92,7 @@ While you may change the log level by a global variable `HUBOT_LOG_LEVEL`, the v
 - info
 - debug
 
-You may also want to let the logging information write to a disk file instead of stdout by setting a file path to global variable `HUBOT_LOG_FILE`.
+You may also want to let the logging information write to a disk file instead of stdout by setting a file path to global variable `HUBOT_LOG_FILE` or command line option `--log-file` or `-f`.
 
 If you want to log your own script information with the same logging system, you can access the log object via `robot.logger` or `msg.robot.logger`.
 
