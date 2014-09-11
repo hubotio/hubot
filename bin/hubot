@@ -2,7 +2,6 @@
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Creator  = require '../src/creator'
 Hubot    = require '..'
 
 Fs       = require 'fs'
@@ -71,8 +70,12 @@ unless process.platform is "win32"
     process.exit 0
 
 if Options.create
-  creator = new Creator(Options.path)
-  creator.run()
+  console.error "'hubot --create' is depreated. Use the yeoman generator instead:"
+  console.error "    npm install -g generator-hubot"
+  console.error "    mkdir yourbot"
+  console.error "    yo hubot"
+  console.error "See https://github.com/github/hubot/blob/master/docs/README.md for more details on getting started."
+  process.exit 1
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
