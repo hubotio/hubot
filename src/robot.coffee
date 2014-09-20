@@ -483,4 +483,26 @@ class Robot
     HttpClient.create(url)
       .header('User-Agent', "Hubot/#{@version}")
 
+# Private: Calculate amount of difference between two commands
+#
+# Returns the distance value
+levenshtein = (str1, str2) ->
+  l1 = str1.length
+  l2 = str2.length
+  dist = []
+
+  return l2 unless l1
+  return l1 unless l2
+
+  dist[i] = [i] for i in [0..l1]
+  dist[0][j] = j for j in [1..l2]
+
+  for i in [1..l1]
+    for j in [1..l2]
+      if str1[i-1] is str2[j-1]
+        dist[i][j] = dist[i-1][j-1]
+      else
+        dist[i][j] = Math.min(dist[i-1][j], dist[i][j-1], dist[i-1][j-1]) + 1
+  dist[l1][l2]
+
 module.exports = Robot
