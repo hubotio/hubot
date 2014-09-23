@@ -11,6 +11,7 @@ class Response
       room: @message.room
       user: @message.user
       message: @message
+      metadata: @message.metadata
 
   # Public: Posts a message back to the chat source
   #
