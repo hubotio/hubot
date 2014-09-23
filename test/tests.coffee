@@ -36,7 +36,7 @@ exports.danger = (helper, cb) ->
 
 class Helper extends Robot
   constructor: (scriptPath) ->
-    super null, null, true, 'helper'
+    super null, null, 'helper'
     @load scriptPath
     @id = 1
     @Response = Helper.Response
