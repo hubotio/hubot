@@ -17,7 +17,8 @@ class TextMessage extends Message
   # user - A User instance that sent the message.
   # text - A String message.
   # id   - A String of the message ID.
-  constructor: (@user, @text, @id) ->
+  # data - Additional metadata about the message, like room or thread info
+  constructor: (@user, @text, @id, @metadata = {}) ->
     super @user
 
   # Determines if the message matches the given regex.
@@ -27,7 +28,7 @@ class TextMessage extends Message
   # Returns a Match object or null.
   match: (regex) ->
     @text.match regex
-  
+
   # String representation of a TextMessage
   #
   # Returns the message text

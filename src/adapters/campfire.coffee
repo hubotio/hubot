@@ -69,7 +69,7 @@ class Campfire extends Adapter
     bot.on "TextMessage",
       withAuthor (id, created, room, user, body, author) ->
         unless bot.info.id is author.id
-          message = new TextMessage author, body, id
+          message = new TextMessage author, body, id, room: room
           message.private = bot.private[room]
           self.receive message
 
