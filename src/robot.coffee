@@ -51,6 +51,7 @@ class Robot
 
     @parseVersion()
     if httpd
+      @logger.warning 'Inbuilt Express support is DEPRECATED and will soon be replaced by hubot-express'
       @setupExpress()
     else
       @setupNullRouter()
