@@ -25,7 +25,6 @@ Options =
   adapter:     process.env.HUBOT_ADAPTER or "shell"
   alias:       process.env.HUBOT_ALIAS   or false
   create:      process.env.HUBOT_CREATE  or false
-  enableHttpd: process.env.HUBOT_HTTPD   or true
   scripts:     process.env.HUBOT_SCRIPTS or []
   name:        process.env.HUBOT_NAME    or "Hubot"
   path:        process.env.HUBOT_PATH    or "."
@@ -40,9 +39,6 @@ Parser.on "adapter", (opt, value) ->
 Parser.on "create", (opt, value) ->
   Options.path = value
   Options.create = true
-
-Parser.on "disable-httpd", (opt) ->
-  Options.enableHttpd = false
 
 Parser.on "help", (opt, value) ->
   console.log Parser.toString()
@@ -77,7 +73,7 @@ if Options.create
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.name
 
   if Options.version
     console.log robot.version

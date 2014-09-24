@@ -34,11 +34,10 @@ class Robot
   #
   # adapterPath - A String of the path to local adapters.
   # adapter     - A String of the adapter name.
-  # httpd       - A Boolean whether to enable the HTTP daemon.
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
+  constructor: (adapterPath, adapter, name = 'Hubot') ->
     @name      = name
     @events    = new EventEmitter
     @brain     = new Brain @
@@ -50,10 +49,6 @@ class Robot
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
-    if httpd
-      @setupExpress()
-    else
-      @setupNullRouter()
     @pingIntervalId = null
 
     @loadAdapter adapterPath, adapter
@@ -65,7 +60,6 @@ class Robot
       @invokeErrorHandlers(err, msg)
     process.on 'uncaughtException', (err) =>
       @emit 'error', err
-
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -261,55 +255,6 @@ class Robot
       @logger.error "Error loading scripts from npm package - #{err.stack}"
       process.exit(1)
 
-  # Setup the Express server's defaults.
-  #
-  # Returns nothing.
-  setupExpress: ->
-    user    = process.env.EXPRESS_USER
-    pass    = process.env.EXPRESS_PASSWORD
-    stat    = process.env.EXPRESS_STATIC
-
-    express = require 'express'
-
-    app = express()
-
-    app.use (req, res, next) =>
-      res.setHeader "X-Powered-By", "hubot/#{@name}"
-      next()
-
-    app.use express.basicAuth user, pass if user and pass
-    app.use express.query()
-    app.use express.bodyParser()
-    app.use express.static stat if stat
-
-    try
-      @server = app.listen(process.env.PORT || 8080, process.env.BIND_ADDRESS || '0.0.0.0')
-      @router = app
-    catch err
-      @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
-      process.exit(1)
-
-    herokuUrl = process.env.HEROKU_URL
-
-    if herokuUrl
-      herokuUrl += '/' unless /\/$/.test herokuUrl
-      @pingIntervalId = setInterval =>
-        HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
-          @logger.info 'keep alive ping!'
-      , 1200000
-
-  # Setup an empty router object
-  #
-  # returns nothing
-  setupNullRouter: ->
-    msg = "A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd."
-    @router =
-      get: ()=> @logger.warning msg
-      post: ()=> @logger.warning msg
-      put: ()=> @logger.warning msg
-      delete: ()=> @logger.warning msg
-
-
   # Load the adapter Hubot is going to use.
   #
   # path    - A String of the path to adapter if local.
@@ -481,6 +426,6 @@ class Robot
   # Returns a ScopedClient instance.
   http: (url) ->
     HttpClient.create(url)
-      .header('User-Agent', "Hubot/#{@version}")
+      .header('User-Agent', "hubot/#{@version}")
 
 module.exports = Robot
