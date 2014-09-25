@@ -48,7 +48,6 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
     hubot help <query> - Displays all help commands that match <query>.
     hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
     hubot map me <query> - Returns a map view of the area returned by `query`.
-    hubot math me <expression> - Calculate the given expression.
     hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
     hubot mustache me <url> - Adds a mustache to the specified URL.
     hubot ping - Reply with pong
