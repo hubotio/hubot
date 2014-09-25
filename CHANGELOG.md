@@ -1,3 +1,8 @@
+v2.8.2
+======
+
+* Fix error logging when not using any error handlers
+
 v2.8.1
 ======
 
