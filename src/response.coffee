@@ -11,7 +11,8 @@ class Response
       room: @message.room
       user: @message.user
       message: @message
-      metadata: @message.metadata
+    for own k,v of @message.envelope
+      @envelope[k] = v
 
   # Public: Posts a message back to the chat source
   #

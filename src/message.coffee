@@ -2,8 +2,8 @@ class Message
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
-  constructor: (@user, @done = false) ->
-    @room = @user.room
+  constructor: (@user, @done = false, @envelope = {}) ->
+    @room = @envelope.room ? @user.room
 
   # Indicates that no other Listener should be called on this object
   #
@@ -14,12 +14,12 @@ class Message
 class TextMessage extends Message
   # Represents an incoming message from the chat.
   #
-  # user - A User instance that sent the message.
-  # text - A String message.
-  # id   - A String of the message ID.
-  # data - Additional metadata about the message, like room or thread info
-  constructor: (@user, @text, @id, @metadata = {}) ->
-    super @user
+  # user     - A User instance that sent the message.
+  # text     - A String message.
+  # id       - A String of the message ID.
+  # envelope - Additional metadata about the message, like room or thread info
+  constructor: (@user, @text, @id, envelope = {}) ->
+    super @user, undefined, envelope
 
   # Determines if the message matches the given regex.
   #
