@@ -26,3 +26,7 @@ setTimeout ->
   assert.ok saved
   assert.ok closed
 , 200
+
+user = brain.userForId 9876
+assert.strictEqual 9876, user.id
+assert.strictEqual "9876", user.name
