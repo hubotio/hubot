@@ -1,3 +1,8 @@
+v2.8.3
+======
+
+* Fix error when trying to find userForName, when name is incorrectly set as an integer
+
 v2.8.2
 ======
 
