@@ -102,7 +102,6 @@ name as a double quoted string to the `external-scripts.json` file in this repo.
 
     % heroku create --stack cedar
     % git push heroku master
-    % heroku ps:scale app=1
 
 If your Heroku account has been verified you can run the following to enable
 and add the Redis to Go addon to your app.
