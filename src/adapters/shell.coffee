@@ -24,9 +24,6 @@ class Shell extends Adapter
     stdin = process.openStdin()
     stdout = process.stdout
 
-    process.on 'uncaughtException', (err) =>
-      @robot.logger.error err.stack
-
     @repl = Readline.createInterface stdin, stdout, null
 
     @repl.on 'close', =>

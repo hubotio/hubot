@@ -58,6 +58,7 @@ class Robot
 
     @loadAdapter adapterPath, adapter
 
+    @adapterName   = adapter
     @errorHandlers = []
 
     @on 'error', (err, msg) =>
@@ -164,6 +165,7 @@ class Robot
   #
   # Returns nothing.
   invokeErrorHandlers: (err, msg) ->
+    @logger.error err.stack
     for errorHandler in @errorHandlers
      try
        errorHandler(err, msg)
@@ -210,7 +212,7 @@ class Robot
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
-    if ext is '.coffee' or ext is '.js'
+    if require.extensions[ext]
       try
         require(full) @
         @parseHelp Path.join(path, file)
@@ -225,10 +227,10 @@ class Robot
   # Returns nothing.
   load: (path) ->
     @logger.debug "Loading scripts from #{path}"
-    Fs.exists path, (exists) =>
-      if exists
-        for file in Fs.readdirSync(path).sort()
-          @loadFile path, file
+
+    if Fs.existsSync(path)
+      for file in Fs.readdirSync(path).sort()
+        @loadFile path, file
 
   # Public: Load scripts specfied in the `hubot-scripts.json` file.
   #

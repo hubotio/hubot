@@ -48,7 +48,6 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
     hubot help <query> - Displays all help commands that match <query>.
     hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
     hubot map me <query> - Returns a map view of the area returned by `query`.
-    hubot math me <expression> - Calculate the given expression.
     hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
     hubot mustache me <url> - Adds a mustache to the specified URL.
     hubot ping - Reply with pong
@@ -91,6 +90,9 @@ In addition, there are scripts released as npm packages. If you find one you wan
 
 1. Add the package to the list of `dependencies` into your `package.json`
 2. `npm install` to make sure its installed
+
+To enable third-party scripts that you've added you will need to add the package
+name as a double quoted string to the `external-scripts.json` file in this repo.
 
 **Please note that external scripts may become the default for hubot scripts in future releases.**
 

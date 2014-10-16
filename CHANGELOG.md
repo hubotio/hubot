@@ -1,3 +1,45 @@
+v2.8.2
+======
+
+* Fix error logging when not using any error handlers
+
+v2.8.1
+======
+
+* Include link to https://github.com/hubot-scripts in addition to hubot-scripts repo
+* Remove auth.coffee. https://github.com/hubot-scripts/hubot-auth is recommended instead
+
+v2.8.0
+======
+
+* Add support for `hubot --check-config` to verify hubot will load based on how it's configured
+* Include `script/` directory for convenient one-liners for common tasks of developing github/hubot
+* Fixes to default `image me` and `help`
+* Updated documentation about external scripts
+* Add better debug output when receiving text messages
+
+v2.7.5
+======
+
+* Fix Campfire adapter to specify a User-Agent
+
+v2.7.4
+======
+
+* Update Campfire adapter to specify a User-Agent
+
+v2.7.3
+======
+
+* Updated list of adapters in documentation
+* Document script load order
+* Support any file extension for script that node supports
+
+v2.7.2
+======
+
+* Expose the robot adapter name as `robot.adapterName`.
+
 v2.7.1
 ======
 
