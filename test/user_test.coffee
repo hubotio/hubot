@@ -12,3 +12,7 @@ assert.equal "Fake User", user.id
 assert.equal "chat@room.jabber", user.room
 assert.equal "groupchat", user.type
 assert.equal "Fake User", user.name # Make sure that if no name is given, we fallback to the ID
+
+user = new User 12345
+assert.strictEqual 12345, user.id
+assert.strictEqual "12345", user.name

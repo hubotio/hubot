@@ -6,6 +6,6 @@ class User
   constructor: (@id, options = {}) ->
     for k of (options or {})
       @[k] = options[k]
-    @['name'] ||= @id
+    @['name'] ||= @id.toString()
 
 module.exports = User
