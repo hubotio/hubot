@@ -5,7 +5,11 @@
 You will need [node.js](http://nodejs.org/) and [npm](https://npmjs.org/). Joyent has
 an [excellent blog post on how to get those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
 
-Once node and npm are ready, we can install hubot and coffeescript:
+You will also need [Redis](http://redis.io/download) for hubots brain. After the installation start Redis server:  
+
+    redis-server
+
+Once node, npm and redis are ready, we can install hubot and coffeescript:
 
     % npm install -g hubot coffee-script
 
