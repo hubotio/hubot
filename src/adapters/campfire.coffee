@@ -1,9 +1,14 @@
 HTTPS          = require 'https'
 {EventEmitter} = require 'events'
 
-Robot                                                = require '../robot'
-Adapter                                              = require '../adapter'
-{TextMessage,EnterMessage,LeaveMessage,TopicMessage} = require '../message'
+Robot          = require '../robot'
+Adapter        = require '../adapter'
+{
+  TextMessage
+  EnterMessage
+  LeaveMessage
+  TopicMessage
+}              = require '../message'
 
 class Campfire extends Adapter
   send: (envelope, strings...) ->

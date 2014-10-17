@@ -6,8 +6,7 @@ class Creator
   # Setup a ready to go version of hubot
   #
   # path - A String directory to create/upgrade scripts for
-  constructor: (path) ->
-    @path = path
+  constructor: (@path) ->
     @templateDir = "#{__dirname}/templates"
     @scriptsDir  = "#{__dirname}/scripts"
 
