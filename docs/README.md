@@ -7,7 +7,7 @@ an [excellent blog post on how to get those installed](http://joyent.com/blog/in
 
 Once node and npm are ready, we can install the hubot generator:
 
-    % npm install -g npm install -g generator-hubot
+    %  npm install -g yo generator-hubot
 
 This will give us the `hubot` [yeoman](http://yeoman.io/) generator. Now we
 can make a new directory, and generate a new instance of hubot in it. For example, if
