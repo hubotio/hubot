@@ -165,6 +165,7 @@ class Robot
   #
   # Returns nothing.
   invokeErrorHandlers: (err, msg) ->
+    @logger.error err.stack
     for errorHandler in @errorHandlers
      try
        errorHandler(err, msg)

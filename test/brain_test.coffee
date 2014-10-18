@@ -6,7 +6,10 @@ saved   = false
 closing = false
 closed  = false
 
-brain = new Brain
+fakeRobot =
+  on: ->
+
+brain = new Brain fakeRobot
 
 brain.on 'save', (data) ->
   is_closing = closing
@@ -19,7 +22,11 @@ brain.on 'close', ->
 
 brain.data.abc = 1
 brain.resetSaveInterval 0.1
-
-process.on 'exit', ->
+setTimeout ->
   assert.ok saved
   assert.ok closed
+, 200
+
+user = brain.userForId 9876
+assert.strictEqual 9876, user.id
+assert.strictEqual "9876", user.name
