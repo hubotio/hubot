@@ -14,7 +14,8 @@ can make a new directory, and generate a new instance of hubot in it. For exampl
 we wanted to make a bot called bender:
 
 
-    % mkdir bender
+    % mkdir myhubot
+    % cd myhubot
     % yo hubot
 
 At this point, you'll be asked a few questions about who is creating the bot,
