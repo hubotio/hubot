@@ -1,3 +1,8 @@
+v2.9.0
+======
+
+* Deprecate `hubot --create` in favor of new yeoman generator
+
 v2.8.3
 ======
 
