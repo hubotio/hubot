@@ -534,19 +534,20 @@ Hubot has an in-memory key-value store exposed as `robot.brain` that can be
 used to store and retrieve data by scripts.
 
 ```coffeescript
-module.exports = (robot) ->
-  robot.respond /have a beer/i, (msg) ->
-    # Get number of beers had (coerced to a number).
-    beersHad = robot.brain.get('totalBeers') * 1 or 0
+robot.respond /have a soda/i, (msg) ->
+  # Get number of sodas had (coerced to a number).
+  sodasHad = robot.brain.get('totalSodas') * 1 or 0
 
-    if beersHad > 4
-      msg.reply "I'm too drunk.."
+  if sodasHad > 4
+    msg.reply "I'm too fizzy.."
 
-    else
-      msg.reply 'Sure!'
+  else
+    msg.reply 'Sure!'
 
-      robot.brain.set 'totalBeers', beersHad+1
-      # Or robot.brain.set totalBeers: beersHad+1
+    robot.brain.set 'totalSodas', sodasHad+1
+robot.respond /sleep it off/i, (msg) ->
+  robot.brain.set 'totalSodas', 0
+  robot.respond 'zzzzz'
 ```
 
 If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
