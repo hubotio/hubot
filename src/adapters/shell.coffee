@@ -1,4 +1,4 @@
-Readline = require 'readline'
+Readline = require 'readline-history'
 
 Robot         = require '../robot'
 Adapter       = require '../adapter'
@@ -20,27 +20,33 @@ class Shell extends Adapter
     @send envelope, strings...
 
   run: ->
-    self = @
     stdin = process.openStdin()
     stdout = process.stdout
 
-    @repl = Readline.createInterface stdin, stdout, null
+    @repl = null
+    Readline.createInterface
+      path: ".hubot_history",
+      input: stdin,
+      output: stdout,
+      maxDiskLength: 1024 * 1024,
+      maxLength: 1024 * 1024,
+      next: (rl) =>
+        @repl = rl
+        @repl.on 'close', =>
+          stdin.destroy()
+          @robot.shutdown()
+          process.exit 0
 
-    @repl.on 'close', =>
-      stdin.destroy()
-      @robot.shutdown()
-      process.exit 0
+        @repl.on 'line', (buffer) =>
+          @repl.close() if buffer.toLowerCase() is 'exit'
+          @repl.prompt()
+          user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
+          @receive new TextMessage user, buffer, 'messageId'
 
-    @repl.on 'line', (buffer) =>
-      @repl.close() if buffer.toLowerCase() is 'exit'
-      @repl.prompt()
-      user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
-      @receive new TextMessage user, buffer, 'messageId'
+        @emit 'connected'
 
-    self.emit 'connected'
-
-    @repl.setPrompt "#{@robot.name}> "
-    @repl.prompt()
+        @repl.setPrompt "#{@robot.name}> "
+        @repl.prompt()
 
 exports.use = (robot) ->
   new Shell robot
