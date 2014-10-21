@@ -1,3 +1,8 @@
+v2.9.1
+======
+
+* Improve instructions for using new yeoman generator when calling `hubot --create`
+
 v2.9.0
 ======
 
