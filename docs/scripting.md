@@ -69,14 +69,14 @@ The `robot` parameter is an instance of your robot friend. At this point, we can
 
 ## Hearing and responding
 
-Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
+Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression, an optional options Object, and a callback function as parameters. For example:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.hear /badger/i, (msg) ->
+  robot.hear /badger/i, id:'my-script.badger', (msg) ->
     # your code here
 
-  robot.respond /open the pod bay doors/i, (msg) ->
+  robot.respond /open the pod bay doors/i, id:'my-script.open-doors', (msg) ->
     # your code here
 ```
 
@@ -99,6 +99,10 @@ It wouldn't be called for:
    *  because its `respond` is bound to the text immediately following the robot name
 *  has anyone ever mentioned how lovely you are when you open pod bay doors?
    * because it lacks the robot's name
+
+The options Object is a way to attach arbitrary metadata to a Listener (hear/respond entry) and enable easy extension of the core hubot functionality. By default, the only handled option inside the options Object is `id`. Additional options may be handled by other scripts that extend hubot.
+
+Every Listener (hear/respond) should be given a unique name (options.id; defaults to 'unknown'). At minimum, names should be scoped by module (e.g. "my-module.my-listener"). These names allow other scripts to extend the functionality of existing scripts with additional functionality like authorization and rate limiting.
 
 ## Send & reply
 
