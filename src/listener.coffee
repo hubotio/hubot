@@ -5,6 +5,8 @@
 class Listener
   # Listeners receive every message from the chat source and decide if they
   # want to act on it.
+  # An identifier should be provided in the options parameter to uniquely
+  # identify the listener (options.id).
   #
   # robot    - A Robot instance.
   # matcher  - A Function that determines if this listener should trigger the
@@ -16,6 +18,8 @@ class Listener
     if not @callback?
       @callback = @options
       @options = {}
+    if not @options.id?
+      @options.id = 'unknown'
 
   # Public: Determines if the listener likes the content of the message. If
   # so, a Response built from the given Message is passed to the Listener
