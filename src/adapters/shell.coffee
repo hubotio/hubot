@@ -52,12 +52,12 @@ class Shell extends Adapter
             else
               user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
               @receive new TextMessage user, buffer, 'messageId'
-          @repl.prompt()
+          @repl.prompt(true)
 
         @emit 'connected'
 
         @repl.setPrompt "#{@robot.name}> "
-        @repl.prompt()
+        @repl.prompt(true)
 
 exports.use = (robot) ->
   new Shell robot
