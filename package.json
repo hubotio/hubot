@@ -28,7 +28,8 @@
     "optparse":           "1.0.4",
     "scoped-http-client": "0.9.8",
     "log":                "1.4.0",
-    "express":            "3.3.4"
+    "express":            "3.3.4",
+    "async":              "~0.9.0"
   },
 
   "engines": {
