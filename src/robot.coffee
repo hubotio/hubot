@@ -3,6 +3,7 @@ Log            = require 'log'
 Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
+async          = require 'async'
 
 User = require './user'
 Brain = require './brain'
@@ -39,15 +40,16 @@ class Robot
   #
   # Returns nothing.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
-    @name      = name
-    @events    = new EventEmitter
-    @brain     = new Brain @
-    @alias     = false
-    @adapter   = null
-    @Response  = Response
-    @commands  = []
-    @listeners = []
-    @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @name       = name
+    @events     = new EventEmitter
+    @brain      = new Brain @
+    @alias      = false
+    @adapter    = null
+    @Response   = Response
+    @commands   = []
+    @listeners  = []
+    @middleware = []
+    @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
     if httpd
@@ -184,6 +186,21 @@ class Robot
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
+  # Public: Registers new middleware for execution after matching but before
+  # Listener callbacks
+  #
+  # middleware - A function that determines whether or not a given matching
+  #              Listener should be executed. The function is called with
+  #              (robot, listener, response, next, done). If execution should
+  #              continue (next middleware, Listener callback), the middleware
+  #              should call the 'next' function with 'done' as an argument.
+  #              If not, the middleware should call the 'done' function with
+  #              no arguments.
+  #
+  # Returns nothing.
+  addListenerMiddleware: (middleware) ->
+    @middleware.push middleware
+
   # Public: Passes the given message to any interested Listeners.
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
@@ -191,17 +208,27 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
-    results = []
-    for listener in @listeners
-      try
-        results.push listener.call(message)
-        break if message.done
-      catch error
-        @emit('error', error, new @Response(@, message, []))
+    # Try executing all registered Listeners in order of registration
+    # and return after message is done being processed
+    anyListenersExecuted = false
+    async.detectSeries(
+      @listeners,
+      (listener, cb) =>
+        try
+          listener.call message, (listenerExecuted) ->
+            anyListenersExecuted = anyListenersExecuted || listenerExecuted
+            # Stop processing when message.done == true
+            cb(message.done)
+        catch err
+          @emit('error', err, new @Response(@, message, []))
+      ,
+      (result) =>
+        # If no registered Listener matched the message
+        if message not instanceof CatchAllMessage and not anyListenersExecuted
+          @logger.debug 'No listeners executed; falling back to catch-all'
+          @receive new CatchAllMessage(message)
+    )
 
-        false
-    if message not instanceof CatchAllMessage and results.indexOf(true) is -1
-      @receive new CatchAllMessage(message)
 
   # Public: Loads a file in path.
   #
