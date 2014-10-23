@@ -4,6 +4,12 @@ Robot         = require '../robot'
 Adapter       = require '../adapter'
 {TextMessage} = require '../message'
 
+
+historySize = if process.env.HUBOT_SHELL_HISTSIZE?
+                parseInt(process.env.HUBOT_SHELL_HISTSIZE)
+              else
+                1024
+
 class Shell extends Adapter
   send: (envelope, strings...) ->
     unless process.platform is 'win32'
@@ -28,8 +34,7 @@ class Shell extends Adapter
       path: ".hubot_history",
       input: stdin,
       output: stdout,
-      maxDiskLength: 1024 * 1024,
-      maxLength: 1024 * 1024,
+      maxLength: historySize, # number of entries
       next: (rl) =>
         @repl = rl
         @repl.on 'close', =>
