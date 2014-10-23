@@ -74,8 +74,8 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  hear: (regex, callback) ->
-    @listeners.push new TextListener(@, regex, callback)
+  hear: (regex, options, callback) ->
+    @listeners.push new TextListener(@, regex, options, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin
@@ -85,7 +85,7 @@ class Robot
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  respond: (regex, callback) ->
+  respond: (regex, options, callback) ->
     re = regex.toString().split('/')
     re.shift()
     modifiers = re.pop()
@@ -110,7 +110,7 @@ class Robot
         modifiers
       )
 
-    @listeners.push new TextListener(@, newRegex, callback)
+    @listeners.push new TextListener(@, newRegex, options, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
