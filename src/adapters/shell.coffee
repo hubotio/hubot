@@ -38,10 +38,16 @@ class Shell extends Adapter
           process.exit 0
 
         @repl.on 'line', (buffer) =>
-          @repl.close() if buffer.toLowerCase() is 'exit'
+
+          switch buffer.toLowerCase()
+            when "exit"
+              @repl.close()
+            when "history"
+              stdout.write "#{line}\n" for line in @repl.history
+            else
+              user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
+              @receive new TextMessage user, buffer, 'messageId'
           @repl.prompt()
-          user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
-          @receive new TextMessage user, buffer, 'messageId'
 
         @emit 'connected'
 
