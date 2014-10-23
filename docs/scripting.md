@@ -296,7 +296,7 @@ Hubot can access the environment he's running in, just like any other node progr
 answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg)
+  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
     msg.send "#{answer}, but what is the question?"
 ```
 
@@ -308,7 +308,7 @@ Here we can default to something:
 answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING or 42
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg)
+  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
     msg.send "#{answer}, but what is the question?"
 ```
 
@@ -321,7 +321,7 @@ unless answer?
   process.exit(1)
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg)
+  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
     msg.send "#{answer}, but what is the question?"
 ```
 
@@ -331,7 +331,7 @@ And lastly, we update the `robot.respond` to check it:
 answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg)
+  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
     unless answer?
       msg.send "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
       return
@@ -358,7 +358,7 @@ Hubot can run code later using JavaScript's built-in [setTimeout](http://nodejs.
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.respond /you are a little slow/, (msg)
+  robot.respond /you are a little slow/, (msg) ->
     setTimeout () ->
       msg.send "Who you calling 'slow'?"
     , 60 * 1000
@@ -368,7 +368,7 @@ Additionally, Hubot can run code on an interval using [setInterval](http://nodej
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.respond /annoy me/, (msg)
+  robot.respond /annoy me/, (msg) ->
     msg.send "Hey, want to hear the most annoying sound in the world?"
     setInterval () ->
       msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
@@ -381,7 +381,7 @@ Both `setTimeout` and `setInterval` return the ID of the timeout or interval it 
 module.exports = (robot) ->
   annoyIntervalId = null
 
-  robot.respond /annoy me/, (msg)
+  robot.respond /annoy me/, (msg) ->
     if annoyIntervalId
       msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
       return
@@ -391,10 +391,10 @@ module.exports = (robot) ->
       msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
     , 1000
 
-  robot.respond /unannoy me/, (msg)
+  robot.respond /unannoy me/, (msg) ->
     if annoyIntervalId
       msg.send "GUYS, GUYS, GUYS!"
-      clearInterval(annoyIntervalId)
+      clearInterval(annoyIntervalId) ->
       annoyIntervalId = null
     else
       msg.send "Not annoying you right now, am I?"
