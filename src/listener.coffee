@@ -15,11 +15,18 @@ class Listener
   #            (optional).
   # callback - A Function that is triggered if the incoming message matches.
   constructor: (@robot, @matcher, @options, @callback) ->
+    if not @matcher?
+      throw new Error "Missing a matcher for Listener"
+
     if not @callback?
       @callback = @options
       @options = {}
+
     if not @options.id?
       @options.id = 'unknown'
+
+    if not @callback?
+      throw new Error "Missing a callback for Listener"
 
   # Public: Determines if the listener likes the content of the message. If
   # so, a Response built from the given Message is passed to the Listener
