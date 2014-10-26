@@ -27,7 +27,7 @@ v2.8.1
 v2.8.0
 ======
 
-* Add support for `hubot --check-config` to verify hubot will load based on how it's configured
+* Add support for `hubot --config-check` to verify hubot will load based on how it's configured
 * Include `script/` directory for convenient one-liners for common tasks of developing github/hubot
 * Fixes to default `image me` and `help`
 * Updated documentation about external scripts
