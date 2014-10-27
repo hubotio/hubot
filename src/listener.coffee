@@ -48,8 +48,11 @@ class Listener
       # callback and calls done (never calls 'next')
       executeListener = (response, done) =>
         @robot.logger.debug "Executing listener callback for Message '#{message}'"
-        @callback response
-        done()
+        try
+          @callback response
+          done()
+        catch err
+          @emit('error', err, new @Response(@, message, []))
 
       # When everything is finished (down the middleware stack and back up),
       # pass control back to the robot

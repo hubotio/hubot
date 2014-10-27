@@ -200,6 +200,7 @@ class Robot
   # Returns nothing.
   addListenerMiddleware: (middleware) ->
     @middleware.push middleware
+    return undefined
 
   # Public: Passes the given message to any interested Listeners.
   #
