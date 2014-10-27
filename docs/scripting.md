@@ -454,7 +454,7 @@ If you provide an event, it's highly recommended to include a hubot user or room
 
 Hubot supports injecting arbitrary code in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics.
 
-Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted). Due to the potentially asynchronous nature of middleware, each piece of middleware is responsible for catching its own exceptions and emitting an `error` event.
 
 On execution, middleware is passed:
 - robot object
@@ -469,7 +469,7 @@ A simple example of middleware logging command executions:
 module.exports = (robot) ->
   robot.addListenerMiddleware (robot, listener, response, next, done) ->
     # Log commands
-    console.log "#{response.message.user.name} asked me to #{response.message.text}"
+    robot.logger.info "#{response.message.user.name} asked me to #{response.message.text}"
     # Continue executing middleware
     next(done)
 ```
@@ -481,17 +481,20 @@ module.exports = (robot) ->
   lastExecutedTime = {}
 
   robot.addListenerMiddleware (robot, listener, response, next, done) ->
-    # Default to 1s unless listener provides a different minimum period
-    minPeriodMs = listener.options?.rateLimits?.minPeriodMs? or 1000
+    try
+      # Default to 1s unless listener provides a different minimum period
+      minPeriodMs = listener.options?.rateLimits?.minPeriodMs? or 1000
 
-    # See if command has been executed recently
-    if lastExecutedTime.hasOwnProperty(listener.options.id) and
-       lastExecutedTime[listener.options.id] > (Date.now()-minPeriodMs)
-      # Command is being executed too quickly!
-      done()
-    else
-      next () ->
-        lastExecutedTime[listener.options.id] = Date.now()
+      # See if command has been executed recently
+      if lastExecutedTime.hasOwnProperty(listener.options.id) and
+         lastExecutedTime[listener.options.id] > (Date.now()-minPeriodMs)
+        # Command is being executed too quickly!
+        done()
+      else
+        next () ->
+          lastExecutedTime[listener.options.id] = Date.now()
+    catch err
+      robot.emit('error', err, response)
 ```
 In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If so, the middleware intercepts and calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
 
