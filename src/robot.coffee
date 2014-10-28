@@ -218,8 +218,11 @@ class Robot
         try
           listener.call message, (listenerExecuted) ->
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
-            # Stop processing when message.done == true
-            cb(message.done)
+            # Defer to the event loop at least after every listener so the
+            # stack doesn't get too big
+            process.nextTick () ->
+              # Stop processing when message.done == true
+              cb(message.done)
         catch err
           @emit('error', err, new @Response(@, message, []))
       ,
