@@ -38,7 +38,7 @@ class Robot
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
+  constructor: (adapterPath, adapter, httpd, name = 'Hubot', logLevel, logFile) ->
     @name      = name
     @events    = new EventEmitter
     @brain     = new Brain @
@@ -47,7 +47,7 @@ class Robot
     @Response  = Response
     @commands  = []
     @listeners = []
-    @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @logger    = @createLogger(logLevel, logFile)
 
     @parseVersion()
     if httpd
@@ -483,5 +483,13 @@ class Robot
   http: (url) ->
     HttpClient.create(url)
       .header('User-Agent', "Hubot/#{@version}")
+
+  # Private: Creates a Log instance, the Log level and Output stream
+  # are determined by Environment variables
+  #
+  # Returns a Log instance
+  createLogger: (logLevel, logFile) ->
+    outStream = Fs.createWriteStream logFile, { flags: 'a' } if logFile?
+    new Log logLevel, outStream
 
 module.exports = Robot
