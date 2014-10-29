@@ -48,13 +48,13 @@ class Robot
     @commands  = []
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @pingIntervalId = null
 
     @parseVersion()
     if httpd
       @setupExpress()
     else
       @setupNullRouter()
-    @pingIntervalId = null
 
     @loadAdapter adapterPath, adapter
 
