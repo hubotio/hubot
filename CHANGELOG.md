@@ -1,3 +1,9 @@
+v2.9.2
+======
+
+* Update express dependency to a version isn't affected by [CVE-2014-7191](http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-7191)
+   * More specifically, a version of express that depends on connect that depends on qs that isn't vulnerable
+
 v2.9.1
 ======
 
