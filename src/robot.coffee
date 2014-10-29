@@ -297,7 +297,7 @@ class Robot
       @pingIntervalId = setInterval =>
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
-      , 1200000
+      , 5 * 60 * 1000
 
   # Setup an empty router object
   #
