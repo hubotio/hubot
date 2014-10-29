@@ -1,3 +1,11 @@
+v2.9.3
+======
+
+* Allow `robot.respond` to work when there is preceding whitespace
+* Update `robot.parseHelp` to be synchronous, so it's easier to test
+* Reduce Heroku ping interval from 20 minutes to 5 minutes to keep hubot from going unavailable
+* Make sure`robot.pingIntervalId` is kept after setting up Heroku ping  interval
+
 v2.9.2
 ======
 
