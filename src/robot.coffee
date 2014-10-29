@@ -101,12 +101,12 @@ class Robot
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
       newRegex = new RegExp(
-        "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
+        "^\\s*[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
         modifiers
       )
     else
       newRegex = new RegExp(
-        "^[@]?#{name}[:,]?\\s*(?:#{pattern})",
+        "^\\s*[@]?#{name}[:,]?\\s*(?:#{pattern})",
         modifiers
       )
 
