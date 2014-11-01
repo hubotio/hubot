@@ -19,9 +19,12 @@ Some things that will increase the chance that your pull request is accepted:
 * Update the documentation: code comments, example code, guides. Basically,
   update anything is affected by your contribution.
 * Include any information that would be relevant to reproducing bugs, use cases for new features, etc.
-* Impact on existing [hubot installs](docs/README.md), [hubot adapters](docs/adapters.md), and [hubot scripts](docs/scripting.md) (e.g. backwards compatibility)
-* Your commits are associated with your GitHub user: https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/
 
+* Discuss the impact on existing [hubot installs](docs/README.md), [hubot adapters](docs/adapters.md), and [hubot scripts](docs/scripting.md) (e.g. backwards compatibility)
+  * If the change does break compatibility, how can it be updated to become backwards compatible, while directing users to the new way of doing things?
+* Your commits are associated with your GitHub user: https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/
+* Make pull requests against a feature branch,
+* Don't update the version in `package.json`, as the maintainers will manage that in a follow-up PR to release
 
 Syntax:
 
