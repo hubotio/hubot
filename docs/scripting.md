@@ -69,14 +69,14 @@ The `robot` parameter is an instance of your robot friend. At this point, we can
 
 ## Hearing and responding
 
-Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression, an optional options Object, and a callback function as parameters. For example:
+Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.hear /badger/i, id:'my-script.badger', (msg) ->
+  robot.hear /badger/i, (msg) ->
     # your code here
 
-  robot.respond /open the pod bay doors/i, id:'my-script.open-doors', (msg) ->
+  robot.respond /open the pod bay doors/i, (msg) ->
     # your code here
 ```
 
@@ -99,10 +99,6 @@ It wouldn't be called for:
    *  because its `respond` is bound to the text immediately following the robot name
 *  has anyone ever mentioned how lovely you are when you open pod bay doors?
    * because it lacks the robot's name
-
-The options Object is a way to attach arbitrary metadata to a Listener (hear/respond entry) and enable easy extension of the core hubot functionality. By default, the only handled option inside the options Object is `id`. Additional options may be handled by other scripts that extend hubot; for more information, see the Middleware section of this document.
-
-Every Listener (hear/respond) should be given a unique name (options.id; defaults to 'unknown'). At minimum, names should be scoped by module (e.g. "my-module.my-listener"). These names allow other scripts to extend the functionality of existing scripts with additional functionality like authorization and rate limiting.
 
 ## Send & reply
 
@@ -628,6 +624,10 @@ Scripts are loaded from the `scripts/` directory. They are loaded in alphabetica
 * `scripts/_second.coffee`
 * `scripts/third.coffee`
 
+# Sharing Scripts
+
+Once you've built some new scripts to extend the abilities of your robot friend, you should consider sharing them with the world! At the minimum, you need to package up your script and submit it to the [Node.js Package Registry](http://npmjs.org). You should also review the best practices for sharing scripts below.
+
 ## Creating A Script Package
 
 Creating a script package for hubot is very simple. Start by creating a normal
@@ -652,3 +652,25 @@ module.exports = (robot) ->
 ```
 
 After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
+
+## Listener Metadata
+
+In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
+
+The most important and most common metadata key is `id`. Every Listener should be given a unique name (options.id; defaults to 'unknown'). Names should be scoped by module (e.g. 'my-module.my-listener'). These names allow other scripts to directly address individual listeners and extend them with additional functionality like authorization and rate limiting.
+
+Additional extensions may define and handle additional metadata keys.
+
+Returning to an earlier example:
+```coffeescript
+module.exports = (robot) ->
+  robot.respond /annoy me/, id:'annoyance.start', (msg)
+    # code to annoy someone
+
+  robot.respond /unannoy me/, id:'annoyance.stop', (msg)
+    # code to stop annoying someone
+```
+
+These scoped identifiers allow you to externally specify new behaviors like:
+- authorization policy: "allow everyone in the `annoyers` group to execute `annoyance.*` commands"
+- rate limiting: "only allow executing `annoyance.start` once every 30 minutes"

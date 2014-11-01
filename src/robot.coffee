@@ -73,6 +73,8 @@ class Robot
   # a Regex.
   #
   # regex    - A Regex that determines if the callback should be called.
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
@@ -84,6 +86,8 @@ class Robot
   # with a '^'
   #
   # regex    - A Regex that determines if the callback should be called.
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
