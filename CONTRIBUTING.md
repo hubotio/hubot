@@ -35,3 +35,18 @@ Syntax:
   * `MyClass.myMethod(my_arg)` not `myMethod( my_arg )` or `myMethod my_arg`.
   * `a = b` and not `a=b`.
   * Follow the conventions you see used in the source already.
+
+# Releasing
+
+This section is for maintainers of hubot. Here's the current process for releasing:
+
+* create a `release-vX.X.X` branch to release off of
+* determine what version to release as:
+  * bug fix? patch release
+  * new functionality that is backwards compatible? minor version
+  * breaking change? major release, but think about if it can be fixed to be a minor release instead
+* update `package.json`
+* summarize changes in `CHANGELOG.md`
+* create a pull request, and cc pull requests included in this release, as well as their contributors
+* merge pull request
+* checkout master branch, and run `script/release`
