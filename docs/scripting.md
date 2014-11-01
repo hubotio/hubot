@@ -446,56 +446,6 @@ module.exports = (robot) ->
 
 If you provide an event, it's highly recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
 
-## Middleware
-
-Hubot supports injecting arbitrary code in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics.
-
-Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted). Due to the potentially asynchronous nature of middleware, each piece of middleware is responsible for catching its own exceptions and emitting an `error` event.
-
-On execution, middleware is passed:
-- robot object
-- matching Listener object (with associated metadata)
-- response object (contains the original message)
-- next/done callbacks.
-
-A fully functioning example can be found in [hubot-rbac](https://github.com/michaelansel/hubot-rbac/blob/master/src/rbac.coffee).
-
-A simple example of middleware logging command executions:
-```coffeescript
-module.exports = (robot) ->
-  robot.addListenerMiddleware (robot, listener, response, next, done) ->
-    # Log commands
-    robot.logger.info "#{response.message.user.name} asked me to #{response.message.text}"
-    # Continue executing middleware
-    next(done)
-```
-
-A more complex example making a rate limiting decision:
-```coffeescript
-module.exports = (robot) ->
-  # Map of listener ID to last time it was executed
-  lastExecutedTime = {}
-
-  robot.addListenerMiddleware (robot, listener, response, next, done) ->
-    try
-      # Default to 1s unless listener provides a different minimum period
-      minPeriodMs = listener.options?.rateLimits?.minPeriodMs? or 1000
-
-      # See if command has been executed recently
-      if lastExecutedTime.hasOwnProperty(listener.options.id) and
-         lastExecutedTime[listener.options.id] > (Date.now()-minPeriodMs)
-        # Command is being executed too quickly!
-        done()
-      else
-        next () ->
-          lastExecutedTime[listener.options.id] = Date.now()
-    catch err
-      robot.emit('error', err, response)
-```
-In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If so, the middleware intercepts and calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
-
-This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
-
 ## Error Handling
 
 No code is perfect, and errors and exceptions are to be expected. Previously, an uncaught exceptions would crash your hubot instance. Hubot now includes an `uncaughtException` handler, which provides hooks for scripts to do something about exceptions.
@@ -674,3 +624,54 @@ module.exports = (robot) ->
 These scoped identifiers allow you to externally specify new behaviors like:
 - authorization policy: "allow everyone in the `annoyers` group to execute `annoyance.*` commands"
 - rate limiting: "only allow executing `annoyance.start` once every 30 minutes"
+
+# Middleware
+
+Hubot supports injecting arbitrary code in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics.
+
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted). Due to the potentially asynchronous nature of middleware, each piece of middleware is responsible for catching its own exceptions and emitting an `error` event.
+
+On execution, middleware is passed:
+- robot object
+- matching Listener object (with associated metadata)
+- response object (contains the original message)
+- next/done callbacks.
+
+A fully functioning example can be found in [hubot-rbac](https://github.com/michaelansel/hubot-rbac/blob/master/src/rbac.coffee).
+
+A simple example of middleware logging command executions:
+```coffeescript
+module.exports = (robot) ->
+  robot.addListenerMiddleware (robot, listener, response, next, done) ->
+    # Log commands
+    robot.logger.info "#{response.message.user.name} asked me to #{response.message.text}"
+    # Continue executing middleware
+    next(done)
+```
+
+A more complex example making a rate limiting decision:
+```coffeescript
+module.exports = (robot) ->
+  # Map of listener ID to last time it was executed
+  lastExecutedTime = {}
+
+  robot.addListenerMiddleware (robot, listener, response, next, done) ->
+    try
+      # Default to 1s unless listener provides a different minimum period
+      minPeriodMs = listener.options?.rateLimits?.minPeriodMs? or 1000
+
+      # See if command has been executed recently
+      if lastExecutedTime.hasOwnProperty(listener.options.id) and
+         lastExecutedTime[listener.options.id] > (Date.now()-minPeriodMs)
+        # Command is being executed too quickly!
+        done()
+      else
+        next () ->
+          lastExecutedTime[listener.options.id] = Date.now()
+    catch err
+      robot.emit('error', err, response)
+```
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If so, the middleware intercepts and calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+
+This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
+
