@@ -82,7 +82,7 @@ class Listener
   #
   # Returns nothing
   executeAllMiddleware: (response, next, done) ->
-    allMiddleware = @robot.middleware
+    allMiddleware = @robot.middleware.listener
 
     # Execute a single piece of middleware and update the completion callback
     # (each piece of middleware can wrap the 'done' callback with additional
