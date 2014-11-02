@@ -607,7 +607,7 @@ After you've built your `npm` package you can publish it to [npmjs](http://npmjs
 
 In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
 
-The most important and most common metadata key is `id`. Every Listener should be given a unique name (options.id; defaults to 'unknown'). Names should be scoped by module (e.g. 'my-module.my-listener'). These names allow other scripts to directly address individual listeners and extend them with additional functionality like authorization and rate limiting.
+The most important and most common metadata key is `id`. Every Listener should be given a unique name (options.id; defaults to `null`). Names should be scoped by module (e.g. 'my-module.my-listener'). These names allow other scripts to directly address individual listeners and extend them with additional functionality like authorization and rate limiting.
 
 Additional extensions may define and handle additional metadata keys.
 
