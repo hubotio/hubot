@@ -50,13 +50,13 @@ class Robot
     @listeners  = []
     @middleware = {listener:[]}
     @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @pingIntervalId = null
 
     @parseVersion()
     if httpd
       @setupExpress()
     else
       @setupNullRouter()
-    @pingIntervalId = null
 
     @loadAdapter adapterPath, adapter
 
@@ -107,12 +107,12 @@ class Robot
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
       newRegex = new RegExp(
-        "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
+        "^\\s*[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
         modifiers
       )
     else
       newRegex = new RegExp(
-        "^[@]?#{name}[:,]?\\s*(?:#{pattern})",
+        "^\\s*[@]?#{name}[:,]?\\s*(?:#{pattern})",
         modifiers
       )
 
@@ -332,7 +332,7 @@ class Robot
       @pingIntervalId = setInterval =>
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
-      , 1200000
+      , 5 * 60 * 1000
 
   # Setup an empty router object
   #
@@ -382,37 +382,36 @@ class Robot
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
     scriptDocumentation = {}
 
-    Fs.readFile path, 'utf-8', (err, body) =>
-      throw err if err?
+    body = Fs.readFileSync path, 'utf-8'
 
-      currentSection = null
-      for line in body.split "\n"
-        break unless line[0] is '#' or line.substr(0, 2) is '//'
+    currentSection = null
+    for line in body.split "\n"
+      break unless line[0] is '#' or line.substr(0, 2) is '//'
 
-        cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
+      cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
 
-        continue if cleanedLine.length is 0
-        continue if cleanedLine.toLowerCase() is 'none'
+      continue if cleanedLine.length is 0
+      continue if cleanedLine.toLowerCase() is 'none'
 
-        nextSection = cleanedLine.toLowerCase().replace(':', '')
-        if nextSection in HUBOT_DOCUMENTATION_SECTIONS
-          currentSection = nextSection
-          scriptDocumentation[currentSection] = []
-        else
-          if currentSection
-            scriptDocumentation[currentSection].push cleanedLine.trim()
-            if currentSection is 'commands'
-              @commands.push cleanedLine.trim()
+      nextSection = cleanedLine.toLowerCase().replace(':', '')
+      if nextSection in HUBOT_DOCUMENTATION_SECTIONS
+        currentSection = nextSection
+        scriptDocumentation[currentSection] = []
+      else
+        if currentSection
+          scriptDocumentation[currentSection].push cleanedLine.trim()
+          if currentSection is 'commands'
+            @commands.push cleanedLine.trim()
 
-      if currentSection is null
-        @logger.info "#{path} is using deprecated documentation syntax"
-        scriptDocumentation.commands = []
-        for line in body.split("\n")
-          break    if not (line[0] is '#' or line.substr(0, 2) is '//')
-          continue if not line.match('-')
-          cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
-          scriptDocumentation.commands.push cleanedLine
-          @commands.push cleanedLine
+    if currentSection is null
+      @logger.info "#{path} is using deprecated documentation syntax"
+      scriptDocumentation.commands = []
+      for line in body.split("\n")
+        break    if not (line[0] is '#' or line.substr(0, 2) is '//')
+        continue if not line.match('-')
+        cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
+        scriptDocumentation.commands.push cleanedLine
+        @commands.push cleanedLine
 
   # Public: A helper send function which delegates to the adapter's send
   # function.

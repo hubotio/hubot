@@ -1,3 +1,17 @@
+v2.9.3
+======
+
+* Allow `robot.respond` to work when there is preceding whitespace
+* Update `robot.parseHelp` to be synchronous, so it's easier to test
+* Reduce Heroku ping interval from 20 minutes to 5 minutes to keep hubot from going unavailable
+* Make sure`robot.pingIntervalId` is kept after setting up Heroku ping  interval
+
+v2.9.2
+======
+
+* Update express dependency to a version isn't affected by [CVE-2014-7191](http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-7191)
+   * More specifically, a version of express that depends on connect that depends on qs that isn't vulnerable
+
 v2.9.1
 ======
 
@@ -27,7 +41,7 @@ v2.8.1
 v2.8.0
 ======
 
-* Add support for `hubot --check-config` to verify hubot will load based on how it's configured
+* Add support for `hubot --config-check` to verify hubot will load based on how it's configured
 * Include `script/` directory for convenient one-liners for common tasks of developing github/hubot
 * Fixes to default `image me` and `help`
 * Updated documentation about external scripts

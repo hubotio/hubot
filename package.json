@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.9.1",
+  "version": "2.9.3",
 
   "author": "hubot",
 
@@ -29,7 +29,7 @@
     "optparse":           "1.0.4",
     "scoped-http-client": "0.9.8",
     "log":                "1.4.0",
-    "express":            "3.3.4"
+    "express":            "3.18.1"
   },
 
   "engines": {
