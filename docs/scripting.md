@@ -645,7 +645,7 @@ A fully functioning example can be found in [hubot-rbac](https://github.com/mich
 A simple example of middleware logging command executions:
 ```coffeescript
 module.exports = (robot) ->
-  robot.addListenerMiddleware (robot, listener, response, next, done) ->
+  robot.listenerMiddleware (robot, listener, response, next, done) ->
     # Log commands
     robot.logger.info "#{response.message.user.name} asked me to #{response.message.text}"
     # Continue executing middleware
@@ -659,7 +659,7 @@ module.exports = (robot) ->
   # Map of listener ID to last time it was executed
   lastExecutedTime = {}
 
-  robot.addListenerMiddleware (robot, listener, response, next, done) ->
+  robot.listenerMiddleware (robot, listener, response, next, done) ->
     try
       # Default to 1s unless listener provides a different minimum period
       minPeriodMs = listener.options?.rateLimits?.minPeriodMs? or 1000
