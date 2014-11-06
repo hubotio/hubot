@@ -70,7 +70,7 @@ unless process.platform is "win32"
     process.exit 0
 
 if Options.create
-  console.error "'hubot --create' is depreated. Use the yeoman generator instead:"
+  console.error "'hubot --create' is deprecated. Use the yeoman generator instead:"
   console.error "    npm install -g yo generator-hubot"
   console.error "    mkdir -p #{Options.path}"
   console.error "    yo hubot"
