@@ -24,7 +24,7 @@ class Listener
       @options = {}
 
     if not @options.id?
-      @options.id = 'unknown'
+      @options.id = null
 
     if not @callback?
       throw new Error "Missing a callback for Listener"
