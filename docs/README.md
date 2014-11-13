@@ -11,7 +11,7 @@ Once node and npm are ready, we can install the hubot generator:
 
 This will give us the `hubot` [yeoman](http://yeoman.io/) generator. Now we
 can make a new directory, and generate a new instance of hubot in it. For example, if
-we wanted to make a bot called bender:
+we wanted to make a bot called myhubot:
 
 
     % mkdir myhubot
