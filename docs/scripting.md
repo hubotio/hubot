@@ -672,6 +672,7 @@ module.exports = (robot) ->
       else
         next () ->
           lastExecutedTime[listener.options.id] = Date.now()
+          done()
     catch err
       robot.emit('error', err, response)
 ```
