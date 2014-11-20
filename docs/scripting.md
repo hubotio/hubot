@@ -97,7 +97,7 @@ It wouldn't be called for:
 
 * HAL: please open the pod bay doors
    *  because its `respond` is bound to the text immediately following the robot name
-*  has anyone ever mentioned how lovely you are when you open pod bay doors?
+*  has anyone ever mentioned how lovely you are when you open the pod bay doors?
    * because it lacks the robot's name
 
 ## Send & reply
