@@ -27,12 +27,19 @@ class TextMessage extends Message
   # Returns a Match object or null.
   match: (regex) ->
     @text.match regex
-  
+
   # String representation of a TextMessage
   #
   # Returns the message text
   toString: () ->
     @text
+
+# Represents an incoming message sent in reply to a prompt from hubot.
+#
+# user - A User instance for the user who entered.
+# text - Always null.
+# id   - A String of the message ID.
+class ConversationMessage extends TextMessage
 
 # Represents an incoming user entrance notification.
 #
@@ -65,6 +72,7 @@ class CatchAllMessage extends Message
 module.exports = {
   Message
   TextMessage
+  ConversationMessage
   EnterMessage
   LeaveMessage
   TopicMessage
