@@ -630,13 +630,17 @@ These scoped identifiers allow you to externally specify new behaviors like:
 Hubot supports injecting arbitrary code in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented just like any other hubot script, however instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Execution Process
-Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted). Due to the potentially asynchronous nature of middleware, each piece of middleware is responsible for catching its own exceptions and emitting an `error` event.
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
 
 On execution, middleware is passed:
-- robot object
+- global robot object
 - matching Listener object (with associated metadata)
 - response object (contains the original message)
 - next/done callbacks.
+
+### Error Handling
+
+For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
 
 ## Middleware Examples
 

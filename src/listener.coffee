@@ -88,11 +88,18 @@ class Listener
     # (each piece of middleware can wrap the 'done' callback with additional
     # logic).
     executeMiddleware = (doneFunc, middlewareFunc, cb) =>
+      # Match the async.reduce interface
       nextFunc = (newDoneFunc) -> cb(null, newDoneFunc)
-      middlewareFunc.call(undefined, @robot, @, response, nextFunc, doneFunc)
+      # Catch errors in synchronous middleware
+      try
+        middlewareFunc.call(undefined, @robot, @, response, nextFunc, doneFunc)
+      catch err
+        @emit('error', err, response)
+        # Forcibly fail the middleware and stop executing deeper
+        doneFunc()
 
     # Executed when the middleware stack is finished
-    allDone = (err, finalDoneFunc) -> next(response, finalDoneFunc)
+    allDone = (_, finalDoneFunc) -> next(response, finalDoneFunc)
 
     # Execute each piece of middleware, collecting the latest 'done' callback
     # at each step.
