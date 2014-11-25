@@ -232,7 +232,8 @@ class Robot
         catch err
           @emit('error', err, new @Response(@, message, []))
       ,
-      (result) =>
+      # Ignore the result ( == the listener that set message.done = true)
+      (_) =>
         # If no registered Listener matched the message
         if message not instanceof CatchAllMessage and not anyListenersExecuted
           @logger.debug 'No listeners executed; falling back to catch-all'
