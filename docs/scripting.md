@@ -670,7 +670,7 @@ module.exports = (robot) ->
 
       # See if command has been executed recently
       if lastExecutedTime.hasOwnProperty(listener.options.id) and
-         lastExecutedTime[listener.options.id] > (Date.now()-minPeriodMs)
+         lastExecutedTime[listener.options.id] > Date.now() - minPeriodMs
         # Command is being executed too quickly!
         done()
       else
