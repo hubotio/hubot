@@ -24,7 +24,7 @@
   },
 
   "dependencies": {
-    "coffee-script":      "1.6.3",
+    "coffee-script":      "^1.8",
     "optparse":           "1.0.4",
     "scoped-http-client": "0.9.8",
     "log":                "1.4.0",
