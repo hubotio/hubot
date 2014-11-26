@@ -1,6 +1,6 @@
 {inspect} = require 'util'
 
-{TextMessage} = require './message'
+{TextMessage, ConversationMessage} = require './message'
 
 class Listener
   # Listeners receive every message from the chat source and decide if they

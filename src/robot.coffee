@@ -8,7 +8,7 @@ User = require './user'
 Brain = require './brain'
 Response = require './response'
 {Listener,TextListener} = require './listener'
-{EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+{ConversationMessage,EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
@@ -47,6 +47,7 @@ class Robot
     @Response  = Response
     @commands  = []
     @listeners = []
+    @conversations = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
 
@@ -200,6 +201,12 @@ class Robot
         @emit('error', error, new @Response(@, message, []))
 
         false
+
+    if message instanceof ConversationMessage
+      namespace = "#{message.user.name}:#{message.user.room}"
+      @conversations[namespace].shift()(new @Response(@, message, []))
+      delete @conversations[namespace] if @conversations[namespace].length is 0
+
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
 
@@ -377,6 +384,17 @@ class Robot
         cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
         scriptDocumentation.commands.push cleanedLine
         @commands.push cleanedLine
+
+  # Public: Adds a Listener that applies the value of the next message by the
+  # initiating user to a callback.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  converse: (user, callback) ->
+    namespace = "#{user.name}:#{user.room}"
+    @conversations[namespace] ?= []
+    @conversations[namespace].push callback
 
   # Public: A helper send function which delegates to the adapter's send
   # function.

@@ -1,9 +1,9 @@
 HTTPS          = require 'https'
 {EventEmitter} = require 'events'
 
-Robot                                                = require '../robot'
-Adapter                                              = require '../adapter'
-{TextMessage,EnterMessage,LeaveMessage,TopicMessage} = require '../message'
+Robot                                                                    = require '../robot'
+Adapter                                                                  = require '../adapter'
+{TextMessage,ConversationMessage,EnterMessage,LeaveMessage,TopicMessage} = require '../message'
 
 class Campfire extends Adapter
   send: (envelope, strings...) ->
@@ -69,7 +69,10 @@ class Campfire extends Adapter
     bot.on "TextMessage",
       withAuthor (id, created, room, user, body, author) ->
         unless bot.info.id is author.id
-          message = new TextMessage author, body, id
+          if bot.conversations["#{user.name}:#{room}"]?.length
+            message = new ConversationMessage author, body, id
+          else
+            message = new TextMessage author, body, id
           message.private = bot.private[room]
           self.receive message
 
