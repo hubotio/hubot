@@ -638,6 +638,8 @@ On execution, middleware is passed:
 - response object (contains the original message)
 - next/done callbacks.
 
+For more details, see the [Middleware API](#middleware-api) section.
+
 ### Error Handling
 
 For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
@@ -684,3 +686,26 @@ In this example, the middleware checks to see if the listener has been executed 
 
 This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
 
+## Middleware API
+
+Although internal data structures are exposed, not all properties on the objects are considered part of the supported API. Below are the supported properties and usage information for each of the arguments middleware receives.
+
+- `robot`
+  - all parts of the standard robot API are included in the middleware API
+
+- `listener`
+  - `options`: a simple Object containing options set when defining the listener. See [Listener Metadata](#listener-metadata).
+  - all other properties should be considered internal
+
+- `response`
+  - all parts of the standard response API are included in the middleware API. See [Send & Reply](#send--reply).
+  - middleware may decorate (but not modify) the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
+  - note: the textual message (`response.message.text`) should be considered immutable in listener middleware
+
+- `next`
+  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
+  - `next` should be called with a single argument: either the provided `done` function or a new function that eventually calls `done`
+
+- `done`
+ - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
+ - `done` should be called with no arguments
