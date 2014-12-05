@@ -13,3 +13,8 @@ hubot as it will use the shell adapter by default.
 ## Configuring
 
 This adapter doesn't require any configuration.
+
+It supports two environment variables to make it possible to test scripts as different users:
+
+* HUBOT_SHELL_USER_ID: default is 1
+* HUBOT_SHELL_USER_NAME: default is Shell
