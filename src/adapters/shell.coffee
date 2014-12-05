@@ -50,8 +50,8 @@ class Shell extends Adapter
             when "history"
               stdout.write "#{line}\n" for line in @repl.history
             else
-              user_id = parseInt(process.ENV.HUBOT_SHELL_USER_ID or '1')
-              user_name = process.ENV.HUBOT_SHELL_USER_NAME or 'Shell'
+              user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+              user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
               user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
               @receive new TextMessage user, buffer, 'messageId'
           @repl.prompt(true)
