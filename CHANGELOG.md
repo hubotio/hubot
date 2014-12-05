@@ -1,3 +1,9 @@
+v2.10.0
+======
+
+* Add support to shell adapter for customizing the user with HUBOT_SHELL_USER_ID and HUBOT_SHELL_USER_NAME
+* Add history support to shell adapter, so it remembers commands previously used
+
 v2.9.3
 ======
 
