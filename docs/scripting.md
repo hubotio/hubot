@@ -646,7 +646,7 @@ For synchronous middleware (never yields to the event loop), hubot will automati
 
 ## Middleware Examples
 
-A fully functioning example can be found in [hubot-rbac](https://github.com/michaelansel/hubot-rbac/blob/master/src/rbac.coffee).
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
 
 A simple example of middleware logging command executions:
 ```coffeescript
