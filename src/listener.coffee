@@ -52,7 +52,7 @@ class Listener
           @callback response
           done()
         catch err
-          @emit('error', err, response)
+          @robot.emit('error', err, response)
 
       # When everything is finished (down the middleware stack and back up),
       # pass control back to the robot
@@ -94,7 +94,7 @@ class Listener
       try
         middlewareFunc.call(undefined, @robot, @, response, nextFunc, doneFunc)
       catch err
-        @emit('error', err, response)
+        @robot.emit('error', err, response)
         # Forcibly fail the middleware and stop executing deeper
         doneFunc()
 
