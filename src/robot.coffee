@@ -269,6 +269,8 @@ class Robot
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
+    port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
+    address = process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
 
@@ -284,7 +286,7 @@ class Robot
     app.use express.static stat if stat
 
     try
-      @server = app.listen(process.env.PORT || 8080, process.env.BIND_ADDRESS || '0.0.0.0')
+      @server = app.listen(port, address)
       @router = app
     catch err
       @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
