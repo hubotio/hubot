@@ -463,6 +463,7 @@ class Robot
   # send the request.
   #
   # url - String URL to access.
+  # options - Optional options to pass on to the client
   #
   # Examples:
   #
@@ -484,9 +485,12 @@ class Robot
   #       .post(data) (err, res, body) ->
   #         console.log body
   #
+  #    # Can also set options
+  #    res.http("http://example.com", {rejectUnauthorized: false})
+  #
   # Returns a ScopedClient instance.
-  http: (url) ->
-    HttpClient.create(url)
+  http: (url, options) ->
+    HttpClient.create(url, options)
       .header('User-Agent', "Hubot/#{@version}")
 
 module.exports = Robot
