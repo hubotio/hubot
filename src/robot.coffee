@@ -7,7 +7,7 @@ HttpClient     = require 'scoped-http-client'
 User = require './user'
 Brain = require './brain'
 Response = require './response'
-{Listener,TextListener} = require './listener'
+{Listener,TextListener,EmoteListener} = require './listener'
 {EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
 
 HUBOT_DEFAULT_ADAPTERS = [
@@ -76,6 +76,16 @@ class Robot
   # Returns nothing.
   hear: (regex, callback) ->
     @listeners.push new TextListener(@, regex, callback)
+
+  # Public: Adds a Listener that attempts to match incoming emote messages
+  # based on a Regex. Identical to hear except for emotes.
+  #
+  # regex    - A Regex that determines if the callback should be called.
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  hearEmote: (regex, callback) ->
+    @listeners.push new EmoteListener(@, regex, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
   # at the robot based on a Regex. All regexes treat patterns like they begin

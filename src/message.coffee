@@ -55,6 +55,26 @@ class LeaveMessage extends Message
 # id   - A String of the message ID.
 class TopicMessage extends TextMessage
 
+# Represents an incoming emote.
+#
+# user - A User instance for the user who changed the topic.
+# text - A String of the new topic
+# id   - A String of the message ID.
+#
+# NOTE: Does not extend TextMessage so we can prevent overlapping
+# TextMessage callbacks
+class EmoteMessage extends Message
+  constructor: (@user, @text, @id) ->
+    super @user
+
+  # Determines if the message matches the given regex.
+  #
+  # regex - A Regex to check.
+  #
+  # Returns a Match object or null.
+  match: (regex) ->
+    @text.match regex
+
 class CatchAllMessage extends Message
   # Represents a message that no matchers matched.
   #
@@ -65,6 +85,7 @@ class CatchAllMessage extends Message
 module.exports = {
   Message
   TextMessage
+  EmoteMessage
   EnterMessage
   LeaveMessage
   TopicMessage
