@@ -467,7 +467,7 @@ class Robot
   #
   # Examples:
   #
-  #     res.http("http://example.com")
+  #     robot.http("http://example.com")
   #       # set a single header
   #       .header('Authorization', 'bearer abcdef')
   #
@@ -486,7 +486,7 @@ class Robot
   #         console.log body
   #
   #    # Can also set options
-  #    res.http("http://example.com", {rejectUnauthorized: false})
+  #    robot.http("https://example.com", {rejectUnauthorized: false})
   #
   # Returns a ScopedClient instance.
   http: (url, options) ->
