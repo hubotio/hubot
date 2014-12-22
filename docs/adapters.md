@@ -29,7 +29,15 @@ to have yours added to the list:
 * [Jabbr](https://github.com/smoak/hubot-jabbr)
 * [iMessage](https://github.com/lazerwalker/hubot-imessage)
 * [Hall](https://github.com/Hall/hubot-hall)
-
+* [ChatWork](https://github.com/akiomik/hubot-chatwork)
+* [QQ](https://github.com/xhan/qqbot)
+* [AIM](https://github.com/shaundubuque/hubot-aim)
+* [Slack](https://github.com/tinyspeck/hubot-slack)
+* [Lingr](https://github.com/miyagawa/hubot-lingr)
+* [Gitter](https://github.com/huafu/hubot-gitter2)
+* [Proxy](https://github.com/Hammertime38/hubot-proxy) - This adapter allows the base application to observe, handle, and control events sent to the proxied adapter, all defined in a config object at the root of the module.
+* [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
+* [Typetalk](https://github.com/nulab/hubot-typetalk)
 
 ## Writing Your Own adapter
 

@@ -1,3 +1,110 @@
+v2.10.0
+======
+
+* Add support to shell adapter for customizing the user with HUBOT_SHELL_USER_ID and HUBOT_SHELL_USER_NAME
+* Add history support to shell adapter, so it remembers commands previously used
+
+v2.9.3
+======
+
+* Allow `robot.respond` to work when there is preceding whitespace
+* Update `robot.parseHelp` to be synchronous, so it's easier to test
+* Reduce Heroku ping interval from 20 minutes to 5 minutes to keep hubot from going unavailable
+* Make sure`robot.pingIntervalId` is kept after setting up Heroku ping  interval
+
+v2.9.2
+======
+
+* Update express dependency to a version isn't affected by [CVE-2014-7191](http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-7191)
+   * More specifically, a version of express that depends on connect that depends on qs that isn't vulnerable
+
+v2.9.1
+======
+
+* Improve instructions for using new yeoman generator when calling `hubot --create`
+
+v2.9.0
+======
+
+* Deprecate `hubot --create` in favor of new yeoman generator
+
+v2.8.3
+======
+
+* Fix error when trying to find userForName, when name is incorrectly set as an integer
+
+v2.8.2
+======
+
+* Fix error logging when not using any error handlers
+
+v2.8.1
+======
+
+* Include link to https://github.com/hubot-scripts in addition to hubot-scripts repo
+* Remove auth.coffee. https://github.com/hubot-scripts/hubot-auth is recommended instead
+
+v2.8.0
+======
+
+* Add support for `hubot --config-check` to verify hubot will load based on how it's configured
+* Include `script/` directory for convenient one-liners for common tasks of developing github/hubot
+* Fixes to default `image me` and `help`
+* Updated documentation about external scripts
+* Add better debug output when receiving text messages
+
+v2.7.5
+======
+
+* Fix Campfire adapter to specify a User-Agent
+
+v2.7.4
+======
+
+* Update Campfire adapter to specify a User-Agent
+
+v2.7.3
+======
+
+* Updated list of adapters in documentation
+* Document script load order
+* Support any file extension for script that node supports
+
+v2.7.2
+======
+
+* Expose the robot adapter name as `robot.adapterName`.
+
+v2.7.1
+======
+
+* Update error handling API to pass along `msg` object in more cases - technicalpickles
+
+
+v2.7.0
+======
+
+* Support binding to a specific IP address - smerrill
+* Add error handling API - technicalpickles
+* Remove math.coffee since it uses a now-removed Google service - technicalpickles
+* MOAR MUSTACHES - cannikin
+
+v2.6.5
+======
+
+* Fix new bot template to get the latest version of the bot - technicalpickles
+
+v2.6.4
+======
+
+* Fix documentation for setting up Redis on Heroku - thiagopnts
+* Document script load ordering - balbeko
+* Fix extra space in help messages - vanetix
+* Parse 'Authors' section in script documentation - spajus
+* Differentiate the different types of Campfire errors - simonsj
+* Consistently load files across platform - technicalpickles
+* Fix topic handler to be able to access the text of its body - wingrunr21
+
 v2.6.3
 ======
 

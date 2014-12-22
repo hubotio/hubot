@@ -2,7 +2,6 @@
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Creator  = require '../src/creator'
 Hubot    = require '..'
 
 Fs       = require 'fs'
@@ -17,6 +16,7 @@ Switches = [
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
   [ "-r", "--require PATH",    "Alternative scripts path" ],
+  [ "-t", "--config-check",    "Test hubot's config to make sure it won't fail at startup"]
   [ "-v", "--version",         "Displays the version of hubot installed" ]
 ]
 
@@ -28,6 +28,7 @@ Options =
   scripts:     process.env.HUBOT_SCRIPTS or []
   name:        process.env.HUBOT_NAME    or "Hubot"
   path:        process.env.HUBOT_PATH    or "."
+  configCheck: false
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -56,6 +57,9 @@ Parser.on "name", (opt, value) ->
 Parser.on "require", (opt, value) ->
   Options.scripts.push(value)
 
+Parser.on "config-check", (opt) ->
+  Options.configCheck = true
+
 Parser.on "version", (opt, value) ->
   Options.version = true
 
@@ -66,8 +70,12 @@ unless process.platform is "win32"
     process.exit 0
 
 if Options.create
-  creator = new Creator(Options.path)
-  creator.run()
+  console.error "'hubot --create' is deprecated. Use the yeoman generator instead:"
+  console.error "    npm install -g yo generator-hubot"
+  console.error "    mkdir -p #{Options.path}"
+  console.error "    yo hubot"
+  console.error "See https://github.com/github/hubot/blob/master/docs/README.md for more details on getting started."
+  process.exit 1
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
@@ -88,29 +96,27 @@ else
     robot.load scriptsPath
 
     hubotScripts = Path.resolve ".", "hubot-scripts.json"
-    Fs.exists hubotScripts, (exists) ->
-      if exists
-        Fs.readFile hubotScripts, (err, data) ->
-          if data.length > 0
-            try
-              scripts = JSON.parse data
-              scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
-              robot.loadHubotScripts scriptsPath, scripts
-            catch err
-              console.error "Error parsing JSON data from hubot-scripts.json: #{err}"
-              process.exit(1)
+    if Fs.existsSync(hubotScripts)
+      data = Fs.readFileSync(hubotScripts)
+      if data.length > 0
+        try
+          scripts = JSON.parse data
+          scriptsPath = Path.resolve "node_modules", "hubot-scripts", "src", "scripts"
+          robot.loadHubotScripts scriptsPath, scripts
+        catch err
+          console.error "Error parsing JSON data from hubot-scripts.json: #{err}"
+          process.exit(1)
 
     externalScripts = Path.resolve ".", "external-scripts.json"
-    Fs.exists externalScripts, (exists) ->
-      if exists
-        Fs.readFile externalScripts, (err, data) ->
-          if data.length > 0
-            try
-              scripts = JSON.parse data
-            catch err
-              console.error "Error parsing JSON data from external-scripts.json: #{err}"
-              process.exit(1)
-            robot.loadExternalScripts scripts
+    if Fs.existsSync(externalScripts)
+      Fs.readFile externalScripts, (err, data) ->
+        if data.length > 0
+          try
+            scripts = JSON.parse data
+          catch err
+            console.error "Error parsing JSON data from external-scripts.json: #{err}"
+            process.exit(1)
+          robot.loadExternalScripts scripts
 
     for path in Options.scripts
       if path[0] == '/'
@@ -118,6 +124,11 @@ else
       else
         scriptsPath = Path.resolve ".", path
       robot.load scriptsPath
+
+  if Options.configCheck
+    loadScripts()
+    console.log "OK"
+    process.exit 0
 
   robot.adapter.on 'connected', loadScripts
 

@@ -27,6 +27,12 @@ class TextMessage extends Message
   # Returns a Match object or null.
   match: (regex) ->
     @text.match regex
+  
+  # String representation of a TextMessage
+  #
+  # Returns the message text
+  toString: () ->
+    @text
 
 # Represents an incoming user entrance notification.
 #
