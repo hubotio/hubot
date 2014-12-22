@@ -601,16 +601,11 @@ will use to load the scripts in your package. Below is a simple example for
 loading each script in a `./scripts` directory in your package.
 
 ```coffeescript
-Fs   = require 'fs'
 Path = require 'path'
 
 module.exports = (robot) ->
   path = Path.resolve __dirname, 'scripts'
-  Fs.exists path, (exists) ->
-    if exists
-      for file in Fs.readdirSync(path)
-        robot.loadFile path, file
-        robot.parseHelp Path.join(path, file)
+  robot.load path
 ```
 
 After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
