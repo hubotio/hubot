@@ -220,7 +220,7 @@ class Robot
           script @
           @parseHelp Path.join(path, file)
         else
-          @logger.warning "Expected #{full} to assign a function to module.exports, not #{typeof script}"
+          @logger.warning "Expected #{full} to assign a function to module.exports, got #{typeof script}"
 
       catch error
         @logger.error "Unable to load #{full}: #{error.stack}"
