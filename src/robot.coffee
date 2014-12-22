@@ -214,8 +214,14 @@ class Robot
     full = Path.join path, Path.basename(file, ext)
     if require.extensions[ext]
       try
-        require(full) @
-        @parseHelp Path.join(path, file)
+        script = require(full)
+
+        if typeof script is 'function'
+          script @
+          @parseHelp Path.join(path, file)
+        else
+          @logger.warning "Expected #{full} to assign a function to module.exports, got #{typeof script}"
+
       catch error
         @logger.error "Unable to load #{full}: #{error.stack}"
         process.exit(1)
