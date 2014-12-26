@@ -50,11 +50,11 @@ subdomain is `hubot`. Make a note of the subdomain.
 
 ### Configuring the variables on Heroku
 
-    % heroku config:add HUBOT_CAMPFIRE_TOKEN="..."
+    % heroku config:set HUBOT_CAMPFIRE_TOKEN="..."
 
-    % heroku config:add HUBOT_CAMPFIRE_ROOMS="123,321"
+    % heroku config:set HUBOT_CAMPFIRE_ROOMS="123,321"
 
-    % heroku config:add HUBOT_CAMPFIRE_ACCOUNT="..."
+    % heroku config:set HUBOT_CAMPFIRE_ACCOUNT="..."
 
 ### Configuring the variables on UNIX
 

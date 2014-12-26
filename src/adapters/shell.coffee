@@ -1,8 +1,14 @@
-Readline = require 'readline'
+Readline = require 'readline-history'
 
 Robot         = require '../robot'
 Adapter       = require '../adapter'
 {TextMessage} = require '../message'
+
+
+historySize = if process.env.HUBOT_SHELL_HISTSIZE?
+                parseInt(process.env.HUBOT_SHELL_HISTSIZE)
+              else
+                1024
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
@@ -20,30 +26,41 @@ class Shell extends Adapter
     @send envelope, strings...
 
   run: ->
-    self = @
     stdin = process.openStdin()
     stdout = process.stdout
 
-    process.on 'uncaughtException', (err) =>
-      @robot.logger.error err.stack
+    @repl = null
+    Readline.createInterface
+      path: ".hubot_history",
+      input: stdin,
+      output: stdout,
+      maxLength: historySize, # number of entries
+      next: (rl) =>
+        @repl = rl
+        @repl.on 'close', =>
+          stdin.destroy()
+          @robot.shutdown()
+          process.exit 0
 
-    @repl = Readline.createInterface stdin, stdout, null
+        @repl.on 'line', (buffer) =>
 
-    @repl.on 'close', =>
-      stdin.destroy()
-      @robot.shutdown()
-      process.exit 0
+          switch buffer.toLowerCase()
+            when "exit"
+              @repl.close()
+            when "history"
+              stdout.write "#{line}\n" for line in @repl.history
+            else
+              user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+              user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
+              user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
+              @receive new TextMessage user, buffer, 'messageId'
+          @repl.prompt(true)
 
-    @repl.on 'line', (buffer) =>
-      @repl.close() if buffer.toLowerCase() is 'exit'
-      @repl.prompt()
-      user = @robot.brain.userForId '1', name: 'Shell', room: 'Shell'
-      @receive new TextMessage user, buffer, 'messageId'
+        @emit 'connected'
 
-    self.emit 'connected'
+        @repl.setPrompt "#{@robot.name}> "
+        @repl.prompt(true)
 
-    @repl.setPrompt "#{@robot.name}> "
-    @repl.prompt()
 
 exports.use = (robot) ->
   new Shell robot

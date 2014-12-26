@@ -2,26 +2,44 @@
 
 ## Getting Started With Hubot
 
-You will need [node.js](nodejs.org/) and [npm](https://npmjs.org/). Joyent has
+You will need [node.js](http://nodejs.org/) and [npm](https://npmjs.org/). Joyent has
 an [excellent blog post on how to get those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
 
-Once node and npm are ready, we can install hubot and coffeescript:
+Once node and npm are ready, we can install the hubot generator:
 
-    % npm install -g hubot coffee-script
+    %  npm install -g yo generator-hubot
 
-This will give us the `hubot` command, which is used for running a hubot, and more importantly now, generating your own hubot. The name of the new bot is
-the last argument, and will be created in the directory of the same name. For
-example, to create a new bot named myhubot:
+This will give us the `hubot` [yeoman](http://yeoman.io/) generator. Now we
+can make a new directory, and generate a new instance of hubot in it. For example, if
+we wanted to make a bot called myhubot:
 
-    % hubot --create myhubot
+
+    % mkdir myhubot
+    % cd myhubot
+    % yo hubot
+
+At this point, you'll be asked a few questions about who is creating the bot,
+and which [adapter](adapters.md) you'll be using. Adapters are hubot's way of
+integrating with different chat providers.
 
 If you are using git, the generated directory includes a .gitignore, so you can
 initialize and add everything:
 
-    % cd myhubot
     % git init
     % git add .
     % git commit -m "Initial commit"
+
+If you'd prefer to automate your hubot build without being interactively
+prompted for its configuration, you can add the following options
+to the `yo hubot` command to do so:
+
+| Option           | Description
+| ---------------- | -----------------------------------------------------
+| `--owner`        | Bot owner, e.g. "Bot Wrangler <bw@example.com>"
+| `--name`         | Bot name, e.g. "Hubot"
+| `--description`  | Bot description, e.g. "Delightfully aware robutt"
+| `--adapter`      | Bot adapter, e.g. "campfire"
+| `--defaults`     | Declare all defaults are set and no prompting required
 
 You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
@@ -48,7 +66,6 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
     hubot help <query> - Displays all help commands that match <query>.
     hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
     hubot map me <query> - Returns a map view of the area returned by `query`.
-    hubot math me <expression> - Calculate the given expression.
     hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
     hubot mustache me <url> - Adds a mustache to the specified URL.
     hubot ping - Reply with pong
@@ -91,6 +108,9 @@ In addition, there are scripts released as npm packages. If you find one you wan
 
 1. Add the package to the list of `dependencies` into your `package.json`
 2. `npm install` to make sure its installed
+
+To enable third-party scripts that you've added you will need to add the package
+name as a double quoted string to the `external-scripts.json` file in this repo.
 
 **Please note that external scripts may become the default for hubot scripts in future releases.**
 
