@@ -3,9 +3,5 @@ node_js:
   - "0.11"
   - "0.10"
   - "0.8"
-branches:
-  only:
-    - vthree-rethink
-    - testing
 notifications:
   email: false
