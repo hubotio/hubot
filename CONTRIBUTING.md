@@ -5,10 +5,11 @@ We love pull requests. Here's a quick guide:
 1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/commits/master)
 2. Fork the repo, and clone it locally
 3. `npm link` to make your cloned repo available to npm
-4. Follow [Getting Started](docs/README.md) to generate a testbot (no automated tests yet :sob:)
+4. Follow [Getting Started](docs/README.md) to generate a testbot
 5. `npm link hubot` in your newly created bot to use your hubot fork
 6. Create a new branch for your contribution
-7. Push to your fork and submit a pull request
+7. Add [tests](test/) (run with `npm test`)
+8. Push to your fork and submit a pull request
 
 At this point you're waiting on us. We like to at least comment on, if not
 accept, pull requests within a few days. We may suggest some changes or improvements or alternatives.
