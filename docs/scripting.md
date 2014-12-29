@@ -489,7 +489,7 @@ Using previous examples:
     try
       data = JSON.parse req.body.payload
     catch err
-      robot.emit 'error', error
+      robot.emit 'error', err
 
     # rest of the code here
 
@@ -504,7 +504,7 @@ Using previous examples:
         # rest of code here
 ```
 
-For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom
+For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting. 
 
 ## Documenting Scripts
 
