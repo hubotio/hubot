@@ -38,6 +38,7 @@ to have yours added to the list:
 * [Proxy](https://github.com/Hammertime38/hubot-proxy) - This adapter allows the base application to observe, handle, and control events sent to the proxied adapter, all defined in a config object at the root of the module.
 * [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
+* [Fleep](https://github.com/anroots/hubot-fleep)
 
 ## Writing Your Own adapter
 
