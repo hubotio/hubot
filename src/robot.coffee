@@ -63,9 +63,9 @@ class Robot
 
     @on 'error', (err, msg) =>
       @invokeErrorHandlers(err, msg)
-    process.on 'uncaughtException', (err) =>
+    @onUncaughtException = (err) =>
       @emit 'error', err
-
+    process.on 'uncaughtException', @onUncaughtException
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -447,6 +447,7 @@ class Robot
   # Returns nothing.
   shutdown: ->
     clearInterval @pingIntervalId if @pingIntervalId?
+    process.removeListener 'uncaughtException', @onUncaughtException
     @adapter.close()
     @brain.close()
 
