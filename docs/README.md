@@ -33,13 +33,13 @@ If you'd prefer to automate your hubot build without being interactively
 prompted for its configuration, you can add the following options
 to the `yo hubot` command to do so:
 
-| Option           | Description
-| ---------------- | -----------------------------------------------------
-| `--owner`        | Bot owner, e.g. "Bot Wrangler <bw@example.com>"
-| `--name`         | Bot name, e.g. "Hubot"
-| `--description`  | Bot description, e.g. "Delightfully aware robutt"
-| `--adapter`      | Bot adapter, e.g. "campfire"
-| `--defaults`     | Declare all defaults are set and no prompting required
+| Option                                      | Description
+| ------------------------------------------- | -----------------------------------------------------
+| `--owner="Bot Wrangler <bw@example.com>"`   | Bot owner, e.g. "Bot Wrangler <bw@example.com>"
+| `--name="Hubot"`                            | Bot name, e.g. "Hubot"
+| `--description="Delightfully aware robutt"` | Bot description, e.g. "Delightfully aware robutt"
+| `--adapter=campfire`                        | Bot adapter, e.g. "campfire"
+| `--defaults`                                | Declare all defaults are set and no prompting required
 
 You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
