@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "chai": "*",
+    "hubot-mock-adapter": "*",
     "mocha": "*",
     "sinon-chai": "*",
     "sinon": "*"
