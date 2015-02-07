@@ -36,48 +36,79 @@ describe 'Listener', ->
 
         expect(testMatcher).to.have.been.calledWith(testMessage)
 
-      it 'executes the callback and returns true if the matcher returns true', ->
-        callback = sinon.spy()
-        testMatcher = (message) ->
-          expect(message).to.be.equal(testMessage)
-          return true
-        testMessage = {}
-
-        testListener = new Listener(@robot, testMatcher, callback)
-        result = testListener.call(testMessage)
-
-        expect(result).to.be.ok
-        expect(callback).to.have.been.called
-
-      it 'does not execute the callback and returns false if the matcher returns false', ->
-        callback = sinon.spy()
-        testMatcher = (message) ->
-          expect(message).to.be.equal(testMessage)
-          return false
-        testMessage = {}
-
-        testListener = new Listener(@robot, testMatcher, callback)
-        result = testListener.call(testMessage)
-
-        expect(result).to.not.be.ok
-        expect(callback).to.not.have.been.called
-
-      it 'passes the matcher result on to the callback', ->
+      it 'passes the matcher result on to the listener callback', ->
         matcherResult = {}
         testMatcher = sinon.stub().returns(matcherResult)
         testMessage = {}
-        callback = (response) ->
+        listenerCallback = (response) ->
           expect(response.match).to.be.equal(matcherResult)
 
         # sanity check; matcherResult must be truthy
         expect(matcherResult).to.be.ok
 
-        testListener = new Listener(@robot, testMatcher, callback)
-        result = testListener.call(testMessage)
+        testListener = new Listener(@robot, testMatcher, listenerCallback)
+        result = testListener.call testMessage
 
         # sanity check; message should have been processed
         expect(testMatcher).to.have.been.called
         expect(result).to.be.ok
+
+      describe 'if the matcher returns true', ->
+        it 'executes the listener callback', ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.call testMessage
+
+          expect(listenerCallback).to.have.been.called
+
+
+        it 'returns true', ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          result = testListener.call testMessage
+
+          expect(result).to.be.ok
+          
+
+        it 'calls the listener callback with a Response that wraps the Message', (done) ->
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          listenerCallback = (response) ->
+            expect(response.message).to.equal(testMessage)
+            done()
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+
+          testListener.call testMessage, sinon.spy()
+
+      describe 'if the matcher returns false', ->
+        it 'does not execute the listener callback', ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(false)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.call testMessage
+
+          expect(listenerCallback).to.not.have.been.called
+
+
+        it 'returns false', ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(false)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          result = testListener.call testMessage
+
+          expect(result).to.not.be.ok
 
     describe 'TextListener', ->
       describe '#matcher', ->
