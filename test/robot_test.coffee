@@ -26,6 +26,7 @@ describe 'Robot', ->
   describe 'Unit Tests', ->
     describe '#receive', ->
       it 'calls all registered listeners', ->
+        # Need to use a real Message so that the CatchAllMessage constructor works
         testMessage = new TextMessage(@user, 'message123')
 
         listener =
@@ -44,23 +45,25 @@ describe 'Robot', ->
         # the original message and once with a CatchAll message
         expect(listener.call).to.have.callCount(8)
 
-      it 'sends a CatchAllMessage if no listener matches', (done) ->
+      it 'sends a CatchAllMessage if no listener matches', ->
         # Testing for recursion with a new CatchAllMessage that wraps the
         # original message
 
         testMessage = new TextMessage(@user, 'message123')
+        @robot.listeners = []
 
         # Replace @robot.receive so we can catch when the functions recurses
         oldReceive = @robot.receive
         @robot.receive = (message) ->
           expect(message).to.be.instanceof(CatchAllMessage)
           expect(message.message).to.be.equal(testMessage)
-          done()
-
-        @robot.listeners = []
+        sinon.spy(@robot, 'receive')
 
         # Call the original receive method that we want to test
-        oldReceive.call(@robot, testMessage)
+        oldReceive.call @robot, testMessage
+
+        # Ensure the function recursed
+        expect(@robot.receive).to.have.been.called
 
       it 'does not trigger a CatchAllMessage if a listener matches', ->
         testMessage = new TextMessage(@user, 'message123')
@@ -79,7 +82,7 @@ describe 'Robot', ->
         ]
 
         # Call the original receive method that we want to test
-        oldReceive.call(@robot, testMessage)
+        oldReceive.call @robot, testMessage
 
         # Ensure the function did not recurse
         expect(@robot.receive).to.not.have.been.called
@@ -90,6 +93,8 @@ describe 'Robot', ->
         matchingListener =
           call: (message) ->
             message.done = true
+            # Listener must have matched
+            true
 
         listenerSpy =
           call: sinon.spy()
@@ -103,6 +108,36 @@ describe 'Robot', ->
 
         expect(listenerSpy.call).to.not.have.been.called
 
+      it 'gracefully handles listener uncaughtExceptions (move on to next listener)', ->
+        testMessage = {}
+        theError = new Error()
+
+        badListener =
+          call: () ->
+            throw theError
+
+        goodListenerCalled = false
+        goodListener =
+          call: (_) ->
+            goodListenerCalled = true
+            true
+
+        @robot.listeners = [
+          badListener
+          goodListener
+        ]
+
+        @robot.emit = (name, err, response) ->
+          expect(name).to.equal('error')
+          expect(err).to.equal(theError)
+          expect(response.message).to.equal(testMessage)
+        sinon.spy(@robot, 'emit')
+
+        @robot.receive testMessage
+
+        expect(@robot.emit).to.have.been.called
+        expect(goodListenerCalled).to.be.ok
+
   describe 'Message Processing', ->
     it 'calls a matching listener', (done) ->
       testMessage = new TextMessage(@user, 'message123')
@@ -111,20 +146,20 @@ describe 'Robot', ->
         done()
       @robot.receive testMessage
 
-    it 'calls multiple matching listeners', (done) ->
+    it 'calls multiple matching listeners', ->
       testMessage = new TextMessage(@user, 'message123')
 
       listenersCalled = 0
       listenerCallback = (response) ->
         expect(response.message).to.equal(testMessage)
         listenersCalled++
-        if listenersCalled == 2
-          done()
 
       @robot.hear /^message123$/, listenerCallback
       @robot.hear /^message123$/, listenerCallback
 
       @robot.receive testMessage
+
+      expect(listenersCalled).to.equal(2)
 
     it 'calls the catch-all listener if no listeners match', (done) ->
       testMessage = new TextMessage(@user, 'message123')
@@ -165,21 +200,6 @@ describe 'Robot', ->
       @robot.receive testMessage
 
       expect(listenerCallback).to.not.have.been.called
-
-    it 'gracefully handles listener uncaughtExceptions', (done) ->
-      testMessage = new TextMessage(@user, 'message123')
-      theError = new Error()
-
-      @robot.hear /^message123$/, (response) ->
-        throw theError
-
-      @robot.emit = (name, err, response) ->
-        expect(name).to.equal('error')
-        expect(err).to.equal(theError)
-        expect(response.message).to.equal(testMessage)
-        done()
-
-      @robot.receive testMessage
 
     it 'calls non-TextListener objects', (done) ->
       testMessage = new EnterMessage @user
