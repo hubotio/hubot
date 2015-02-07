@@ -15,6 +15,12 @@ describe 'Listener', ->
   beforeEach ->
     # Dummy robot (should never actually get called)
     @robot =
+      # Ignore log messages
+      logger:
+        debug: () ->
+      # Setting an internal Robot variable feels dirty...
+      middleware:
+        listener: []
       # Why is this part of the Robot object??
       Response: Response
 
@@ -26,17 +32,24 @@ describe 'Listener', ->
 
   describe 'Unit Tests', ->
     describe '#call', ->
-      it 'calls the matcher', ->
+      it 'calls the matcher', (done) ->
         callback = sinon.spy()
         testMatcher = sinon.spy()
         testMessage = {}
 
         testListener = new Listener(@robot, testMatcher, callback)
-        testListener.call testMessage
+        testListener.call testMessage, (_) ->
+          expect(testMatcher).to.have.been.calledWith(testMessage)
+          done()
 
-        expect(testMatcher).to.have.been.calledWith(testMessage)
+      it 'bails if there is no callback', ->
+        testMatcher = sinon.spy()
+        listenerCallback = sinon.spy()
+        testListener = new Listener(@robot, testMatcher, listenerCallback)
+        testMessage = {}
+        expect(() -> testListener.call(testMessage, undefined)).to.throw(Error)
 
-      it 'passes the matcher result on to the listener callback', ->
+      it 'passes the matcher result on to the listener callback', (done) ->
         matcherResult = {}
         testMatcher = sinon.stub().returns(matcherResult)
         testMessage = {}
@@ -47,34 +60,51 @@ describe 'Listener', ->
         expect(matcherResult).to.be.ok
 
         testListener = new Listener(@robot, testMatcher, listenerCallback)
-        result = testListener.call testMessage
+        testListener.call testMessage, (result) ->
+          # sanity check; message should have been processed
+          expect(testMatcher).to.have.been.called
+          expect(result).to.be.ok
 
-        # sanity check; message should have been processed
-        expect(testMatcher).to.have.been.called
-        expect(result).to.be.ok
+          done()
 
       describe 'if the matcher returns true', ->
-        it 'executes the listener callback', ->
+        it 'executes the listener callback', (done) ->
           listenerCallback = sinon.spy()
           testMatcher = sinon.stub().returns(true)
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          testListener.call testMessage
+          testListener.call testMessage, (_) ->
+            expect(listenerCallback).to.have.been.called
+            done()
 
-          expect(listenerCallback).to.have.been.called
 
-
-        it 'returns true', ->
+        it 'calls the provided callback with true', (done) ->
           listenerCallback = sinon.spy()
           testMatcher = sinon.stub().returns(true)
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          result = testListener.call testMessage
+          testListener.call testMessage, (result) ->
+            expect(result).to.be.ok
+            done()
 
-          expect(result).to.be.ok
-          
+        it 'handles uncaught errors from the listener callback', (done) ->
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+          theError = new Error()
+
+          listenerCallback = (response) ->
+            throw theError
+
+          @robot.emit = (name, err, response) ->
+            expect(name).to.equal('error')
+            expect(err).to.equal(theError)
+            expect(response.message).to.equal(testMessage)
+            done()
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.call testMessage, sinon.spy()
 
         it 'calls the listener callback with a Response that wraps the Message', (done) ->
           testMatcher = sinon.stub().returns(true)
@@ -88,27 +118,109 @@ describe 'Listener', ->
 
           testListener.call testMessage, sinon.spy()
 
+        it 'passes through #executeAllMiddleware', (testDone) ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.executeAllMiddleware = (response, next, done) ->
+            expect(response.message).to.be.equal(testMessage)
+            expect(next).to.be.a('function')
+            expect(done).to.be.a('function')
+            testDone()
+
+          testListener.call(testMessage, sinon.spy())
+
+        it 'executes the listener callback if middleware succeeds', (testDone) ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.executeAllMiddleware = (response, next, done) ->
+            # Middleware succeeds
+            next(response, done)
+
+          testListener.call testMessage, (result) ->
+            expect(listenerCallback).to.have.been.called
+            # Matcher matched, so we return true
+            expect(result).to.be.ok
+            testDone()
+
+        it 'does not execute the listener callback if middleware fails', (testDone) ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.executeAllMiddleware = (response, next, done) ->
+            # Middleware fails
+            done()
+
+          testListener.call testMessage, (result) ->
+            expect(listenerCallback).to.not.have.been.called
+            # Matcher still matched, so we return true
+            expect(result).to.be.ok
+            testDone()
+
       describe 'if the matcher returns false', ->
-        it 'does not execute the listener callback', ->
+        it 'does not execute the listener callback', (done) ->
           listenerCallback = sinon.spy()
           testMatcher = sinon.stub().returns(false)
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          testListener.call testMessage
+          testListener.call testMessage, (_) ->
+            expect(listenerCallback).to.not.have.been.called
+            done()
 
-          expect(listenerCallback).to.not.have.been.called
 
-
-        it 'returns false', ->
+        it 'calls the provided callback with false', (done) ->
           listenerCallback = sinon.spy()
           testMatcher = sinon.stub().returns(false)
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          result = testListener.call testMessage
+          testListener.call testMessage, (result) ->
+            expect(result).to.not.be.ok
+            done()
 
-          expect(result).to.not.be.ok
+        it 'does not execute any middleware', (done) ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(false)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.executeAllMiddleware = sinon.stub()
+
+          testListener.call testMessage, (result) ->
+            expect(testListener.executeAllMiddleware).to.not.have.been.called
+            done()
+
+    describe '#constructor', ->
+      it 'requires a matcher', ->
+        expect(() -> new Listener(@robot, undefined, {}, sinon.spy())).to.throw(Error)
+
+      it 'requires a callback', ->
+        # No options
+        expect(() -> new Listener(@robot, sinon.spy(), undefined)).to.throw(Error)
+        # With options
+        expect(() -> new Listener(@robot, sinon.spy(), {}, undefined)).to.throw(Error)
+
+      it 'gracefully handles missing options', ->
+        testMatcher = sinon.spy()
+        listenerCallback = sinon.spy()
+        testListener = new Listener(@robot, testMatcher, listenerCallback)
+        # slightly brittle because we are testing for the default options Object
+        expect(testListener.options).to.deep.equal({id:null})
+        expect(testListener.callback).to.be.equal(listenerCallback)
+
+      it 'gracefully handles a missing ID (set to null)', ->
+        testMatcher = sinon.spy()
+        listenerCallback = sinon.spy()
+        testListener = new Listener(@robot, testMatcher, {}, listenerCallback)
+        expect(testListener.options.id).to.be.null
 
     describe 'TextListener', ->
       describe '#matcher', ->

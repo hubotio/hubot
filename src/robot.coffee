@@ -213,8 +213,10 @@ class Robot
   # message - A Message instance. Listeners can flag this message as 'done' to
   #           prevent further execution.
   #
+  # cb - Optional callback that is called when message processing is complete
+  #
   # Returns nothing.
-  receive: (message) ->
+  receive: (message, cb) ->
     # Try executing all registered Listeners in order of registration
     # and return after message is done being processed
     anyListenersExecuted = false
@@ -231,13 +233,17 @@ class Robot
               cb(message.done)
         catch err
           @emit('error', err, new @Response(@, message, []))
+          # Continue to next listener when there is an error
+          cb(false)
       ,
       # Ignore the result ( == the listener that set message.done = true)
       (_) =>
         # If no registered Listener matched the message
         if message not instanceof CatchAllMessage and not anyListenersExecuted
           @logger.debug 'No listeners executed; falling back to catch-all'
-          @receive new CatchAllMessage(message)
+          @receive new CatchAllMessage(message), cb
+        else
+          cb() if cb?
     )
 
 

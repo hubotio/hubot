@@ -26,7 +26,7 @@ class Listener
     if not @options.id?
       @options.id = null
 
-    if not @callback?
+    if not @callback? or typeof @callback != 'function'
       throw new Error "Missing a callback for Listener"
 
   # Public: Determines if the listener likes the content of the message. If
@@ -39,6 +39,8 @@ class Listener
   #
   # @callback - Call with a boolean of whether the matcher matched.
   call: (message, cb) ->
+    throw new Error('missing callback') if not cb
+
     if match = @matcher message
       if @regex
         @robot.logger.debug \
