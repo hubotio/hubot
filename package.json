@@ -33,6 +33,7 @@
     "chai": "*",
     "hubot-mock-adapter": "*",
     "mocha": "*",
+    "mockery": "*",
     "sinon-chai": "*",
     "sinon": "*"
   },

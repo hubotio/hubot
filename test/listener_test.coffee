@@ -6,23 +6,23 @@ chai.use require 'sinon-chai'
 { expect } = chai
 
 # Hubot classes
-Robot = require '../src/robot.coffee'
 { CatchAllMessage, EnterMessage, TextMessage } = require '../src/message'
 { Listener, TextListener } = require '../src/listener'
+Response = require '../src/response.coffee'
+User = require '../src/user.coffee'
 
 describe 'Listener', ->
   beforeEach ->
-    @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
-    @robot.run
+    # Dummy robot (should never actually get called)
+    @robot =
+      # Why is this part of the Robot object??
+      Response: Response
 
-    @user = @robot.brain.userForId '1', {
+    # Test user
+    @user = new User
+      id: 1
       name: 'hubottester'
       room: '#mocha'
-    }
-
-  afterEach ->
-   @robot.server.close()
-   @robot.shutdown()
 
   describe 'Unit Tests', ->
     describe '#call', ->
