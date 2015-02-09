@@ -222,6 +222,148 @@ describe 'Listener', ->
         testListener = new Listener(@robot, testMatcher, {}, listenerCallback)
         expect(testListener.options.id).to.be.null
 
+    describe '#executeAllMiddleware', ->
+      beforeEach ->
+        @testListener = new Listener(@robot, sinon.spy(), {}, sinon.spy())
+
+      it 'executes all registered middleware in definition order', (testDone) ->
+        middlewareExecution = []
+
+        testMiddlewareA = (robot, listener, response, next, done) =>
+          # Check that variables get passed correctly
+          expect(robot).to.equal(@robot)
+          expect(listener).to.equal(@testListener)
+          expect(response).to.equal(testResponse)
+
+          middlewareExecution.push('A')
+          next(done)
+
+        testMiddlewareB = (robot, listener, response, next, done) ->
+          middlewareExecution.push('B')
+          next(done)
+
+        @robot.middleware.listener = [
+          testMiddlewareA
+          testMiddlewareB
+        ]
+
+        testResponse = {}
+
+        middlewareFinished = (response, done) ->
+          expect(middlewareExecution).to.deep.equal(['A','B'])
+          testDone()
+        middlewareFailed = sinon.spy()
+
+        @testListener.executeAllMiddleware(testResponse, middlewareFinished, middlewareFailed)
+
+      it 'works with asynchronous middleware', (testDone) ->
+        testMiddleware = sinon.spy (robot, listener, response, next, done) ->
+          # Yield to the event loop
+          process.nextTick () ->
+            next(done)
+
+        @robot.middleware.listener = [
+          testMiddleware
+        ]
+
+        middlewareFinished = (response, done) ->
+          expect(testMiddleware).to.have.been.called
+          testDone()
+
+        testResponse = {}
+        @testListener.executeAllMiddleware(testResponse, middlewareFinished, sinon.spy())
+
+      describe 'error handling', ->
+        it 'does not execute subsequent middleware after the error is thrown', (testDone) ->
+          middlewareExecution = []
+
+          testMiddlewareA = (robot, listener, response, next, done) ->
+            middlewareExecution.push('A')
+            next(done)
+
+          testMiddlewareB = (robot, listener, response, next, done) ->
+            middlewareExecution.push('B')
+            throw new Error
+
+          testMiddlewareC = (robot, listener, response, next, done) ->
+            middlewareExecution.push('C')
+            next(done)
+
+          @robot.middleware.listener = [
+            testMiddlewareA
+            testMiddlewareB
+            testMiddlewareC
+          ]
+
+          # Don't care about emit
+          @robot.emit = () ->
+          middlewareFinished = sinon.spy()
+          middlewareFailed = (response, done) =>
+            expect(middlewareFinished).to.not.have.been.called
+            expect(middlewareExecution).to.deep.equal(['A','B'])
+            testDone()
+
+          @testListener.executeAllMiddleware({}, middlewareFinished, middlewareFailed)
+
+
+        it 'emits an error event', (testDone) ->
+          testResponse = {}
+          theError = new Error
+
+          testMiddleware = (robot, listener, response, next, done) ->
+            throw theError
+
+          @robot.middleware.listener = [
+            testMiddleware
+          ]
+
+          @robot.emit = sinon.spy (name, err, response) ->
+            expect(name).to.equal('error')
+            expect(err).to.equal(theError)
+            expect(response).to.equal(testResponse)
+
+          middlewareFinished = sinon.spy()
+          middlewareFailed = (response, done) =>
+            expect(@robot.emit).to.have.been.called
+            testDone()
+
+          @testListener.executeAllMiddleware(testResponse, middlewareFinished, middlewareFailed)
+
+
+        it 'unwinds the middleware stack (calling all done functions)', (testDone) ->
+          extraDoneFunc = null
+
+          testMiddlewareA = (robot, listener, response, next, done) ->
+            # Goal: make sure that the middleware stack is unwound correctly
+            extraDoneFunc = sinon.spy () ->
+              done()
+            next extraDoneFunc
+
+          testMiddlewareB = (robot, listener, response, next, done) ->
+            throw new Error
+
+          @robot.middleware.listener = [
+            testMiddlewareA
+            testMiddlewareB
+          ]
+
+          # Don't care about emit
+          @robot.emit = () ->
+          middlewareFinished = sinon.spy()
+          middlewareFailed = (response, done) ->
+            # Sanity check that the error was actually thrown
+            expect(middlewareFinished).to.not.have.been.called
+
+            expect(extraDoneFunc).to.have.been.called
+            testDone()
+
+          @testListener.executeAllMiddleware({}, middlewareFinished, middlewareFailed)
+
+      it 'does the right thing with done callbacks??'
+        # not exactly sure what to test here, but we want to ensure that
+        # the 'done' callbacks are nested correctly (executed in reverse
+        # order of definition)
+
     describe 'TextListener', ->
       describe '#matcher', ->
         it 'matches TextMessages', ->
