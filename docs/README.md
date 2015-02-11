@@ -49,7 +49,7 @@ and then launching your hubot.
     Hubot>
 
 This starts hubot using the [shell adapter](adapters/shell.md), which
-is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
+is mostly useful for development. Make note of  `Hubot>`; this is the name your hubot will
 `respond` to with commands. For example, to list available commands:
 
     % bin/hubot
@@ -81,7 +81,7 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
     hubot pug me - Receive a pug
     hubot ship it - Display a motivation squirrel
 
-You almost definitely will want to change his name to give him some more character. bin/hubot takes a `--name`:
+You almost definitely will want to change your hubot's name to add character. bin/hubot takes a `--name`:
 
     % bin/hubot --name myhubot
     myhubot>
@@ -130,4 +130,4 @@ Please note the support for deploying to Windows isn't officially supported.
 
 ## Patterns
 
-Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he can be. Read [docs/patterns.md](patterns.md) for some nifty tricks that may come in handy as you teach him new skills.
+Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he or she can be. Read [docs/patterns.md](patterns.md) for some nifty tricks that may come in handy as you teach your hubot new skills.
