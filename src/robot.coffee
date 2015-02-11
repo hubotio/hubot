@@ -46,7 +46,6 @@ class Robot
     @brain      = new Brain @
     @alias      = false
     @adapter    = null
-    @Response   = Response
     @commands   = []
     @listeners  = []
     @middleware =
@@ -262,7 +261,7 @@ class Robot
               # Stop processing when message.done == true
               cb(message.done)
         catch err
-          @emit('error', err, new @Response(@, message, []))
+          @emit('error', err, new Response(@, message, []))
           # Continue to next listener when there is an error
           cb(false)
       ,
