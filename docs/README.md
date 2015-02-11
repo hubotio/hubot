@@ -49,7 +49,7 @@ and then launching your hubot.
     Hubot>
 
 This starts hubot using the [shell adapter](adapters/shell.md), which
-is mostly useful for development. Make note of  `Hubot>`; this is the name hubot will
+is mostly useful for development. Make note of  `Hubot>`; this is the name your hubot will
 `respond` to with commands. For example, to list available commands:
 
     % bin/hubot
