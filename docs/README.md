@@ -45,6 +45,8 @@ You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
 and then launching your hubot.
 
+Hubot needs Redis to persist data, so before you can start hubot on your own computer, you should have Redis installed on your localhost. If just want to test Hubot without Redis, then you can remove `redis-brain.coffee` from `hubot-scripts.json`.
+
     % bin/hubot
     Hubot>
 
