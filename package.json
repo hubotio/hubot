@@ -28,6 +28,14 @@
     "express": "3.18.1",
     "readline-history": "~1.2.0"
   },
+  "devDependencies": {
+    "chai": "*",
+    "hubot-mock-adapter": "*",
+    "mocha": "*",
+    "mockery": "*",
+    "sinon-chai": "*",
+    "sinon": "*"
+  },
   "engines": {
     "node": ">= 0.8.x",
     "npm": ">= 1.1.x"
@@ -35,5 +43,8 @@
   "main": "./index",
   "bin": {
     "hubot": "./bin/hubot"
+  },
+  "scripts": {
+    "test": "./script/test"
   }
 }
