@@ -1,7 +1,6 @@
 {
   "name": "hubot",
   "version": "2.11.0",
-
   "author": "hubot",
   "keywords": [
     "github",
@@ -30,12 +29,10 @@
   },
 
   "devDependencies": {
-    "chai": "*",
-    "hubot-mock-adapter": "*",
-    "mocha": "*",
-    "mockery": "*",
-    "sinon-chai": "*",
-    "sinon": "*"
+    "hubot-mock-adapter": "^1.0.0",
+    "mocha": "^2.1.0",
+    "mockery": "^1.4.0",
+    "sinon-chai": "^2.6.0"
   },
 
   "engines": {
