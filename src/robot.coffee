@@ -270,7 +270,7 @@ class Robot
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
     port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
-    address = process.env.BIND_ADDRESS or '0.0.0.0'
+    address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
 
