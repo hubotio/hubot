@@ -39,6 +39,7 @@ to have yours added to the list:
 * [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
 * [Fleep](https://github.com/anroots/hubot-fleep)
+* [Let's Chat](https://github.com/sdelements/hubot-lets-chat)
 
 ## Writing Your Own adapter
 
