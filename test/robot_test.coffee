@@ -30,6 +30,12 @@ describe 'Robot', ->
     @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
     @robot.run
 
+    # Re-throw AssertionErrors for clearer test failures
+    @robot.on 'error', (name, err, response) ->
+      if err.constructor.name == "AssertionError"
+        process.nextTick () ->
+          throw err
+
     @user = @robot.brain.userForId '1', {
       name: 'hubottester'
       room: '#mocha'
@@ -432,12 +438,14 @@ describe 'Robot', ->
         testMessage = new TextMessage @user, 'message123'
 
         @robot.listenerMiddleware (robot, listener, response, next, done) =>
-          expect(robot).to.equal(@robot)
-          expect(listener).to.equal(testListener)
-          expect(response.message).to.equal(testMessage)
-          expect(next).to.be.a('function')
-          expect(done).to.be.a('function')
-          testDone()
+          # Escape middleware error handling for clearer test failures
+          process.nextTick () =>
+            expect(robot).to.equal(@robot)
+            expect(listener).to.equal(testListener)
+            expect(response.message).to.equal(testMessage)
+            expect(next).to.be.a('function')
+            expect(done).to.be.a('function')
+            testDone()
 
         @robot.receive testMessage
 

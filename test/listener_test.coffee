@@ -13,8 +13,13 @@ User = require '../src/user.coffee'
 
 describe 'Listener', ->
   beforeEach ->
-    # Dummy robot (should never actually get called)
+    # Dummy robot
     @robot =
+      # Re-throw AssertionErrors for clearer test failures
+      emit: (name, err, response) ->
+        if err.constructor.name == "AssertionError"
+          process.nextTick () ->
+            throw err
       # Skip middleware execution
       executeMiddleware: (whichMiddleware, context, next, done) ->
         next(context, done)
