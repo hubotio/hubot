@@ -1,5 +1,20 @@
+v2.11.1
+=======
+
+* Automated testing
+* Cleanup uncaughtException handlers, to avoid node warning about a memory leak during tests
+
+v2.11.0
+=======
+
+* Update scripting.md script package sample
+* Include Message class in exported module (ie require 'hubot')
+* Support custom options when calling `robot.http` that are passed onto the scoped-http-client
+* Update scoped-http-client dependency to 0.10.0
+* Fix error when loading a script that doesn't export a function; log a warning instead
+
 v2.10.0
-======
+=======
 
 * Add support to shell adapter for customizing the user with HUBOT_SHELL_USER_ID and HUBOT_SHELL_USER_NAME
 * Add history support to shell adapter, so it remembers commands previously used

@@ -29,15 +29,29 @@ initialize and add everything:
     % git add .
     % git commit -m "Initial commit"
 
+If you'd prefer to automate your hubot build without being interactively
+prompted for its configuration, you can add the following options
+to the `yo hubot` command to do so:
+
+| Option                                      | Description
+| ------------------------------------------- | -----------------------------------------------------
+| `--owner="Bot Wrangler <bw@example.com>"`   | Bot owner, e.g. "Bot Wrangler <bw@example.com>"
+| `--name="Hubot"`                            | Bot name, e.g. "Hubot"
+| `--description="Delightfully aware robutt"` | Bot description, e.g. "Delightfully aware robutt"
+| `--adapter=campfire`                        | Bot adapter, e.g. "campfire"
+| `--defaults`                                | Declare all defaults are set and no prompting required
+
 You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
 and then launching your hubot.
+
+Hubot needs Redis to persist data, so before you can start hubot on your own computer, you should have Redis installed on your localhost. If just want to test Hubot without Redis, then you can remove `redis-brain.coffee` from `hubot-scripts.json`.
 
     % bin/hubot
     Hubot>
 
 This starts hubot using the [shell adapter](adapters/shell.md), which
-is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
+is mostly useful for development. Make note of  `Hubot>`; this is the name your hubot will
 `respond` to with commands. For example, to list available commands:
 
     % bin/hubot
@@ -69,7 +83,7 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name he'll
     hubot pug me - Receive a pug
     hubot ship it - Display a motivation squirrel
 
-You almost definitely will want to change his name to give him some more character. bin/hubot takes a `--name`:
+You almost definitely will want to change your hubot's name to add character. bin/hubot takes a `--name`:
 
     % bin/hubot --name myhubot
     myhubot>
@@ -118,4 +132,4 @@ Please note the support for deploying to Windows isn't officially supported.
 
 ## Patterns
 
-Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he can be. Read [docs/patterns.md](patterns.md) for some nifty tricks that may come in handy as you teach him new skills.
+Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he or she can be. Read [docs/patterns.md](patterns.md) for some nifty tricks that may come in handy as you teach your hubot new skills.

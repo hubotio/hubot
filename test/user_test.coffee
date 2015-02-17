@@ -1,18 +1,20 @@
-User = require '../src/user'
-assert = require 'assert'
+{expect} = require 'chai'
+User = require '../src/user.coffee'
 
+describe 'User', ->
+  describe 'new', ->
+    it 'uses id as the default name', ->
+      user = new User('hubot')
 
-user = new User "Fake User", {name: 'fake', type: "groupchat"}
-assert.equal "Fake User", user.id
-assert.equal "groupchat", user.type
-assert.equal "fake", user.name
+      expect(user.name).to.equal('hubot')
 
-user = new User "Fake User", {room: "chat@room.jabber", type: "groupchat"}
-assert.equal "Fake User", user.id
-assert.equal "chat@room.jabber", user.room
-assert.equal "groupchat", user.type
-assert.equal "Fake User", user.name # Make sure that if no name is given, we fallback to the ID
+    it 'sets attributes passed in', ->
+      user = new User('hubot', foo: 1, bar: 2)
 
-user = new User 12345
-assert.strictEqual 12345, user.id
-assert.strictEqual "12345", user.name
+      expect(user.foo).to.equal(1)
+      expect(user.bar).to.equal(2)
+
+    it 'uses name attribute when passed in, not id', ->
+      user = new User('hubot', name: 'tobuh')
+
+      expect(user.name).to.equal('tobuh')

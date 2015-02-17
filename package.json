@@ -1,7 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.10.0",
-
+  "version": "2.11.1",
   "author": "hubot",
   "keywords": [
     "github",
@@ -24,12 +23,19 @@
     "async": ">=0.1.0 <1.0.0",
     "coffee-script": "1.6.3",
     "optparse": "1.0.4",
-    "scoped-http-client": "0.9.8",
+    "scoped-http-client": "0.10.0",
     "log": "1.4.0",
-    "express": "3.3.4",
     "express": "3.18.1",
     "readline-history": "~1.2.0"
   },
+
+  "devDependencies": {
+    "hubot-mock-adapter": "^1.0.0",
+    "mocha": "^2.1.0",
+    "mockery": "^1.4.0",
+    "sinon-chai": "^2.6.0"
+  },
+
   "engines": {
     "node": ">= 0.8.x",
     "npm": ">= 1.1.x"
@@ -37,5 +43,8 @@
   "main": "./index",
   "bin": {
     "hubot": "./bin/hubot"
+  },
+  "scripts": {
+    "test": "./script/test"
   }
 }
