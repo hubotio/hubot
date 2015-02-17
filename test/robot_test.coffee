@@ -228,3 +228,75 @@ describe 'Robot', ->
         done()
 
       @robot.receive testMessage
+
+    describe 'Listener Middleware', ->
+      it 'allows listener callback execution', (testDone) ->
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, listenerCallback
+        @robot.listenerMiddleware (robot, listener, response, next, done) ->
+          # Allow Listener callback execution
+          next done
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(listenerCallback).to.have.been.called
+          testDone()
+
+      it 'can block listener callback execution', (testDone) ->
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, listenerCallback
+        @robot.listenerMiddleware (robot, listener, response, next, done) ->
+          # Block Listener callback execution
+          done()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(listenerCallback).to.not.have.been.called
+          testDone()
+
+      it 'receives the correct arguments', (testDone) ->
+        @robot.hear /^message123$/, () ->
+        testListener = @robot.listeners[0]
+        testMessage = new TextMessage @user, 'message123'
+
+        @robot.listenerMiddleware (robot, listener, response, next, done) =>
+          expect(robot).to.equal(@robot)
+          expect(listener).to.equal(testListener)
+          expect(response.message).to.equal(testMessage)
+          expect(next).to.be.a('function')
+          expect(done).to.be.a('function')
+          testDone()
+
+        @robot.receive testMessage
+
+      it 'executes middleware in order of definition', (testDone) ->
+        execution = []
+
+        testMiddlewareA = (robot, listener, response, next, done) ->
+          execution.push 'middlewareA'
+          next () ->
+            execution.push 'doneA'
+            done()
+
+        testMiddlewareB = (robot, listener, response, next, done) ->
+          execution.push 'middlewareB'
+          next () ->
+            execution.push 'doneB'
+            done()
+
+        @robot.listenerMiddleware testMiddlewareA
+        @robot.listenerMiddleware testMiddlewareB
+
+        @robot.hear /^message123$/, () ->
+          execution.push 'listener'
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(execution).to.deep.equal([
+            'middlewareA'
+            'middlewareB'
+            'listener'
+            'doneB'
+            'doneA'
+          ])
+          testDone()
