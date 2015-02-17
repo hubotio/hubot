@@ -157,6 +157,178 @@ describe 'Robot', ->
           expect(goodListenerCalled).to.be.ok
           done()
 
+    describe '#executeMiddleware', ->
+      it 'bails if an invalid middleware set is specified', ->
+        testCase = () =>
+          @robot.executeMiddleware 'not-a-valid-set', {}, (() ->), (() ->)
+        expect(testCase).to.throw /invalid.*not-a-valid-set/i
+
+      it 'executes all registered middleware in definition order', (testDone) ->
+        testListener = {}
+        testResponse = {}
+
+        middlewareExecution = []
+
+        testMiddlewareA = (robot, listener, response, next, done) =>
+          # Check that variables get passed correctly
+          expect(robot).to.equal(@robot)
+          expect(listener).to.equal(testListener)
+          expect(response).to.equal(testResponse)
+
+          middlewareExecution.push('A')
+          next(done)
+
+        testMiddlewareB = (robot, listener, response, next, done) ->
+          middlewareExecution.push('B')
+          next(done)
+
+        @robot.listenerMiddleware testMiddlewareA
+        @robot.listenerMiddleware testMiddlewareB
+
+        middlewareFinished = (context, done) ->
+          expect(middlewareExecution).to.deep.equal(['A','B'])
+          testDone()
+        middlewareFailed = sinon.spy()
+
+        @robot.executeMiddleware 'listener',
+          {listener: testListener, response: testResponse},
+          middlewareFinished,
+          middlewareFailed
+
+      it 'works with asynchronous middleware', (testDone) ->
+        testMiddleware = sinon.spy (robot, listener, response, next, done) ->
+          # Yield to the event loop
+          process.nextTick () ->
+            next(done)
+
+        @robot.listenerMiddleware testMiddleware
+
+        middlewareFinished = (context, done) ->
+          expect(testMiddleware).to.have.been.called
+          testDone()
+
+        @robot.executeMiddleware 'listener',
+          {},
+          middlewareFinished,
+          sinon.spy()
+
+      describe 'error handling', ->
+        it 'does not execute subsequent middleware after the error is thrown', (testDone) ->
+          middlewareExecution = []
+
+          testMiddlewareA = (robot, listener, response, next, done) ->
+            middlewareExecution.push('A')
+            next(done)
+
+          testMiddlewareB = (robot, listener, response, next, done) ->
+            middlewareExecution.push('B')
+            throw new Error
+
+          testMiddlewareC = (robot, listener, response, next, done) ->
+            middlewareExecution.push('C')
+            next(done)
+
+          @robot.listenerMiddleware testMiddlewareA
+          @robot.listenerMiddleware testMiddlewareB
+          @robot.listenerMiddleware testMiddlewareC
+
+          # Don't care about emit
+          @robot.emit = () ->
+          middlewareFinished = sinon.spy()
+          middlewareFailed = () =>
+            expect(middlewareFinished).to.not.have.been.called
+            expect(middlewareExecution).to.deep.equal(['A','B'])
+            testDone()
+
+          @robot.executeMiddleware 'listener',
+            {},
+            middlewareFinished,
+            middlewareFailed
+
+        it 'emits an error event', (testDone) ->
+          testResponse = {}
+          theError = new Error
+
+          testMiddleware = (robot, listener, response, next, done) ->
+            throw theError
+
+          @robot.listenerMiddleware testMiddleware
+
+          @robot.emit = sinon.spy (name, err, response) ->
+            expect(name).to.equal('error')
+            expect(err).to.equal(theError)
+            expect(response).to.equal(testResponse)
+
+          middlewareFinished = sinon.spy()
+          middlewareFailed = () =>
+            expect(@robot.emit).to.have.been.called
+            testDone()
+
+          @robot.executeMiddleware 'listener',
+            {response: testResponse},
+            middlewareFinished,
+            middlewareFailed
+
+        it 'unwinds the middleware stack (calling all done functions)', (testDone) ->
+          extraDoneFunc = null
+
+          testMiddlewareA = (robot, listener, response, next, done) ->
+            # Goal: make sure that the middleware stack is unwound correctly
+            extraDoneFunc = sinon.spy () ->
+              done()
+            next extraDoneFunc
+
+          testMiddlewareB = (robot, listener, response, next, done) ->
+            throw new Error
+
+          @robot.listenerMiddleware testMiddlewareA
+          @robot.listenerMiddleware testMiddlewareB
+
+          # Don't care about emit
+          @robot.emit = () ->
+          middlewareFinished = sinon.spy()
+          middlewareFailed = () ->
+            # Sanity check that the error was actually thrown
+            expect(middlewareFinished).to.not.have.been.called
+
+            expect(extraDoneFunc).to.have.been.called
+            testDone()
+
+          @robot.executeMiddleware 'listener',
+            {},
+            middlewareFinished,
+            middlewareFailed
+
+      it 'does the right thing with done callbacks', (testDone) ->
+        # we want to ensure that the 'done' callbacks are nested correctly
+        # (executed in reverse order of definition)
+        execution = []
+
+        testMiddlewareA = (robot, listener, response, next, done) ->
+          execution.push 'middlewareA'
+          next () ->
+            execution.push 'doneA'
+            done()
+
+        testMiddlewareB = (robot, listener, response, next, done) ->
+          execution.push 'middlewareB'
+          next () ->
+            execution.push 'doneB'
+            done()
+
+        @robot.listenerMiddleware testMiddlewareA
+        @robot.listenerMiddleware testMiddlewareB
+
+        allDone = () ->
+          expect(execution).to.deep.equal(['middlewareA', 'middlewareB', 'doneB', 'doneA'])
+          testDone()
+
+        @robot.executeMiddleware 'listener',
+          {},
+          # Short circuit at the bottom of the middleware stack
+          (context, done) -> done(),
+          allDone
+
   describe 'Message Processing', ->
     it 'calls a matching listener', (done) ->
       testMessage = new TextMessage(@user, 'message123')

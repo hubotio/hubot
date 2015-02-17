@@ -48,13 +48,13 @@ class Listener
 
       # special middleware-like function that always executes the Listener's
       # callback and calls done (never calls 'next')
-      executeListener = (response, done) =>
+      executeListener = (context, done) =>
         @robot.logger.debug "Executing listener callback for Message '#{message}'"
         try
-          @callback response
+          @callback context.response
           done()
         catch err
-          @robot.emit('error', err, response)
+          @robot.emit('error', err, context.response)
 
       # When everything is finished (down the middleware stack and back up),
       # pass control back to the robot
@@ -64,48 +64,13 @@ class Listener
         cb true
 
       response = new @robot.Response(@robot, message, match)
-      @executeAllMiddleware response, executeListener, allDone
+      @robot.executeMiddleware 'listener',
+        {listener: @, response: response},
+        executeListener,
+        allDone
     else
       # No, we didn't try to execute the listener callback
       cb false
-
-  # Execute all middleware in order and call 'next' with the latest 'done'
-  # callback if last middleware calls through. If all middleware is compliant,
-  # 'done' should be called with no arguments when the entire round trip is
-  # complete.
-  #
-  # response - Response object to eventually pass to the Listener callback
-  #
-  # next(response, done) - Called when all middleware is complete (assuming
-  #     all continued by calling respective 'next' functions)
-  #
-  # done() - Initial (final) completion callback. May be wrapped by
-  #     executed middleware.
-  #
-  # Returns nothing
-  executeAllMiddleware: (response, next, done) ->
-    allMiddleware = @robot.middleware.listener
-
-    # Execute a single piece of middleware and update the completion callback
-    # (each piece of middleware can wrap the 'done' callback with additional
-    # logic).
-    executeMiddleware = (doneFunc, middlewareFunc, cb) =>
-      # Match the async.reduce interface
-      nextFunc = (newDoneFunc) -> cb(null, newDoneFunc)
-      # Catch errors in synchronous middleware
-      try
-        middlewareFunc.call(undefined, @robot, @, response, nextFunc, doneFunc)
-      catch err
-        @robot.emit('error', err, response)
-        # Forcibly fail the middleware and stop executing deeper
-        doneFunc()
-
-    # Executed when the middleware stack is finished
-    allDone = (_, finalDoneFunc) -> next(response, finalDoneFunc)
-
-    # Execute each piece of middleware, collecting the latest 'done' callback
-    # at each step.
-    async.reduce(allMiddleware, done, executeMiddleware, allDone)
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they

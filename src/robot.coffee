@@ -205,8 +205,55 @@ class Robot
   listenerMiddleware: (middleware) ->
     if middleware.length != 5
       throw new Error("Incorrect number of arguments for middleware callback (expected 5, got #{middleware.length})")
-    @middleware.listener.push middleware
+    @middleware.listener.push (robot, context, next, done) ->
+      middleware.call(undefined, robot, context.listener, context.response, next, done)
     return undefined
+
+  # Execute all middleware in order and call 'next' with the latest 'done'
+  # callback if last middleware calls through. If all middleware is compliant,
+  # 'done' should be called with no arguments when the entire round trip is
+  # complete.
+  #
+  # whichMiddleware - String name of middleware set to execute (currently
+  #     just 'listener')
+  #
+  # context - context object that is passed through the middleware stack.
+  #     When handling errors, this is assumed to have a `response` property.
+  #
+  # next(context, done) - Called when all middleware is complete (assuming
+  #     all continued by calling respective 'next' functions)
+  #
+  # done() - Initial (final) completion callback. May be wrapped by
+  #     executed middleware.
+  #
+  # Returns nothing
+  executeMiddleware: (whichMiddleware, context, next, done) ->
+    if not @middleware.hasOwnProperty whichMiddleware
+      throw new Error "Invalid middleware set: \"#{whichMiddleware}\""
+
+    allMiddleware = @middleware[whichMiddleware]
+
+    # Execute a single piece of middleware and update the completion callback
+    # (each piece of middleware can wrap the 'done' callback with additional
+    # logic).
+    executeMiddleware = (doneFunc, middlewareFunc, cb) =>
+      # Match the async.reduce interface
+      nextFunc = (newDoneFunc) -> cb(null, newDoneFunc)
+      # Catch errors in synchronous middleware
+      try
+        middlewareFunc.call(undefined, @, context, nextFunc, doneFunc)
+      catch err
+        # Maintaining the existing error interface (Response object)
+        @emit('error', err, context.response)
+        # Forcibly fail the middleware and stop executing deeper
+        doneFunc()
+
+    # Executed when the middleware stack is finished
+    allDone = (_, finalDoneFunc) -> next(context, finalDoneFunc)
+
+    # Execute each piece of middleware, collecting the latest 'done' callback
+    # at each step.
+    async.reduce(allMiddleware, done, executeMiddleware, allDone)
 
   # Public: Passes the given message to any interested Listeners.
   #
