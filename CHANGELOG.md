@@ -1,3 +1,9 @@
+v2.11.1
+=======
+
+* Automated testing
+* Cleanup uncaughtException handlers, to avoid node warning about a memory leak during tests
+
 v2.11.0
 =======
 
