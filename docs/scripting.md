@@ -638,7 +638,7 @@ These scoped identifiers allow you to externally specify new behaviors like:
 
 # Middleware
 
-Hubot supports injecting arbitrary code in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented just like any other hubot script, however instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
+Hubot supports inserting additional logic in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented just like any other hubot script, however instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Execution Process
 Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
