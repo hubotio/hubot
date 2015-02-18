@@ -111,6 +111,19 @@ describe 'Listener', ->
           testListener = new Listener(@robot, testMatcher, listenerCallback)
           testListener.call testMessage, sinon.spy()
 
+        it 'calls the provided callback with true if there is an error thrown by the listener callback', (done) ->
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+          theError = new Error()
+
+          listenerCallback = (response) ->
+            throw theError
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          testListener.call testMessage, (result) ->
+            expect(result).to.be.ok
+            done()
+
         it 'calls the listener callback with a Response that wraps the Message', (done) ->
           testMatcher = sinon.stub().returns(true)
           testMessage = {}
@@ -167,6 +180,27 @@ describe 'Listener', ->
             # Matcher still matched, so we return true
             expect(result).to.be.ok
             testDone()
+
+        it 'unwinds the middleware stack if there is an error in the listener callback', (testDone) ->
+          listenerCallback = sinon.stub().throws(new Error())
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+          extraDoneFunc = null
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          @robot.executeMiddleware = (whichMiddleware, context, next, done) ->
+            extraDoneFunc = sinon.spy done
+            next context, extraDoneFunc
+
+          testListener.call testMessage, (result) ->
+            # Listener callback was called (and failed)
+            expect(listenerCallback).to.have.been.called
+            # Middleware stack was unwound correctly
+            expect(extraDoneFunc).to.have.been.called
+            # Matcher still matched, so we return true
+            expect(result).to.be.ok
+            testDone()
+
 
       describe 'if the matcher returns false', ->
         it 'does not execute the listener callback', (done) ->

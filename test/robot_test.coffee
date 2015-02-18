@@ -407,6 +407,30 @@ describe 'Robot', ->
 
       @robot.receive testMessage
 
+    it 'gracefully handles listener uncaughtExceptions (move on to next listener)', (done) ->
+      testMessage = new TextMessage @user, 'message123'
+      theError = new Error()
+
+      @robot.hear /^message123$/, () ->
+        throw theError
+
+      goodListenerCalled = false
+      @robot.hear /^message123$/, () ->
+        goodListenerCalled = true
+
+      [badListener,goodListener] = @robot.listeners
+
+      @robot.emit = (name, err, response) ->
+        expect(name).to.equal('error')
+        expect(err).to.equal(theError)
+        expect(response.message).to.equal(testMessage)
+      sinon.spy(@robot, 'emit')
+
+      @robot.receive testMessage, () =>
+        expect(@robot.emit).to.have.been.called
+        expect(goodListenerCalled).to.be.ok
+        done()
+
     describe 'Listener Middleware', ->
       it 'allows listener callback execution', (testDone) ->
         listenerCallback = sinon.spy()

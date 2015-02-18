@@ -52,9 +52,9 @@ class Listener
         @robot.logger.debug "Executing listener callback for Message '#{message}'"
         try
           @callback context.response
-          done()
         catch err
           @robot.emit('error', err, context.response)
+        done()
 
       # When everything is finished (down the middleware stack and back up),
       # pass control back to the robot
