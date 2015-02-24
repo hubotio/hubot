@@ -68,6 +68,20 @@ class Robot
       @emit 'error', err
     process.on 'uncaughtException', @onUncaughtException
 
+  # Public: Adds a custom Listener with the provided matcher, options, and
+  # callback
+  #
+  # matcher  - A Function that determines whether to call the callback.
+  #            Expected to return a boolean.
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
+  # callback - A Function that is called with a Response object if the
+  #            matcher function returns true.
+  #
+  # Returns nothing.
+  listen: (matcher, options, callback) ->
+    @listeners.push new Listener(@, matcher, options, callback)
+
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
   #
@@ -91,7 +105,7 @@ class Robot
   #
   # Returns nothing.
   respond: (regex, options, callback) ->
-    @listeners.push new TextListener(@, @respondPattern(regex), options, callback)
+    @hear(@respondPattern(regex), options, callback)
 
   # Private: Build a regular expression that matches messages addressed
   # directly to the robot
@@ -135,10 +149,9 @@ class Robot
   #
   # Returns nothing.
   enter: (options, callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof EnterMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof EnterMessage)
+      options
       callback
     )
 
@@ -150,10 +163,9 @@ class Robot
   #
   # Returns nothing.
   leave: (options, callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof LeaveMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof LeaveMessage)
+      options
       callback
     )
 
@@ -165,10 +177,9 @@ class Robot
   #
   # Returns nothing.
   topic: (options, callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof TopicMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof TopicMessage)
+      options
       callback
     )
 
@@ -210,10 +221,9 @@ class Robot
       callback = options
       options = {}
 
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof CatchAllMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof CatchAllMessage)
+      options
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
