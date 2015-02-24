@@ -720,3 +720,5 @@ Although internal data structures are exposed, not all properties on the objects
 - `done`
  - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
  - `done` should be called with no arguments
+
+Note that this API is protected by [automated tests](../test/middleware_test.coffee) to prevent breakage. Anything not covered by the tests is susceptible to change at any time.
