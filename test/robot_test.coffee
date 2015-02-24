@@ -136,46 +136,46 @@ describe 'Robot', ->
         expect(match2).to.equal('message123')
 
     describe '#listen', ->
-      it 'registers a new listener', ->
+      it 'registers a new listener directly', ->
         expect(@robot.listeners).to.have.length(0)
-        @robot.hear /.*/, ->
+        @robot.listen (->), ->
         expect(@robot.listeners).to.have.length(1)
 
     describe '#hear', ->
-      it 'registers a new listener', ->
+      it 'registers a new listener directly', ->
         expect(@robot.listeners).to.have.length(0)
         @robot.hear /.*/, ->
         expect(@robot.listeners).to.have.length(1)
 
     describe '#respond', ->
-      it 'registers a new listener', ->
-        expect(@robot.listeners).to.have.length(0)
+      it 'registers a new listener using hear', ->
+        sinon.spy @robot, 'hear'
         @robot.respond /.*/, ->
-        expect(@robot.listeners).to.have.length(1)
+        expect(@robot.hear).to.have.been.called
 
     describe '#enter', ->
-      it 'registers a new listener', ->
-        expect(@robot.listeners).to.have.length(0)
+      it 'registers a new listener using listen', ->
+        sinon.spy @robot, 'listen'
         @robot.enter ->
-        expect(@robot.listeners).to.have.length(1)
+        expect(@robot.listen).to.have.been.called
 
     describe '#leave', ->
-      it 'registers a new listener', ->
-        expect(@robot.listeners).to.have.length(0)
+      it 'registers a new listener using listen', ->
+        sinon.spy @robot, 'listen'
         @robot.leave ->
-        expect(@robot.listeners).to.have.length(1)
+        expect(@robot.listen).to.have.been.called
 
     describe '#topic', ->
-      it 'registers a new listener', ->
-        expect(@robot.listeners).to.have.length(0)
+      it 'registers a new listener using listen', ->
+        sinon.spy @robot, 'listen'
         @robot.topic ->
-        expect(@robot.listeners).to.have.length(1)
+        expect(@robot.listen).to.have.been.called
 
     describe '#catchAll', ->
-      it 'registers a new listener', ->
-        expect(@robot.listeners).to.have.length(0)
+      it 'registers a new listener using listen', ->
+        sinon.spy @robot, 'listen'
         @robot.catchAll ->
-        expect(@robot.listeners).to.have.length(1)
+        expect(@robot.listen).to.have.been.called
 
     describe '#receive', ->
       it 'calls all registered listeners', ->
