@@ -20,21 +20,20 @@
     "url": "https://github.com/github/hubot.git"
   },
   "dependencies": {
+    "cline": "^0.8.1",
     "coffee-script": "1.6.3",
-    "optparse": "1.0.4",
-    "scoped-http-client": "0.10.0",
-    "log": "1.4.0",
     "express": "3.18.1",
-    "readline-history": "~1.2.0"
+    "log": "1.4.0",
+    "optparse": "1.0.4",
+    "readline-history": "~1.2.0",
+    "scoped-http-client": "0.10.0"
   },
-
   "devDependencies": {
     "hubot-mock-adapter": "^1.0.0",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
     "sinon-chai": "^2.6.0"
   },
-
   "engines": {
     "node": ">= 0.8.x",
     "npm": ">= 1.1.x"

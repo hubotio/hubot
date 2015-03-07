@@ -1,14 +1,13 @@
-Readline = require 'readline-history'
-
+Cline = require('cline')
 Robot         = require '../robot'
 Adapter       = require '../adapter'
 {TextMessage} = require '../message'
-
 
 historySize = if process.env.HUBOT_SHELL_HISTSIZE?
                 parseInt(process.env.HUBOT_SHELL_HISTSIZE)
               else
                 1024
+
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
@@ -16,7 +15,6 @@ class Shell extends Adapter
       console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
     else
       console.log "#{str}" for str in strings
-    @repl.prompt()
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
@@ -26,40 +24,30 @@ class Shell extends Adapter
     @send envelope, strings...
 
   run: ->
-    stdin = process.openStdin()
-    stdout = process.stdout
+    @cli = Cline()
 
-    @repl = null
-    Readline.createInterface
-      path: ".hubot_history",
-      input: stdin,
-      output: stdout,
-      maxLength: historySize, # number of entries
-      next: (rl) =>
-        @repl = rl
-        @repl.on 'close', =>
-          stdin.destroy()
-          @robot.shutdown()
-          process.exit 0
+    @cli.command '*', (input) =>
+      console.log "got #{input}"
+      user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+      user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
+      user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
+      @receive new TextMessage user, input, 'messageId'
 
-        @repl.on 'line', (buffer) =>
+    @cli.command 'history', () =>
+      console.log @cli.history()
 
-          switch buffer.toLowerCase()
-            when "exit"
-              @repl.close()
-            when "history"
-              stdout.write "#{line}\n" for line in @repl.history
-            else
-              user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
-              user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
-              user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
-              @receive new TextMessage user, buffer, 'messageId'
-          @repl.prompt(true)
+    @cli.on 'command', (input, cmd) ->
+      console.log "on command #{input}"
+    @cli.on 'history', (item) ->
+      if item.length > 0 and item isnt 'exit'
+        console.log "adding #{item} to the history"
+    @cli.on 'close', () =>
+      console.log "on close!"
+      @robot.shutdown()
+      process.exit 0
 
-        @emit 'connected'
-
-        @repl.setPrompt "#{@robot.name}> "
-        @repl.prompt(true)
+    @cli.interact("#{@robot.name}> ")
+    @emit 'connected'
 
 
 exports.use = (robot) ->
