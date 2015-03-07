@@ -1,3 +1,8 @@
+v2.11.2
+=======
+
+* Add support for namespaced alternative environment variables for controlling the port and address express binds to (EXPRESS_PORT and EXPRESS_BIND_ADDRESS).
+
 v2.11.1
 =======
 
