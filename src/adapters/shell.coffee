@@ -1,7 +1,8 @@
-cline    = require('cline')
 fs       = require('fs')
 readline = require('readline')
 stream   = require('stream')
+cline    = require('cline')
+chalk    = require('chalk')
 
 Robot         = require '../robot'
 Adapter       = require '../adapter'
@@ -14,10 +15,7 @@ historySize = if process.env.HUBOT_SHELL_HISTSIZE?
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
-    unless process.platform is 'win32'
-      console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
-    else
-      console.log "#{str}" for str in strings
+    console.log chalk.green.bold("#{str}") for str in strings
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings

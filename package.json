@@ -20,6 +20,7 @@
     "url": "https://github.com/github/hubot.git"
   },
   "dependencies": {
+    "chalk": "^1.0.0",
     "cline": "^0.8.1",
     "coffee-script": "1.6.3",
     "express": "3.18.1",
