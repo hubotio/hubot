@@ -57,8 +57,6 @@ class Shell extends Adapter
 
     @cli.on 'history', (item) =>
       if item.length > 0 and item isnt 'exit' and item isnt 'history'
-        console.log "adding #{item} to the history"
-
         fs.appendFile '.hubot_history', "#{item}\n", (err) =>
           @robot.emit 'error', err if err
 
