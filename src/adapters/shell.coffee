@@ -26,12 +26,15 @@ class Shell extends Adapter
   run: ->
     @cli = Cline()
 
-    @cli.command '*', (input) =>
+    @cli.command "*", (input) =>
       console.log "got #{input}"
       user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
       user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
       user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
       @receive new TextMessage user, input, 'messageId'
+
+    # workaround https://github.com/kucoe/cline/issues/5
+    @cli.commands['*'] = @cli.commands['\\*']
 
     @cli.command 'history', () =>
       console.log @cli.history()
