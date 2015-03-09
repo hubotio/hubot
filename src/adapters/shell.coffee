@@ -69,8 +69,7 @@ class Shell extends Adapter
         console.log "adding #{item} to the history"
 
         fs.appendFile '.hubot_history', "#{item}\n", (err) =>
-          @robot.emit 'error', err
-
+          @robot.emit 'error', err if err
 
     @cli.on 'close', () =>
       console.log "on close!"
