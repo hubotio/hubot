@@ -45,9 +45,6 @@ class Shell extends Adapter
       user = @robot.brain.userForId userId, name: userName, room: 'Shell'
       @receive new TextMessage user, input, 'messageId'
 
-    # workaround https://github.com/kucoe/cline/issues/5
-    @cli.commands['*'] = @cli.commands['\\*']
-
     @cli.command 'history', () =>
       console.log item for item in @cli.history()
 
