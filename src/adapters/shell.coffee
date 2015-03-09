@@ -36,7 +36,7 @@ class Shell extends Adapter
       @cli.interact("#{@robot.name}> ")
       @emit 'connected'
 
-  finish: () ->
+  shutdown: () ->
     @robot.shutdown()
     process.exit 0
 
@@ -71,16 +71,16 @@ class Shell extends Adapter
         outstream = fs.createWriteStream('.hubot_history')
         # >= node 0.10
         outstream.on 'finish', () =>
-          @finish()
+          @shutdown()
 
         for item in history
           outstream.write "#{item}\n"
 
         # < node 0.10
         outstream.end () =>
-          @finish()
+          @shutdown()
        else
-         @finish
+         @shutdown()
 
   loadHistory: (callback) ->
     fs.exists '.hubot_history', (exists) ->
