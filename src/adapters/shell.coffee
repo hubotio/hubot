@@ -28,6 +28,60 @@ class Shell extends Adapter
     strings = strings.map (s) -> "#{envelope.user.name}: #{s}"
     @send envelope, strings...
 
+  run: ->
+    @buildCli()
+
+    @loadHistory (history) =>
+      @cli.history(history)
+      @cli.interact("#{@robot.name}> ")
+      @emit 'connected'
+
+  finish: () ->
+    @robot.shutdown()
+    process.exit 0
+
+  buildCli: () ->
+    @cli = Cline()
+
+    @cli.command '*', (input) =>
+      userId = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+      userName = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
+      user = @robot.brain.userForId userId, name: userName, room: 'Shell'
+      @receive new TextMessage user, input, 'messageId'
+
+    # workaround https://github.com/kucoe/cline/issues/5
+    @cli.commands['*'] = @cli.commands['\\*']
+
+    @cli.command 'history', () =>
+      console.log item for item in @cli.history()
+
+    @cli.on 'history', (item) =>
+      if item.length > 0 and item isnt 'exit' and item isnt 'history'
+        console.log "adding #{item} to the history"
+
+        fs.appendFile '.hubot_history', "#{item}\n", (err) =>
+          @robot.emit 'error', err if err
+
+    @cli.on 'close', () =>
+      history = @cli.history()
+      if history.length > historySize
+        startIndex = history.length - historySize
+        history = history.reverse().splice(startIndex, historySize)
+
+        outstream = fs.createWriteStream('.hubot_history')
+        # >= node 0.10
+        outstream.on 'finish', () =>
+          @finish()
+
+        for item in history
+          outstream.write "#{item}\n"
+
+        # < node 0.10
+        outstream.end () =>
+          @finish()
+       else
+         @finish
+
   loadHistory: (callback) ->
     fs.exists '.hubot_history', (exists) ->
       if exists
@@ -46,43 +100,7 @@ class Shell extends Adapter
       else
         callback([])
 
-  buildCli: () ->
-    @cli = Cline()
 
-    @cli.command "*", (input) =>
-      console.log "got #{input}"
-      user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
-      user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
-      user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
-      @receive new TextMessage user, input, 'messageId'
-
-    # workaround https://github.com/kucoe/cline/issues/5
-    @cli.commands['*'] = @cli.commands['\\*']
-
-    @cli.command 'history', () =>
-      console.log @cli.history()
-
-    #@cli.on 'command', (input, cmd) ->
-    #  console.log "on command #{input}"
-    @cli.on 'history', (item) =>
-      if item.length > 0 and item isnt 'exit'
-        console.log "adding #{item} to the history"
-
-        fs.appendFile '.hubot_history', "#{item}\n", (err) =>
-          @robot.emit 'error', err if err
-
-    @cli.on 'close', () =>
-      console.log "on close!"
-      @robot.shutdown()
-      process.exit 0
-
-  run: ->
-    @buildCli()
-
-    @loadHistory (history) =>
-      @cli.history(history)
-      @cli.interact("#{@robot.name}> ")
-      @emit 'connected'
 
 
 exports.use = (robot) ->
