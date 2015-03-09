@@ -1,4 +1,9 @@
 Cline = require('cline')
+fs    = require('fs')
+readline = require('readline')
+stream = require('stream')
+util = require('util')
+
 Robot         = require '../robot'
 Adapter       = require '../adapter'
 {TextMessage} = require '../message'
@@ -23,7 +28,25 @@ class Shell extends Adapter
     strings = strings.map (s) -> "#{envelope.user.name}: #{s}"
     @send envelope, strings...
 
-  run: ->
+  loadHistory: (callback) ->
+    fs.exists '.hubot_history', (exists) ->
+      if exists
+        instream = fs.createReadStream('.hubot_history')
+        outstream = new stream
+        outstream.readable = true
+        outstream.writable = true
+
+        items = []
+        rl = readline.createInterface(input: instream, output: outstream, terminal: false)
+        rl.on 'line', (line) ->
+          if line.length > 0 
+            items.push(line)
+        rl.on 'close', () ->
+          callback(items)
+      else
+        callback([])
+
+  buildCli: () ->
     @cli = Cline()
 
     @cli.command "*", (input) =>
@@ -39,18 +62,28 @@ class Shell extends Adapter
     @cli.command 'history', () =>
       console.log @cli.history()
 
-    @cli.on 'command', (input, cmd) ->
-      console.log "on command #{input}"
-    @cli.on 'history', (item) ->
+    #@cli.on 'command', (input, cmd) ->
+    #  console.log "on command #{input}"
+    @cli.on 'history', (item) =>
       if item.length > 0 and item isnt 'exit'
         console.log "adding #{item} to the history"
+
+        fs.appendFile '.hubot_history', "#{item}\n", (err) =>
+          @robot.emit 'error', err
+
+
     @cli.on 'close', () =>
       console.log "on close!"
       @robot.shutdown()
       process.exit 0
 
-    @cli.interact("#{@robot.name}> ")
-    @emit 'connected'
+  run: ->
+    @buildCli()
+
+    @loadHistory (history) =>
+      @cli.history(history)
+      @cli.interact("#{@robot.name}> ")
+      @emit 'connected'
 
 
 exports.use = (robot) ->
