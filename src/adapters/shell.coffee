@@ -1,8 +1,7 @@
-Cline = require('cline')
-fs    = require('fs')
+cline    = require('cline')
+fs       = require('fs')
 readline = require('readline')
-stream = require('stream')
-util = require('util')
+stream   = require('stream')
 
 Robot         = require '../robot'
 Adapter       = require '../adapter'
@@ -12,7 +11,6 @@ historySize = if process.env.HUBOT_SHELL_HISTSIZE?
                 parseInt(process.env.HUBOT_SHELL_HISTSIZE)
               else
                 1024
-
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
@@ -41,7 +39,7 @@ class Shell extends Adapter
     process.exit 0
 
   buildCli: () ->
-    @cli = Cline()
+    @cli = cline()
 
     @cli.command '*', (input) =>
       userId = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')

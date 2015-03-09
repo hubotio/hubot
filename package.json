@@ -25,7 +25,6 @@
     "express": "3.18.1",
     "log": "1.4.0",
     "optparse": "1.0.4",
-    "readline-history": "~1.2.0",
     "scoped-http-client": "0.10.0"
   },
   "devDependencies": {
