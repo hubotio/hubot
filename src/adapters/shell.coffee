@@ -94,8 +94,5 @@ class Shell extends Adapter
       else
         callback([])
 
-
-
-
 exports.use = (robot) ->
   new Shell robot
