@@ -1,4 +1,5 @@
-# Patterns
+---
+---
 
 Shared patterns for dealing with common Hubot scenarios.
 

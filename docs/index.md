@@ -1,4 +1,6 @@
-# Hubot
+---
+title: Hubot
+---
 
 ## Getting Started With Hubot
 

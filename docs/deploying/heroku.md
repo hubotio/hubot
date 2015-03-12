@@ -1,4 +1,5 @@
-# Deploying Hubot to Heroku
+---
+---
 
 If you've been following along with [Getting Started](../README.md), it's time to deploy so you can use it beyond just your local machine.
 [Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubot.

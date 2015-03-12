@@ -1,4 +1,6 @@
-# Deploying Hubot
+---
+title: Deploying Hubot
+---
 
 - [Heroku](deploying/heroku.html)
 - [Unix](deploying/unix.html)
