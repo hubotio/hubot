@@ -13,6 +13,8 @@ historySize = if process.env.HUBOT_SHELL_HISTSIZE?
               else
                 1024
 
+historyPath = ".hubot_history"
+
 class Shell extends Adapter
   send: (envelope, strings...) ->
     console.log chalk.green.bold("#{str}") for str in strings
@@ -50,7 +52,7 @@ class Shell extends Adapter
 
     @cli.on 'history', (item) =>
       if item.length > 0 and item isnt 'exit' and item isnt 'history'
-        fs.appendFile '.hubot_history', "#{item}\n", (err) =>
+        fs.appendFile historyPath, "#{item}\n", (err) =>
           @robot.emit 'error', err if err
 
     @cli.on 'close', () =>
@@ -59,7 +61,7 @@ class Shell extends Adapter
         startIndex = history.length - historySize
         history = history.reverse().splice(startIndex, historySize)
 
-        outstream = fs.createWriteStream('.hubot_history')
+        outstream = fs.createWriteStream(historyPath)
         # >= node 0.10
         outstream.on 'finish', () =>
           @shutdown()
@@ -74,9 +76,9 @@ class Shell extends Adapter
          @shutdown()
 
   loadHistory: (callback) ->
-    fs.exists '.hubot_history', (exists) ->
+    fs.exists historyPath, (exists) ->
       if exists
-        instream = fs.createReadStream('.hubot_history')
+        instream = fs.createReadStream(historyPath)
         outstream = new stream
         outstream.readable = true
         outstream.writable = true
