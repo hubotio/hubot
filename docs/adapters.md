@@ -9,8 +9,8 @@ Adapters are the interface to the service you want your hubot to run on.
 
 Hubot includes two official adapters:
 
-* [Shell](adapters/shell.md), i.e. for use with development
-* [Campfire](adapters/campfire.md)
+* [Shell](/docs/adapters/shell/), i.e. for use with development
+* [Campfire](/docs/adapters/campfire/)
 
 ## Third-party Adapters
 

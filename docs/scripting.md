@@ -105,7 +105,7 @@ It wouldn't be called for:
 
 ## Send & reply
 
-The `msg` parameter is, despite the name, an instance of [Response](../src/response.coffee). With it, you can `send` a message back to the room the `msg` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
+The `msg` parameter is, despite the name, an instance of `Response`. With it, you can `send` a message back to the room the `msg` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
 
 ```coffeescript
 module.exports = (robot) ->
