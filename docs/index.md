@@ -1,5 +1,6 @@
 ---
 title: Hubot
+permalink: /docs/index.html
 ---
 
 ## Getting Started With Hubot
