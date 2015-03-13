@@ -36,14 +36,11 @@ class Listener
   # being executed.
   #
   # message - A Message instance.
+  # callback - Optional function called with a boolean of whether the matcher matched
   #
-  # @callback - Call with a boolean of whether the matcher matched.
-  #
-  # Returns nothing
+  # Returns a boolean of whether the matcher matched.
   # Returns before executing callback
   call: (message, cb) ->
-    throw new Error('missing callback') if not cb
-
     if match = @matcher message
       if @regex
         @robot.logger.debug \
@@ -64,16 +61,20 @@ class Listener
       allDone = () ->
         # Yes, we tried to execute the listener callback (middleware may
         # have intercepted before actually executing though)
-        process.nextTick -> cb true
+        if cb?
+          process.nextTick -> cb true
 
       response = new @robot.Response(@robot, message, match)
       @robot.executeMiddleware 'listener',
         {listener: @, response: response},
         executeListener,
         allDone
+      true
     else
-      # No, we didn't try to execute the listener callback
-      process.nextTick -> cb false
+      if cb?
+        # No, we didn't try to execute the listener callback
+        process.nextTick -> cb false
+      false
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they
