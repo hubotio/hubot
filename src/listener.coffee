@@ -73,6 +73,7 @@ class Listener
       if cb?
         # No, we didn't try to execute the listener callback
         process.nextTick -> cb false
+    null
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they
