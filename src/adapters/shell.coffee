@@ -75,6 +75,9 @@ class Shell extends Adapter
        else
          @shutdown()
 
+  # Private: load history from .hubot_history.
+  #
+  # callback - A Function that is called with the loaded history items (or an empty array if there is no history)
   loadHistory: (callback) ->
     fs.exists historyPath, (exists) ->
       if exists
