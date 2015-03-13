@@ -46,4 +46,4 @@ to have yours added to the list:
 
 ## Writing Your Own Adapter
 
-Check out our new documentation for [creating new adapters](/docs/creating-a-new-adapter)
+Check out our new documentation for [creating new adapters](/docs/creating-a-new-adapter/)
