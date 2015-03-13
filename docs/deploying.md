@@ -1,4 +1,7 @@
-# Deploying Hubot
+---
+permalink: /docs/deploying/index.html
+layout: docs
+---
 
 - [Heroku](deploying/heroku.html)
 - [Unix](deploying/unix.html)

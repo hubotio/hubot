@@ -1,4 +1,7 @@
-# Deploying Hubot to Windows
+---
+permalink: /docs/deploying/windows/index.html
+layout: docs
+---
 
 Hasn't been fully tested - YMMV
 

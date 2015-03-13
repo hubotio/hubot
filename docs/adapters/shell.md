@@ -1,4 +1,7 @@
-# Adapters: Shell
+---
+permalink: /docs/adapters/shell/index.html
+layout: docs
+---
 
 The shell adapter provides a simple read-eval-print loop for interacting with a hubot locally.
 It can be useful for testing scripts before using them on a live hubot.
