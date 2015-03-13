@@ -1,6 +1,6 @@
 ---
 layout: docs
-permalink: /docs/creating-a-new-adapter/index.html
+permalink: /docs/adapters/development/index.html
 ---
 
 # Adapter Basics
