@@ -1,4 +1,4 @@
-v2.11.3
+v2.11.4
 =======
 
 * Fix shell adapter parsing history on node 0.8 (ie don't include newlines)
