@@ -1,6 +1,7 @@
 ---
 title: Hubot
 permalink: /docs/index.html
+layout: docs
 ---
 
 ## Getting Started With Hubot
