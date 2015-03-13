@@ -1,4 +1,6 @@
 ---
+permalink: /docs/patterns/index.html
+layout: docs
 ---
 
 Shared patterns for dealing with common Hubot scenarios.

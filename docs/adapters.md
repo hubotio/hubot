@@ -1,4 +1,6 @@
 ---
+permalink: /docs/adapters/index.html
+layout: docs
 ---
 
 Adapters are the interface to the service you want your hubot to run on.

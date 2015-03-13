@@ -1,4 +1,6 @@
 ---
+permalink: /docs/adapters/campfire/index.html
+layout: docs
 ---
 
 [Campfire](http://campfirenow.com/) is a web based chat application built by

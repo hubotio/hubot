@@ -1,5 +1,7 @@
 ---
-title: Deploying Hubot
+title: Deploying
+permalink: /docs/deploying/index.html
+layout: docs
 ---
 
 - [Heroku](deploying/heroku.html)

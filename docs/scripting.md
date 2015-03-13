@@ -1,4 +1,6 @@
 ---
+permalink: /docs/scripting/index.html
+layout: docs
 ---
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.

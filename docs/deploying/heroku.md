@@ -1,4 +1,6 @@
 ---
+permalink: /docs/deploying/heroku/index.html
+layout: docs
 ---
 
 If you've been following along with [Getting Started](../README.md), it's time to deploy so you can use it beyond just your local machine.

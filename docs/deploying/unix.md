@@ -1,5 +1,6 @@
 ---
-permalink: /docs/deploying/unix.html
+permalink: /docs/deploying/unix/index.html
+layout: docs
 ---
 
 Because there are so many variations of Linux, and more generally UNIX, it's
