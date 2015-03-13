@@ -1,5 +1,4 @@
 ---
-title: Deploying
 permalink: /docs/deploying/index.html
 layout: docs
 ---
