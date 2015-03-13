@@ -643,12 +643,14 @@ These scoped identifiers allow you to externally specify new behaviors like:
 
 # Middleware
 
-Hubot supports inserting additional logic in between the listener match and execute steps. This allows you to create very interesting extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented just like any other hubot script, however instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
+Hubot supports inserting logic between the listener matching a message and the listener executing. This allows you to create extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Execution Process
-Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each piece of middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
 
-On execution, middleware is passed:
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot middleware executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
+
+Middleware is called with:
+
 - global robot object
 - matching Listener object (with associated metadata)
 - response object (contains the original message)
@@ -665,6 +667,7 @@ For synchronous middleware (never yields to the event loop), hubot will automati
 A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
 
 A simple example of middleware logging command executions:
+
 ```coffeescript
 module.exports = (robot) ->
   robot.listenerMiddleware (robot, listener, response, next, done) ->
@@ -673,9 +676,11 @@ module.exports = (robot) ->
     # Continue executing middleware
     next(done)
 ```
+
 In this example, a log message will be written for each chat message that matches a Listener.
 
 A more complex example making a rate limiting decision:
+
 ```coffeescript
 module.exports = (robot) ->
   # Map of listener ID to last time it was executed
@@ -698,7 +703,8 @@ module.exports = (robot) ->
     catch err
       robot.emit('error', err, response)
 ```
-In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If so, the middleware intercepts and calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
 
 This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
 
@@ -726,4 +732,4 @@ Although internal data structures are exposed, not all properties on the objects
  - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
  - `done` should be called with no arguments
 
-Note that this API is protected by [automated tests](../test/middleware_test.coffee) to prevent breakage. Anything not covered by the tests is susceptible to change at any time.
+Note that this API is protected by automated tests (`test/middleware_test.coffee`) to prevent breakage. Anything not covered by the tests is susceptible to change.
