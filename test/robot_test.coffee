@@ -61,6 +61,19 @@ describe 'Robot', ->
       it 'sets a sane user agent', ->
         expect(@httpClient.options.headers['User-Agent']).to.contain('Hubot')
 
+      it 'merges in any global http options', ->
+        agent = {}
+        @robot.globalHttpOptions = {agent: agent}
+        httpClient = @robot.http('http://localhost')
+        expect(httpClient.options.agent).to.equal(agent)
+
+      it 'local options override global http options', ->
+        agentA = {}
+        agentB = {}
+        @robot.globalHttpOptions = {agent: agentA}
+        httpClient = @robot.http('http://localhost', agent: agentB)
+        expect(httpClient.options.agent).to.equal(agentB)
+
     describe '#receive', ->
       it 'calls all registered listeners', ->
         # Need to use a real Message so that the CatchAllMessage constructor works

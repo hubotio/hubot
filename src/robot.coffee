@@ -49,6 +49,7 @@ class Robot
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
+    @globalHttpOptions = {}
 
     @parseVersion()
     if httpd
@@ -493,7 +494,16 @@ class Robot
   #
   # Returns a ScopedClient instance.
   http: (url, options) ->
-    HttpClient.create(url, options)
+    HttpClient.create(url, @extend({}, @globalHttpOptions, options))
       .header('User-Agent', "Hubot/#{@version}")
+
+  # Private: Extend obj with objects passed as additional args.
+  #
+  # Returns the original object with updated changes.
+  extend: (obj, sources...) ->
+    for source in sources
+      obj[key] = value for own key, value of source
+    obj
+
 
 module.exports = Robot
