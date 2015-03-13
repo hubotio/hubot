@@ -1,3 +1,18 @@
+v2.11.4
+=======
+
+* Fix shell adapter parsing history on node 0.8 (ie don't include newlines)
+
+v2.11.3
+=======
+
+* Fix issues around shell adapter throwing errors when there isn't a .hubot_history file
+
+v2.11.2
+=======
+
+* Add support for namespaced alternative environment variables for controlling the port and address express binds to (EXPRESS_PORT and EXPRESS_BIND_ADDRESS).
+
 v2.11.1
 =======
 

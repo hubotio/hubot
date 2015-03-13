@@ -1,4 +1,7 @@
-# Patterns
+---
+permalink: /docs/patterns/index.html
+layout: docs
+---
 
 Shared patterns for dealing with common Hubot scenarios.
 
@@ -11,7 +14,7 @@ When you rename Hubot, he will no longer respond to his former name. In order to
 
 Setting this up is very easy:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
+1. Create a [bundled script](/docs/scripting/) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
 2. Add the following code, modified for your needs:
 
 ```coffeescript

@@ -1,4 +1,7 @@
-# Scripting
+---
+permalink: /docs/scripting/index.html
+layout: docs
+---
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
 
@@ -102,7 +105,7 @@ It wouldn't be called for:
 
 ## Send & reply
 
-The `msg` parameter is, despite the name, an instance of [Response](../src/response.coffee). With it, you can `send` a message back to the room the `msg` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
+The `msg` parameter is, despite the name, an instance of `Response`. With it, you can `send` a message back to the room the `msg` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
 
 ```coffeescript
 module.exports = (robot) ->
@@ -418,7 +421,7 @@ module.exports = (robot) ->
 
 ## HTTP Listener
 
-Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to serve up HTTP requests. It listens on the port specified by the `PORT` environment variable, and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
+Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
 
 The most common use of this is for providing HTTP end points for services with webhooks to push to, and have those show up in chat.
 
@@ -434,6 +437,8 @@ module.exports = (robot) ->
 
     res.send 'OK'
 ```
+
+All endpoint URLs should start with the literal string `/hubot` (regardless of what your robot's name is). This consistency makes it easier to set up webhooks (copy-pasteable URL) and guarantees that URLs are valid (not all bot names are URL-safe).
 
 ## Events
 

@@ -1,22 +1,23 @@
-Readline = require 'readline-history'
+fs       = require('fs')
+readline = require('readline')
+stream   = require('stream')
+cline    = require('cline')
+chalk    = require('chalk')
 
 Robot         = require '../robot'
 Adapter       = require '../adapter'
 {TextMessage} = require '../message'
-
 
 historySize = if process.env.HUBOT_SHELL_HISTSIZE?
                 parseInt(process.env.HUBOT_SHELL_HISTSIZE)
               else
                 1024
 
+historyPath = ".hubot_history"
+
 class Shell extends Adapter
   send: (envelope, strings...) ->
-    unless process.platform is 'win32'
-      console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
-    else
-      console.log "#{str}" for str in strings
-    @repl.prompt()
+    console.log chalk.green.bold("#{str}") for str in strings
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
@@ -26,41 +27,75 @@ class Shell extends Adapter
     @send envelope, strings...
 
   run: ->
-    stdin = process.openStdin()
-    stdout = process.stdout
+    @buildCli()
 
-    @repl = null
-    Readline.createInterface
-      path: ".hubot_history",
-      input: stdin,
-      output: stdout,
-      maxLength: historySize, # number of entries
-      next: (rl) =>
-        @repl = rl
-        @repl.on 'close', =>
-          stdin.destroy()
-          @robot.shutdown()
-          process.exit 0
+    @loadHistory (history) =>
+      @cli.history(history)
+      @cli.interact("#{@robot.name}> ")
+      @emit 'connected'
 
-        @repl.on 'line', (buffer) =>
+  shutdown: () ->
+    @robot.shutdown()
+    process.exit 0
 
-          switch buffer.toLowerCase()
-            when "exit"
-              @repl.close()
-            when "history"
-              stdout.write "#{line}\n" for line in @repl.history
-            else
-              user_id = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
-              user_name = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
-              user = @robot.brain.userForId user_id, name: user_name, room: 'Shell'
-              @receive new TextMessage user, buffer, 'messageId'
-          @repl.prompt(true)
+  buildCli: () ->
+    @cli = cline()
 
-        @emit 'connected'
+    @cli.command '*', (input) =>
+      userId = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+      userName = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
+      user = @robot.brain.userForId userId, name: userName, room: 'Shell'
+      @receive new TextMessage user, input, 'messageId'
 
-        @repl.setPrompt "#{@robot.name}> "
-        @repl.prompt(true)
+    @cli.command 'history', () =>
+      console.log item for item in @cli.history()
 
+    @cli.on 'history', (item) =>
+      if item.length > 0 and item isnt 'exit' and item isnt 'history'
+        fs.appendFile historyPath, "#{item}\n", (err) =>
+          @robot.emit 'error', err if err
+
+    @cli.on 'close', () =>
+      history = @cli.history()
+      if history.length > historySize
+        startIndex = history.length - historySize
+        history = history.reverse().splice(startIndex, historySize)
+
+        outstream = fs.createWriteStream(historyPath)
+        # >= node 0.10
+        outstream.on 'finish', () =>
+          @shutdown()
+
+        for item in history
+          outstream.write "#{item}\n"
+
+        # < node 0.10
+        outstream.end () =>
+          @shutdown()
+       else
+         @shutdown()
+
+  # Private: load history from .hubot_history.
+  #
+  # callback - A Function that is called with the loaded history items (or an empty array if there is no history)
+  loadHistory: (callback) ->
+    fs.exists historyPath, (exists) ->
+      if exists
+        instream = fs.createReadStream(historyPath)
+        outstream = new stream
+        outstream.readable = true
+        outstream.writable = true
+
+        items = []
+        rl = readline.createInterface(input: instream, output: outstream, terminal: false)
+        rl.on 'line', (line) ->
+          line = line.trim()
+          if line.length > 0 
+            items.push(line)
+        rl.on 'close', () ->
+          callback(items)
+      else
+        callback([])
 
 exports.use = (robot) ->
   new Shell robot
