@@ -1,4 +1,8 @@
-# Hubot Implementation Notes
+---
+title: Implementation Notes
+permalink: /docs/implementation/index.html
+layout: docs
+---
 
 For the purpose of maintainability, several internal flows are documented here.
 
