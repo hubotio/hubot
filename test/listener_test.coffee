@@ -94,6 +94,18 @@ describe 'Listener', ->
             expect(result).to.be.ok
             done()
 
+        it 'calls the provided callback after the function returns', (done) ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          finished = false
+          testListener.call testMessage, (result) ->
+            expect(finished).to.be.ok
+            done()
+          finished = true
+
         it 'handles uncaught errors from the listener callback', (done) ->
           testMatcher = sinon.stub().returns(true)
           testMessage = {}
@@ -223,6 +235,18 @@ describe 'Listener', ->
           testListener.call testMessage, (result) ->
             expect(result).to.not.be.ok
             done()
+
+        it 'calls the provided callback after the function returns', (done) ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(false)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          finished = false
+          testListener.call testMessage, (result) ->
+            expect(finished).to.be.ok
+            done()
+          finished = true
 
         it 'does not execute any middleware', (done) ->
           listenerCallback = sinon.spy()

@@ -163,6 +163,14 @@ describe 'Robot', ->
           expect(goodListenerCalled).to.be.ok
           done()
 
+      it 'executes the callback after the function returns when there are no listeners', (done) ->
+        testMessage = new TextMessage @user, 'message123'
+        finished = false
+        @robot.receive testMessage, ->
+          expect(finished).to.be.ok
+          done()
+        finished = true
+
     describe '#executeMiddleware', ->
       it 'bails if an invalid middleware set is specified', ->
         testCase = () =>
@@ -217,6 +225,26 @@ describe 'Robot', ->
           {},
           middlewareFinished,
           sinon.spy()
+
+      it 'executes the next callback after the function returns when there is no middleware', (done) ->
+        finished = false
+        @robot.executeMiddleware 'listener',
+          {},
+          (->
+            expect(finished).to.be.ok
+            done()),
+          sinon.spy()
+        finished = true
+
+      it 'always executes middleware after the function returns', (testDone) ->
+        finished = false
+
+        @robot.listenerMiddleware (robot, listener, response, next, done) ->
+          expect(finished).to.be.ok
+          testDone()
+
+        @robot.executeMiddleware 'listener', {}, sinon.spy(), sinon.spy()
+        finished = true
 
       describe 'error handling', ->
         it 'does not execute subsequent middleware after the error is thrown', (testDone) ->

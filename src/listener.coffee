@@ -38,6 +38,9 @@ class Listener
   # message - A Message instance.
   #
   # @callback - Call with a boolean of whether the matcher matched.
+  #
+  # Returns nothing
+  # Returns before executing callback
   call: (message, cb) ->
     throw new Error('missing callback') if not cb
 
@@ -61,7 +64,7 @@ class Listener
       allDone = () ->
         # Yes, we tried to execute the listener callback (middleware may
         # have intercepted before actually executing though)
-        cb true
+        process.nextTick -> cb true
 
       response = new @robot.Response(@robot, message, match)
       @robot.executeMiddleware 'listener',
@@ -70,7 +73,7 @@ class Listener
         allDone
     else
       # No, we didn't try to execute the listener callback
-      cb false
+      process.nextTick -> cb false
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they
