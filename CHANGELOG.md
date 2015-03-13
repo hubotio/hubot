@@ -1,3 +1,8 @@
+v2.11.3
+=======
+
+* Fix issues around shell adapter throwing errors when there isn't a .hubot_history file
+
 v2.11.2
 =======
 
