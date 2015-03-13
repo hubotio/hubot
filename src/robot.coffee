@@ -79,7 +79,7 @@ class Robot
   #
   # Returns nothing.
   hear: (regex, options, callback) ->
-    options.listenerType ?= 'hear'
+    options.listenerType = 'hear'
     @listeners.push new TextListener(@, regex, options, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages directed
@@ -116,7 +116,7 @@ class Robot
         "^\\s*[@]?#{name}[:,]?\\s*(?:#{pattern})",
         modifiers
       )
-    options.listenerType ?= 'respond'
+    options.listenerType = 'respond'
 
     @listeners.push new TextListener(@, newRegex, options, callback)
 
@@ -126,7 +126,6 @@ class Robot
   #
   # Returns nothing.
   enter: (callback) ->
-    options.listenerType ?= 'enter'
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof EnterMessage),
@@ -139,7 +138,6 @@ class Robot
   #
   # Returns nothing.
   leave: (callback) ->
-    options.listenerType ?= 'leave'
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof LeaveMessage),
@@ -152,7 +150,6 @@ class Robot
   #
   # Returns nothing.
   topic: (callback) ->
-    options.listenerType ?= 'topic'
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof TopicMessage),
