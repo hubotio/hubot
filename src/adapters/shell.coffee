@@ -89,6 +89,7 @@ class Shell extends Adapter
         items = []
         rl = readline.createInterface(input: instream, output: outstream, terminal: false)
         rl.on 'line', (line) ->
+          line = line.trim()
           if line.length > 0 
             items.push(line)
         rl.on 'close', () ->
