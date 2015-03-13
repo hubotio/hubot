@@ -38,7 +38,7 @@ class Listener
   # message - A Message instance.
   # callback - Optional function called with a boolean of whether the matcher matched
   #
-  # Returns nothing
+  # Returns a boolean of whether the matcher matched.
   # Returns before executing callback
   call: (message, cb) ->
     if match = @matcher message
@@ -69,11 +69,12 @@ class Listener
         {listener: @, response: response},
         executeListener,
         allDone
+      true
     else
       if cb?
         # No, we didn't try to execute the listener callback
         process.nextTick -> cb false
-    null
+      false
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they

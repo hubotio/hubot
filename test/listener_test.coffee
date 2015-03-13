@@ -47,13 +47,6 @@ describe 'Listener', ->
           expect(testMatcher).to.have.been.calledWith(testMessage)
           done()
 
-      it 'bails if there is no callback', ->
-        testMatcher = sinon.spy()
-        listenerCallback = sinon.spy()
-        testListener = new Listener(@robot, testMatcher, listenerCallback)
-        testMessage = {}
-        expect(() -> testListener.call(testMessage, undefined)).to.throw(Error)
-
       it 'passes the matcher result on to the listener callback', (done) ->
         matcherResult = {}
         testMatcher = sinon.stub().returns(matcherResult)
@@ -83,6 +76,15 @@ describe 'Listener', ->
             expect(listenerCallback).to.have.been.called
             done()
 
+
+        it 'returns true', () ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(true)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          result = testListener.call testMessage
+          expect(result).to.be.ok
 
         it 'calls the provided callback with true', (done) ->
           listenerCallback = sinon.spy()
@@ -225,6 +227,15 @@ describe 'Listener', ->
             expect(listenerCallback).to.not.have.been.called
             done()
 
+
+        it 'returns false', () ->
+          listenerCallback = sinon.spy()
+          testMatcher = sinon.stub().returns(false)
+          testMessage = {}
+
+          testListener = new Listener(@robot, testMatcher, listenerCallback)
+          result = testListener.call testMessage
+          expect(result).to.not.be.ok
 
         it 'calls the provided callback with false', (done) ->
           listenerCallback = sinon.spy()
