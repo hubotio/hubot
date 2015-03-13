@@ -12,6 +12,8 @@ Robot = require '../src/robot.coffee'
 { CatchAllMessage, EnterMessage, TextMessage } = require '../src/message'
 Adapter = require '../src/adapter'
 
+ScopedHttpClient = require 'scoped-http-client'
+
 # Preload the Hubot mock adapter but substitute in the latest version of Adapter
 mockery.enable()
 mockery.registerAllowable 'hubot-mock-adapter'
@@ -40,6 +42,25 @@ describe 'Robot', ->
    @robot.shutdown()
 
   describe 'Unit Tests', ->
+    describe '#http', ->
+      beforeEach ->
+        url = 'http://localhost'
+        @httpClient = @robot.http(url)
+
+      it 'creates a new ScopedHttpClient', ->
+        # 'instanceOf' check doesn't work here due to the design of
+        # ScopedHttpClient
+        expect(@httpClient).to.have.property('get')
+        expect(@httpClient).to.have.property('post')
+
+      it 'passes options through to the ScopedHttpClient', ->
+        agent = {}
+        httpClient = @robot.http('http://localhost', agent: agent)
+        expect(httpClient.options.agent).to.equal(agent)
+
+      it 'sets a sane user agent', ->
+        expect(@httpClient.options.headers['User-Agent']).to.contain('Hubot')
+
     describe '#receive', ->
       it 'calls all registered listeners', ->
         # Need to use a real Message so that the CatchAllMessage constructor works
