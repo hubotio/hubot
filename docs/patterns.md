@@ -72,7 +72,8 @@ In many corporate environments, a web proxy is required to access the Internet a
 Due to the way node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
 
 ```coffeescript
+proxy = require 'proxy-agent'
 module.export = (robot) ->
-  robot.globalHttpOptions.httpAgent  = new ProxyAgent('http://my-proxy-server.internal', false)
-  robot.globalHttpOptions.httpsAgent = new ProxyAgent('http://my-proxy-server.internal', true)
+  robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
+  robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 ```
