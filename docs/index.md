@@ -122,7 +122,7 @@ name as a double quoted string to the `external-scripts.json` file in this repo.
 
 ## Adapters
 
-Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adaptesr](/docs/adapters/), along with details on how to configure them.
+Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](/docs/adapters/), along with details on how to configure them.
 
 ## Deploying
 
