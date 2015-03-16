@@ -46,7 +46,7 @@ exports.use = (robot) ->
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": "^2.11.1"
+    "hubot": ">=2.0"
   },
   "devDependencies": {
     "coffee-script": ">=1.2.0"
