@@ -430,12 +430,19 @@ The most common use of this is for providing HTTP end points for services with w
 module.exports = (robot) ->
   robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
     room   = req.params.room
-    data   = JSON.parse req.body.payload
+    data   = req.body.payload
     secret = data.secret
 
     robot.messageRoom room, "I have a secret: #{secret}"
 
     res.send 'OK'
+```
+
+Test it with curl; also see section on [error handling](#error-handling) below.
+```shell
+curl -X POST -H "Content-Type: application/json" -d '{"payload": 
+    {"secret":"C-TECH Astronomy"}
+}' http://127.0.0.1:8080/hubot/chatsecrets/general
 ```
 
 All endpoint URLs should start with the literal string `/hubot` (regardless of what your robot's name is). This consistency makes it easier to set up webhooks (copy-pasteable URL) and guarantees that URLs are valid (not all bot names are URL-safe).
