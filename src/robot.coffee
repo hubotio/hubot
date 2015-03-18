@@ -223,8 +223,17 @@ class Robot
           @logger.warning "Expected #{full} to assign a function to module.exports, got #{typeof script}"
 
       catch error
-        @logger.error "Unable to load #{full}: #{error.stack}"
+        @logger.error "Unable to load #{@getSyntaxErrorString(full, error)}"
         process.exit(1)
+
+
+  getSyntaxErrorString: (filename, syntaxError) ->
+    #(5,1):
+    message = "#{filename}"
+    if (syntaxError.location)
+      message += "(#{syntaxError.location.first_line},#{syntaxError.location.first_column})"
+    message += " : Error: #{syntaxError.message}"
+    return message
 
   # Public: Loads every script in the given path.
   #
@@ -335,8 +344,8 @@ class Robot
         "hubot-#{adapter}"
 
       @adapter = require(path).use @
-    catch err
-      @logger.error "Cannot load adapter #{adapter} - #{err}"
+    catch error
+      @logger.error "Unable to load adapter #{@getSyntaxErrorString(path, error)}"
       process.exit(1)
 
   # Public: Help Commands for Running Scripts.
