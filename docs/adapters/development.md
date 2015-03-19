@@ -24,6 +24,9 @@ class Sample extends Adapter
   run: ->
     @robot.logger.info "Run"
     @emit "connected"
+    user = new User 1001, name: 'Sample User'
+    message = new TextMessage user, 'Some Sample Message', 'MSG-001'
+    @robot.receive message
 
 
 exports.use = (robot) ->
