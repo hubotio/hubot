@@ -74,7 +74,7 @@ catch
   prequire = require('parent-require')
   {Robot,Adapter,TextMessage,User} = prequire 'hubot'
   ```
-2. In your `hubot-bunny` folder, modify the `package.json` to include the following dependency so this custom import mechanism will work
+2. In your `hubot-sample` folder, modify the `package.json` to include the following dependency so this custom import mechanism will work
 ```json
   "dependencies": {
     "parent-require": "^1.0.0"
