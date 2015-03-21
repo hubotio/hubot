@@ -211,31 +211,6 @@ class Robot
       middleware.call(undefined, robot, context.listener, context.response, next, done)
     return undefined
 
-  # Execute all middleware in order and call 'next' with the latest 'done'
-  # callback if last middleware calls through. If all middleware is compliant,
-  # 'done' should be called with no arguments when the entire round trip is
-  # complete.
-  #
-  # whichMiddleware - String name of middleware set to execute (currently
-  #     just 'listener')
-  #
-  # context - context object that is passed through the middleware stack.
-  #     When handling errors, this is assumed to have a `response` property.
-  #
-  # next(context, done) - Called when all middleware is complete (assuming
-  #     all continued by calling respective 'next' functions)
-  #
-  # done() - Initial (final) completion callback. May be wrapped by
-  #     executed middleware.
-  #
-  # Returns nothing
-  # Returns before executing any middleware
-  executeMiddleware: (whichMiddleware, context, next, done) ->
-    if not @middleware.hasOwnProperty whichMiddleware
-      throw new Error "Invalid middleware set: \"#{whichMiddleware}\""
-
-    @middleware[whichMiddleware].execute(context, next, done)
-
   # Public: Passes the given message to any interested Listeners.
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
