@@ -52,7 +52,7 @@ describe 'Robot', ->
         testMessage = new TextMessage(@user, 'message123')
 
         listener =
-          call: (response, cb) ->
+          call: (response, middleware, cb) ->
             cb()
         sinon.spy(listener, 'call')
 
@@ -93,7 +93,7 @@ describe 'Robot', ->
         testMessage = new TextMessage(@user, 'message123')
 
         matchingListener =
-          call: (message, cb) ->
+          call: (message, middleware, cb) ->
             # indicate that the message matched the listener
             cb(true)
 
@@ -116,7 +116,7 @@ describe 'Robot', ->
         testMessage = new TextMessage(@user, 'message123')
 
         matchingListener =
-          call: (message, cb) ->
+          call: (message, middleware, cb) ->
             message.done = true
             # Listener must have matched
             cb(true)
@@ -143,7 +143,7 @@ describe 'Robot', ->
 
         goodListenerCalled = false
         goodListener =
-          call: (_, cb) ->
+          call: (_, middleware, cb) ->
             goodListenerCalled = true
             cb(true)
 

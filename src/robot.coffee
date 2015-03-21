@@ -228,7 +228,7 @@ class Robot
       @listeners,
       (listener, cb) =>
         try
-          listener.call message, (listenerExecuted) ->
+          listener.call message, @middleware.listener, (listenerExecuted) ->
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
             # Defer to the event loop at least after every listener so the
             # stack doesn't get too big
