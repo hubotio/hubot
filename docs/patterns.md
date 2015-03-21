@@ -116,14 +116,14 @@ POWER_USERS = [
 ]
 
 module.exports = (robot) ->
-  robot.listenerMiddleware (robot, listener, response, next, done) ->
-    if listener.options.id in POWER_COMMANDS
-      if response.message.user.id in POWER_USERS
+  robot.listenerMiddleware (robot, context, next, done) ->
+    if context.listener.options.id in POWER_COMMANDS
+      if context.response.message.user.id in POWER_USERS
         # User is allowed access to this command
         next(done)
       else
         # Restricted command, but user isn't in whitelist
-        response.reply "I'm sorry, @#{response.message.user.name}, but you don't have access to do that."
+        context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
         done()
     else
       # This is not a restricted command; allow everyone
