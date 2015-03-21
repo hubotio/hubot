@@ -50,7 +50,7 @@ class Listener
 
     # ensure we have a Middleware object
     if not middleware?
-      middleware = @robot.middleware?.listener or new Middleware(@robot)
+      middleware = new Middleware(@robot)
 
     if match = @matcher message
       if @regex
