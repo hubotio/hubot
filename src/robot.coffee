@@ -193,6 +193,12 @@ class Robot
   #
   # Returns nothing.
   catchAll: (options, callback) ->
+    # `options` is optional; need to isolate the real callback before
+    # wrapping it with logic below
+    if not callback?
+      callback = options
+      options = {}
+
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof CatchAllMessage),
