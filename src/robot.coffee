@@ -205,10 +205,7 @@ class Robot
   #
   # Returns nothing.
   listenerMiddleware: (middleware) ->
-    if middleware.length != 5
-      throw new Error("Incorrect number of arguments for middleware callback (expected 5, got #{middleware.length})")
-    @middleware.listener.register (robot, context, next, done) ->
-      middleware.call(undefined, robot, context.listener, context.response, next, done)
+    @middleware.listener.register middleware
     return undefined
 
   # Public: Passes the given message to any interested Listeners.

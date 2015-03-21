@@ -271,7 +271,7 @@ describe 'Middleware', ->
   # Per the documentation in docs/scripting.md
   # Any new fields that are exposed to middleware should be explicitly
   # tested for.
-  describe 'Public API', ->
+  describe 'Listener Middleware Public API', ->
     beforeEach ->
       @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
       @robot.run
@@ -288,11 +288,11 @@ describe 'Middleware', ->
       }
 
       # Dummy middleware
-      @middleware = sinon.spy (robot, listener, response, next, done) ->
+      @middleware = sinon.spy (robot, context, next, done) ->
         next(done)
 
-      @robot.listenerMiddleware (robot, listener, response, next, done) =>
-        @middleware.call @, robot, listener, response, next, done
+      @robot.listenerMiddleware (robot, context, next, done) =>
+        @middleware.call @, robot, context, next, done
 
       @testMessage = new TextMessage @user, 'message123'
       @robot.hear /^message123$/, (response) ->
@@ -307,58 +307,57 @@ describe 'Middleware', ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
             sinon.match.same(@robot) # robot
-            sinon.match.any          # listener
-            sinon.match.any          # response
+            sinon.match.any          # context
             sinon.match.any          # next
             sinon.match.any          # done
           )
           testDone()
 
-    describe 'listener', ->
-      it 'is the listener object that matched', (testDone) ->
-        @robot.receive @testMessage, () =>
-          expect(@middleware).to.have.been.calledWithMatch(
-            sinon.match.any                 # robot
-            sinon.match.same(@testListener) # listener
-            sinon.match.any                 # response
-            sinon.match.any                 # next
-            sinon.match.any                 # done
-          )
-          testDone()
+    describe 'context', ->
+      describe 'listener', ->
+        it 'is the listener object that matched', (testDone) ->
+          @robot.receive @testMessage, () =>
+            expect(@middleware).to.have.been.calledWithMatch(
+              sinon.match.any                    # robot
+              sinon.match.has('listener',
+                sinon.match.same(@testListener)) # context
+              sinon.match.any                    # next
+              sinon.match.any                    # done
+            )
+            testDone()
 
-      it 'has options.id (metadata)', (testDone) ->
-        @robot.receive @testMessage, () =>
-          expect(@middleware).to.have.been.calledWithMatch(
-            sinon.match.any                    # robot
-            sinon.match.has('options',
-              sinon.match.has('id'))           # listener
-            sinon.match.any                    # response
-            sinon.match.any                    # next
-            sinon.match.any                    # done
-          )
-          testDone()
+        it 'has options.id (metadata)', (testDone) ->
+          @robot.receive @testMessage, () =>
+            expect(@middleware).to.have.been.calledWithMatch(
+              sinon.match.any                    # robot
+              sinon.match.has('listener',
+                sinon.match.has('options',
+                  sinon.match.has('id')))        # context
+              sinon.match.any                    # next
+              sinon.match.any                    # done
+            )
+            testDone()
 
-    describe 'response', ->
-      it 'is a Response that wraps the message', (testDone) ->
-        @robot.receive @testMessage, () =>
-          expect(@middleware).to.have.been.calledWithMatch(
-            sinon.match.any                       # robot
-            sinon.match.any                       # listener
-            sinon.match.instanceOf(Response).and(
-              sinon.match.has('message',
-                sinon.match.same(@testMessage)))  # response
-            sinon.match.any                       # next
-            sinon.match.any                       # done
-          )
-          testDone()
+      describe 'response', ->
+        it 'is a Response that wraps the message', (testDone) ->
+          @robot.receive @testMessage, () =>
+            expect(@middleware).to.have.been.calledWithMatch(
+              sinon.match.any                         # robot
+              sinon.match.has('response',
+                sinon.match.instanceOf(Response).and(
+                  sinon.match.has('message',
+                    sinon.match.same(@testMessage)))) # context
+              sinon.match.any                         # next
+              sinon.match.any                         # done
+            )
+            testDone()
 
     describe 'next', ->
       it 'is a function with arity one', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
             sinon.match.any             # robot
-            sinon.match.any             # listener
-            sinon.match.any             # response
+            sinon.match.any             # context
             sinon.match.func.and(
               sinon.match.has('length',
                 sinon.match(1)))        # next
@@ -371,8 +370,7 @@ describe 'Middleware', ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
             sinon.match.any             # robot
-            sinon.match.any             # listener
-            sinon.match.any             # response
+            sinon.match.any             # context
             sinon.match.any             # next
             sinon.match.func.and(
               sinon.match.has('length',

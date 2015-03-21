@@ -271,7 +271,7 @@ describe 'Robot', ->
       it 'allows listener callback execution', (testDone) ->
         listenerCallback = sinon.spy()
         @robot.hear /^message123$/, listenerCallback
-        @robot.listenerMiddleware (robot, listener, response, next, done) ->
+        @robot.listenerMiddleware (robot, context, next, done) ->
           # Allow Listener callback execution
           next done
 
@@ -283,7 +283,7 @@ describe 'Robot', ->
       it 'can block listener callback execution', (testDone) ->
         listenerCallback = sinon.spy()
         @robot.hear /^message123$/, listenerCallback
-        @robot.listenerMiddleware (robot, listener, response, next, done) ->
+        @robot.listenerMiddleware (robot, context, next, done) ->
           # Block Listener callback execution
           done()
 
@@ -297,12 +297,12 @@ describe 'Robot', ->
         testListener = @robot.listeners[0]
         testMessage = new TextMessage @user, 'message123'
 
-        @robot.listenerMiddleware (robot, listener, response, next, done) =>
+        @robot.listenerMiddleware (robot, context, next, done) =>
           # Escape middleware error handling for clearer test failures
           process.nextTick () =>
             expect(robot).to.equal(@robot)
-            expect(listener).to.equal(testListener)
-            expect(response.message).to.equal(testMessage)
+            expect(context.listener).to.equal(testListener)
+            expect(context.response.message).to.equal(testMessage)
             expect(next).to.be.a('function')
             expect(done).to.be.a('function')
             testDone()
@@ -312,13 +312,13 @@ describe 'Robot', ->
       it 'executes middleware in order of definition', (testDone) ->
         execution = []
 
-        testMiddlewareA = (robot, listener, response, next, done) ->
+        testMiddlewareA = (robot, context, next, done) ->
           execution.push 'middlewareA'
           next () ->
             execution.push 'doneA'
             done()
 
-        testMiddlewareB = (robot, listener, response, next, done) ->
+        testMiddlewareB = (robot, context, next, done) ->
           execution.push 'middlewareB'
           next () ->
             execution.push 'doneB'
