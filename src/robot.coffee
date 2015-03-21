@@ -10,6 +10,7 @@ Brain = require './brain'
 Response = require './response'
 {Listener,TextListener} = require './listener'
 {EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+Middleware = require './middleware'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
@@ -48,7 +49,8 @@ class Robot
     @Response   = Response
     @commands   = []
     @listeners  = []
-    @middleware = {listener:[]}
+    @middleware =
+      listener: new Middleware(@)
     @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
 
@@ -205,7 +207,7 @@ class Robot
   listenerMiddleware: (middleware) ->
     if middleware.length != 5
       throw new Error("Incorrect number of arguments for middleware callback (expected 5, got #{middleware.length})")
-    @middleware.listener.push (robot, context, next, done) ->
+    @middleware.listener.register (robot, context, next, done) ->
       middleware.call(undefined, robot, context.listener, context.response, next, done)
     return undefined
 
@@ -232,30 +234,7 @@ class Robot
     if not @middleware.hasOwnProperty whichMiddleware
       throw new Error "Invalid middleware set: \"#{whichMiddleware}\""
 
-    allMiddleware = @middleware[whichMiddleware]
-
-    # Execute a single piece of middleware and update the completion callback
-    # (each piece of middleware can wrap the 'done' callback with additional
-    # logic).
-    executeMiddleware = (doneFunc, middlewareFunc, cb) =>
-      # Match the async.reduce interface
-      nextFunc = (newDoneFunc) -> cb(null, newDoneFunc)
-      # Catch errors in synchronous middleware
-      try
-        middlewareFunc.call(undefined, @, context, nextFunc, doneFunc)
-      catch err
-        # Maintaining the existing error interface (Response object)
-        @emit('error', err, context.response)
-        # Forcibly fail the middleware and stop executing deeper
-        doneFunc()
-
-    # Executed when the middleware stack is finished
-    allDone = (_, finalDoneFunc) -> next(context, finalDoneFunc)
-
-    # Execute each piece of middleware, collecting the latest 'done' callback
-    # at each step.
-    process.nextTick ->
-      async.reduce(allMiddleware, done, executeMiddleware, allDone)
+    @middleware[whichMiddleware].execute(context, next, done)
 
   # Public: Passes the given message to any interested Listeners.
   #
