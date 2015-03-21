@@ -2,6 +2,7 @@
 async     = require 'async'
 
 {TextMessage} = require './message'
+Middleware = require './middleware'
 
 class Listener
   # Listeners receive every message from the chat source and decide if they
@@ -36,11 +37,21 @@ class Listener
   # being executed.
   #
   # message - A Message instance.
-  # callback - Optional function called with a boolean of whether the matcher matched
+  # middleware - Optional Middleware object to execute before the Listener callback
+  # callback - Optional Function called with a boolean of whether the matcher matched
   #
   # Returns a boolean of whether the matcher matched.
   # Returns before executing callback
-  call: (message, cb) ->
+  call: (message, middleware, cb) ->
+    # middleware argument is optional
+    if not cb? and typeof middleware is 'function'
+      cb = middleware
+      middleware = undefined
+
+    # ensure we have a Middleware object
+    if not middleware?
+      middleware = @robot.middleware?.listener or new Middleware(@robot)
+
     if match = @matcher message
       if @regex
         @robot.logger.debug \
@@ -65,10 +76,11 @@ class Listener
           process.nextTick -> cb true
 
       response = new @robot.Response(@robot, message, match)
-      @robot.executeMiddleware 'listener',
-        {listener: @, response: response},
-        executeListener,
+      middleware.execute(
+        {listener: @, response: response}
+        executeListener
         allDone
+      )
       true
     else
       if cb?

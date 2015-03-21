@@ -20,9 +20,6 @@ describe 'Listener', ->
         if err.constructor.name == "AssertionError"
           process.nextTick () ->
             throw err
-      # Skip middleware execution
-      executeMiddleware: (whichMiddleware, context, next, done) ->
-        next(context, done)
       # Ignore log messages
       logger:
         debug: () ->
@@ -150,21 +147,22 @@ describe 'Listener', ->
 
           testListener.call testMessage, sinon.spy()
 
-        it 'passes through Robot#executeMiddleware', (testDone) ->
+        it 'passes through the provided middleware stack', (testDone) ->
           listenerCallback = sinon.spy()
           testMatcher = sinon.stub().returns(true)
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          @robot.executeMiddleware = (whichMiddleware, context, next, done) ->
-            expect(context.listener).to.be.equal(testListener)
-            expect(context.response).to.be.instanceof(Response)
-            expect(context.response.message).to.be.equal(testMessage)
-            expect(next).to.be.a('function')
-            expect(done).to.be.a('function')
-            testDone()
+          testMiddleware =
+            execute: (context, next, done) ->
+              expect(context.listener).to.be.equal(testListener)
+              expect(context.response).to.be.instanceof(Response)
+              expect(context.response.message).to.be.equal(testMessage)
+              expect(next).to.be.a('function')
+              expect(done).to.be.a('function')
+              testDone()
 
-          testListener.call(testMessage, sinon.spy())
+          testListener.call(testMessage, testMiddleware, sinon.spy())
 
         it 'executes the listener callback if middleware succeeds', (testDone) ->
           listenerCallback = sinon.spy()
@@ -185,11 +183,12 @@ describe 'Listener', ->
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          @robot.executeMiddleware = (whichMiddleware, context, next, done) ->
-            # Middleware fails
-            done()
+          testMiddleware =
+            execute: (context, next, done) ->
+              # Middleware fails
+              done()
 
-          testListener.call testMessage, (result) ->
+          testListener.call testMessage, testMiddleware, (result) ->
             expect(listenerCallback).to.not.have.been.called
             # Matcher still matched, so we return true
             expect(result).to.be.ok
@@ -202,11 +201,12 @@ describe 'Listener', ->
           extraDoneFunc = null
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          @robot.executeMiddleware = (whichMiddleware, context, next, done) ->
-            extraDoneFunc = sinon.spy done
-            next context, extraDoneFunc
+          testMiddleware =
+            execute: (context, next, done) ->
+              extraDoneFunc = sinon.spy done
+              next context, extraDoneFunc
 
-          testListener.call testMessage, (result) ->
+          testListener.call testMessage, testMiddleware, (result) ->
             # Listener callback was called (and failed)
             expect(listenerCallback).to.have.been.called
             # Middleware stack was unwound correctly
@@ -265,10 +265,11 @@ describe 'Listener', ->
           testMessage = {}
 
           testListener = new Listener(@robot, testMatcher, listenerCallback)
-          sinon.spy @robot, 'executeMiddleware'
+          testMiddleware =
+            execute: sinon.spy()
 
           testListener.call testMessage, (result) =>
-            expect(@robot.executeMiddleware).to.not.have.been.called
+            expect(testMiddleware.execute).to.not.have.been.called
             done()
 
     describe '#constructor', ->
