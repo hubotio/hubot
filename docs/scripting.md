@@ -705,9 +705,16 @@ module.exports = (robot) ->
       robot.emit('error', err, context.response)
 ```
 
-In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
 
 This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (msg) ->
+    # This will execute no faster than once every ten seconds
+    msg.reply 'Why, hello there!'
+```
 
 ## Listener Middleware API
 
