@@ -190,6 +190,52 @@ describe 'Robot', ->
         expect(@robot.emit).to.have.been.called
         expect(goodListenerCalled).to.be.ok
 
+    describe '#loadFile', ->
+      beforeEach ->
+        @sandbox = sinon.sandbox.create()
+
+      afterEach ->
+        @sandbox.restore()
+
+      it 'should require the specified file', ->
+        module = require 'module'
+
+        script = sinon.spy (robot) ->
+        @sandbox.stub(module, '_load').returns(script)
+        @sandbox.stub @robot, 'parseHelp'
+
+        @robot.loadFile('./scripts', 'test-script.coffee')
+        expect(module._load).to.have.been.calledWith('scripts/test-script')
+
+      describe 'proper script', ->
+        beforeEach ->
+          module = require 'module'
+
+          @script = sinon.spy (robot) ->
+          @sandbox.stub(module, '_load').returns(@script)
+          @sandbox.stub @robot, 'parseHelp'
+
+        it 'should call the script with the Robot', ->
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@script).to.have.been.calledWith(@robot)
+
+        it 'should parse the script documentation', ->
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@robot.parseHelp).to.have.been.calledWith('scripts/test-script.coffee')
+
+      describe 'non-Function script', ->
+        beforeEach ->
+          module = require 'module'
+
+          @script = {}
+          @sandbox.stub(module, '_load').returns(@script)
+          @sandbox.stub @robot, 'parseHelp'
+
+        it 'logs a warning', ->
+          sinon.stub @robot.logger, 'warning'
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@robot.logger.warning).to.have.been.called
+
   describe 'Listener Registration', ->
     describe '#hear', ->
       it 'matches TextMessages', ->
