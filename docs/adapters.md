@@ -43,6 +43,7 @@ to have yours added to the list:
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
 * [Fleep](https://github.com/anroots/hubot-fleep)
 * [Let's Chat](https://github.com/sdelements/hubot-lets-chat)
+* [VictorOps](https://github.com/victorops/hubot-victorops)
 
 ## Writing Your Own Adapter
 
