@@ -577,7 +577,7 @@ robot.respond /have a soda/i, (msg) ->
     robot.brain.set 'totalSodas', sodasHad+1
 robot.respond /sleep it off/i, (msg) ->
   robot.brain.set 'totalSodas', 0
-  robot.respond 'zzzzz'
+  msg.reply 'zzzzz'
 ```
 
 If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
