@@ -3,6 +3,6 @@ permalink: /docs/deploying/index.html
 layout: docs
 ---
 
-- [Heroku](/docs/deploying/heroku/)
-- [Unix](/docs/deploying/unix/)
-- [Windows](/docs/deploying/windows/)
+- [Heroku](/docs/deploying/heroku.md)
+- [Unix](/docs/deploying/unix.md)
+- [Windows](/docs/deploying/windows.md)
