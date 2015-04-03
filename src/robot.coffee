@@ -292,7 +292,9 @@ class Robot
 
     app.use express.json()
     app.use express.urlencoded()
-    app.use multipart()
+    # replacement for deprecated express.multipart/connect.multipart
+    # limit to 100mb, as per the old behavior
+    app.use multipart(maxFilesSize: 100 * 1024 * 1024)
 
     app.use express.static stat if stat
 
