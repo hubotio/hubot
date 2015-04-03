@@ -61,8 +61,8 @@ class Robot
     @adapterName   = adapter
     @errorHandlers = []
 
-    @on 'error', (err, msg) =>
-      @invokeErrorHandlers(err, msg)
+    @on 'error', (err, res) =>
+      @invokeErrorHandlers(err, res)
     @onUncaughtException = (err) =>
       @emit 'error', err
     process.on 'uncaughtException', @onUncaughtException
