@@ -288,7 +288,13 @@ class Robot
 
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
-    app.use express.bodyParser()
+
+    # Removing bodyParser since it's deprecated
+    # Note that Hubot no longer supports multipart uploads due to no longer using express.bodyParser
+    # In order to put support back for that, we would need to use one of: formidable, multiparty, busboy, multer, etc.
+    app.use express.urlencoded()
+    app.use express.json()
+
     app.use express.static stat if stat
 
     try
