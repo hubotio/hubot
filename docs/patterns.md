@@ -25,10 +25,10 @@ Setting this up is very easy:
 #   None
 #
 module.exports = (robot) ->
-  robot.hear /^hubot:? (.+)/i, (msg) ->
+  robot.hear /^hubot:? (.+)/i, (res) ->
     response = "Sorry, I'm a diva and only respond to #{robot.name}"
     response += " or #{robot.alias}" if robot.alias
-    msg.reply response
+    res.reply response
     return
 
 ```
@@ -59,8 +59,8 @@ Here is the setup:
 #   None
 #
 module.exports = (robot) ->
-  robot.respond /help\s*(.*)?$/i, (msg) ->
-    msg.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
+  robot.respond /help\s*(.*)?$/i, (res) ->
+    res.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
     return
 
 ```
