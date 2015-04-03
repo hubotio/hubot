@@ -27,7 +27,7 @@
     "express": "3.18.1",
     "log": "1.4.0",
     "optparse": "1.0.4",
-    "scoped-http-client": "0.10.0"
+    "scoped-http-client": "0.10.3"
   },
   "devDependencies": {
     "hubot-mock-adapter": "^1.0.0",
