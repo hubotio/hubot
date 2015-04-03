@@ -279,6 +279,7 @@ class Robot
     address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
+    multipart = require 'connect-multiparty'
 
     app = express()
 
@@ -289,11 +290,11 @@ class Robot
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
 
-    # Removing bodyParser since it's deprecated
-    # Note that Hubot no longer supports multipart uploads due to no longer using express.bodyParser
-    # In order to put support back for that, we would need to use one of: formidable, multiparty, busboy, multer, etc.
-    app.use express.urlencoded()
     app.use express.json()
+    app.use express.urlencoded()
+    # replacement for deprecated express.multipart/connect.multipart
+    # limit to 100mb, as per the old behavior
+    app.use multipart(maxFilesSize: 100 * 1024 * 1024)
 
     app.use express.static stat if stat
 
