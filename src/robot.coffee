@@ -437,6 +437,17 @@ class Robot
   # Public: A wrapper around the EventEmitter API to make usage
   # semanticly better.
   #
+  # event    - The event name.
+  # listener - A Function that is called with the event parameter
+  #            when first event happens.
+  #
+  # Returns nothing.
+  once: (event, args...) ->
+    @events.once event, args...
+
+  # Public: A wrapper around the EventEmitter API to make usage
+  # semanticly better.
+  #
   # event   - The event name.
   # args...  - Arguments emitted by the event
   #
