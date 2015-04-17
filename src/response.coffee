@@ -19,7 +19,8 @@ class Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.adapter.send @envelope, strings...
+    for string in strings
+      @robot.runPrereplyHooks this, string, @robot.adapter.send
 
   # Public: Posts an emote back to the chat source
   #
@@ -28,7 +29,8 @@ class Response
   #
   # Returns nothing.
   emote: (strings...) ->
-    @robot.adapter.emote @envelope, strings...
+    for string in strings
+      @robot.runPrereplyHooks this, string, @robot.adapter.emote
 
   # Public: Posts a message mentioning the current user.
   #
@@ -37,7 +39,8 @@ class Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.adapter.reply @envelope, strings...
+    for string in strings
+      @robot.runPrereplyHooks this, string, @robot.adapter.reply
 
   # Public: Posts a topic changing message
   #
@@ -46,7 +49,8 @@ class Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @robot.adapter.topic @envelope, strings...
+    for string in strings
+      @robot.runPrereplyHooks this, string, @robot.adapter.topic
 
   # Public: Play a sound in the chat source
   #
@@ -55,7 +59,8 @@ class Response
   #
   # Returns nothing
   play: (strings...) ->
-    @robot.adapter.play @envelope, strings...
+    for string in strings
+      @robot.runPrereplyHooks this, string, @robot.adapter.play
 
   # Public: Posts a message in an unlogged room
   #
@@ -64,7 +69,8 @@ class Response
   #
   # Returns nothing
   locked: (strings...) ->
-    @robot.adapter.locked @envelope, strings...
+    for string in strings
+      @robot.runPrereplyHooks this, string, @robot.adapter.locked
 
   # Public: Picks a random item from the given items.
   #

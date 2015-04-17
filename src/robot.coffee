@@ -575,4 +575,24 @@ class Robot
       listener.callback(response) unless response.envelope.message.done
     @runHooks 'prelisten', done, response.envelope.message, response, listener
 
+  # Public. Adds a prereply callback hook to this robot.
+  #
+  #   cb  - A callback function which accepts a Hook object.
+  #
+  # See also Hook
+  # Returns nothing
+  prereply: (cb) ->
+    @hooks['prereply'] ||= []
+    @hooks['prereply'].push cb
+
+  # Protected. For use by Response to run hooks before replying.
+  #
+  # TODO: we should have a listener available here, but there's no way to get
+  # to it. Responses belong to listeners but don't have a way to get to them,
+  # and we should change that API.
+  runPrereplyHooks: (response, string, cb) ->
+    done = ->
+      cb(response.envelope, string)
+    @runHooks 'prereply', done, response.envelope.message, response, response.listener, string
+
 module.exports = Robot

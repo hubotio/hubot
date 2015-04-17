@@ -234,7 +234,7 @@ describe 'Robot', ->
       @robot.prereceive (hook) ->
         hook.finish()
       @robot.receive testMessage
-      expect(listenerCallback).to.not.have.been.called
+      expect(listenerCallback).to.not.have.been.calledOnce
       done()
 
     it 'runs a prelistener hook before each listener', (done) ->
@@ -257,5 +257,23 @@ describe 'Robot', ->
         hook.finish()
       @robot.hear /^message123$/, listener
       @robot.receive testMessage
-      expect(listener).to.not.have.been.called
+      expect(listener).to.not.have.been.calledOnce
       done()
+
+    it 'runs a prereply hook before each replied message', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      sender = @robot.adapter.send = sinon.spy()
+      replier = @robot.adapter.reply = sinon.spy()
+      @robot.hear /^message123$/, (response) ->
+        response.send "this sounds awesome"
+        response.send "dump passwords to IRC lol"
+        response.reply "more passwords, seriously?", "this is fine though"
+        done()
+      @robot.prereply (hook) ->
+        if hook.reply.match(/passwords/)
+          hook.finish()
+        else
+          hook.next()
+      @robot.receive testMessage
+      expect(replier).to.have.been.calledOnce
+      expect(sender).to.have.been.calledOnce

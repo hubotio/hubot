@@ -5,6 +5,7 @@ class Hook
       listener: opts.listener
       message:  opts.message
       robot:    opts.robot
+      reply:    opts.reply
       finish:   @finish
       next:     @next
     @hooks    = opts.hooks.slice 0 # make a shallow clone
@@ -18,8 +19,13 @@ class Hook
       @callback()
 
   finish: =>
-    @context.message.finish()
-    @callback()
+    if @context.reply
+      # We're processing a reply, not a listen or receive. The message has
+      # been processed, so it's too late to finish() it. By not calling
+      # @run() or @callback() we end processing and do not send the reply.
+    else
+      @context.message.finish()
+      @callback()
 
   next: =>
     @run()
