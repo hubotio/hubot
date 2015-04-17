@@ -66,20 +66,11 @@ describe 'Robot', ->
         # original message
 
         testMessage = new TextMessage(@user, 'message123')
-        @robot.listeners = []
+        listener = sinon.spy()
+        @robot.catchAll listener
+        @robot.receive testMessage
+        expect(listener).to.have.been.called
 
-        # Replace @robot.receive so we can catch when the functions recurses
-        oldReceive = @robot.receive
-        @robot.receive = (message) ->
-          expect(message).to.be.instanceof(CatchAllMessage)
-          expect(message.message).to.be.equal(testMessage)
-        sinon.spy(@robot, 'receive')
-
-        # Call the original receive method that we want to test
-        oldReceive.call @robot, testMessage
-
-        # Ensure the function recursed
-        expect(@robot.receive).to.have.been.called
 
       it 'does not trigger a CatchAllMessage if a listener matches', ->
         testMessage = new TextMessage(@user, 'message123')
@@ -225,3 +216,23 @@ describe 'Robot', ->
         done()
 
       @robot.receive testMessage
+
+    it 'passes on a message that a prereceive hook allows', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      @robot.prereceive (hook) ->
+        hook.message.addedData = "added data"
+        hook.next()
+      @robot.hear /^message123$/, (response) ->
+        expect(response.message.addedData).to.equal("added data")
+        done()
+      @robot.receive testMessage
+
+    it 'does not pass on a message that a prereceive hook finishes', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      listenerCallback = sinon.spy()
+      @robot.hear /^message123$/, listenerCallback
+      @robot.prereceive (hook) ->
+        hook.done()
+      @robot.receive testMessage
+      expect(listenerCallback).to.not.have.been.called
+      done()

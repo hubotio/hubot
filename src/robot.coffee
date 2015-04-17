@@ -9,6 +9,7 @@ Brain = require './brain'
 Response = require './response'
 {Listener,TextListener} = require './listener'
 {EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+{Hook} = require './hook'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
@@ -49,6 +50,7 @@ class Robot
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
+    @hooks     = {}
 
     @parseVersion()
     if httpd
@@ -191,17 +193,29 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
+    curriedReceive = =>
+      @receiveWithoutHooks(message)
+    @runHooks 'prereceive', curriedReceive, message, null
+
+  # Private: receive a message, passing it to any inerested listeners. Does
+  # not execute callbacks.
+  #
+  # message - A Message instance
+  #
+  # Returns nothing.
+  receiveWithoutHooks: (message) ->
     results = []
     for listener in @listeners
       try
-        results.push listener.call(message)
         break if message.done
+        results.push listener.call(message)
       catch error
         @emit('error', error, new @Response(@, message, []))
 
         false
+
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
-      @receive new CatchAllMessage(message)
+      @receiveWithoutHooks new CatchAllMessage(message)
 
   # Public: Loads a file in path.
   #
@@ -502,5 +516,41 @@ class Robot
   http: (url, options) ->
     HttpClient.create(url, options)
       .header('User-Agent', "Hubot/#{@version}")
+
+  # Private. Run the hooks of a given name
+  #
+  #  name     - 'prereceive'
+  #  response - The response object
+  #  listener - The matching listener, if any
+  #  message  - A message that hubot is trying to send, if any
+  #
+  # Each hook must call hook.next() or hook.done(). Hook.next() continues
+  # processing and hook.done() aborts the message. If a response message
+  # exists, hook.done() prevents it from being sent.
+  #
+  # Returns nothing.
+  runHooks: (name, callback, message, reply) ->
+    hooks = @hooks[name]
+    if hooks?.length > 0
+      opts =
+        hooks:    hooks
+        callback: callback
+        message:  message
+        robot:    this
+        reply:    reply
+      hook = new Hook(opts)
+      hook.run()
+    else
+      callback()
+
+  # Public. Adds a prereceive callback hook to this robot.
+  #
+  #   cb  - A callback function which accepts a Hook object.
+  #
+  # See also Hook
+  # Returns nothing
+  prereceive: (cb) ->
+    @hooks['prereceive'] ||= []
+    @hooks['prereceive'].push cb
 
 module.exports = Robot
