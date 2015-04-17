@@ -21,10 +21,13 @@ class Listener
   # Returns a boolean of whether the matcher matched.
   call: (message) ->
     if match = @matcher message
+
       @robot.logger.debug \
         "Message '#{message}' matched regex /#{inspect @regex}/" if @regex
 
-      @callback new @robot.Response(@robot, message, match)
+      response = new @robot.Response(@robot, message, match)
+
+      @robot.runPrelistenHooks(this, response)
       true
     else
       false

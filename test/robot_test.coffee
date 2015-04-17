@@ -236,3 +236,26 @@ describe 'Robot', ->
       @robot.receive testMessage
       expect(listenerCallback).to.not.have.been.called
       done()
+
+    it 'runs a prelistener hook before each listener', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      @robot.hear /^message123$/, (response) ->
+        expect(response.message.addedData).to.equal("added data")
+        done()
+      listener = @robot.listeners[0]
+      @robot.prelisten (hook) ->
+        hook.message.addedData = "added data"
+        expect(hook.listener).to.equal(listener)
+        expect(hook.response.message).to.equal(testMessage)
+        hook.next()
+      @robot.receive testMessage
+
+    it 'stops processing if a prelisten hook finishes', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      listener = sinon.spy()
+      @robot.prelisten (hook) ->
+        hook.finish()
+      @robot.hear /^message123$/, listener
+      @robot.receive testMessage
+      expect(listener).to.not.have.been.called
+      done()

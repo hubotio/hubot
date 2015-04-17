@@ -17,6 +17,8 @@ describe 'Listener', ->
     @robot =
       # Why is this part of the Robot object??
       Response: Response
+      runPrelistenHooks: (listener, response) ->
+        listener.callback(response)
 
     # Test user
     @user = new User

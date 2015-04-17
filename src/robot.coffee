@@ -529,13 +529,15 @@ class Robot
   # exists, hook.done() prevents it from being sent.
   #
   # Returns nothing.
-  runHooks: (name, callback, message, reply) ->
+  runHooks: (name, callback, message, response, listener, reply) ->
     hooks = @hooks[name]
     if hooks?.length > 0
       opts =
         hooks:    hooks
         callback: callback
+        response: response
         message:  message
+        listener: listener
         robot:    this
         reply:    reply
       hook = new Hook(opts)
@@ -552,5 +554,25 @@ class Robot
   prereceive: (cb) ->
     @hooks['prereceive'] ||= []
     @hooks['prereceive'].push cb
+
+  # Public. Adds a prelisten callback hook to this robot.
+  #
+  #   cb  - A callback function which accepts a Hook object.
+  #
+  # See also Hook
+  # Returns nothing
+  prelisten: (cb) ->
+    @hooks['prelisten'] ||= []
+    @hooks['prelisten'].push cb
+
+  # Protected. For use by Listener to run prelisten callbacks after a match
+  # is found.
+  #
+  # See also Hook
+  # Returns nothing
+  runPrelistenHooks: (listener, response) ->
+    done = ->
+      listener.callback(response) unless response.envelope.message.done
+    @runHooks 'prelisten', done, response.envelope.message, response, listener
 
 module.exports = Robot
