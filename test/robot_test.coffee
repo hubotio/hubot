@@ -232,7 +232,7 @@ describe 'Robot', ->
       listenerCallback = sinon.spy()
       @robot.hear /^message123$/, listenerCallback
       @robot.prereceive (hook) ->
-        hook.done()
+        hook.finish()
       @robot.receive testMessage
       expect(listenerCallback).to.not.have.been.called
       done()

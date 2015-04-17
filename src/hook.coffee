@@ -5,7 +5,7 @@ class Hook
       listener: opts.listener
       message:  opts.message
       robot:    opts.robot
-      done:     @done
+      finish:   @finish
       next:     @next
     @hooks    = opts.hooks.slice 0 # make a shallow clone
     @callback = opts.callback
@@ -17,7 +17,7 @@ class Hook
     else
       @callback()
 
-  done: =>
+  finish: =>
     @context.message.finish()
     @callback()
 
