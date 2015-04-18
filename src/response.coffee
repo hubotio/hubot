@@ -20,7 +20,9 @@ class Response
   # Returns nothing.
   send: (strings...) ->
     for string in strings
-      @robot.runPrereplyHooks this, string, @robot.adapter.send
+      done = =>
+        @robot.adapter.send @envelope, string
+      @robot.runPrereplyHooks this, string, done
 
   # Public: Posts an emote back to the chat source
   #
@@ -30,7 +32,9 @@ class Response
   # Returns nothing.
   emote: (strings...) ->
     for string in strings
-      @robot.runPrereplyHooks this, string, @robot.adapter.emote
+      done = =>
+        @robot.adapter.emote @envelope, string
+      @robot.runPrereplyHooks this, string, done
 
   # Public: Posts a message mentioning the current user.
   #
@@ -40,7 +44,9 @@ class Response
   # Returns nothing.
   reply: (strings...) ->
     for string in strings
-      @robot.runPrereplyHooks this, string, @robot.adapter.reply
+      done = =>
+        @robot.adapter.reply @envelope, string
+      @robot.runPrereplyHooks this, string, done
 
   # Public: Posts a topic changing message
   #
@@ -50,7 +56,9 @@ class Response
   # Returns nothing.
   topic: (strings...) ->
     for string in strings
-      @robot.runPrereplyHooks this, string, @robot.adapter.topic
+      done = =>
+        @robot.adapter.topic @envelope, string
+      @robot.runPrereplyHooks this, string, done
 
   # Public: Play a sound in the chat source
   #
@@ -60,7 +68,9 @@ class Response
   # Returns nothing
   play: (strings...) ->
     for string in strings
-      @robot.runPrereplyHooks this, string, @robot.adapter.play
+      done = =>
+        @robot.adapter.play @envelope, string
+      @robot.runPrereplyHooks this, string, done
 
   # Public: Posts a message in an unlogged room
   #
@@ -70,7 +80,9 @@ class Response
   # Returns nothing
   locked: (strings...) ->
     for string in strings
-      @robot.runPrereplyHooks this, string, @robot.adapter.locked
+      done = =>
+        @robot.adapter.locked @envelope, string
+      @robot.runPrereplyHooks this, string, done
 
   # Public: Picks a random item from the given items.
   #
