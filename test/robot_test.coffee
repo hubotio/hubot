@@ -221,7 +221,6 @@ describe 'Robot', ->
       testMessage = new TextMessage(@user, 'message123')
       @robot.prereceive (hook) ->
         hook.message.addedData = "added data"
-        hook.next()
       @robot.hear /^message123$/, (response) ->
         expect(response.message.addedData).to.equal("added data")
         done()
@@ -260,7 +259,6 @@ describe 'Robot', ->
         hook.message.addedData = "added data"
         expect(hook.listener).to.equal(listener)
         expect(hook.response.message).to.equal(testMessage)
-        hook.next()
       @robot.receive testMessage
 
     it 'stops processing if a prelisten hook finishes', (done) ->
@@ -285,8 +283,6 @@ describe 'Robot', ->
       @robot.prereply (hook) ->
         if hook.reply.match(/passwords/)
           hook.finish()
-        else
-          hook.next()
       @robot.receive testMessage
       expect(replier).to.have.been.calledOnce
       expect(sender).to.have.been.calledOnce

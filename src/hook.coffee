@@ -14,14 +14,13 @@ class Hook
     @nextHook = -1
 
   run: ->
-    @nextHook += 1
-    hook = @hooks[@nextHook]
-    if hook?
+    for hook in @hooks
       hook(@)
-    else
-      @callback()
+      return if @finished?
+    @callback()
 
   finish: =>
+    @finished = true
     if @reply?
       # We're processing a reply, not a listen or receive. The message has
       # been processed, so it's too late to finish() it. By not calling
@@ -29,9 +28,6 @@ class Hook
     else
       @message.finish()
       @callback()
-
-  next: =>
-    @run()
 
 module.exports = {
   Hook
