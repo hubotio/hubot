@@ -407,26 +407,6 @@ class Robot
         scriptDocumentation.commands.push cleanedLine
         @commands.push cleanedLine
 
-  # Public: A helper send function which delegates to the adapter's send
-  # function.
-  #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  send: (user, strings...) ->
-    @adapter.send user, strings...
-
-  # Public: A helper reply function which delegates to the adapter's reply
-  # function.
-  #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  reply: (user, strings...) ->
-    @adapter.reply user, strings...
-
   # Public: A helper send function to message a room that the robot is in.
   #
   # room    - String designating the room to message.
