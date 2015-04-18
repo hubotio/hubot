@@ -517,34 +517,6 @@ class Robot
     HttpClient.create(url, options)
       .header('User-Agent', "Hubot/#{@version}")
 
-  # Private. Run the hooks of a given name
-  #
-  #  name     - 'prereceive'
-  #  response - The response object
-  #  listener - The matching listener, if any
-  #  message  - A message that hubot is trying to send, if any
-  #
-  # Each hook must call hook.next() or hook.done(). Hook.next() continues
-  # processing and hook.done() aborts the message. If a response message
-  # exists, hook.done() prevents it from being sent.
-  #
-  # Returns nothing.
-  runHooks: (name, callback, message, response, listener, reply) ->
-    hooks = @hooks[name]
-    if hooks?.length > 0
-      opts =
-        hooks:    hooks
-        callback: callback
-        response: response
-        message:  message
-        listener: listener
-        robot:    this
-        reply:    reply
-      hook = new Hook(opts)
-      hook.run()
-    else
-      callback()
-
   # Public. Adds a prereceive callback hook to this robot.
   #
   #   cb  - A callback function which accepts a Hook object.
@@ -594,5 +566,33 @@ class Robot
     done = ->
       cb(response.envelope, string)
     @runHooks 'prereply', done, response.envelope.message, response, response.listener, string
+
+  # Private. Run the hooks of a given name
+  #
+  #  name     - 'prereceive'
+  #  response - The response object
+  #  listener - The matching listener, if any
+  #  message  - A message that hubot is trying to send, if any
+  #
+  # Each hook must call hook.next() or hook.done(). Hook.next() continues
+  # processing and hook.done() aborts the message. If a response message
+  # exists, hook.done() prevents it from being sent.
+  #
+  # Returns nothing.
+  runHooks: (name, callback, message, response, listener, reply) ->
+    hooks = @hooks[name]
+    if hooks?.length > 0
+      opts =
+        hooks:    hooks
+        callback: callback
+        response: response
+        message:  message
+        listener: listener
+        robot:    this
+        reply:    reply
+      hook = new Hook(opts)
+      hook.run()
+    else
+      callback()
 
 module.exports = Robot
