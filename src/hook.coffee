@@ -5,13 +5,15 @@ class Hook
     @message  = opts.message
     @robot    = opts.robot
     @reply    = opts.reply
-    @hooks    = opts.hooks.slice 0 # make a shallow clone
+    @hooks    = opts.hooks
     @callback = opts.callback
+    @nextHook = -1
 
   run: ->
-    nextHook = @hooks.shift()
-    if nextHook?
-      nextHook(@)
+    @nextHook += 1
+    hook = @hooks[@nextHook]
+    if hook?
+      hook(@)
     else
       @callback()
 
