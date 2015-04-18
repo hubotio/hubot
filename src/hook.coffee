@@ -1,10 +1,14 @@
 class Hook
   constructor: (opts) ->
     @response = opts.response
+    @robot    = opts.robot
     @listener = opts.listener
     @message  = opts.message
-    @robot    = opts.robot
-    @reply    = opts.reply
+    @response ||= new @robot.Response(@robot, @message)
+
+    @reply    = opts.reply # A string response that is being sent if
+                           # this hook is a reply hook
+
     @hooks    = opts.hooks
     @callback = opts.callback
     @nextHook = -1

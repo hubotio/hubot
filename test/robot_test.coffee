@@ -227,6 +227,19 @@ describe 'Robot', ->
         done()
       @robot.receive testMessage
 
+    it 'provides a response object so replies can be sent before a match', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      replier = @robot.adapter.reply = sinon.spy()
+      listenerCallback = sinon.spy()
+      @robot.hear /^message123$/, listenerCallback
+      @robot.prereceive (hook) ->
+        hook.response.reply "Listen bud, here's why I won't let you do that."
+        hook.finish()
+      @robot.receive testMessage
+      expect(listenerCallback).to.not.have.been.called
+      expect(replier).to.have.been.calledOnce
+      done()
+
     it 'does not pass on a message that a prereceive hook finishes', (done) ->
       testMessage = new TextMessage(@user, 'message123')
       listenerCallback = sinon.spy()

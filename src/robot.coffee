@@ -195,7 +195,7 @@ class Robot
   receive: (message) ->
     curriedReceive = =>
       @receiveWithoutHooks(message)
-    @runHooks 'prereceive', curriedReceive, message, null
+    @runHooks 'prereceive', curriedReceive, message
 
   # Private: receive a message, passing it to any inerested listeners. Does
   # not execute callbacks.
