@@ -20,8 +20,8 @@ class Response
   # Returns nothing.
   send: (strings...) ->
     for string in strings
-      done = =>
-        @robot.adapter.send @envelope, string
+      done = (newText) =>
+        @robot.adapter.send @envelope, newText
       @robot.runPrereplyHooks this, string, done
 
   # Public: Posts an emote back to the chat source
@@ -32,8 +32,8 @@ class Response
   # Returns nothing.
   emote: (strings...) ->
     for string in strings
-      done = =>
-        @robot.adapter.emote @envelope, string
+      done = (newText) =>
+        @robot.adapter.emote @envelope, newText
       @robot.runPrereplyHooks this, string, done
 
   # Public: Posts a message mentioning the current user.
@@ -44,8 +44,8 @@ class Response
   # Returns nothing.
   reply: (strings...) ->
     for string in strings
-      done = =>
-        @robot.adapter.reply @envelope, string
+      done = (newText) =>
+        @robot.adapter.reply @envelope, newText
       @robot.runPrereplyHooks this, string, done
 
   # Public: Posts a topic changing message
@@ -56,8 +56,8 @@ class Response
   # Returns nothing.
   topic: (strings...) ->
     for string in strings
-      done = =>
-        @robot.adapter.topic @envelope, string
+      done = (newText) =>
+        @robot.adapter.topic @envelope, newText
       @robot.runPrereplyHooks this, string, done
 
   # Public: Play a sound in the chat source
@@ -68,8 +68,8 @@ class Response
   # Returns nothing
   play: (strings...) ->
     for string in strings
-      done = =>
-        @robot.adapter.play @envelope, string
+      done = (newText) =>
+        @robot.adapter.play @envelope, newText
       @robot.runPrereplyHooks this, string, done
 
   # Public: Posts a message in an unlogged room
@@ -80,8 +80,8 @@ class Response
   # Returns nothing
   locked: (strings...) ->
     for string in strings
-      done = =>
-        @robot.adapter.locked @envelope, string
+      done = (newText) =>
+        @robot.adapter.locked @envelope, newText
       @robot.runPrereplyHooks this, string, done
 
   # Public: Picks a random item from the given items.

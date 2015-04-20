@@ -543,7 +543,7 @@ class Robot
   # to it. Responses belong to listeners but don't have a way to get to them,
   # and we should change that API.
   runPrereplyHooks: (response, string, cb) ->
-    @runHooks 'prereply', cb, response.envelope.message, response, response.listener, string
+    @runHooks 'prereply', cb, response.envelope.message, response, response.listener, { text: string }
 
   # Private. Run the hooks of a given name
   #

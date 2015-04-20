@@ -6,8 +6,7 @@ class Hook
     @message  = opts.message
     @response ||= new @robot.Response(@robot, @message)
 
-    @reply    = opts.reply # A string response that is being sent if
-                           # this hook is a reply hook
+    @reply    = opts.reply # An object like { text: "string" }
 
     @hooks    = opts.hooks
     @callback = opts.callback
@@ -17,7 +16,7 @@ class Hook
     for hook in @hooks
       hook(@)
       return if @finished?
-    @callback()
+    @callback(@reply.text if @reply?)
 
   finish: =>
     @finished = true
@@ -25,6 +24,8 @@ class Hook
       # We're processing a reply, not a listen or receive. The message has
       # been processed, so it's too late to finish() it. By not calling
       # @run() or @callback() we end processing and do not send the reply.
+      # if they reply has been updated, we note that by returning the new value.
+      @reply.text
     else
       @message.finish()
       @callback()

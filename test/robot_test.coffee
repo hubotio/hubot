@@ -281,8 +281,20 @@ describe 'Robot', ->
         response.reply "more passwords, seriously?", "this is fine though"
         done()
       @robot.prereply (hook) ->
-        if hook.reply.match(/passwords/)
+        if hook.reply.text.match(/passwords/)
           hook.finish()
       @robot.receive testMessage
       expect(replier).to.have.been.calledOnce
       expect(sender).to.have.been.calledOnce
+
+    it 'allows changing the outgoing message', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      sender = @robot.adapter.send = sinon.spy()
+      @robot.hear /^message123$/, (response) ->
+        response.send "dump passwords to IRC lol"
+        done()
+      @robot.prereply (hook) ->
+        if hook.reply.text.match(/passwords/)
+          hook.reply.text = "Sorry meatbag, no passwords."
+      @robot.receive testMessage
+      expect(sender.getCall(0).args[1]).to.equal("Sorry meatbag, no passwords.")
