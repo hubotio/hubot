@@ -100,8 +100,9 @@ class Robot
 
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+      [a,b] = if name.length > alias.length then [name,alias] else [alias,name]
       newRegex = new RegExp(
-        "^\\s*[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
+        "^\\s*[@]?(?:#{a}[:,]?|#{b}[:,]?)\\s*(?:#{pattern})"
         modifiers
       )
     else
