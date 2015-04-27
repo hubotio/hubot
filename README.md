@@ -13,6 +13,8 @@ for details on getting up and running with your very own robot friend.
 In most cases, you'll probably never have to hack on this repo directly if you
 are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTING.md)
 
+If you'd like to chat, drop by #hubot on FreeNode IRC.
+
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
