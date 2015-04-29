@@ -102,7 +102,7 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
 
 ## Scripting
 
-Hubot's power comes through scripting. Read [more about scripting](/docs/scripting/) for the deal on bending hubot to your will using code.
+Hubot's power comes through scripting. Read [more about scripting](/docs/scripting.md) for the deal on bending hubot to your will using code.
 
 There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use scripts from it:
 
