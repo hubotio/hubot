@@ -130,9 +130,9 @@ You can deploy hubot to Heroku, which is the officially supported method.
 Additionally you are able to deploy hubot to a UNIX-like system or Windows.
 Please note the support for deploying to Windows isn't officially supported.
 
-* [Deploying Hubot onto Heroku](/docs/deploying/heroku/)
-* [Deploying Hubot onto UNIX](/docs/deploying/unix/)
-* [Deploying Hubot onto Windows](/docs/deploying/windows/)
+* [Deploying Hubot onto Heroku](/docs/deploying/heroku.md)
+* [Deploying Hubot onto UNIX](/docs/deploying/unix.md)
+* [Deploying Hubot onto Windows](/docs/deploying/windows.md)
 
 ## Patterns
 
