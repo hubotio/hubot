@@ -102,7 +102,7 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
 
 ## Scripting
 
-Hubot's power comes through scripting. Read [more about scripting](/docs/scripting/) for the deal on bending hubot to your will using code.
+Hubot's power comes through scripting. Read [more about scripting](/docs/scripting.md) for the deal on bending hubot to your will using code.
 
 There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use scripts from it:
 
@@ -136,4 +136,4 @@ Please note the support for deploying to Windows isn't officially supported.
 
 ## Patterns
 
-Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he or she can be. Read [docs/patterns.md](/docs/patterns/) for some nifty tricks that may come in handy as you teach your hubot new skills.
+Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he or she can be. Read [docs/patterns.md](/docs/patterns.md) for some nifty tricks that may come in handy as you teach your hubot new skills.
