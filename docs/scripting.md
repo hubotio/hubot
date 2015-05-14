@@ -161,6 +161,7 @@ A post looks like:
     foo: 'bar'
   })
   robot.http("https://midnight-train")
+    .header('Content-Type', 'application/json')
     .post(data) (err, res, body) ->
       # your code here
 ```
