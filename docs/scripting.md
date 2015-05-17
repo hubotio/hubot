@@ -216,7 +216,7 @@ If you are talking to APIs, the easiest way is going to be JSON because it doesn
     .get() (err, res, body) ->
       # error checking code here
 
-      data = JSON.parse(body)
+      data = JSON.parse body
       res.send "#{data.passenger} taking midnight train going #{data.destination}"
 ```
 
@@ -234,7 +234,7 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
 
       data = null
       try
-        data = JSON.parse(body)
+        data = JSON.parse body
       catch error
        res.send "Ran into an error parsing JSON :("
        return
