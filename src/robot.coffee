@@ -137,7 +137,7 @@ class Robot
   enter: (options, callback) ->
     @listeners.push new Listener(
       @,
-      ((msg) -> msg instanceof EnterMessage),
+      ((msg) -> msg.type is 'enter'),
       options,
       callback
     )
@@ -152,7 +152,7 @@ class Robot
   leave: (options, callback) ->
     @listeners.push new Listener(
       @,
-      ((msg) -> msg instanceof LeaveMessage),
+      ((msg) -> msg.type is 'leave'),
       options,
       callback
     )
@@ -167,7 +167,7 @@ class Robot
   topic: (options, callback) ->
     @listeners.push new Listener(
       @,
-      ((msg) -> msg instanceof TopicMessage),
+      ((msg) -> msg.type is 'topic'),
       options,
       callback
     )
@@ -212,7 +212,7 @@ class Robot
 
     @listeners.push new Listener(
       @,
-      ((msg) -> msg instanceof CatchAllMessage),
+      ((msg) -> msg.type is 'all'),
       options,
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
@@ -233,7 +233,7 @@ class Robot
         @emit('error', error, new @Response(@, message, []))
 
         false
-    if message not instanceof CatchAllMessage and results.indexOf(true) is -1
+    if message.type isnt 'all' and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
 
   # Public: Loads a file in path.
