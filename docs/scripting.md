@@ -21,7 +21,7 @@ To use community scripts, place the name of the script in the `hubot-scripts.jso
 ["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
 ```
 
-(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts repo](https://github.com/github/hubot-scripts/tree/master/src/scripts) for scripts carefully crafted for you by lots of nice folks)
+(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts organization](https://github.com/hubot-scripts) for scripts carefully crafted for you by lots of nice folks)
 
 ### NPM Packages
 
