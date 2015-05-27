@@ -63,7 +63,7 @@ class TopicMessage extends TextMessage
   type: 'topic'
 
 class CatchAllMessage extends Message
-  type: 'all'
+  type: 'catchall'
 
   # Represents a message that no matchers matched.
   #

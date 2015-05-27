@@ -212,7 +212,7 @@ class Robot
 
     @listeners.push new Listener(
       @,
-      ((msg) -> msg.type is 'all'),
+      ((msg) -> msg.type is 'catchall'),
       options,
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
@@ -233,7 +233,7 @@ class Robot
         @emit('error', error, new @Response(@, message, []))
 
         false
-    if message.type isnt 'all' and results.indexOf(true) is -1
+    if message.type isnt 'catchall' and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
 
   # Public: Loads a file in path.
