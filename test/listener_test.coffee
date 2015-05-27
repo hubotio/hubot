@@ -127,6 +127,7 @@ describe 'Listener', ->
         it 'does not match EnterMessages', ->
           callback = sinon.spy()
           testMessage = new EnterMessage(@user)
+          testMessage.match = sinon.stub().returns(true) # Invalid for a EnterMessage
           testRegex = /test/
 
           testListener = new TextListener(@robot, testRegex, callback)
