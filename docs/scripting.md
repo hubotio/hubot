@@ -29,12 +29,6 @@ hubot-github          Giving Hubot the ability to be a vital member of your gith
 To use a script from an NPM package:
 
 1. Add the package to the list of `dependencies` into your `package.json`.
-    …
-    "dependencies": {
-      "hubot":          ">= 2.6.0 < 3.0.0",
-      "hubot-deployer": "",
-    },
-    …
 2. Run `npm install` to install the package.
 3. Add the package to `external-scripts.json`.
 4. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
