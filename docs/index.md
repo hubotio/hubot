@@ -104,22 +104,6 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
 
 Hubot's power comes through scripting. Read [more about scripting](/docs/scripting/) for the deal on bending hubot to your will using code.
 
-There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use scripts from it:
-
-* Make sure `hubot-scripts` is listed as a dependency in `package.json` (it should by default)
-* Update `hubot-scripts.json` to include the script you want in the list. Make sure the file is still valid JSON!
-* Review the script to see if there's dependencies or configuration to add
-
-In addition, there are scripts released as npm packages. If you find one you want to use:
-
-1. Add the package to the list of `dependencies` into your `package.json`
-2. `npm install` to make sure its installed
-
-To enable third-party scripts that you've added you will need to add the package
-name as a double quoted string to the `external-scripts.json` file in this repo.
-
-**Please note that external scripts may become the default for hubot scripts in future releases.**
-
 ## Adapters
 
 Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](/docs/adapters/), along with details on how to configure them.
