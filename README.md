@@ -1,10 +1,8 @@
 # Hubot
 
 Hubot is a chat bot, modeled after GitHub's Campfire bot, hubot. He's pretty
-cool. He's extendable with
-[old community scripts](https://github.com/github/hubot-scripts), or 
-[new community org](https://github.com/hubot-scripts/) and your own custom
-scripts, and can work on [many different chat services](docs/adapters.md).
+cool. He's [extendable with scripts](docs/scripting.md) and can work on [many
+different chat services](docs/adapters.md)..
 
 This repository provides a library that's distributed by `npm` that you
 use for building your own bots.  See the [documentation](http://hubot.github.com/docs)
