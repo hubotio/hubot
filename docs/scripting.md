@@ -53,9 +53,9 @@ To use old community scripts:
 
 ### Bundled Scripts
 
-Last but not least, you can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
+You can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
 
-You can also use this for customizing scripts from other sources. Just copy the *.coffee file into this directory and make whatever changes you'd like.
+You can also use this for customizing scripts from other sources. Just copy the `*.coffee` file into this directory and make whatever changes you'd like.
 
 Instructions for writing your own scripts can be found below.
 
@@ -371,7 +371,6 @@ Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To a
 ```json
   "dependencies": {
     "hubot":         "2.5.5",
-    "hubot-scripts": "2.4.6",
     "lolimadeupthispackage": "1.2.3"
   },
 ```
@@ -525,7 +524,7 @@ Using previous examples:
         # rest of code here
 ```
 
-For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting. 
+For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting.
 
 ## Documenting Scripts
 
