@@ -9,41 +9,47 @@ Hubot out of the box doesn't do too much, but it is an extensible, scriptable ro
 
 There are three main sources to load scripts from:
 
+* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
 * all scripts __bundled__ with your hubot installation under `scripts/` dir
 * __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
-* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
-
-### Community Scripts
-
-To use community scripts, place the name of the script in the `hubot-scripts.json` file. For example:
-
-```coffeescript
-["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
-```
-
-(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts organization](https://github.com/hubot-scripts) for scripts carefully crafted for you by lots of nice folks)
 
 ### NPM Packages
 
-Another way is to install scripts via an npm package (you can check some of them [here](https://npmjs.org/search?q=hubot)).
+There are hundreds of scripts written and maintained by the community. Find them by searching the [NPM registry](https://www.npmjs.com/browse/keyword/hubot-scripts) for `hubot-scripts <your-search-term>`. For example:
 
-To load those scripts to your hubot installation, you need to place them in the `external-scripts.json` file after adding the required npm packages to the `package.json` dependency section.
-
-Here is an example of adding the [hubot-botriot](https://npmjs.org/package/hubot-botriot) npm package:
-
-```json
-{
- ...
-
-  "dependencies": {
-    "hubot":         ">= 2.6.0 < 3.0.0",
-    "hubot-scripts": ">= 2.5.0 < 3.0.0",
-    "hubot-botriot": "",
-  },
-
-...
-}
 ```
+$ npm search hubot-scripts github
+NAME                  DESCRIPTION
+hubot-deployer        Giving Hubot the ability to deploy GitHub repos to PaaS providers hubot hubot-scripts hubot-gith
+hubot-gh-release-pr   A hubot script to create GitHub's PR for release
+hubot-github          Giving Hubot the ability to be a vital member of your github organization
+…
+```
+
+To use a script from an NPM package:
+
+1. Add the package to the list of `dependencies` into your `package.json`.
+```json
+  …
+  "dependencies": {
+    "hubot":          ">= 2.6.0 < 3.0.0",
+    "hubot-deployer": "",
+  },
+  …
+```
+2. Run `npm install` to install the package.
+3. Add the package to `external-scripts.json`.
+4. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
+
+### Old Community Scripts
+
+[hubot-scripts](https://github.com/github/hubot-scripts) is the package that includes the original community scripts. It is deprecated in favor of NPM packages and will not be packaged by default in Hubot 3.0.
+
+To use old community scripts:
+
+* Make sure `hubot-scripts` is listed as a dependency in `package.json` (it should by default in <3.0).
+* Update `hubot-scripts.json` to include the script you want in the list.
+* Review the script to see if are any dependencies or configuration required.
 
 ### Bundled Scripts
 
