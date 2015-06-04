@@ -11,9 +11,8 @@ All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  T
 class Sample extends Adapter
 
   constructor: ->
-    @robot.logger.info "Constructor"
     super
-    
+    @robot.logger.info "Constructor"
 
   send: (envelope, strings...) ->
     @robot.logger.info "Send"
