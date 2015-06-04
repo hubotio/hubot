@@ -57,7 +57,7 @@ class TextListener extends Listener
   # callback - A Function that is triggered if the incoming message matches.
   constructor: (@robot, @regex, @options, @callback) ->
     @matcher = (message) =>
-      if message.type == 'text'
+      if message.type is 'text'
         message.match @regex
     super @robot, @matcher, @options, @callback
 
