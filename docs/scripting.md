@@ -21,7 +21,7 @@ To use community scripts, place the name of the script in the `hubot-scripts.jso
 ["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
 ```
 
-(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts repo](https://github.com/github/hubot-scripts/tree/master/src/scripts) for scripts carefully crafted for you by lots of nice folks)
+(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts organization](https://github.com/hubot-scripts) for scripts carefully crafted for you by lots of nice folks)
 
 ### NPM Packages
 
@@ -161,6 +161,7 @@ A post looks like:
     foo: 'bar'
   })
   robot.http("https://midnight-train")
+    .header('Content-Type', 'application/json')
     .post(data) (err, res, body) ->
       # your code here
 ```
@@ -215,7 +216,7 @@ If you are talking to APIs, the easiest way is going to be JSON because it doesn
     .get() (err, res, body) ->
       # error checking code here
 
-      data = JSON.parse(body)
+      data = JSON.parse body
       res.send "#{data.passenger} taking midnight train going #{data.destination}"
 ```
 
@@ -233,7 +234,7 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
 
       data = null
       try
-        data = JSON.parse(body)
+        data = JSON.parse body
       catch error
        res.send "Ran into an error parsing JSON :("
        return
@@ -359,7 +360,7 @@ module.exports = (robot) ->
 
 ## Dependencies
 
-Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
 
 ```json
   "dependencies": {
@@ -421,7 +422,7 @@ module.exports = (robot) ->
 
 ## HTTP Listener
 
-Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
+Hubot includes support for the [express](http://expressjs.com) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
 
 The most common use of this is for providing HTTP end points for services with webhooks to push to, and have those show up in chat.
 
