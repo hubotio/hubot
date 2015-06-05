@@ -3,7 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts) and it's easy to write your own.
+Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.
 
 ## Anatomy of a script
 
