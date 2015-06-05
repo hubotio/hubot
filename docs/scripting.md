@@ -5,14 +5,6 @@ layout: docs
 
 Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts) and it's easy to write your own.
 
-## Anatomy of script loading
-
-There are three main sources to load scripts from:
-
-* all scripts __bundled__ with your hubot installation under `scripts/` dir
-* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
-* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
-
 ## Anatomy of a script
 
 When you created your hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples of scripts. For a script to be a script, it needs to:
@@ -556,9 +548,15 @@ module.exports = (robot) ->
       res.send "#{name} is user - #{user}"
 ```
 
-## Script Load Order
+## Script Loading
 
-Scripts are loaded from the `scripts/` directory. They are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
+There are three main sources to load scripts from:
+
+* all scripts __bundled__ with your hubot installation under `scripts/` directory
+* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
+* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
+
+Scripts loaded from the `scripts/` directory are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
 
 * `scripts/1-first.coffee`
 * `scripts/_second.coffee`
