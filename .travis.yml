@@ -2,10 +2,10 @@ language: node_js
 node_js:
   - "0.11"
   - "0.10"
-  - "0.8"
-branches:
-  only:
-    - vthree-rethink
-    - testing
+matrix:
+  include:
+    - node_js: "0.8"
+      # old versions of NPM don't include support for `^` dependency prefixes in package.json
+      before_install: npm update -g npm
 notifications:
   email: false

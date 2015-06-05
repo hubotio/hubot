@@ -48,24 +48,24 @@ class Robot
     @commands  = []
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @pingIntervalId = null
 
     @parseVersion()
     if httpd
       @setupExpress()
     else
       @setupNullRouter()
-    @pingIntervalId = null
 
     @loadAdapter adapterPath, adapter
 
     @adapterName   = adapter
     @errorHandlers = []
 
-    @on 'error', (err, msg) =>
-      @invokeErrorHandlers(err, msg)
-    process.on 'uncaughtException', (err) =>
+    @on 'error', (err, res) =>
+      @invokeErrorHandlers(err, res)
+    @onUncaughtException = (err) =>
       @emit 'error', err
-
+    process.on 'uncaughtException', @onUncaughtException
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -105,12 +105,12 @@ class Robot
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
       newRegex = new RegExp(
-        "^[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
+        "^\\s*[@]?(?:#{alias}[:,]?|#{name}[:,]?)\\s*(?:#{pattern})"
         modifiers
       )
     else
       newRegex = new RegExp(
-        "^[@]?#{name}[:,]?\\s*(?:#{pattern})",
+        "^\\s*[@]?#{name}[:,]?\\s*(?:#{pattern})",
         modifiers
       )
 
@@ -174,14 +174,14 @@ class Robot
   # user emitted error events.
   #
   # err - An Error object.
-  # msg - An optional Response object that generated the error
+  # res - An optional Response object that generated the error
   #
   # Returns nothing.
-  invokeErrorHandlers: (err, msg) ->
+  invokeErrorHandlers: (err, res) ->
     @logger.error err.stack
     for errorHandler in @errorHandlers
      try
-       errorHandler(err, msg)
+       errorHandler(err, res)
      catch errErr
        @logger.error "while invoking error handler: #{errErr}\n#{errErr.stack}"
 
@@ -236,8 +236,14 @@ class Robot
     full = Path.join path, Path.basename(file, ext)
     if require.extensions[ext]
       try
-        require(full) @
-        @parseHelp Path.join(path, file)
+        script = require(full)
+
+        if typeof script is 'function'
+          script @
+          @parseHelp Path.join(path, file)
+        else
+          @logger.warning "Expected #{full} to assign a function to module.exports, got #{typeof script}"
+
       catch error
         @logger.error "Unable to load #{full}: #{error.stack}"
         process.exit(1)
@@ -291,8 +297,11 @@ class Robot
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
+    port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
+    address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
+    multipart = require 'connect-multiparty'
 
     app = express()
 
@@ -302,11 +311,17 @@ class Robot
 
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
-    app.use express.bodyParser()
+
+    app.use express.json()
+    app.use express.urlencoded()
+    # replacement for deprecated express.multipart/connect.multipart
+    # limit to 100mb, as per the old behavior
+    app.use multipart(maxFilesSize: 100 * 1024 * 1024)
+
     app.use express.static stat if stat
 
     try
-      @server = app.listen(process.env.PORT || 8080, process.env.BIND_ADDRESS || '0.0.0.0')
+      @server = app.listen(port, address)
       @router = app
     catch err
       @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
@@ -319,7 +334,7 @@ class Robot
       @pingIntervalId = setInterval =>
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
-      , 1200000
+      , 5 * 60 * 1000
 
   # Setup an empty router object
   #
@@ -369,37 +384,36 @@ class Robot
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
     scriptDocumentation = {}
 
-    Fs.readFile path, 'utf-8', (err, body) =>
-      throw err if err?
+    body = Fs.readFileSync path, 'utf-8'
 
-      currentSection = null
-      for line in body.split "\n"
-        break unless line[0] is '#' or line.substr(0, 2) is '//'
+    currentSection = null
+    for line in body.split "\n"
+      break unless line[0] is '#' or line.substr(0, 2) is '//'
 
-        cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
+      cleanedLine = line.replace(/^(#|\/\/)\s?/, "").trim()
 
-        continue if cleanedLine.length is 0
-        continue if cleanedLine.toLowerCase() is 'none'
+      continue if cleanedLine.length is 0
+      continue if cleanedLine.toLowerCase() is 'none'
 
-        nextSection = cleanedLine.toLowerCase().replace(':', '')
-        if nextSection in HUBOT_DOCUMENTATION_SECTIONS
-          currentSection = nextSection
-          scriptDocumentation[currentSection] = []
-        else
-          if currentSection
-            scriptDocumentation[currentSection].push cleanedLine.trim()
-            if currentSection is 'commands'
-              @commands.push cleanedLine.trim()
+      nextSection = cleanedLine.toLowerCase().replace(':', '')
+      if nextSection in HUBOT_DOCUMENTATION_SECTIONS
+        currentSection = nextSection
+        scriptDocumentation[currentSection] = []
+      else
+        if currentSection
+          scriptDocumentation[currentSection].push cleanedLine.trim()
+          if currentSection is 'commands'
+            @commands.push cleanedLine.trim()
 
-      if currentSection is null
-        @logger.info "#{path} is using deprecated documentation syntax"
-        scriptDocumentation.commands = []
-        for line in body.split("\n")
-          break    if not (line[0] is '#' or line.substr(0, 2) is '//')
-          continue if not line.match('-')
-          cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
-          scriptDocumentation.commands.push cleanedLine
-          @commands.push cleanedLine
+    if currentSection is null
+      @logger.info "#{path} is using deprecated documentation syntax"
+      scriptDocumentation.commands = []
+      for line in body.split("\n")
+        break    if not (line[0] is '#' or line.substr(0, 2) is '//')
+        continue if not line.match('-')
+        cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
+        scriptDocumentation.commands.push cleanedLine
+        @commands.push cleanedLine
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
@@ -464,6 +478,7 @@ class Robot
   # Returns nothing.
   shutdown: ->
     clearInterval @pingIntervalId if @pingIntervalId?
+    process.removeListener 'uncaughtException', @onUncaughtException
     @adapter.close()
     @brain.close()
 
@@ -480,10 +495,11 @@ class Robot
   # send the request.
   #
   # url - String URL to access.
+  # options - Optional options to pass on to the client
   #
   # Examples:
   #
-  #     res.http("http://example.com")
+  #     robot.http("http://example.com")
   #       # set a single header
   #       .header('Authorization', 'bearer abcdef')
   #
@@ -501,9 +517,12 @@ class Robot
   #       .post(data) (err, res, body) ->
   #         console.log body
   #
+  #    # Can also set options
+  #    robot.http("https://example.com", {rejectUnauthorized: false})
+  #
   # Returns a ScopedClient instance.
-  http: (url) ->
-    HttpClient.create(url)
+  http: (url, options) ->
+    HttpClient.create(url, options)
       .header('User-Agent', "Hubot/#{@version}")
 
 module.exports = Robot

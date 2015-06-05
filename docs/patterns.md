@@ -1,4 +1,7 @@
-# Patterns
+---
+permalink: /docs/patterns/index.html
+layout: docs
+---
 
 Shared patterns for dealing with common Hubot scenarios.
 
@@ -11,7 +14,7 @@ When you rename Hubot, he will no longer respond to his former name. In order to
 
 Setting this up is very easy:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
+1. Create a [bundled script](/docs/scripting/) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
 2. Add the following code, modified for your needs:
 
 ```coffeescript
@@ -22,10 +25,10 @@ Setting this up is very easy:
 #   None
 #
 module.exports = (robot) ->
-  robot.hear /^hubot:? (.+)/i, (msg) ->
+  robot.hear /^hubot:? (.+)/i, (res) ->
     response = "Sorry, I'm a diva and only respond to #{robot.name}"
     response += " or #{robot.alias}" if robot.alias
-    msg.reply response
+    res.reply response
     return
 
 ```
@@ -56,8 +59,8 @@ Here is the setup:
 #   None
 #
 module.exports = (robot) ->
-  robot.respond /help\s*(.*)?$/i, (msg) ->
-    msg.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
+  robot.respond /help\s*(.*)?$/i, (res) ->
+    res.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
     return
 
 ```

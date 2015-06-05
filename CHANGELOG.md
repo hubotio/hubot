@@ -1,3 +1,60 @@
+v2.12.0
+=======
+
+* Update scripting documentation to ref to `res` instead of `msg`, since it's a `Response` object
+* Update scoped-http-client from 0.10.0 to 0.10.3
+* Fix deprecation warnings from connect at startup
+
+v2.11.4
+=======
+
+* Fix shell adapter parsing history on node 0.8 (ie don't include newlines)
+
+v2.11.3
+=======
+
+* Fix issues around shell adapter throwing errors when there isn't a .hubot_history file
+
+v2.11.2
+=======
+
+* Add support for namespaced alternative environment variables for controlling the port and address express binds to (EXPRESS_PORT and EXPRESS_BIND_ADDRESS).
+
+v2.11.1
+=======
+
+* Automated testing
+* Cleanup uncaughtException handlers, to avoid node warning about a memory leak during tests
+
+v2.11.0
+=======
+
+* Update scripting.md script package sample
+* Include Message class in exported module (ie require 'hubot')
+* Support custom options when calling `robot.http` that are passed onto the scoped-http-client
+* Update scoped-http-client dependency to 0.10.0
+* Fix error when loading a script that doesn't export a function; log a warning instead
+
+v2.10.0
+=======
+
+* Add support to shell adapter for customizing the user with HUBOT_SHELL_USER_ID and HUBOT_SHELL_USER_NAME
+* Add history support to shell adapter, so it remembers commands previously used
+
+v2.9.3
+======
+
+* Allow `robot.respond` to work when there is preceding whitespace
+* Update `robot.parseHelp` to be synchronous, so it's easier to test
+* Reduce Heroku ping interval from 20 minutes to 5 minutes to keep hubot from going unavailable
+* Make sure`robot.pingIntervalId` is kept after setting up Heroku ping  interval
+
+v2.9.2
+======
+
+* Update express dependency to a version isn't affected by [CVE-2014-7191](http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-7191)
+   * More specifically, a version of express that depends on connect that depends on qs that isn't vulnerable
+
 v2.9.1
 ======
 
@@ -27,7 +84,7 @@ v2.8.1
 v2.8.0
 ======
 
-* Add support for `hubot --check-config` to verify hubot will load based on how it's configured
+* Add support for `hubot --config-check` to verify hubot will load based on how it's configured
 * Include `script/` directory for convenient one-liners for common tasks of developing github/hubot
 * Fixes to default `image me` and `help`
 * Updated documentation about external scripts

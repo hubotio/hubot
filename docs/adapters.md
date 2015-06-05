@@ -1,4 +1,7 @@
-# Hubot Adapters
+---
+permalink: /docs/adapters/index.html
+layout: docs
+---
 
 Adapters are the interface to the service you want your hubot to run on.
 
@@ -6,8 +9,8 @@ Adapters are the interface to the service you want your hubot to run on.
 
 Hubot includes two official adapters:
 
-* [Shell](adapters/shell.md), i.e. for use with development
-* [Campfire](adapters/campfire.md)
+* [Shell](/docs/adapters/shell/), i.e. for use with development
+* [Campfire](/docs/adapters/campfire/)
 
 ## Third-party Adapters
 
@@ -37,9 +40,11 @@ to have yours added to the list:
 * [Gitter](https://github.com/huafu/hubot-gitter2)
 * [Proxy](https://github.com/Hammertime38/hubot-proxy) - This adapter allows the base application to observe, handle, and control events sent to the proxied adapter, all defined in a config object at the root of the module.
 * [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
+* [Typetalk](https://github.com/nulab/hubot-typetalk)
+* [Fleep](https://github.com/anroots/hubot-fleep)
+* [Let's Chat](https://github.com/sdelements/hubot-lets-chat)
+* [VictorOps](https://github.com/victorops/hubot-victorops)
 
-## Writing Your Own adapter
+## Writing Your Own Adapter
 
-The best place to start is `src/adapter.coffee`, and inheriting from `Adapter`.
-There is not as much documentation as could exist (yet!), so it is worth
-reviewing existing adapters as well as how hubot internally uses an adapter.
+Interested in adding your own adapter? Check out our documentation for [developing adapters](/docs/adapters/development/)
