@@ -119,7 +119,7 @@ To use a script from an NPM package:
 2. Add the package to `external-scripts.json`.
 3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
 
-You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about bending hubot to your by [writing your own scripts](/docs/scripting/).
+You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](/docs/scripting/).
 
 ## Adapters
 
