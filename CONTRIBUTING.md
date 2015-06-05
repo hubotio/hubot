@@ -41,13 +41,14 @@ Syntax:
 
 This section is for maintainers of hubot. Here's the current process for releasing:
 
-* create a `release-vX.X.X` branch to release off of
+* review unreleased changes since last release on https://github.com/github/hubot/commits/master
 * determine what version to release as:
-  * bug fix? patch release
+  * bug or documentation fix? patch release
   * new functionality that is backwards compatible? minor version
   * breaking change? major release, but think about if it can be fixed to be a minor release instead
-* update `package.json`
-* summarize changes in `CHANGELOG.md`
-* create a pull request, and cc pull requests included in this release, as well as their contributors
+* create a `release-vX.X.X` branch to release from
+* update `package.json`'s `version`
+* summarize changes in `CHANGELOG.md` (see https://github.com/github/hubot/blob/master/CHANGELOG.md#v2120 for an example)
+* create a pull request, and cc pull requests included in this release, as well as their contributors (see https://github.com/github/hubot/pull/887 as an example)
 * merge pull request
 * checkout master branch, and run `script/release`
