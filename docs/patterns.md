@@ -142,3 +142,132 @@ Example access policy:
 * The front desk cannot cut releases nor deploy services
 
 Complex policies like this are currently best implemented in code directly, though there is [ongoing work](https://github.com/michaelansel/hubot-rbac) to build a generalized framework for access management.
+
+## Middleware Examples
+
+Middleware is often used for authentication and authorization.  There are three
+kinds of middleware: Post-receive, Pre-listener, and Pre-reply.
+
+ - Post-Receive middleware happens for every message, whether it's matched or not.
+ - Pre-Listener middleware is called for every listener that matches a message,
+  before it has been executed
+ - Pre-reply middleware is called for every message hubot attempts to send to
+  a chat room, regardless of reason or source.
+
+Hooks are asynchronous by default, needing to call either `middleware.finish()`
+to allow further processing, or `middleware.done()` to end processing for a
+given message. All hooks can be created with a `Sync` variant.
+
+**All of these are just examples. None of them are secure. Don't use them.**
+
+Here's a simple example to blacklist users at the listener level.
+```coffeescript
+module.exports = (robot) ->
+  robot.preListen (middleware) ->
+    if middleware.listener.options.id == "banned.command"
+      if middleware.response.message.user.id == "whitelistedUser"
+        # User is allowed access to this command
+        middleware.next()
+      else
+        # Restricted command, but user isn't in whitelist
+        middleware.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+        middleware.done()
+    else
+      # This is not a restricted command; allow everyone
+      middleware.next()
+```
+
+Here's a synchronous version of the same example. As soon as this function returns,
+the listener will run (or the next middleware, if any). If `middleware.done()` is
+called, further processing will stop.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.preListenSync (middleware) ->
+    if middleware.listener.options.id == "banned.command" &&
+       !middleware.response.message.user.id == "whitelistedUser"
+         middleware.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+         middleware.done()
+```
+
+Here's a similar synchronous example, blacklisting particular users from *all*
+commands:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.preReceiveSync (middleware) ->
+    if middleware.response.message.user.id == "blacklistedUser"
+       context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+       middleware.done()
+```
+
+Here's an example that will replace sensitive information from being sent
+under any circumstances:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.preReply (middleware) ->
+    if middleware.reply.text.match(/passwords lol/)
+      middleware.reply.text = "Sorry meatbag, no passwords allowed"
+    middleware.next()
+```
+
+You could also block the message entirely:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.preReply (middleware) ->
+    if middleware.reply.text.match(/passwords lol/)
+      middleware.done()
+    else
+      middleware.next()
+```
+
+Here's a more complicated example, using an external auth system to
+authenticate users for particular listeners:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.preListen (middleware) ->
+    robot.auth(middleware.response.user, middleware.listener.options) -> (auth)
+      if auth.allowed()
+        middleware.next()
+      else
+         middleware.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+         middleware.done()
+```
+
+Lastly, here's a version of the two-person rule, requiring a second person
+to validate commands tagged as requiring it.
+
+```coffeescript
+crypto = require('crypto')
+module.exports = (robot) ->
+  randomIdentifier = (len = 12) ->
+    crypto.randomBytes(Math.ceil(len * 3 / 4)).toString('base64').slice(0, len)
+
+  robot.commandsAwaitingVerification = {}
+
+  robot.preListenSync (middleware) ->
+    if middleware.listener.options.two_person_protected?
+      if middleware.response.message.verified?
+        middleware.response.send "Who am I to argue with *two* fleshy constructs?"
+      else
+        middleware.message.code = randomIdentifier()
+        robot.commandsAwaitingVerification[middleware.message.code] = middleware.message
+        middleware.response.reply "A bold strategy. One of your meatbag friends needs to verify it with /verify #{msg.code}"
+        middleware.done()
+
+  robot.preReceive (middleware) ->
+    if match = middleware.message.text.match(/verify (\S+)/)
+      code = match[1]
+      if old_message = robot.commandsAwaitingVerification[code]
+        if middleware.message.user.id == old_message.middleware.user.id
+          middleware.response.reply "You can't verify your own commands, silly meatbag."
+          middleware.done()
+        else
+          # stop further processing on the verification and send the old message through the pipeline again.
+          middleware.done()
+          old_message.verified = true
+          robot.receive(old_message)
+```
