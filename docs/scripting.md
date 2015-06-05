@@ -34,7 +34,7 @@ To use a script from an NPM package:
 
 ### Old Community Scripts
 
-[hubot-scripts](https://github.com/github/hubot-scripts) is the package that includes the original community scripts. It is deprecated in favor of NPM packages and will not be packaged by default in Hubot 3.0.
+[hubot-scripts](https://github.com/github/hubot-scripts) is the package that includes the original community scripts. [It is deprecated in favor of NPM packages](https://github.com/github/hubot-scripts/issues/1113) and will not be packaged by default in Hubot 3.0.
 
 To use old community scripts:
 
