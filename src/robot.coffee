@@ -62,8 +62,8 @@ class Robot
     @adapterName   = adapter
     @errorHandlers = []
 
-    @on 'error', (err, msg) =>
-      @invokeErrorHandlers(err, msg)
+    @on 'error', (err, res) =>
+      @invokeErrorHandlers(err, res)
     @onUncaughtException = (err) =>
       @emit 'error', err
     process.on 'uncaughtException', @onUncaughtException
@@ -162,14 +162,14 @@ class Robot
   # user emitted error events.
   #
   # err - An Error object.
-  # msg - An optional Response object that generated the error
+  # res - An optional Response object that generated the error
   #
   # Returns nothing.
-  invokeErrorHandlers: (err, msg) ->
+  invokeErrorHandlers: (err, res) ->
     @logger.error err.stack
     for errorHandler in @errorHandlers
      try
-       errorHandler(err, msg)
+       errorHandler(err, res)
      catch errErr
        @logger.error "while invoking error handler: #{errErr}\n#{errErr.stack}"
 
@@ -280,6 +280,7 @@ class Robot
     address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
+    multipart = require 'connect-multiparty'
 
     app = express()
 
@@ -289,7 +290,13 @@ class Robot
 
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
-    app.use express.bodyParser()
+
+    app.use express.json()
+    app.use express.urlencoded()
+    # replacement for deprecated express.multipart/connect.multipart
+    # limit to 100mb, as per the old behavior
+    app.use multipart(maxFilesSize: 100 * 1024 * 1024)
+
     app.use express.static stat if stat
 
     try

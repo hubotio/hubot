@@ -5,7 +5,7 @@ We love pull requests. Here's a quick guide:
 1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/commits/master)
 2. Fork the repo, and clone it locally
 3. `npm link` to make your cloned repo available to npm
-4. Follow [Getting Started](docs/README.md) to generate a testbot
+4. Follow [Getting Started](docs/index.md) to generate a testbot
 5. `npm link hubot` in your newly created bot to use your hubot fork
 6. Create a new branch for your contribution
 7. Add [tests](test/) (run with `npm test`)
@@ -41,13 +41,14 @@ Syntax:
 
 This section is for maintainers of hubot. Here's the current process for releasing:
 
-* create a `release-vX.X.X` branch to release off of
+* review unreleased changes since last release on https://github.com/github/hubot/commits/master
 * determine what version to release as:
-  * bug fix? patch release
+  * bug or documentation fix? patch release
   * new functionality that is backwards compatible? minor version
   * breaking change? major release, but think about if it can be fixed to be a minor release instead
-* update `package.json`
-* summarize changes in `CHANGELOG.md`
-* create a pull request, and cc pull requests included in this release, as well as their contributors
+* create a `release-vX.X.X` branch to release from
+* update `package.json`'s `version`
+* summarize changes in `CHANGELOG.md` (see https://github.com/github/hubot/blob/master/CHANGELOG.md#v2120 for an example)
+* create a pull request, and cc pull requests included in this release, as well as their contributors (see https://github.com/github/hubot/pull/887 as an example)
 * merge pull request
 * checkout master branch, and run `script/release`

@@ -1,3 +1,20 @@
+v2.12.0
+=======
+
+* Update scripting documentation to ref to `res` instead of `msg`, since it's a `Response` object
+* Update scoped-http-client from 0.10.0 to 0.10.3
+* Fix deprecation warnings from connect at startup
+
+v2.11.4
+=======
+
+* Fix shell adapter parsing history on node 0.8 (ie don't include newlines)
+
+v2.11.3
+=======
+
+* Fix issues around shell adapter throwing errors when there isn't a .hubot_history file
+
 v2.11.2
 =======
 
