@@ -595,6 +595,7 @@ The most important and most common metadata key is `id`. Every Listener should b
 Additional extensions may define and handle additional metadata keys.
 
 Returning to an earlier example:
+
 ```coffeescript
 module.exports = (robot) ->
   robot.respond /annoy me/, id:'annoyance.start', (msg)
