@@ -100,9 +100,26 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
     @myhubot help
     myhubot: help
 
-## Scripting
+## Scripts
 
-Hubot's power comes through scripting. Read [more about scripting](/docs/scripting/) for the deal on bending hubot to your will using code.
+Hubot's power comes through scripts. There are hundreds of scripts written and maintained by the community. Find them by searching the [NPM registry](https://www.npmjs.com/browse/keyword/hubot-scripts) for `hubot-scripts <your-search-term>`. For example:
+
+```
+$ npm search hubot-scripts github
+NAME                  DESCRIPTION
+hubot-deployer        Giving Hubot the ability to deploy GitHub repos to PaaS providers hubot hubot-scripts hubot-gith
+hubot-gh-release-pr   A hubot script to create GitHub's PR for release
+hubot-github          Giving Hubot the ability to be a vital member of your github organization
+…
+```
+
+To use a script from an NPM package:
+
+1. Run `npm install --save <package-name>` to add the package as a dependency and install it.
+2. Add the package to `external-scripts.json`.
+3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
+
+You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about bending hubot to your by [writing your own scripts](/docs/scripting/).
 
 ## Adapters
 

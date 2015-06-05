@@ -3,7 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
+Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts) and it's easy to write your own.
 
 ## Anatomy of script loading
 
@@ -12,43 +12,6 @@ There are three main sources to load scripts from:
 * all scripts __bundled__ with your hubot installation under `scripts/` dir
 * __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
 * scripts loaded from external __npm packages__ and specified in `external-scripts.json`
-
-### NPM Packages
-
-There are hundreds of scripts written and maintained by the community. Find them by searching the [NPM registry](https://www.npmjs.com/browse/keyword/hubot-scripts) for `hubot-scripts <your-search-term>`. For example:
-
-```
-$ npm search hubot-scripts github
-NAME                  DESCRIPTION
-hubot-deployer        Giving Hubot the ability to deploy GitHub repos to PaaS providers hubot hubot-scripts hubot-gith
-hubot-gh-release-pr   A hubot script to create GitHub's PR for release
-hubot-github          Giving Hubot the ability to be a vital member of your github organization
-…
-```
-
-To use a script from an NPM package:
-
-1. Run `npm install --save <package-name>` to add the package as a dependency and install it.
-2. Add the package to `external-scripts.json`.
-3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
-
-### Old Community Scripts
-
-[hubot-scripts](https://github.com/github/hubot-scripts) is the package that includes the original community scripts. [It is deprecated in favor of NPM packages](https://github.com/github/hubot-scripts/issues/1113) and will not be packaged by default in Hubot 3.0.
-
-To use old community scripts:
-
-* Make sure `hubot-scripts` is listed as a dependency in `package.json` (it should by default in <3.0).
-* Update `hubot-scripts.json` to include the script you want in the list.
-* Review the script to see if are any dependencies or configuration required.
-
-### Bundled Scripts
-
-You can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
-
-You can also use this for customizing scripts from other sources. Just copy the `*.coffee` file into this directory and make whatever changes you'd like.
-
-Instructions for writing your own scripts can be found below.
 
 ## Anatomy of a script
 
