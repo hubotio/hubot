@@ -25,10 +25,10 @@ Setting this up is very easy:
 #   None
 #
 module.exports = (robot) ->
-  robot.hear /^hubot:? (.+)/i, (msg) ->
+  robot.hear /^hubot:? (.+)/i, (res) ->
     response = "Sorry, I'm a diva and only respond to #{robot.name}"
     response += " or #{robot.alias}" if robot.alias
-    msg.reply response
+    res.reply response
     return
 
 ```
@@ -59,8 +59,21 @@ Here is the setup:
 #   None
 #
 module.exports = (robot) ->
-  robot.respond /help\s*(.*)?$/i, (msg) ->
-    msg.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
+  robot.respond /help\s*(.*)?$/i, (res) ->
+    res.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
     return
 
+```
+
+## Forwarding all HTTP requests through a proxy
+
+In many corporate environments, a web proxy is required to access the Internet and/or protected resources. For one-off control, use can specify an [Agent](https://nodejs.org/api/http.html) to use with `robot.http`. However, this would require modifying every script your robot uses to point at the proxy. Instead, you can specify the agent at the global level and have all HTTP requests use the agent by default.
+
+Due to the way node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
+
+```coffeescript
+proxy = require 'proxy-agent'
+module.export = (robot) ->
+  robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
+  robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 ```

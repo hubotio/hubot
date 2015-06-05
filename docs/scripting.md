@@ -3,55 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
-
-## Anatomy of script loading
-
-There are three main sources to load scripts from:
-
-* all scripts __bundled__ with your hubot installation under `scripts/` dir
-* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
-* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
-
-### Community Scripts
-
-To use community scripts, place the name of the script in the `hubot-scripts.json` file. For example:
-
-```coffeescript
-["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
-```
-
-(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts repo](https://github.com/github/hubot-scripts/tree/master/src/scripts) for scripts carefully crafted for you by lots of nice folks)
-
-### NPM Packages
-
-Another way is to install scripts via an npm package (you can check some of them [here](https://npmjs.org/search?q=hubot)).
-
-To load those scripts to your hubot installation, you need to place them in the `external-scripts.json` file after adding the required npm packages to the `package.json` dependency section.
-
-Here is an example of adding the [hubot-botriot](https://npmjs.org/package/hubot-botriot) npm package:
-
-```json
-{
- ...
-
-  "dependencies": {
-    "hubot":         ">= 2.6.0 < 3.0.0",
-    "hubot-scripts": ">= 2.5.0 < 3.0.0",
-    "hubot-botriot": "",
-  },
-
-...
-}
-```
-
-### Bundled Scripts
-
-Last but not least, you can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
-
-You can also use this for customizing scripts from other sources. Just copy the *.coffee file into this directory and make whatever changes you'd like.
-
-Instructions for writing your own scripts can be found below.
+Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts) and it's easy to write your own.
 
 ## Anatomy of a script
 
@@ -76,10 +28,10 @@ Since this is a chat bot, the most common interactions are based on messages. Hu
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.hear /badger/i, (msg) ->
+  robot.hear /badger/i, (res) ->
     # your code here
 
-  robot.respond /open the pod bay doors/i, (msg) ->
+  robot.respond /open the pod bay doors/i, (res) ->
     # your code here
 ```
 
@@ -105,18 +57,18 @@ It wouldn't be called for:
 
 ## Send & reply
 
-The `msg` parameter is, despite the name, an instance of `Response`. With it, you can `send` a message back to the room the `msg` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
+The `res` parameter is an instance of `Response` (historically, this parameter was `msg` and you may see other scripts use it this way). With it, you can `send` a message back to the room the `res` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.hear /badger/i, (msg) ->
-    msg.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
+  robot.hear /badger/i, (res) ->
+    res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
 
-  robot.respond /open the pod bay doors/i, (msg) ->
-    msg.reply "I'm afraid I can't let you do that."
+  robot.respond /open the pod bay doors/i, (res) ->
+    res.reply "I'm afraid I can't let you do that."
 
-  robot.hear /I like pie/i, (msg) ->
-    msg.emote "makes a freshly baked pie"
+  robot.hear /I like pie/i, (res) ->
+    res.emote "makes a freshly baked pie"
 ```
 
 The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
@@ -125,22 +77,22 @@ If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod 
 
 ## Capturing data
 
-So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `msg.match`. For example, if we update a script like:
+So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update a script like:
 
 ```coffeescript
-  robot.respond /open the (.*) doors/i, (msg) ->
+  robot.respond /open the (.*) doors/i, (res) ->
     # your code here
 ```
 
-If Dave says "HAL: open the pod bay doors", then `msg.match[0]` is "open the pod bay doors", and `msg.match[1]` is just "pod bay". Now we can start doing more dynamic things:
+If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod bay doors", and `res.match[1]` is just "pod bay". Now we can start doing more dynamic things:
 
 ```coffeescript
-  robot.respond /open the (.*) doors/i, (msg) ->
-    doorType = msg.match[1]
+  robot.respond /open the (.*) doors/i, (res) ->
+    doorType = res.match[1]
     if doorType is "pod bay"
-      msg.reply "I'm afraid I can't let you do that."
+      res.reply "I'm afraid I can't let you do that."
     else
-      msg.reply "Opening #{doorType} doors"
+      res.reply "Opening #{doorType} doors"
 ```
 
 ## Making HTTP calls
@@ -161,6 +113,7 @@ A post looks like:
     foo: 'bar'
   })
   robot.http("https://midnight-train")
+    .header('Content-Type', 'application/json')
     .post(data) (err, res, body) ->
       # your code here
 ```
@@ -172,7 +125,7 @@ A post looks like:
   robot.http("https://midnight-train")
     .get() (err, res, body) ->
       if err
-        msg.send "Encountered an error :( #{err}"
+        res.send "Encountered an error :( #{err}"
         return
       # your code here, knowing it was successful
 ```
@@ -185,12 +138,12 @@ A post looks like:
       # pretend there's error checking code here
 
       if res.statusCode isnt 200
-        msg.send "Request didn't come back HTTP 200 :("
+        res.send "Request didn't come back HTTP 200 :("
         return
 
       rateLimitRemaining = parseInt res.getHeader('X-RateLimit-Limit') if res.getHeader('X-RateLimit-Limit')
       if rateLimitRemaining and rateLimitRemaining < 1
-        msg.send "Rate Limit hit, stop believing for awhile"
+        res.send "Rate Limit hit, stop believing for awhile"
 
       # rest of your code
 ```
@@ -202,7 +155,7 @@ A post looks like:
     .get() (err, res, body) ->
       # error checking code here
 
-      msg.send "Got back #{body}"
+      res.send "Got back #{body}"
 ```
 
 ### JSON
@@ -215,8 +168,8 @@ If you are talking to APIs, the easiest way is going to be JSON because it doesn
     .get() (err, res, body) ->
       # error checking code here
 
-      data = JSON.parse(body)
-      msg.send "#{data.passenger} taking midnight train going #{data.destination}"
+      data = JSON.parse body
+      res.send "#{data.passenger} taking midnight train going #{data.destination}"
 ```
 
 It's possible to get non-JSON back, like if the API hit an error and it tries to render a normal HTML error instead of JSON. To be on the safe side, you should check the `Content-Type`, and catch any errors while parsing.
@@ -228,14 +181,14 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
       # err & response status checking code here
 
       if response.getHeader('Content-Type') isnt 'application/json'
-        msg.send "Didn't get back JSON :("
+        res.send "Didn't get back JSON :("
         return
 
       data = null
       try
-        data = JSON.parse(body)
+        data = JSON.parse body
       catch error
-       msg.send "Ran into an error parsing JSON :("
+       res.send "Ran into an error parsing JSON :("
        return
 
       # your code here
@@ -279,7 +232,7 @@ A common pattern is to hear or respond to commands, and send with a random funny
 ```coffeescript
 lulz = ['lol', 'rofl', 'lmao']
 
-msg.send msg.random lulz
+res.send res.random lulz
 ```
 
 ## Topic
@@ -288,8 +241,8 @@ Hubot can react to a room's topic changing, assuming that the adapter supports i
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.topic (msg) ->
-    msg.send "#{msg.message.text}? That's a Paddlin'"
+  robot.topic (res) ->
+    res.send "#{res.message.text}? That's a Paddlin'"
 ```
 
 ## Entering and leaving
@@ -301,10 +254,10 @@ enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I
 leaveReplies = ['Are you still there?', 'Target lost', 'Searching']
 
 module.exports = (robot) ->
-  robot.enter (msg) ->
-    msg.send msg.random enterReplies
-  robot.leave (msg) ->
-    msg.send msg.random leaveReplies
+  robot.enter (res) ->
+    res.send res.random enterReplies
+  robot.leave (res) ->
+    res.send res.random leaveReplies
 ```
 
 ## Environment variables
@@ -315,8 +268,8 @@ Hubot can access the environment he's running in, just like any other node progr
 answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
-    msg.send "#{answer}, but what is the question?"
+  robot.respond /what is the answer to the ultimate question of life/, (res) ->
+    res.send "#{answer}, but what is the question?"
 ```
 
 Take care to make sure the script can load if it's not defined, give the Hubot developer notes on how to define it, or default to something. It's up to the script writer to decide if that should be a fatal error (e.g. hubot exits), or not (make any script that relies on it to say it needs to be configured. When possible and when it makes sense to, having a script work without any other configuration is preferred.
@@ -327,8 +280,8 @@ Here we can default to something:
 answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING or 42
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
-    msg.send "#{answer}, but what is the question?"
+  robot.respond /what is the answer to the ultimate question of life/, (res) ->
+    res.send "#{answer}, but what is the question?"
 ```
 
 Here we exit if it's not defined:
@@ -340,8 +293,8 @@ unless answer?
   process.exit(1)
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
-    msg.send "#{answer}, but what is the question?"
+  robot.respond /what is the answer to the ultimate question of life/, (res) ->
+    res.send "#{answer}, but what is the question?"
 ```
 
 And lastly, we update the `robot.respond` to check it:
@@ -350,21 +303,20 @@ And lastly, we update the `robot.respond` to check it:
 answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) ->
-  robot.respond /what is the answer to the ultimate question of life/, (msg) ->
+  robot.respond /what is the answer to the ultimate question of life/, (res) ->
     unless answer?
-      msg.send "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
+      res.send "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
       return
-    msg.send "#{answer}, but what is the question?"
+    res.send "#{answer}, but what is the question?"
 ```
 
 ## Dependencies
 
-Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
 
 ```json
   "dependencies": {
     "hubot":         "2.5.5",
-    "hubot-scripts": "2.4.6",
     "lolimadeupthispackage": "1.2.3"
   },
 ```
@@ -377,9 +329,9 @@ Hubot can run code later using JavaScript's built-in [setTimeout](http://nodejs.
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.respond /you are a little slow/, (msg) ->
+  robot.respond /you are a little slow/, (res) ->
     setTimeout () ->
-      msg.send "Who you calling 'slow'?"
+      res.send "Who you calling 'slow'?"
     , 60 * 1000
 ```
 
@@ -387,10 +339,10 @@ Additionally, Hubot can run code on an interval using [setInterval](http://nodej
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.respond /annoy me/, (msg) ->
-    msg.send "Hey, want to hear the most annoying sound in the world?"
+  robot.respond /annoy me/, (res) ->
+    res.send "Hey, want to hear the most annoying sound in the world?"
     setInterval () ->
-      msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+      res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
     , 1000
 ```
 
@@ -400,28 +352,28 @@ Both `setTimeout` and `setInterval` return the ID of the timeout or interval it 
 module.exports = (robot) ->
   annoyIntervalId = null
 
-  robot.respond /annoy me/, (msg) ->
+  robot.respond /annoy me/, (res) ->
     if annoyIntervalId
-      msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+      res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
       return
 
-    msg.send "Hey, want to hear the most annoying sound in the world?"
+    res.send "Hey, want to hear the most annoying sound in the world?"
     annoyIntervalId = setInterval () ->
-      msg.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+      res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
     , 1000
 
-  robot.respond /unannoy me/, (msg) ->
+  robot.respond /unannoy me/, (res) ->
     if annoyIntervalId
-      msg.send "GUYS, GUYS, GUYS!"
+      res.send "GUYS, GUYS, GUYS!"
       clearInterval(annoyIntervalId) ->
       annoyIntervalId = null
     else
-      msg.send "Not annoying you right now, am I?"
+      res.send "Not annoying you right now, am I?"
 ```
 
 ## HTTP Listener
 
-Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
+Hubot includes support for the [express](http://expressjs.com) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
 
 The most common use of this is for providing HTTP end points for services with webhooks to push to, and have those show up in chat.
 
@@ -430,12 +382,21 @@ The most common use of this is for providing HTTP end points for services with w
 module.exports = (robot) ->
   robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
     room   = req.params.room
-    data   = JSON.parse req.body.payload
+    data   = if req.body.payload? then JSON.parse req.body.payload else req.body
     secret = data.secret
 
     robot.messageRoom room, "I have a secret: #{secret}"
 
     res.send 'OK'
+```
+
+Test it with curl; also see section on [error handling](#error-handling) below.
+```shell
+// raw json, must specify Content-Type: application/json
+curl -X POST -H "Content-Type: application/json" -d '{"secret":"C-TECH Astronomy"}' http://127.0.0.1:8080/hubot/chatsecrets/general
+
+// defaults Content-Type: application/x-www-form-urlencoded, must st payload=...
+curl -d 'payload=%7B%22secret%22%3A%22C-TECH+Astronomy%22%7D' http://127.0.0.1:8080/hubot/chatsecrets/general
 ```
 
 All endpoint URLs should start with the literal string `/hubot` (regardless of what your robot's name is). This consistency makes it easier to set up webhooks (copy-pasteable URL) and guarantees that URLs are valid (not all bot names are URL-safe).
@@ -474,11 +435,11 @@ No code is perfect, and errors and exceptions are to be expected. Previously, an
 ```coffeescript
 # src/scripts/does-not-compute.coffee
 module.exports = (robot) ->
-  robot.error (err, msg) ->
+  robot.error (err, res) ->
     robot.logger.error "DOES NOT COMPUTE"
 
-    if msg?
-      msg.reply "DOES NOT COMPUTE"
+    if res?
+      res.reply "DOES NOT COMPUTE"
 ```
 
 You can do anything you want here, but you will want to take extra precaution of rescuing and logging errors, particularly with asynchronous code. Otherwise, you might find yourself with recursive errors and not know what is going on.
@@ -499,17 +460,17 @@ Using previous examples:
     # rest of the code here
 
 
-  robot.hear /midnight train/i, (msg)
+  robot.hear /midnight train/i, (res)
     robot.http("https://midnight-train")
       .get() (err, res, body) ->
         if err
-          msg.reply "Had problems taking the midnight train"
-          robot.emit 'error', err, msg
+          res.reply "Had problems taking the midnight train"
+          robot.emit 'error', err, res
           return
         # rest of code here
 ```
 
-For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting. 
+For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting.
 
 ## Documenting Scripts
 
@@ -555,20 +516,20 @@ Hubot has an in-memory key-value store exposed as `robot.brain` that can be
 used to store and retrieve data by scripts.
 
 ```coffeescript
-robot.respond /have a soda/i, (msg) ->
+robot.respond /have a soda/i, (res) ->
   # Get number of sodas had (coerced to a number).
   sodasHad = robot.brain.get('totalSodas') * 1 or 0
 
   if sodasHad > 4
-    msg.reply "I'm too fizzy.."
+    res.reply "I'm too fizzy.."
 
   else
-    msg.reply 'Sure!'
+    res.reply 'Sure!'
 
     robot.brain.set 'totalSodas', sodasHad+1
-robot.respond /sleep it off/i, (msg) ->
+robot.respond /sleep it off/i, (res) ->
   robot.brain.set 'totalSodas', 0
-  robot.respond 'zzzzz'
+  msg.reply 'zzzzz'
 ```
 
 If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
@@ -576,20 +537,26 @@ If the script needs to lookup user data, there are methods on `robot.brain` for 
 ```coffeescript
 module.exports = (robot) ->
 
-  robot.respond /who is @?([\w .\-]+)\?*$/i, (msg) ->
-    name = msg.match[1].trim()
+  robot.respond /who is @?([\w .\-]+)\?*$/i, (res) ->
+    name = res.match[1].trim()
 
     users = robot.brain.usersForFuzzyName(name)
     if users.length is 1
       user = users[0]
       # Do something interesting here..
 
-      msg.send "#{name} is user - #{user}"
+      res.send "#{name} is user - #{user}"
 ```
 
-## Script Load Order
+## Script Loading
 
-Scripts are loaded from the `scripts/` directory. They are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
+There are three main sources to load scripts from:
+
+* all scripts __bundled__ with your hubot installation under `scripts/` directory
+* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
+* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
+
+Scripts loaded from the `scripts/` directory are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
 
 * `scripts/1-first.coffee`
 * `scripts/_second.coffee`

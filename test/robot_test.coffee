@@ -9,8 +9,10 @@ mockery = require 'mockery'
 
 # Hubot classes
 Robot = require '../src/robot.coffee'
-{ CatchAllMessage, EnterMessage, TextMessage } = require '../src/message'
+{ CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage } = require '../src/message'
 Adapter = require '../src/adapter'
+
+ScopedHttpClient = require 'scoped-http-client'
 
 # Preload the Hubot mock adapter but substitute in the latest version of Adapter
 mockery.enable()
@@ -46,6 +48,74 @@ describe 'Robot', ->
    @robot.shutdown()
 
   describe 'Unit Tests', ->
+    describe '#http', ->
+      beforeEach ->
+        url = 'http://localhost'
+        @httpClient = @robot.http(url)
+
+      it 'creates a new ScopedHttpClient', ->
+        # 'instanceOf' check doesn't work here due to the design of
+        # ScopedHttpClient
+        expect(@httpClient).to.have.property('get')
+        expect(@httpClient).to.have.property('post')
+
+      it 'passes options through to the ScopedHttpClient', ->
+        agent = {}
+        httpClient = @robot.http('http://localhost', agent: agent)
+        expect(httpClient.options.agent).to.equal(agent)
+
+      it 'sets a sane user agent', ->
+        expect(@httpClient.options.headers['User-Agent']).to.contain('Hubot')
+
+      it 'merges in any global http options', ->
+        agent = {}
+        @robot.globalHttpOptions = {agent: agent}
+        httpClient = @robot.http('http://localhost')
+        expect(httpClient.options.agent).to.equal(agent)
+
+      it 'local options override global http options', ->
+        agentA = {}
+        agentB = {}
+        @robot.globalHttpOptions = {agent: agentA}
+        httpClient = @robot.http('http://localhost', agent: agentB)
+        expect(httpClient.options.agent).to.equal(agentB)
+
+    describe '#hear', ->
+      it 'registers a new listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.hear /.*/, ->
+        expect(@robot.listeners).to.have.length(1)
+
+    describe '#respond', ->
+      it 'registers a new listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.respond /.*/, ->
+        expect(@robot.listeners).to.have.length(1)
+
+    describe '#enter', ->
+      it 'registers a new listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.enter ->
+        expect(@robot.listeners).to.have.length(1)
+
+    describe '#leave', ->
+      it 'registers a new listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.leave ->
+        expect(@robot.listeners).to.have.length(1)
+
+    describe '#topic', ->
+      it 'registers a new listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.topic ->
+        expect(@robot.listeners).to.have.length(1)
+
+    describe '#catchAll', ->
+      it 'registers a new listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.catchAll ->
+        expect(@robot.listeners).to.have.length(1)
+
     describe '#receive', ->
       it 'calls all registered listeners', (done) ->
         # Need to use a real Message so that the CatchAllMessage constructor works
@@ -170,6 +240,183 @@ describe 'Robot', ->
           expect(finished).to.be.ok
           done()
         finished = true
+
+    describe '#loadFile', ->
+      beforeEach ->
+        @sandbox = sinon.sandbox.create()
+
+      afterEach ->
+        @sandbox.restore()
+
+      it 'should require the specified file', ->
+        module = require 'module'
+
+        script = sinon.spy (robot) ->
+        @sandbox.stub(module, '_load').returns(script)
+        @sandbox.stub @robot, 'parseHelp'
+
+        @robot.loadFile('./scripts', 'test-script.coffee')
+        expect(module._load).to.have.been.calledWith('scripts/test-script')
+
+      describe 'proper script', ->
+        beforeEach ->
+          module = require 'module'
+
+          @script = sinon.spy (robot) ->
+          @sandbox.stub(module, '_load').returns(@script)
+          @sandbox.stub @robot, 'parseHelp'
+
+        it 'should call the script with the Robot', ->
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@script).to.have.been.calledWith(@robot)
+
+        it 'should parse the script documentation', ->
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@robot.parseHelp).to.have.been.calledWith('scripts/test-script.coffee')
+
+      describe 'non-Function script', ->
+        beforeEach ->
+          module = require 'module'
+
+          @script = {}
+          @sandbox.stub(module, '_load').returns(@script)
+          @sandbox.stub @robot, 'parseHelp'
+
+        it 'logs a warning', ->
+          sinon.stub @robot.logger, 'warning'
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@robot.logger.warning).to.have.been.called
+
+  describe 'Listener Registration', ->
+    describe '#hear', ->
+      it 'matches TextMessages', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'message123')
+        testRegex = /^message123$/
+
+        @robot.hear(testRegex, callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.be.ok
+
+      it 'does not match EnterMessages', ->
+        callback = sinon.spy()
+        testMessage = new EnterMessage(@user)
+        testRegex = /.*/
+
+        @robot.hear(testRegex, callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.not.be.ok
+
+    describe '#respond', ->
+      it 'matches TextMessages addressed to the robot', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'TestHubot message123')
+        testRegex = /message123$/
+
+        @robot.respond(testRegex, callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.be.ok
+
+      it 'does not match EnterMessages', ->
+        callback = sinon.spy()
+        testMessage = new EnterMessage(@user)
+        testRegex = /.*/
+
+        @robot.respond(testRegex, callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.not.be.ok
+
+    describe '#enter', ->
+      it 'matches EnterMessages', ->
+        callback = sinon.spy()
+        testMessage = new EnterMessage(@user)
+
+        @robot.enter(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.be.ok
+
+      it 'does not match TextMessages', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'message123')
+
+        @robot.enter(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.not.be.ok
+
+    describe '#leave', ->
+      it 'matches LeaveMessages', ->
+        callback = sinon.spy()
+        testMessage = new LeaveMessage(@user)
+
+        @robot.leave(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.be.ok
+
+      it 'does not match TextMessages', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'message123')
+
+        @robot.leave(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.not.be.ok
+
+    describe '#topic', ->
+      it 'matches TopicMessages', ->
+        callback = sinon.spy()
+        testMessage = new TopicMessage(@user)
+
+        @robot.topic(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.be.ok
+
+      it 'does not match TextMessages', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'message123')
+
+        @robot.topic(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.not.be.ok
+
+    describe '#catchAll', ->
+      it 'matches CatchAllMessages', ->
+        callback = sinon.spy()
+        testMessage = new CatchAllMessage(new TextMessage(@user, 'message123'))
+
+        @robot.catchAll(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.be.ok
+
+      it 'does not match TextMessages', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'message123')
+
+        @robot.catchAll(callback)
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+
+        expect(result).to.not.be.ok
 
   describe 'Message Processing', ->
     it 'calls a matching listener', (done) ->

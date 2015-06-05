@@ -43,9 +43,8 @@ to have yours added to the list:
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
 * [Fleep](https://github.com/anroots/hubot-fleep)
 * [Let's Chat](https://github.com/sdelements/hubot-lets-chat)
+* [VictorOps](https://github.com/victorops/hubot-victorops)
 
-## Writing Your Own adapter
+## Writing Your Own Adapter
 
-The best place to start is `src/adapter.coffee`, and inheriting from `Adapter`.
-There is not as much documentation as could exist (yet!), so it is worth
-reviewing existing adapters as well as how hubot internally uses an adapter.
+Interested in adding your own adapter? Check out our documentation for [developing adapters](/docs/adapters/development/)

@@ -59,33 +59,26 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name your 
 `respond` to with commands. For example, to list available commands:
 
     % bin/hubot
-    Hubot> hubot: help
-    hubot <keyword> tweet - Returns a link to a tweet about <keyword>
-    hubot <user> is a badass guitarist - assign a role to a user
-    hubot <user> is not a badass guitarist - remove a role from a user
+    hubot> hubot help
+    hubot adapter - Reply with the adapter
     hubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
-    hubot convert me <expression> to <units> - Convert expression to given units.
-    hubot die - End hubot process
     hubot echo <text> - Reply back with <text>
-    hubot fake event <event> - Triggers the <event> event for debugging reasons
-    hubot help - Displays all of the help commands that Hubot knows about.
+    hubot help - Displays all of the help commands that hubot knows about.
     hubot help <query> - Displays all help commands that match <query>.
     hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
     hubot map me <query> - Returns a map view of the area returned by `query`.
     hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
     hubot mustache me <url> - Adds a mustache to the specified URL.
     hubot ping - Reply with pong
-    hubot show storage - Display the contents that are persisted in the brain
-    hubot show users - Display all users that hubot knows about
+    hubot pronounce <phrase> in <language> - Provides pronounciation of <phrase> (<language> is optional)
+    hubot pug bomb N - get N pugs
+    hubot pug me - Receive a pug
     hubot the rules - Make sure hubot still knows the rules.
     hubot time - Reply with current time
     hubot translate me <phrase> - Searches for a translation for the <phrase> and then prints that bad boy out.
     hubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
-    hubot who is <user> - see what roles a user has
     hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
-    hubot pug bomb N - get N pugs
-    hubot pug me - Receive a pug
-    hubot ship it - Display a motivation squirrel
+    ship it - Display a motivation squirrel
 
 You almost definitely will want to change your hubot's name to add character. bin/hubot takes a `--name`:
 
@@ -100,29 +93,30 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
     @myhubot help
     myhubot: help
 
-## Scripting
+## Scripts
 
-Hubot's power comes through scripting. Read [docs/scripting.md](scripting.md) for the deal on bending hubot to your will using code.
+Hubot's power comes through scripts. There are hundreds of scripts written and maintained by the community. Find them by searching the [NPM registry](https://www.npmjs.com/browse/keyword/hubot-scripts) for `hubot-scripts <your-search-term>`. For example:
 
-There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use scripts from it:
+```
+$ npm search hubot-scripts github
+NAME                  DESCRIPTION
+hubot-deployer        Giving Hubot the ability to deploy GitHub repos to PaaS providers hubot hubot-scripts hubot-gith
+hubot-gh-release-pr   A hubot script to create GitHub's PR for release
+hubot-github          Giving Hubot the ability to be a vital member of your github organization
+…
+```
 
-* Make sure `hubot-scripts` is listed as a dependency in `package.json` (it should by default)
-* Update `hubot-scripts.json` to include the script you want in the list. Make sure the file is still valid JSON!
-* Review the script to see if there's dependencies or configuration to add
+To use a script from an NPM package:
 
-In addition, there are scripts released as npm packages. If you find one you want to use:
+1. Run `npm install --save <package-name>` to add the package as a dependency and install it.
+2. Add the package to `external-scripts.json`.
+3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
 
-1. Add the package to the list of `dependencies` into your `package.json`
-2. `npm install` to make sure its installed
-
-To enable third-party scripts that you've added you will need to add the package
-name as a double quoted string to the `external-scripts.json` file in this repo.
-
-**Please note that external scripts may become the default for hubot scripts in future releases.**
+You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](/docs/scripting/).
 
 ## Adapters
 
-Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adaptesr](/docs/adapters/), along with details on how to configure them.
+Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](/docs/adapters/), along with details on how to configure them.
 
 ## Deploying
 

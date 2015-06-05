@@ -53,6 +53,7 @@ class Robot
       listener: new Middleware(@)
     @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
+    @globalHttpOptions = {}
 
     @parseVersion()
     if httpd
@@ -65,8 +66,8 @@ class Robot
     @adapterName   = adapter
     @errorHandlers = []
 
-    @on 'error', (err, msg) =>
-      @invokeErrorHandlers(err, msg)
+    @on 'error', (err, res) =>
+      @invokeErrorHandlers(err, res)
     @onUncaughtException = (err) =>
       @emit 'error', err
     process.on 'uncaughtException', @onUncaughtException
@@ -122,37 +123,46 @@ class Robot
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  enter: (callback) ->
+  enter: (options, callback) ->
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof EnterMessage),
+      options,
       callback
     )
 
   # Public: Adds a Listener that triggers when anyone leaves the room.
   #
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  leave: (callback) ->
+  leave: (options, callback) ->
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof LeaveMessage),
+      options,
       callback
     )
 
   # Public: Adds a Listener that triggers when anyone changes the topic.
   #
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  topic: (callback) ->
+  topic: (options, callback) ->
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof TopicMessage),
+      options,
       callback
     )
 
@@ -169,26 +179,35 @@ class Robot
   # user emitted error events.
   #
   # err - An Error object.
-  # msg - An optional Response object that generated the error
+  # res - An optional Response object that generated the error
   #
   # Returns nothing.
-  invokeErrorHandlers: (err, msg) ->
+  invokeErrorHandlers: (err, res) ->
     @logger.error err.stack
     for errorHandler in @errorHandlers
      try
-       errorHandler(err, msg)
+       errorHandler(err, res)
      catch errErr
        @logger.error "while invoking error handler: #{errErr}\n#{errErr.stack}"
 
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
   # callback - A Function that is called with a Response object.
   #
   # Returns nothing.
-  catchAll: (callback) ->
+  catchAll: (options, callback) ->
+    # `options` is optional; need to isolate the real callback before
+    # wrapping it with logic below
+    if not callback?
+      callback = options
+      options = {}
+
     @listeners.push new Listener(
       @,
       ((msg) -> msg instanceof CatchAllMessage),
+      options,
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
@@ -324,6 +343,7 @@ class Robot
     address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
+    multipart = require 'connect-multiparty'
 
     app = express()
 
@@ -333,7 +353,13 @@ class Robot
 
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
-    app.use express.bodyParser()
+
+    app.use express.json()
+    app.use express.urlencoded()
+    # replacement for deprecated express.multipart/connect.multipart
+    # limit to 100mb, as per the old behavior
+    app.use multipart(maxFilesSize: 100 * 1024 * 1024)
+
     app.use express.static stat if stat
 
     try
@@ -538,7 +564,16 @@ class Robot
   #
   # Returns a ScopedClient instance.
   http: (url, options) ->
-    HttpClient.create(url, options)
+    HttpClient.create(url, @extend({}, @globalHttpOptions, options))
       .header('User-Agent', "Hubot/#{@version}")
+
+  # Private: Extend obj with objects passed as additional args.
+  #
+  # Returns the original object with updated changes.
+  extend: (obj, sources...) ->
+    for source in sources
+      obj[key] = value for own key, value of source
+    obj
+
 
 module.exports = Robot
