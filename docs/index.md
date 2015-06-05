@@ -23,7 +23,7 @@ we wanted to make a bot called myhubot:
     % yo hubot
 
 At this point, you'll be asked a few questions about who is creating the bot,
-and which [adapter](/docs/adapters/) you'll be using. Adapters are hubot's way of
+and which [adapter](/docs/adapters.md) you'll be using. Adapters are hubot's way of
 integrating with different chat providers.
 
 If you are using git, the generated directory includes a .gitignore, so you can
@@ -54,7 +54,7 @@ Hubot needs Redis to persist data, so before you can start hubot on your own com
     % bin/hubot
     Hubot>
 
-This starts hubot using the [shell adapter](/docs/adapters/shell/), which
+This starts hubot using the [shell adapter](/docs/adapters/shell.md), which
 is mostly useful for development. Make note of  `Hubot>`; this is the name your hubot will
 `respond` to with commands. For example, to list available commands:
 
@@ -112,11 +112,11 @@ To use a script from an NPM package:
 2. Add the package to `external-scripts.json`.
 3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
 
-You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](/docs/scripting/).
+You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](/docs/scripting.md).
 
 ## Adapters
 
-Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](/docs/adapters/), along with details on how to configure them.
+Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](/docs/adapters.md), along with details on how to configure them.
 
 ## Deploying
 
@@ -124,10 +124,10 @@ You can deploy hubot to Heroku, which is the officially supported method.
 Additionally you are able to deploy hubot to a UNIX-like system or Windows.
 Please note the support for deploying to Windows isn't officially supported.
 
-* [Deploying Hubot onto Heroku](/docs/deploying/heroku/)
-* [Deploying Hubot onto UNIX](/docs/deploying/unix/)
-* [Deploying Hubot onto Windows](/docs/deploying/windows/)
+* [Deploying Hubot onto Heroku](/docs/deploying/heroku.md)
+* [Deploying Hubot onto UNIX](/docs/deploying/unix.md)
+* [Deploying Hubot onto Windows](/docs/deploying/windows.md)
 
 ## Patterns
 
-Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he or she can be. Read [docs/patterns.md](/docs/patterns/) for some nifty tricks that may come in handy as you teach your hubot new skills.
+Using custom scripts, you can quickly customize Hubot to be the most life embettering robot he or she can be. Read [docs/patterns.md](/docs/patterns.md) for some nifty tricks that may come in handy as you teach your hubot new skills.

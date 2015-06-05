@@ -32,7 +32,7 @@ Then create a Heroku application:
 
 Before you deploy the application, you'll need to configure some environment
 variables for hubot to use. The specific variables you'll need depends on which
-[adapter](/docs/adapters/) and scripts you are using. For Campfire, with no other
+[adapter](/docs/adapters.md) and scripts you are using. For Campfire, with no other
 scripts, you'd need to set the following environment variables:
 
     % heroku config:set HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
@@ -42,7 +42,7 @@ scripts, you'd need to set the following environment variables:
 In addition, there is one special environment variable for Heroku. The default hubot
 [Procfile](https://devcenter.heroku.com/articles/procfile) marks the process as
 a 'web' process type, in order to support serving http requests (more on that
-in the [scripting docs](/docs/scripting/)). The downside of this is that dynos
+in the [scripting docs](/docs/scripting.md)). The downside of this is that dynos
 will [idle after an hour of inactivity](https://devcenter.heroku.com/articles/dynos#dyno-idling).
 That means your hubot would leave after an hour of idle web traffic, and only rejoin when it does get traffic. This is extremely
 inconvenient since most interaction is done through chat, and hubot has to be online and in the room to respond to messages. To get around this,
