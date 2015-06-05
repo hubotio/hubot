@@ -1,3 +1,15 @@
+v2.13.0
+=======
+
+* Fix some website links
+* Link to Freenode channel (#hubot)
+* Fix license in package.json
+* Various documentation updates
+* More automated tests
+* Add support for global http options (see https://github.com/github/hubot/blob/master/docs/patterns.md#forwarding-all-http-requests-through-a-proxy for details)
+* Add support for listener metadata (see https://github.com/github/hubot/blob/master/docs/scripting.md#listener-metadata) for details
+* Document using npm search for finding scripts
+
 v2.12.0
 =======
 
