@@ -93,25 +93,26 @@ case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are e
     @myhubot help
     myhubot: help
 
-## Scripting
+## Scripts
 
-Hubot's power comes through scripting. Read [more about scripting](/docs/scripting/) for the deal on bending hubot to your will using code.
+Hubot's power comes through scripts. There are hundreds of scripts written and maintained by the community. Find them by searching the [NPM registry](https://www.npmjs.com/browse/keyword/hubot-scripts) for `hubot-scripts <your-search-term>`. For example:
 
-There are many community-contributed scripts available through [hubot-scripts](https://github.com/github/hubot-scripts). To use scripts from it:
+```
+$ npm search hubot-scripts github
+NAME                  DESCRIPTION
+hubot-deployer        Giving Hubot the ability to deploy GitHub repos to PaaS providers hubot hubot-scripts hubot-gith
+hubot-gh-release-pr   A hubot script to create GitHub's PR for release
+hubot-github          Giving Hubot the ability to be a vital member of your github organization
+…
+```
 
-* Make sure `hubot-scripts` is listed as a dependency in `package.json` (it should by default)
-* Update `hubot-scripts.json` to include the script you want in the list. Make sure the file is still valid JSON!
-* Review the script to see if there's dependencies or configuration to add
+To use a script from an NPM package:
 
-In addition, there are scripts released as npm packages. If you find one you want to use:
+1. Run `npm install --save <package-name>` to add the package as a dependency and install it.
+2. Add the package to `external-scripts.json`.
+3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
 
-1. Add the package to the list of `dependencies` into your `package.json`
-2. `npm install` to make sure its installed
-
-To enable third-party scripts that you've added you will need to add the package
-name as a double quoted string to the `external-scripts.json` file in this repo.
-
-**Please note that external scripts may become the default for hubot scripts in future releases.**
+You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](/docs/scripting/).
 
 ## Adapters
 

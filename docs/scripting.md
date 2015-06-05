@@ -3,55 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend.
-
-## Anatomy of script loading
-
-There are three main sources to load scripts from:
-
-* all scripts __bundled__ with your hubot installation under `scripts/` dir
-* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
-* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
-
-### Community Scripts
-
-To use community scripts, place the name of the script in the `hubot-scripts.json` file. For example:
-
-```coffeescript
-["redis-brain.coffee", "shipit.coffee", "whatis.coffee", "<new-script-name>.coffee"]
-```
-
-(Please check the [script catalog](http://hubot-script-catalog.herokuapp.com) and the [hubot-scripts organization](https://github.com/hubot-scripts) for scripts carefully crafted for you by lots of nice folks)
-
-### NPM Packages
-
-Another way is to install scripts via an npm package (you can check some of them [here](https://npmjs.org/search?q=hubot)).
-
-To load those scripts to your hubot installation, you need to place them in the `external-scripts.json` file after adding the required npm packages to the `package.json` dependency section.
-
-Here is an example of adding the [hubot-botriot](https://npmjs.org/package/hubot-botriot) npm package:
-
-```json
-{
- ...
-
-  "dependencies": {
-    "hubot":         ">= 2.6.0 < 3.0.0",
-    "hubot-scripts": ">= 2.5.0 < 3.0.0",
-    "hubot-botriot": "",
-  },
-
-...
-}
-```
-
-### Bundled Scripts
-
-Last but not least, you can put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot.
-
-You can also use this for customizing scripts from other sources. Just copy the *.coffee file into this directory and make whatever changes you'd like.
-
-Instructions for writing your own scripts can be found below.
+Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts) and it's easy to write your own.
 
 ## Anatomy of a script
 
@@ -365,7 +317,6 @@ Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To a
 ```json
   "dependencies": {
     "hubot":         "2.5.5",
-    "hubot-scripts": "2.4.6",
     "lolimadeupthispackage": "1.2.3"
   },
 ```
@@ -519,7 +470,7 @@ Using previous examples:
         # rest of code here
 ```
 
-For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting. 
+For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting.
 
 ## Documenting Scripts
 
@@ -597,9 +548,15 @@ module.exports = (robot) ->
       res.send "#{name} is user - #{user}"
 ```
 
-## Script Load Order
+## Script Loading
 
-Scripts are loaded from the `scripts/` directory. They are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
+There are three main sources to load scripts from:
+
+* all scripts __bundled__ with your hubot installation under `scripts/` directory
+* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
+* scripts loaded from external __npm packages__ and specified in `external-scripts.json`
+
+Scripts loaded from the `scripts/` directory are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
 
 * `scripts/1-first.coffee`
 * `scripts/_second.coffee`
