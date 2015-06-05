@@ -195,7 +195,7 @@ class Robot
   receive: (message) ->
     curriedReceive = =>
       @receiveWithoutHooks(message)
-    @runHooks 'prereceive', curriedReceive, message, null
+    @runHooks 'prereceive', curriedReceive, message
 
   # Private: receive a message, passing it to any inerested listeners. Does
   # not execute callbacks.
@@ -407,26 +407,6 @@ class Robot
         scriptDocumentation.commands.push cleanedLine
         @commands.push cleanedLine
 
-  # Public: A helper send function which delegates to the adapter's send
-  # function.
-  #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  send: (user, strings...) ->
-    @adapter.send user, strings...
-
-  # Public: A helper reply function which delegates to the adapter's reply
-  # function.
-  #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  reply: (user, strings...) ->
-    @adapter.reply user, strings...
-
   # Public: A helper send function to message a room that the robot is in.
   #
   # room    - String designating the room to message.
@@ -563,9 +543,7 @@ class Robot
   # to it. Responses belong to listeners but don't have a way to get to them,
   # and we should change that API.
   runPrereplyHooks: (response, string, cb) ->
-    done = ->
-      cb(response.envelope, string)
-    @runHooks 'prereply', done, response.envelope.message, response, response.listener, string
+    @runHooks 'prereply', cb, response.envelope.message, response, response.listener, { text: string }
 
   # Private. Run the hooks of a given name
   #

@@ -434,11 +434,23 @@ describe 'Robot', ->
       testMessage = new TextMessage(@user, 'message123')
       @robot.prereceive (hook) ->
         hook.message.addedData = "added data"
-        hook.next()
       @robot.hear /^message123$/, (response) ->
         expect(response.message.addedData).to.equal("added data")
         done()
       @robot.receive testMessage
+
+    it 'provides a response object so replies can be sent before a match', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      replier = @robot.adapter.reply = sinon.spy()
+      listenerCallback = sinon.spy()
+      @robot.hear /^message123$/, listenerCallback
+      @robot.prereceive (hook) ->
+        hook.response.reply "Listen bud, here's why I won't let you do that."
+        hook.finish()
+      @robot.receive testMessage
+      expect(listenerCallback).to.not.have.been.called
+      expect(replier).to.have.been.calledOnce
+      done()
 
     it 'does not pass on a message that a prereceive hook finishes', (done) ->
       testMessage = new TextMessage(@user, 'message123')
@@ -460,7 +472,6 @@ describe 'Robot', ->
         hook.message.addedData = "added data"
         expect(hook.listener).to.equal(listener)
         expect(hook.response.message).to.equal(testMessage)
-        hook.next()
       @robot.receive testMessage
 
     it 'stops processing if a prelisten hook finishes', (done) ->
@@ -483,10 +494,20 @@ describe 'Robot', ->
         response.reply "more passwords, seriously?", "this is fine though"
         done()
       @robot.prereply (hook) ->
-        if hook.reply.match(/passwords/)
+        if hook.reply.text.match(/passwords/)
           hook.finish()
-        else
-          hook.next()
       @robot.receive testMessage
       expect(replier).to.have.been.calledOnce
       expect(sender).to.have.been.calledOnce
+
+    it 'allows changing the outgoing message', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      sender = @robot.adapter.send = sinon.spy()
+      @robot.hear /^message123$/, (response) ->
+        response.send "dump passwords to IRC lol"
+        done()
+      @robot.prereply (hook) ->
+        if hook.reply.text.match(/passwords/)
+          hook.reply.text = "Sorry meatbag, no passwords."
+      @robot.receive testMessage
+      expect(sender.getCall(0).args[1]).to.equal("Sorry meatbag, no passwords.")
