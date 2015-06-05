@@ -17,6 +17,8 @@ describe 'Listener', ->
     @robot =
       # Why is this part of the Robot object??
       Response: Response
+      runPrelistenHooks: (listener, response) ->
+        listener.callback(response)
 
     # Test user
     @user = new User
@@ -74,7 +76,7 @@ describe 'Listener', ->
           result = testListener.call testMessage
 
           expect(result).to.be.ok
-          
+
 
         it 'calls the listener callback with a Response that wraps the Message', (done) ->
           testMatcher = sinon.stub().returns(true)
@@ -117,21 +119,21 @@ describe 'Listener', ->
           testMessage = new TextMessage(@user, 'test')
           testMessage.match = sinon.stub().returns(true)
           testRegex = /test/
- 
+
           testListener = new TextListener(@robot, testRegex, callback)
           result = testListener.matcher(testMessage)
- 
+
           expect(result).to.be.ok
           expect(testMessage.match).to.have.been.calledWith(testRegex)
- 
+
         it 'does not match EnterMessages', ->
           callback = sinon.spy()
           testMessage = new EnterMessage(@user)
           testMessage.match = sinon.stub().returns(true)
           testRegex = /test/
- 
+
           testListener = new TextListener(@robot, testRegex, callback)
           result = testListener.matcher(testMessage)
- 
+
           expect(result).to.not.be.ok
           expect(testMessage.match).to.not.have.been.called

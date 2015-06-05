@@ -136,20 +136,11 @@ describe 'Robot', ->
         # original message
 
         testMessage = new TextMessage(@user, 'message123')
-        @robot.listeners = []
+        listener = sinon.spy()
+        @robot.catchAll listener
+        @robot.receive testMessage
+        expect(listener).to.have.been.called
 
-        # Replace @robot.receive so we can catch when the functions recurses
-        oldReceive = @robot.receive
-        @robot.receive = (message) ->
-          expect(message).to.be.instanceof(CatchAllMessage)
-          expect(message.message).to.be.equal(testMessage)
-        sinon.spy(@robot, 'receive')
-
-        # Call the original receive method that we want to test
-        oldReceive.call @robot, testMessage
-
-        # Ensure the function recursed
-        expect(@robot.receive).to.have.been.called
 
       it 'does not trigger a CatchAllMessage if a listener matches', ->
         testMessage = new TextMessage(@user, 'message123')
@@ -472,3 +463,85 @@ describe 'Robot', ->
         done()
 
       @robot.receive testMessage
+
+    it 'passes on a message that a prereceive hook allows', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      @robot.prereceive (hook) ->
+        hook.message.addedData = "added data"
+      @robot.hear /^message123$/, (response) ->
+        expect(response.message.addedData).to.equal("added data")
+        done()
+      @robot.receive testMessage
+
+    it 'provides a response object so replies can be sent before a match', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      replier = @robot.adapter.reply = sinon.spy()
+      listenerCallback = sinon.spy()
+      @robot.hear /^message123$/, listenerCallback
+      @robot.prereceive (hook) ->
+        hook.response.reply "Listen bud, here's why I won't let you do that."
+        hook.finish()
+      @robot.receive testMessage
+      expect(listenerCallback).to.not.have.been.called
+      expect(replier).to.have.been.calledOnce
+      done()
+
+    it 'does not pass on a message that a prereceive hook finishes', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      listenerCallback = sinon.spy()
+      @robot.hear /^message123$/, listenerCallback
+      @robot.prereceive (hook) ->
+        hook.finish()
+      @robot.receive testMessage
+      expect(listenerCallback).to.not.have.been.calledOnce
+      done()
+
+    it 'runs a prelistener hook before each listener', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      @robot.hear /^message123$/, (response) ->
+        expect(response.message.addedData).to.equal("added data")
+        done()
+      listener = @robot.listeners[0]
+      @robot.prelisten (hook) ->
+        hook.message.addedData = "added data"
+        expect(hook.listener).to.equal(listener)
+        expect(hook.response.message).to.equal(testMessage)
+      @robot.receive testMessage
+
+    it 'stops processing if a prelisten hook finishes', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      listener = sinon.spy()
+      @robot.prelisten (hook) ->
+        hook.finish()
+      @robot.hear /^message123$/, listener
+      @robot.receive testMessage
+      expect(listener).to.not.have.been.calledOnce
+      done()
+
+    it 'runs a prereply hook before each replied message', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      sender = @robot.adapter.send = sinon.spy()
+      replier = @robot.adapter.reply = sinon.spy()
+      @robot.hear /^message123$/, (response) ->
+        response.send "this sounds awesome"
+        response.send "dump passwords to IRC lol"
+        response.reply "more passwords, seriously?", "this is fine though"
+        done()
+      @robot.prereply (hook) ->
+        if hook.reply.text.match(/passwords/)
+          hook.finish()
+      @robot.receive testMessage
+      expect(replier).to.have.been.calledOnce
+      expect(sender).to.have.been.calledOnce
+
+    it 'allows changing the outgoing message', (done) ->
+      testMessage = new TextMessage(@user, 'message123')
+      sender = @robot.adapter.send = sinon.spy()
+      @robot.hear /^message123$/, (response) ->
+        response.send "dump passwords to IRC lol"
+        done()
+      @robot.prereply (hook) ->
+        if hook.reply.text.match(/passwords/)
+          hook.reply.text = "Sorry meatbag, no passwords."
+      @robot.receive testMessage
+      expect(sender.getCall(0).args[1]).to.equal("Sorry meatbag, no passwords.")

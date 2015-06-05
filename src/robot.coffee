@@ -9,6 +9,7 @@ Brain = require './brain'
 Response = require './response'
 {Listener,TextListener} = require './listener'
 {EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+{Hook} = require './hook'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
@@ -49,7 +50,9 @@ class Robot
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
+    @hooks     = {}
     @globalHttpOptions = {}
+
 
     @parseVersion()
     if httpd
@@ -214,17 +217,29 @@ class Robot
   #
   # Returns nothing.
   receive: (message) ->
+    curriedReceive = =>
+      @receiveWithoutHooks(message)
+    @runHooks 'prereceive', curriedReceive, message
+
+  # Private: receive a message, passing it to any inerested listeners. Does
+  # not execute callbacks.
+  #
+  # message - A Message instance
+  #
+  # Returns nothing.
+  receiveWithoutHooks: (message) ->
     results = []
     for listener in @listeners
       try
-        results.push listener.call(message)
         break if message.done
+        results.push listener.call(message)
       catch error
         @emit('error', error, new @Response(@, message, []))
 
         false
+
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
-      @receive new CatchAllMessage(message)
+      @receiveWithoutHooks new CatchAllMessage(message)
 
   # Public: Loads a file in path.
   #
@@ -416,26 +431,6 @@ class Robot
         scriptDocumentation.commands.push cleanedLine
         @commands.push cleanedLine
 
-  # Public: A helper send function which delegates to the adapter's send
-  # function.
-  #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  send: (user, strings...) ->
-    @adapter.send user, strings...
-
-  # Public: A helper reply function which delegates to the adapter's reply
-  # function.
-  #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
-  #
-  # Returns nothing.
-  reply: (user, strings...) ->
-    @adapter.reply user, strings...
-
   # Public: A helper send function to message a room that the robot is in.
   #
   # room    - String designating the room to message.
@@ -526,6 +521,82 @@ class Robot
     HttpClient.create(url, @extend({}, @globalHttpOptions, options))
       .header('User-Agent', "Hubot/#{@version}")
 
+  # Public. Adds a prereceive callback hook to this robot.
+  #
+  #   cb  - A callback function which accepts a Hook object.
+  #
+  # See also Hook
+  # Returns nothing
+  prereceive: (cb) ->
+    @hooks['prereceive'] ||= []
+    @hooks['prereceive'].push cb
+
+  # Public. Adds a prelisten callback hook to this robot.
+  #
+  #   cb  - A callback function which accepts a Hook object.
+  #
+  # See also Hook
+  # Returns nothing
+  prelisten: (cb) ->
+    @hooks['prelisten'] ||= []
+    @hooks['prelisten'].push cb
+
+  # Protected. For use by Listener to run prelisten callbacks after a match
+  # is found.
+  #
+  # See also Hook
+  # Returns nothing
+  runPrelistenHooks: (listener, response) ->
+    done = ->
+      listener.callback(response) unless response.envelope.message.done
+    @runHooks 'prelisten', done, response.envelope.message, response, listener
+
+  # Public. Adds a prereply callback hook to this robot.
+  #
+  #   cb  - A callback function which accepts a Hook object.
+  #
+  # See also Hook
+  # Returns nothing
+  prereply: (cb) ->
+    @hooks['prereply'] ||= []
+    @hooks['prereply'].push cb
+
+  # Protected. For use by Response to run hooks before replying.
+  #
+  # TODO: we should have a listener available here, but there's no way to get
+  # to it. Responses belong to listeners but don't have a way to get to them,
+  # and we should change that API.
+  runPrereplyHooks: (response, string, cb) ->
+    @runHooks 'prereply', cb, response.envelope.message, response, response.listener, { text: string }
+
+  # Private. Run the hooks of a given name
+  #
+  #  name     - 'prereceive'
+  #  response - The response object
+  #  listener - The matching listener, if any
+  #  message  - A message that hubot is trying to send, if any
+  #
+  # Each hook must call hook.next() or hook.done(). Hook.next() continues
+  # processing and hook.done() aborts the message. If a response message
+  # exists, hook.done() prevents it from being sent.
+  #
+  # Returns nothing.
+  runHooks: (name, callback, message, response, listener, reply) ->
+    hooks = @hooks[name]
+    if hooks?.length > 0
+      opts =
+        hooks:    hooks
+        callback: callback
+        response: response
+        message:  message
+        listener: listener
+        robot:    this
+        reply:    reply
+      hook = new Hook(opts)
+      hook.run()
+    else
+      callback()
+
   # Private: Extend obj with objects passed as additional args.
   #
   # Returns the original object with updated changes.
@@ -533,6 +604,5 @@ class Robot
     for source in sources
       obj[key] = value for own key, value of source
     obj
-
 
 module.exports = Robot
