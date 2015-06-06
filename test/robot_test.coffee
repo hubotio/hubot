@@ -30,6 +30,7 @@ mockery.disable()
 describe 'Robot', ->
   beforeEach ->
     @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
+    @robot.alias = 'Hubot'
     @robot.run
 
     @user = @robot.brain.userForId '1', {
@@ -85,6 +86,101 @@ describe 'Robot', ->
         expect(@robot.listeners).to.have.length(0)
         @robot.respond /.*/, ->
         expect(@robot.listeners).to.have.length(1)
+
+      it "responds to messages starting with robot's name", ->
+        callback    = sinon.spy()
+        testMessage = new TextMessage(@user, @robot.name + 'message123')
+        testRegex   = /.*/
+
+        @robot.listeners = []
+        @robot.respond testRegex, callback
+        @robot.receive testMessage
+
+        # Restore robot's state
+        @robot.listeners = []
+
+        expect(callback).to.have.been.calledOnce
+
+      it "responds to messages starting with robot's alias", ->
+        callback    = sinon.spy()
+        testMessage = new TextMessage(@user, @robot.alias + 'message123')
+        testRegex   = /.*/
+
+        @robot.listeners = []
+        @robot.respond testRegex, callback
+        @robot.receive testMessage
+
+        # Restore robot's state
+        @robot.listeners = []
+
+        expect(callback).to.have.been.calledOnce
+
+      it 'does not reply to other messages', ->
+        callback    = sinon.spy()
+        testMessage = new TextMessage(@user, 'message123')
+        testRegex   = /.*/
+
+        @robot.listeners = []
+        @robot.respond testRegex, callback
+        @robot.receive testMessage
+
+        # Restore robot's state
+        @robot.listeners = []
+
+        expect(callback).to.have.not.been.called
+
+
+      it 'matches properly when name is substring of alias', ->
+        oldName  = @robot.name
+        oldAlias = @robot.alias
+
+        testName  = 'Meg'
+        testAlias = 'Megan'
+        callback = sinon.spy (res) -> res.match[1]
+        testMessage1 = new TextMessage(@user, testName  + ' message123')
+        testMessage2 = new TextMessage(@user, testAlias + ' message123')
+        testRegex = /(.*)/
+
+        @robot.name  = testName
+        @robot.alias = testAlias
+        @robot.listeners = []
+        @robot.respond testRegex, callback
+        @robot.receive testMessage1
+        @robot.receive testMessage2
+
+        # Restore robot's state
+        @robot.name  = oldName
+        @robot.alias = oldAlias
+        @robot.listeners = []
+
+        expect(callback).to.have.been.calledTwice
+        expect(callback).to.have.always.returned('message123')
+
+      it 'matches properly when alias is substring of name', ->
+        oldName  = @robot.name
+        oldAlias = @robot.alias
+
+        testName  = 'Megan'
+        testAlias = 'Meg'
+        callback = sinon.spy (res) -> res.match[1]
+        testMessage1 = new TextMessage(@user, testName  + ' message123')
+        testMessage2 = new TextMessage(@user, testAlias + ' message123')
+        testRegex = /(.*)/
+
+        @robot.name  = testName
+        @robot.alias = testAlias
+        @robot.listeners = []
+        @robot.respond testRegex, callback
+        @robot.receive testMessage1
+        @robot.receive testMessage2
+
+        # Restore robot's state
+        @robot.name  = oldName
+        @robot.alias = oldAlias
+        @robot.listeners = []
+
+        expect(callback).to.have.been.calledTwice
+        expect(callback).to.have.always.returned('message123')
 
     describe '#enter', ->
       it 'registers a new listener', ->
