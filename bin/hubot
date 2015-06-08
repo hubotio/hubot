@@ -63,6 +63,9 @@ Parser.on "config-check", (opt) ->
 Parser.on "version", (opt, value) ->
   Options.version = true
 
+Parser.on (opt, value) ->
+  console.warn "Unknown option: #{opt}"
+
 Parser.parse process.argv
 
 unless process.platform is "win32"
