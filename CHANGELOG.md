@@ -2,7 +2,7 @@ v2.13.1
 =======
 
 * Fix documentation when running `hubot -c` to suggest correct usage of generator https://github.com/github/hubot/pull/938
-* Fix respond listeners matching when robot alias is a substring of robot alias https://github.com/github/hubot/pull/927
+* Fix respond listeners matching when robot alias is a substring of robot name https://github.com/github/hubot/pull/927
 * Update bin/hubot to log a warning if called with non-existent options https://github.com/github/hubot/pull/931
 
 
