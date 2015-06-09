@@ -148,6 +148,21 @@ class Brain extends EventEmitter
 
     matchedUsers
 
+  # Public: Get all users that contain the provided query string
+  # in any of their properties.
+  #
+  # Returns an Array of User instances matching the search criteria.
+  usersForAny: (query) ->
+    query = query.toLowerCase()
+    matchedUsers = []
+    for key, user of (@data.users or {})
+      for property, value of user
+        if typeof value is 'string'
+          if value.toLowerCase().indexOf(query) isnt -1
+            matchedUsers.push user
+            break
+    matchedUsers
+
 # Private: Extend obj with objects passed as additional args.
 #
 # Returns the original object with updated changes.
