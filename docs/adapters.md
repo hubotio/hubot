@@ -35,6 +35,7 @@ to have yours added to the list:
 * [ChatWork](https://github.com/akiomik/hubot-chatwork)
 * [QQ](https://github.com/xhan/qqbot)
 * [AIM](https://github.com/shaundubuque/hubot-aim)
+* [Rocket.Chat](https://github.com/RocketChat/hubot-rocketchat)
 * [Slack](https://github.com/tinyspeck/hubot-slack)
 * [Lingr](https://github.com/miyagawa/hubot-lingr)
 * [Gitter](https://github.com/huafu/hubot-gitter2)
