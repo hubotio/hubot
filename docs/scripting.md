@@ -22,6 +22,34 @@ module.exports = (robot) ->
 
 The `robot` parameter is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
 
+## Creating your own script
+
+If you have an idea for a script that doesn't yet exist in the [NPM Registry](https://www.npmjs.com/browse/keyword/hubot-scripts) then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.  This requires that you have the hubot generator installed:
+
+```
+% npm install -g yo generator-hubot
+```
+
+Once you've got the hubot generator installed, creating a hubot script is similar to creating a hubot.  You create a directory for your hubot script and generate a new `hubot:script` in it.  For example, if we wanted to create a hubot script called "my-awesome-script":
+
+```
+% mkdir hubot-my-awesome-script
+% cd hubot-my-awesome-script
+% yo hubot:script
+```
+
+At this point, the you'll be asked a few questions about author for the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+
+If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
+
+```
+% git init
+% git add .
+% git commit -m "Initial commit"
+```
+
+You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.coffee` file and start building up your script!
+
 ## Hearing and responding
 
 Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
