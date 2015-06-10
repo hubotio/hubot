@@ -125,7 +125,7 @@ class Robot
         modifiers
       )
 
-    return newRegex
+    newRegex
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
