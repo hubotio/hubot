@@ -41,6 +41,6 @@
     "hubot": "./bin/hubot"
   },
   "scripts": {
-    "test": "./script/test"
+    "test": "mocha --require coffee-errors --compilers coffee:coffee-script"
   }
 }
