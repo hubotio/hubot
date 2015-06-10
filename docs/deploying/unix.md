@@ -53,11 +53,13 @@ really, you probably want some process monitoring using tools like
 [monit](http://mmonit.com/monit/),
 [god](http://godrb.com/),
 [bluepill](https://github.com/arya/bluepill),
-[upstart](http://upstart.ubuntu.com/).
+[upstart](http://upstart.ubuntu.com/),
+[systemd](http://freedesktop.org/wiki/Software/systemd/).
 
 For starting at boot, you can create an init script for appropriate your UNIX
 distribution, or if you are using one the process monitoring tools above, make
-sure it boots at startup.
+sure it boots at startup. See the [examples](https://github.com/github/hubot/tree/master/examples)
+for configuration examples.
 
 ## Recommendations
 

@@ -1,0 +1,23 @@
+; Hubot systemd service unit file
+; Place in e.g. `/etc/systemd/system/hubot.service`, then `systemctl daemon-reload` and `service hubot start`.
+
+[Unit]
+Description=Hubot
+Requires=network.target
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/hubot
+User=change-to-hubot-user
+
+Restart=always
+RestartSec=10
+
+; Configure Hubot environment variables, make sure to use quotes around whitespace as shown below.
+Environment=HUBOT_aaa=xxx "HUBOT_bbb='yyy yyy'"
+
+ExecStart=/path/to/hubot/bin/hubot --adapter zzz
+
+[Install]
+WantedBy=multi-user.target
