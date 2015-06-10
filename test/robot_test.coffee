@@ -75,6 +75,66 @@ describe 'Robot', ->
         httpClient = @robot.http('http://localhost', agent: agentB)
         expect(httpClient.options.agent).to.equal(agentB)
 
+    describe '#respondPattern', ->
+      it 'matches messages starting with robot\'s name', ->
+        testMessage = @robot.name + 'message123'
+        testRegex   = /(.*)/
+
+        pattern = @robot.respondPattern testRegex
+        expect(testMessage).to.match(pattern)
+        match = testMessage.match(pattern)[1]
+        expect(match).to.equal('message123')
+
+      it 'matches messages starting with robot\'s alias', ->
+        testMessage = @robot.alias + 'message123'
+        testRegex   = /(.*)/
+
+        pattern = @robot.respondPattern testRegex
+        expect(testMessage).to.match(pattern)
+        match = testMessage.match(pattern)[1]
+        expect(match).to.equal('message123')
+
+      it 'does not match unaddressed messages', ->
+        testMessage = 'message123'
+        testRegex   = /(.*)/
+
+        pattern = @robot.respondPattern testRegex
+        expect(testMessage).to.not.match(pattern)
+
+      it 'matches properly when name is substring of alias', ->
+        @robot.name  = 'Meg'
+        @robot.alias = 'Megan'
+        testMessage1 = @robot.name  + ' message123'
+        testMessage2 = @robot.alias + ' message123'
+        testRegex = /(.*)/
+
+        pattern = @robot.respondPattern testRegex
+
+        expect(testMessage1).to.match(pattern)
+        match1 = testMessage1.match(pattern)[1]
+        expect(match1).to.equal('message123')
+
+        expect(testMessage2).to.match(pattern)
+        match2 = testMessage2.match(pattern)[1]
+        expect(match2).to.equal('message123')
+
+      it 'matches properly when alias is substring of name', ->
+        @robot.name  = 'Megan'
+        @robot.alias = 'Meg'
+        testMessage1 = @robot.name  + ' message123'
+        testMessage2 = @robot.alias + ' message123'
+        testRegex = /(.*)/
+
+        pattern = @robot.respondPattern testRegex
+
+        expect(testMessage1).to.match(pattern)
+        match1 = testMessage1.match(pattern)[1]
+        expect(match1).to.equal('message123')
+
+        expect(testMessage2).to.match(pattern)
+        match2 = testMessage2.match(pattern)[1]
+        expect(match2).to.equal('message123')
+
     describe '#hear', ->
       it 'registers a new listener', ->
         expect(@robot.listeners).to.have.length(0)
@@ -86,101 +146,6 @@ describe 'Robot', ->
         expect(@robot.listeners).to.have.length(0)
         @robot.respond /.*/, ->
         expect(@robot.listeners).to.have.length(1)
-
-      it "responds to messages starting with robot's name", ->
-        callback    = sinon.spy()
-        testMessage = new TextMessage(@user, @robot.name + 'message123')
-        testRegex   = /.*/
-
-        @robot.listeners = []
-        @robot.respond testRegex, callback
-        @robot.receive testMessage
-
-        # Restore robot's state
-        @robot.listeners = []
-
-        expect(callback).to.have.been.calledOnce
-
-      it "responds to messages starting with robot's alias", ->
-        callback    = sinon.spy()
-        testMessage = new TextMessage(@user, @robot.alias + 'message123')
-        testRegex   = /.*/
-
-        @robot.listeners = []
-        @robot.respond testRegex, callback
-        @robot.receive testMessage
-
-        # Restore robot's state
-        @robot.listeners = []
-
-        expect(callback).to.have.been.calledOnce
-
-      it 'does not reply to other messages', ->
-        callback    = sinon.spy()
-        testMessage = new TextMessage(@user, 'message123')
-        testRegex   = /.*/
-
-        @robot.listeners = []
-        @robot.respond testRegex, callback
-        @robot.receive testMessage
-
-        # Restore robot's state
-        @robot.listeners = []
-
-        expect(callback).to.have.not.been.called
-
-
-      it 'matches properly when name is substring of alias', ->
-        oldName  = @robot.name
-        oldAlias = @robot.alias
-
-        testName  = 'Meg'
-        testAlias = 'Megan'
-        callback = sinon.spy (res) -> res.match[1]
-        testMessage1 = new TextMessage(@user, testName  + ' message123')
-        testMessage2 = new TextMessage(@user, testAlias + ' message123')
-        testRegex = /(.*)/
-
-        @robot.name  = testName
-        @robot.alias = testAlias
-        @robot.listeners = []
-        @robot.respond testRegex, callback
-        @robot.receive testMessage1
-        @robot.receive testMessage2
-
-        # Restore robot's state
-        @robot.name  = oldName
-        @robot.alias = oldAlias
-        @robot.listeners = []
-
-        expect(callback).to.have.been.calledTwice
-        expect(callback).to.have.always.returned('message123')
-
-      it 'matches properly when alias is substring of name', ->
-        oldName  = @robot.name
-        oldAlias = @robot.alias
-
-        testName  = 'Megan'
-        testAlias = 'Meg'
-        callback = sinon.spy (res) -> res.match[1]
-        testMessage1 = new TextMessage(@user, testName  + ' message123')
-        testMessage2 = new TextMessage(@user, testAlias + ' message123')
-        testRegex = /(.*)/
-
-        @robot.name  = testName
-        @robot.alias = testAlias
-        @robot.listeners = []
-        @robot.respond testRegex, callback
-        @robot.receive testMessage1
-        @robot.receive testMessage2
-
-        # Restore robot's state
-        @robot.name  = oldName
-        @robot.alias = oldAlias
-        @robot.listeners = []
-
-        expect(callback).to.have.been.calledTwice
-        expect(callback).to.have.always.returned('message123')
 
     describe '#enter', ->
       it 'registers a new listener', ->
