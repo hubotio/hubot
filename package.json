@@ -48,6 +48,7 @@
     "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
     "test:smoke": "coffee src/**/*.coffee",
     "compile": "coffee --compile --bare --output lib src",
+    "compile:watch": "coffee --compile --bare --output lib --watch src",
     "prerelease": "npm update && npm run test:smoke",
     "release": "npm version",
     "postrelease": "npm publish && git push origin master --tags"
