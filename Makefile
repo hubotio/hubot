@@ -12,8 +12,5 @@ package:
 	@bin/hubot -c hubot
 	@chmod 0755 hubot/bin/hubot
 
-remove-js:
-	@rm -fr lib/
-
 .PHONY: all
 
