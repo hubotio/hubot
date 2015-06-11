@@ -42,6 +42,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib/",
+    "start": "bin/hubot",
     "test": "mocha --require coffee-errors --compilers coffee:coffee-script"
   }
 }

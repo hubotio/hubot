@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-source script/bootstrap
-
-bin/hubot "$@"
