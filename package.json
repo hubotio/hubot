@@ -44,6 +44,9 @@
     "clean": "rm -rf lib/",
     "start": "bin/hubot",
     "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
-    "test:smoke": "coffee src/**/*.coffee"
+    "test:smoke": "coffee src/**/*.coffee",
+    "prerelease": "npm update && npm run test:smoke",
+    "release": "npm version",
+    "postrelease": "npm publish && git push origin master --tags"
   }
 }
