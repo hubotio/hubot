@@ -1,4 +1,0 @@
-#!/bin/bash
-
-source script/bootstrap
-mocha --require coffee-errors --compilers coffee:coffee-script "$@"
