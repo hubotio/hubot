@@ -26,11 +26,13 @@
     "scoped-http-client": "0.11.0"
   },
   "devDependencies": {
+    "generator-hubot": "^0.3.1",
     "hubot-mock-adapter": "^1.0.0",
     "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
-    "sinon-chai": "^2.6.0"
+    "sinon-chai": "^2.6.0",
+    "yo": "^1.4.7"
   },
   "engines": {
     "node": ">= 0.8.x",
