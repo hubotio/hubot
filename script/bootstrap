@@ -13,6 +13,3 @@ if [ -f .env.${NODE_ENV} ]; then
 fi
 
 npm install
-
-# Make sure mocha and coffee are in the PATH
-export PATH="node_modules/.bin:$PATH"

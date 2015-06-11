@@ -42,7 +42,9 @@
   },
   "scripts": {
     "clean": "rm -rf lib/",
+    "prestart": "script/bootstrap",
     "start": "bin/hubot",
+    "pretest": "script/bootstrap",
     "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
     "test:smoke": "coffee src/**/*.coffee",
     "prerelease": "npm update && npm run test:smoke",
