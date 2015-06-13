@@ -145,32 +145,26 @@ Complex policies like this are currently best implemented in code directly, thou
 
 ## Middleware Examples
 
-Middleware is often used for authentication and authorization.  There are three
-kinds of middleware: Post-receive, Pre-listener, and Pre-reply.
+Middleware is often used for authentication and authorization.  There are three kinds of middleware:
+- **Receive**: executed for every message prior to testing for listener matches
+- **Listener**: executed for every listener that matches a message before executing the listener callback
+- **Response**: executed for every message hubot attempts to send, regardless of reason or source
 
- - Post-Receive middleware happens for every message, whether it's matched or not.
- - Pre-Listener middleware is called for every listener that matches a message,
-  before it has been executed
- - Pre-reply middleware is called for every message hubot attempts to send to
-  a chat room, regardless of reason or source.
-
-Hooks are asynchronous by default, needing to call either `middleware.finish()`
-to allow further processing, or `middleware.done()` to end processing for a
-given message. All hooks can be created with a `Sync` variant.
+Middleware is asynchronous by default, needing to call either `middleware.next()` to continue processing or `middleware.done()` to stop processing. There are Sync helper functions for each type to simplify creating simple middleware units.
 
 **All of these are just examples. None of them are secure. Don't use them.**
 
 Here's a simple example to blacklist users at the listener level.
 ```coffeescript
 module.exports = (robot) ->
-  robot.preListen (middleware) ->
-    if middleware.listener.options.id == "banned.command"
-      if middleware.response.message.user.id == "whitelistedUser"
+  robot.listenerMiddleware (middleware) ->
+    if middleware.listener.options.id is "banned.command"
+      if middleware.response.message.user.id is "whitelistedUser"
         # User is allowed access to this command
         middleware.next()
       else
         # Restricted command, but user isn't in whitelist
-        middleware.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+        middleware.response.reply "I'm sorry, @#{middleware.response.message.user.name}, but you don't have access to do that."
         middleware.done()
     else
       # This is not a restricted command; allow everyone
@@ -183,32 +177,35 @@ called, further processing will stop.
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.preListenSync (middleware) ->
-    if middleware.listener.options.id == "banned.command" &&
-       !middleware.response.message.user.id == "whitelistedUser"
-         middleware.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
-         middleware.done()
+  robot.listenerMiddlewareSync (middleware) ->
+    if middleware.listener.options.id is "banned.command" and
+       middleware.response.message.user.id isnt "whitelistedUser"
+      middleware.response.reply "I'm sorry, @#{middleware.response.message.user.name}, but you don't have access to do that."
+      false
+    else
+      true
 ```
 
-Here's a similar synchronous example, blacklisting particular users from *all*
-commands:
+Here's a similar synchronous example, blacklisting particular users from *all* commands:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.preReceiveSync (middleware) ->
-    if middleware.response.message.user.id == "blacklistedUser"
-       context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
-       middleware.done()
+  robot.receiveMiddlewareSync (middleware) ->
+    if middleware.response.message.user.id is "blacklistedUser"
+      context.response.reply "I'm sorry, @#{middleware.response.message.user.name}, but you don't have access to do that."
+      false
+    else
+      true
 ```
 
-Here's an example that will replace sensitive information from being sent
-under any circumstances:
+Here's an example that will prevent sensitive information from being sent under any circumstances:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.preReply (middleware) ->
-    if middleware.reply.text.match(/passwords lol/)
-      middleware.reply.text = "Sorry meatbag, no passwords allowed"
+  robot.responseMiddleware (middleware) ->
+    if middleware.message.text.match(/passwords lol/)
+      # Modify the message and then allow it
+      middleware.message.text = middleware.message.text.replace(/passwords lol/, '[REDACTED]')
     middleware.next()
 ```
 
@@ -216,10 +213,12 @@ You could also block the message entirely:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.preReply (middleware) ->
-    if middleware.reply.text.match(/passwords lol/)
+  robot.responseMiddleware (middleware) ->
+    if middleware.message.text.match(/passwords lol/)
+      # Block the message
       middleware.done()
     else
+      # Permit the message
       middleware.next()
 ```
 
@@ -228,13 +227,13 @@ authenticate users for particular listeners:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.preListen (middleware) ->
-    robot.auth(middleware.response.user, middleware.listener.options) -> (auth)
+  robot.listenerMiddleware (middleware) ->
+    robot.auth middleware.response.user, middleware.listener.options, (auth) ->
       if auth.allowed()
         middleware.next()
       else
-         middleware.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
-         middleware.done()
+        middleware.response.reply "I'm sorry, @#{middleware.response.message.user.name}, but you don't have access to do that."
+        middleware.done()
 ```
 
 Lastly, here's a version of the two-person rule, requiring a second person
@@ -248,17 +247,18 @@ module.exports = (robot) ->
 
   robot.commandsAwaitingVerification = {}
 
-  robot.preListenSync (middleware) ->
+  robot.listenerMiddlewareSync (middleware) ->
     if middleware.listener.options.two_person_protected?
       if middleware.response.message.verified?
         middleware.response.send "Who am I to argue with *two* fleshy constructs?"
+        true
       else
         middleware.message.code = randomIdentifier()
         robot.commandsAwaitingVerification[middleware.message.code] = middleware.message
         middleware.response.reply "A bold strategy. One of your meatbag friends needs to verify it with /verify #{msg.code}"
-        middleware.done()
+        false
 
-  robot.preReceive (middleware) ->
+  robot.receiveMiddleware (middleware) ->
     if match = middleware.message.text.match(/verify (\S+)/)
       code = match[1]
       if old_message = robot.commandsAwaitingVerification[code]
