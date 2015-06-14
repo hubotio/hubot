@@ -203,9 +203,8 @@ Here's an example that will prevent sensitive information from being sent under 
 ```coffeescript
 module.exports = (robot) ->
   robot.responseMiddleware (middleware) ->
-    if middleware.message.text.match(/passwords lol/)
-      # Modify the message and then allow it
-      middleware.message.text = middleware.message.text.replace(/passwords lol/, '[REDACTED]')
+    # Modify the message and then allow it
+    middleware.envelope.text = middleware.envelope.text.replace(/passwords lol/, '[REDACTED]')
     middleware.next()
 ```
 
@@ -214,7 +213,7 @@ You could also block the message entirely:
 ```coffeescript
 module.exports = (robot) ->
   robot.responseMiddleware (middleware) ->
-    if middleware.message.text.match(/passwords lol/)
+    if middleware.envelope.text.match(/passwords lol/)
       # Block the message
       middleware.done()
     else
