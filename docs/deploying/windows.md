@@ -5,7 +5,7 @@ layout: docs
 
 Hasn't been fully tested - YMMV
 
-There are 3 primary things to deploying and running hubot:
+There are 3 primary things to deploying and running hubot on a windows machine:
 
   * node and npm
   * a way to get source code updated on the server
@@ -18,21 +18,48 @@ To start, your windows server will need node and npm.
 The best way to do this is with [chocolatey](http://chocolatey.org) using the [nodejs.install](http://chocolatey.org/packages/nodejs.install) package.
 I've found that sometimes the system path variable is not correctly set; ensure you can run node/npm from the command line. If needed set the PATH variable with "setx PATH \"%PATH%;C:\Program Files\nodejs\" "
 
+Your other option is to install directly from [NodeJS](https://nodejs.org/) and run the current download (v0.12.4 as of this documentation). This should set your PATH variables for you.
+
 ## Updating code on the server
 
-The simplest way to update your hubot's code is going to be to have a git
-checkout of your hubot's source code (that you've created during [Getting Started](../README.md), not the [github/hubot repository](http://github.com/github/hubot), and just git pull to get change. This may
-feel a dirty hack, but it works when you are starting out.
+To get the code on your server, you can follow the instructions at [Getting Started](https://hubot.github.com/docs/) on your local development machine or directly on the server. If you are building locally, push your hubot to git and clone the repo onto your server. Don't clone the normal [github/hubot repository](http://github.com/github/hubot), make sure you're using the Yo Generator to build your own hubot.
+
+## Setting up environment vars
+
+You will want to set up your hubot environment variables on the server where it will run. You can do this by opening a administrative powershell/command prompt and typing the following:
+
+    [Environment]::SetEnvironmentVariable("HUBOT_ADAPTER", "Campfire", "Machine")
+	
+This is equivelent to going into the system menu -> selecting advanced system settings => environment vars and adding a new system variable called HUBOT_ADAPTER with the value of Campfire.
 
 ## Starting, stopping, and restarting hubot
 
 Every hubot install has a `bin/hubot` script to handle starting up the hubot.
-You can run this command from your git checkout on the server, but there are some problems you can encounter:
+You can run this command directly from your hubot folder by typing the following:
+
+    .\bin\hubot –adapter campfire
+
+There are a few issues if you call it manually, though.
 
 * you disconnect, and hubot dies
 * hubot dies, for any reason, and doesn't start again
 * it doesn't start up at boot automatically
 
+To fix this, you will want to create a .ps1 file with whatever name makes you happy that you will call from your Hubot directory. It should contain the following:
+
+    Write-Host “Starting Hubot Watcher”
+    While (1)
+    {
+        Write-Host “Starting Hubot
+        Start-Process powershell -ArgumentList “.\bin\hubot –adapter slack” -wait
+	}
+
+Remember to allow local unsigned powershell scripts if you are using this. Run this in an Administrator Powershell window.
+
+    Set-ExecutionPolicy RemoteSigned
+	
+You can set this as scheduled task on boot if you like or some other way to start your process. 
+	
 ## Expanding the documentation
 
 Not yet fleshed out. [Help contribute by submitting a pull request, please?](https://github.com/github/hubot/pull/new/master)
