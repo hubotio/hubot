@@ -54,11 +54,19 @@ To fix this, you will want to create a .ps1 file with whatever name makes you ha
         Start-Process powershell -ArgumentList “.\bin\hubot –adapter slack” -wait
 	}
 
+<<<<<<< HEAD
 Remember to allow local unsigned powershell scripts if you are using the .ps1 file to run hubot. Run this command in an Administrator Powershell window.
 
     Set-ExecutionPolicy RemoteSigned
 	
 You can set this .ps1 as scheduled task on boot if you like or some other way to start your process. 
+=======
+Remember to allow local unsigned powershell scripts if you are using this. Run this in an Administrator Powershell window.
+
+    Set-ExecutionPolicy RemoteSigned
+	
+You can set this as scheduled task on boot if you like or some other way to start your process. 
+>>>>>>> eb9f78d90095836adfa6501cc36ca6666c5dffab
 	
 ## Expanding the documentation
 
