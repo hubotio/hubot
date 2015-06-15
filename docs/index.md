@@ -6,10 +6,7 @@ layout: docs
 
 ## Getting Started With Hubot
 
-You will need [node.js](http://nodejs.org/) and [npm](https://npmjs.org/). Joyent has
-an [excellent blog post on how to get those installed](http://joyent.com/blog/installing-node-and-npm), so we'll omit those details here.
-
-Once node and npm are ready, we can install the hubot generator:
+You will need [node.js and npm](https://docs.npmjs.com/getting-started/installing-node). Once those are installed, we can install the hubot generator:
 
     %  npm install -g yo generator-hubot
 
