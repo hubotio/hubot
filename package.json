@@ -44,9 +44,9 @@
   },
   "scripts": {
     "clean": "rm -rf lib/",
-    "prestart": "script/bootstrap",
+    "prestart": "script/dotenv",
     "start": "bin/hubot",
-    "pretest": "script/bootstrap",
+    "pretest": "script/dotenv",
     "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
     "test:smoke": "coffee src/**/*.coffee",
     "compile": "coffee --compile --bare --output lib src",
