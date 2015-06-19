@@ -275,6 +275,8 @@ module.exports = (robot) ->
   )
 ```
 
+See [the design patterns document](patterns.md) for examples of complex matchers.
+
 ## Environment variables
 
 Hubot can access the environment he's running in, just like any other node program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `HUBOT_` prefix.
