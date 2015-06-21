@@ -3,7 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.  You can either put together a quick script under your hubot's `scripts` directory or [create a script package](#creating-a-script-package) of your own!
+Hubot out of the box doesn't do too much but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.  You can create a custom script in hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
@@ -568,7 +568,7 @@ Once you've built some new scripts to extend the abilities of your robot friend,
 
 ## See if a script already exists
 
-Check out the [NPM Registry](https://www.npmjs.com/browse/keyword/hubot-scripts) for the `hubot-scripts` keyword.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+Start by [checking if an NPM package](/docs/index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
 
 ## Creating A Script Package
 
@@ -597,7 +597,7 @@ If you are using git, the generated directory includes a .gitignore, so you can 
 % git commit -m "Initial commit"
 ```
 
-You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.coffee` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org)!
+You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.coffee` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
 
 # Listener Metadata
 
