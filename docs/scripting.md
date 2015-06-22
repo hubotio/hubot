@@ -3,7 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.
+Hubot out of the box doesn't do too much but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.  You can create a custom script in hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
@@ -566,27 +566,40 @@ Scripts loaded from the `scripts/` directory are loaded in alphabetical order, s
 
 Once you've built some new scripts to extend the abilities of your robot friend, you should consider sharing them with the world! At the minimum, you need to package up your script and submit it to the [Node.js Package Registry](http://npmjs.org). You should also review the best practices for sharing scripts below.
 
+## See if a script already exists
+
+Start by [checking if an NPM package](/docs/index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+
 ## Creating A Script Package
 
-Creating a script package for hubot is very simple. Start by creating a normal
-`npm` package. Make sure you add a main file for the entry point (e.g.
-`index.js` or `index.coffee`).
+Creating a script package for hubot is very simple.  Start by installing the `hubot` [yeoman](http://yeoman.io/) generator:
 
-In this entry point file you're going to have to export a function that hubot
-will use to load the scripts in your package. Below is a simple example for
-loading each script in a `./scripts` directory in your package.
 
-```coffeescript
-Path = require 'path'
-
-module.exports = (robot) ->
-  path = Path.resolve __dirname, 'scripts'
-  robot.load path
+```
+% npm install -g yo generator-hubot
 ```
 
-After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
+Once you've got the hubot generator installed, creating a hubot script is similar to creating a new hubot.  You create a directory for your hubot script and generate a new `hubot:script` in it.  For example, if we wanted to create a hubot script called "my-awesome-script":
 
-## Listener Metadata
+```
+% mkdir hubot-my-awesome-script
+% cd hubot-my-awesome-script
+% yo hubot:script
+```
+
+At this point, the you'll be asked a few questions about the author for the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+
+If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
+
+```
+% git init
+% git add .
+% git commit -m "Initial commit"
+```
+
+You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.coffee` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
+
+# Listener Metadata
 
 In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
 
