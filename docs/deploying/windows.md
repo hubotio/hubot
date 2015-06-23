@@ -47,11 +47,11 @@ There are a few issues if you call it manually, though.
 
 To fix this, you will want to create a .ps1 file with whatever name makes you happy that you will call from your hubot directory. There is a copy of this file in the `examples` directory. It should contain the following:
 
-    Write-Host “Starting Hubot Watcher”
+    Write-Host "Starting Hubot Watcher"
     While (1)
     {
-        Write-Host “Starting Hubot
-        Start-Process powershell -ArgumentList “.\bin\hubot –adapter slack” -wait
+        Write-Host "Starting Hubot"
+        Start-Process powershell -ArgumentList ".\bin\hubot –adapter slack" -wait
     }
 
 Remember to allow local unsigned PowerShell scripts if you are using the .ps1 file to run hubot. Run this command in an Administrator PowerShell window.
