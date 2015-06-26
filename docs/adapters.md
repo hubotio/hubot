@@ -40,6 +40,7 @@ to have yours added to the list:
 * [Slack](https://github.com/tinyspeck/hubot-slack)
 * [Skype](https://github.com/netpro2k/hubot-skype)
 * [Talker](https://github.com/unixcharles/hubot-talker)
+* [Telegram](https://github.com/lukefx/hubot-telegram)
 * [Twilio](https://github.com/jkarmel/hubot-twilio)
 * [Twitter](https://github.com/MathildeLemee/hubot-twitter)
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
