@@ -21,6 +21,16 @@ class Response
   send: (strings...) ->
     @robot.adapter.send @envelope, strings...
 
+  # Public: Posts an image back to the chat source
+  #
+  # url     - URL of the image resource
+  # strings - One or more strings to be posted. The order of these strings
+  #           should be kept intact.
+  #
+  # Returns nothing.
+  sendImage: (url, strings...) ->
+    @robot.adapter.sendImage @envelope, url, strings...
+
   # Public: Posts an emote back to the chat source
   #
   # strings - One or more strings to be posted. The order of these strings
