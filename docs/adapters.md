@@ -39,6 +39,7 @@ to have yours added to the list:
 * [Rocket.Chat](https://github.com/RocketChat/hubot-rocketchat)
 * [Slack](https://github.com/tinyspeck/hubot-slack)
 * [Skype](https://github.com/netpro2k/hubot-skype)
+* [SkypeWeb](https://github.com/sdimkov/hubot-skype-web)
 * [Talker](https://github.com/unixcharles/hubot-talker)
 * [Twilio](https://github.com/jkarmel/hubot-twilio)
 * [Twitter](https://github.com/MathildeLemee/hubot-twitter)
