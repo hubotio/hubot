@@ -457,7 +457,7 @@ class Robot
     @adapter.send user, strings...
 
   # Public: A wrapper around the EventEmitter API to make usage
-  # semanticly better.
+  # semantically better.
   #
   # event    - The event name.
   # listener - A Function that is called with the event parameter
@@ -468,7 +468,7 @@ class Robot
     @events.on event, args...
 
   # Public: A wrapper around the EventEmitter API to make usage
-  # semanticly better.
+  # semantically better.
   #
   # event   - The event name.
   # args...  - Arguments emitted by the event
