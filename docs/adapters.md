@@ -41,6 +41,7 @@ to have yours added to the list:
 * [Skype](https://github.com/netpro2k/hubot-skype)
 * [SkypeWeb](https://github.com/sdimkov/hubot-skype-web)
 * [Talker](https://github.com/unixcharles/hubot-talker)
+* [Telegram](https://github.com/lukefx/hubot-telegram)
 * [Twilio](https://github.com/jkarmel/hubot-twilio)
 * [Twitter](https://github.com/MathildeLemee/hubot-twitter)
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
