@@ -21,7 +21,7 @@ I've found that sometimes the system path variable is not correctly set; ensure 
 ## Updating code on the server
 
 The simplest way to update your hubot's code is going to be to have a git
-checkout of your hubot's source code (that you've created during [Getting Started](../README.md), not the [github/hubot repository](http://github.com/github/hubot), and just git pull to get change. This may
+checkout of your hubot's source code (that you've created during [Getting Started](../index.md), not the [github/hubot repository](http://github.com/github/hubot), and just git pull to get change. This may
 feel a dirty hack, but it works when you are starting out.
 
 ## Starting, stopping, and restarting hubot
