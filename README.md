@@ -11,7 +11,7 @@ for details on getting up and running with your very own robot friend.
 In most cases, you'll probably never have to hack on this repo directly if you
 are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTING.md)
 
-If you'd like to chat, drop by [#hubot](http://webchat.freenode.net/?channels=#hubote) on [FreeNode](http://webchat.freenode.net/?channels=#hubote) IRC.
+If you'd like to chat, drop by [#hubot](http://webchat.freenode.net/?channels=#hubot) on FreeNode IRC.
 
 ## License
 
