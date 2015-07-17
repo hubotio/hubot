@@ -271,7 +271,7 @@ class Robot
       for file in Fs.readdirSync(path).sort()
         @loadFile path, file
 
-  # Public: Load scripts specfied in the `hubot-scripts.json` file.
+  # Public: Load scripts specified in the `hubot-scripts.json` file.
   #
   # path    - A String path to the hubot-scripts files.
   # scripts - An Array of scripts to load.
@@ -282,7 +282,7 @@ class Robot
     for script in scripts
       @loadFile path, script
 
-  # Public: Load scripts from packages specfied in the
+  # Public: Load scripts from packages specified in the
   # `external-scripts.json` file.
   #
   # packages - An Array of packages containing hubot scripts to load.
@@ -457,7 +457,7 @@ class Robot
     @adapter.send user, strings...
 
   # Public: A wrapper around the EventEmitter API to make usage
-  # semanticly better.
+  # semantically better.
   #
   # event    - The event name.
   # listener - A Function that is called with the event parameter
@@ -468,7 +468,7 @@ class Robot
     @events.on event, args...
 
   # Public: A wrapper around the EventEmitter API to make usage
-  # semanticly better.
+  # semantically better.
   #
   # event   - The event name.
   # args...  - Arguments emitted by the event
