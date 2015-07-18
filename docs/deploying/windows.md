@@ -45,7 +45,7 @@ There are a few issues if you call it manually, though.
 * hubot dies, for any reason, and doesn't start again
 * it doesn't start up at boot automatically
 
-To fix this, you will want to create a .ps1 file with whatever name makes you happy that you will call from your hubot directory. There is a copy of this file in the `examples` directory. It should contain the following:
+To fix this, you will want to create a .ps1 file with whatever name makes you happy that you will call from your hubot directory. There is a copy of this file in the `examples` directory [here](/examples/hubot-start.ps1). It should contain the following:
 
     Write-Host "Starting Hubot Watcher"
     While (1)

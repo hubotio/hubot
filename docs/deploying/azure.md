@@ -4,7 +4,7 @@ layout: docs
 ---
 
 If you've been following along with [Getting Started](../README.md), it's time to deploy so you can use it beyond just your local machine.
-[Azure](http://http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](/docs/deploying/heroku.md).
+[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](/docs/deploying/heroku.md).
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
 
