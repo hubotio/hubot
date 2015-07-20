@@ -1,5 +1,8 @@
 # Contributing
 
+This project adheres to the [Open Code of Conduct][code-of-conduct]. By participating, you are expected to uphold this code.
+[code-of-conduct]: http://todogroup.org/opencodeofconduct/#Hubot/opensource@github.com
+
 We love pull requests. Here's a quick guide:
 
 1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/commits/master)
