@@ -45,7 +45,7 @@ class Robot
     @alias     = false
     @adapter   = null
     @Response  = Response
-    @commands  = []
+    @commands  = {}
     @listeners = []
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
@@ -383,7 +383,10 @@ class Robot
   #
   # Returns an Array of help commands for running scripts.
   helpCommands: ->
-    @commands.sort()
+    output = []
+    for script, cmds of @commands
+      output = output.concat(cmds.sort())
+    return output
 
   # Private: load help info from a loaded script.
   #
@@ -394,7 +397,7 @@ class Robot
     @logger.debug "Parsing help for #{path}"
     scriptName = Path.basename(path).replace /\.(coffee|js)$/, ''
     scriptDocumentation = {}
-
+    @commands[scriptName] = []
     body = Fs.readFileSync path, 'utf-8'
 
     currentSection = null
@@ -414,7 +417,7 @@ class Robot
         if currentSection
           scriptDocumentation[currentSection].push cleanedLine.trim()
           if currentSection is 'commands'
-            @commands.push cleanedLine.trim()
+            @commands[scriptName].push cleanedLine.trim()
 
     if currentSection is null
       @logger.info "#{path} is using deprecated documentation syntax"
@@ -424,7 +427,7 @@ class Robot
         continue if not line.match('-')
         cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
         scriptDocumentation.commands.push cleanedLine
-        @commands.push cleanedLine
+        @commands[scriptName].push cleanedLine
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
