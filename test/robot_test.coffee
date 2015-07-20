@@ -171,6 +171,12 @@ describe 'Robot', ->
         @robot.catchAll ->
         expect(@robot.listeners).to.have.length(1)
 
+    describe '#catchAllAddressed', ->
+      it 'registers a new Listener', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.catchAllAddressed ->
+        expect(@robot.listeners).to.have.length(1)
+
     describe '#receive', ->
       it 'calls all registered listeners', ->
         # Need to use a real Message so that the CatchAllMessage constructor works
@@ -461,6 +467,47 @@ describe 'Robot', ->
         result = testListener.matcher(testMessage)
 
         expect(result).to.not.be.ok
+
+      it 'matches CatchAllMessages wrapping non-TextMessages', ->
+        @robot.catchAll ->
+        # Grab the only registered listener
+        testListener = @robot.listeners[0]
+
+        testMessage = new CatchAllMessage(new EnterMessage @user)
+        expect(testListener.matcher(testMessage)).to.be.ok
+
+    describe '#catchAllAddressed', ->
+      it 'matches messages addressed to the robot', ->
+        @robot.catchAllAddressed ->
+        # Grab the only registered listener
+        testListener = @robot.listeners[0]
+
+        testMessage = new CatchAllMessage(new TextMessage @user, 'TestHubot: message123')
+        expect(testListener.matcher(testMessage)).to.be.ok
+
+      it 'does not match messages not addressed to the robot', ->
+        @robot.catchAllAddressed ->
+        # Grab the only registered listener
+        testListener = @robot.listeners[0]
+
+        testMessage = new CatchAllMessage(new TextMessage @user, 'message123')
+        expect(testListener.matcher(testMessage)).to.not.be.ok
+
+      it 'does not match non-CatchAllMessages that are addressed to the robot', ->
+        @robot.catchAllAddressed ->
+        # Grab the only registered listener
+        testListener = @robot.listeners[0]
+
+        testMessage = new TextMessage @user, 'TestHubot: message123'
+        expect(testListener.matcher(testMessage)).to.not.be.ok
+
+      it 'does not match CatchAllMessages wrapping non-TextMessages', ->
+        @robot.catchAllAddressed ->
+        # Grab the only registered listener
+        testListener = @robot.listeners[0]
+
+        testMessage = new CatchAllMessage(new EnterMessage @user)
+        expect(testListener.matcher(testMessage)).to.not.be.ok
 
   describe 'Message Processing', ->
     it 'calls a matching listener', (done) ->

@@ -472,6 +472,22 @@ Using previous examples:
 
 For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting.
 
+## Catch All
+
+Sometimes you are interested in responding to all unmatched messages in a room. Hubot has two helpers to generate listeners that will only react when all other listeners have been tested.
+
+`catchAll` will respond to ALL messages that weren't matched by a non-catch-all listener (e.g. `I would like a sandwich today`)
+
+`catchAllAddressed` will only respond to catch-all messages that were addressed to the robot (e.g. `Hubot: tell me a story`)
+
+`catchAllAddressed` is particularly useful if you would like to have your robot apologize:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.catchAllAddressed (response) ->
+    response.reply "I'm sorry, I don't know how to \"#{response.match[1]}\"... :sob:"
+```
+
 ## Documenting Scripts
 
 Hubot scripts can be documented with comments at the top of their file, for example:

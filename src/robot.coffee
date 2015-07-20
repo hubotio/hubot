@@ -217,6 +217,24 @@ class Robot
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
+  # Public: Adds a Listener that triggers when no other text matchers match
+  # and the message was addressing the robot.
+  #
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  catchAllAddressed: (callback) ->
+    pattern = @respondPattern(/(.*)/)
+    @listeners.push new Listener(
+      @
+      (msg) ->
+        if msg instanceof CatchAllMessage and msg.message.match?
+          msg.message.match(pattern)
+      (response) ->
+        response.message = response.message.message
+        callback response
+    )
+
   # Public: Passes the given message to any interested Listeners.
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
