@@ -1,4 +1,6 @@
 class Message
+  type: 'message'
+
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
@@ -12,6 +14,8 @@ class Message
     @done = true
 
 class TextMessage extends Message
+  type: 'text'
+
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
@@ -27,7 +31,7 @@ class TextMessage extends Message
   # Returns a Match object or null.
   match: (regex) ->
     @text.match regex
-  
+
   # String representation of a TextMessage
   #
   # Returns the message text
@@ -40,6 +44,7 @@ class TextMessage extends Message
 # text - Always null.
 # id   - A String of the message ID.
 class EnterMessage extends Message
+  type: 'enter'
 
 # Represents an incoming user exit notification.
 #
@@ -47,6 +52,7 @@ class EnterMessage extends Message
 # text - Always null.
 # id   - A String of the message ID.
 class LeaveMessage extends Message
+  type: 'leave'
 
 # Represents an incoming topic change notification.
 #
@@ -54,8 +60,11 @@ class LeaveMessage extends Message
 # text - A String of the new topic
 # id   - A String of the message ID.
 class TopicMessage extends TextMessage
+  type: 'topic'
 
 class CatchAllMessage extends Message
+  type: 'catchall'
+
   # Represents a message that no matchers matched.
   #
   # message - The original message.
