@@ -29,7 +29,7 @@ class Middleware
       nextFunc = (newDoneFunc) -> cb(null, newDoneFunc)
       # Catch errors in synchronous middleware
       try
-        middlewareFunc.call(undefined, @robot, context, nextFunc, doneFunc)
+        middlewareFunc.call(undefined, context, nextFunc, doneFunc)
       catch err
         # Maintaining the existing error interface (Response object)
         @robot.emit('error', err, context.response)
@@ -58,8 +58,8 @@ class Middleware
   #
   # Returns nothing.
   register: (middleware) ->
-    if middleware.length != 4
-      throw new Error("Incorrect number of arguments for middleware callback (expected 4, got #{middleware.length})")
+    if middleware.length != 3
+      throw new Error("Incorrect number of arguments for middleware callback (expected 3, got #{middleware.length})")
     @stack.push middleware
     return undefined
 

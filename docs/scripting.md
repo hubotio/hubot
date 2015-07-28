@@ -618,7 +618,6 @@ Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot
 
 Middleware is called with:
 
-- global robot object
 - a context object containing:
   - matching Listener object (with associated metadata)
   - response object (contains the original message)
@@ -638,7 +637,7 @@ A simple example of middleware logging command executions:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.listenerMiddleware (robot, context, next, done) ->
+  robot.listenerMiddleware (context, next, done) ->
     # Log commands
     robot.logger.info "#{context.response.message.user.name} asked me to #{context.response.message.text}"
     # Continue executing middleware
@@ -654,7 +653,7 @@ module.exports = (robot) ->
   # Map of listener ID to last time it was executed
   lastExecutedTime = {}
 
-  robot.listenerMiddleware (robot, context, next, done) ->
+  robot.listenerMiddleware (context, next, done) ->
     try
       # Default to 1s unless listener provides a different minimum period
       minPeriodMs = context.listener.options?.rateLimits?.minPeriodMs? or 1000
@@ -686,9 +685,6 @@ module.exports = (robot) ->
 ## Listener Middleware API
 
 Although internal data structures are exposed, not all properties on the objects are considered part of the supported API. Below are the supported properties and usage information for each of the arguments middleware receives.
-
-- `robot`
-  - all parts of the standard robot API are included in the middleware API
 
 - `context`
   - `listener`

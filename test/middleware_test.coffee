@@ -38,7 +38,7 @@ describe 'Middleware', ->
 
     describe '#execute', ->
       it 'executes synchronous middleware', (testDone) ->
-        testMiddleware = sinon.spy (robot, context, next, done) =>
+        testMiddleware = sinon.spy (context, next, done) =>
           next(done)
 
         @middleware.register testMiddleware
@@ -54,7 +54,7 @@ describe 'Middleware', ->
         )
 
       it 'executes asynchronous middleware', (testDone) ->
-        testMiddleware = sinon.spy (robot, context, next, done) ->
+        testMiddleware = sinon.spy (context, next, done) ->
           # Yield to the event loop
           process.nextTick ->
             next(done)
@@ -76,12 +76,11 @@ describe 'Middleware', ->
         # Pull the Robot in scope for simpler callbacks
         testRobot = @robot
 
-        testMiddleware = (robot, context, next, done) ->
+        testMiddleware = (context, next, done) ->
           # Break out of middleware error handling so assertion errors are
           # more visible
           process.nextTick ->
             # Check that variables were passed correctly
-            expect(robot).to.equal(testRobot)
             expect(context).to.equal(testContext)
             next(done)
 
@@ -96,11 +95,11 @@ describe 'Middleware', ->
       it 'executes all registered middleware in definition order', (testDone) ->
         middlewareExecution = []
 
-        testMiddlewareA = (robot, context, next, done) =>
+        testMiddlewareA = (context, next, done) =>
           middlewareExecution.push('A')
           next(done)
 
-        testMiddlewareB = (robot, context, next, done) ->
+        testMiddlewareB = (context, next, done) ->
           middlewareExecution.push('B')
           next(done)
 
@@ -131,7 +130,7 @@ describe 'Middleware', ->
       it 'always executes middleware after the function returns', (testDone) ->
         finished = false
 
-        @middleware.register (robot, context, next, done) ->
+        @middleware.register (context, next, done) ->
           expect(finished).to.be.ok
           testDone()
 
@@ -143,13 +142,13 @@ describe 'Middleware', ->
         # (executed in reverse order of definition)
         execution = []
 
-        testMiddlewareA = (robot, context, next, done) ->
+        testMiddlewareA = (context, next, done) ->
           execution.push 'middlewareA'
           next () ->
             execution.push 'doneA'
             done()
 
-        testMiddlewareB = (robot, context, next, done) ->
+        testMiddlewareB = (context, next, done) ->
           execution.push 'middlewareB'
           next () ->
             execution.push 'doneB'
@@ -173,15 +172,15 @@ describe 'Middleware', ->
         it 'does not execute subsequent middleware after the error is thrown', (testDone) ->
           middlewareExecution = []
 
-          testMiddlewareA = (robot, context, next, done) ->
+          testMiddlewareA = (context, next, done) ->
             middlewareExecution.push('A')
             next(done)
 
-          testMiddlewareB = (robot, context, next, done) ->
+          testMiddlewareB = (context, next, done) ->
             middlewareExecution.push('B')
             throw new Error
 
-          testMiddlewareC = (robot, context, next, done) ->
+          testMiddlewareC = (context, next, done) ->
             middlewareExecution.push('C')
             next(done)
 
@@ -205,7 +204,7 @@ describe 'Middleware', ->
           testResponse = {}
           theError = new Error
 
-          testMiddleware = (robot, context, next, done) ->
+          testMiddleware = (context, next, done) ->
             throw theError
 
           @middleware.register testMiddleware
@@ -229,13 +228,13 @@ describe 'Middleware', ->
         it 'unwinds the middleware stack (calling all done functions)', (testDone) ->
           extraDoneFunc = null
 
-          testMiddlewareA = (robot, context, next, done) ->
+          testMiddlewareA = (context, next, done) ->
             # Goal: make sure that the middleware stack is unwound correctly
             extraDoneFunc = sinon.spy () ->
               done()
             next extraDoneFunc
 
-          testMiddlewareB = (robot, context, next, done) ->
+          testMiddlewareB = (context, next, done) ->
             throw new Error
 
           @middleware.register testMiddlewareA
@@ -257,14 +256,14 @@ describe 'Middleware', ->
 
     describe '#register', ->
       it 'adds to the list of middleware', ->
-        testMiddleware = (robot, context, next, done) ->
+        testMiddleware = (context, next, done) ->
 
         @middleware.register testMiddleware
 
         expect(@middleware.stack).to.include(testMiddleware)
 
       it 'validates the arity of middleware', ->
-        testMiddleware = (robot, context, next, done, extra) ->
+        testMiddleware = (context, next, done, extra) ->
 
         expect(=> @middleware.register(testMiddleware)).to.throw(/Incorrect number of arguments/)
 
@@ -288,11 +287,11 @@ describe 'Middleware', ->
       }
 
       # Dummy middleware
-      @middleware = sinon.spy (robot, context, next, done) ->
+      @middleware = sinon.spy (context, next, done) ->
         next(done)
 
-      @robot.listenerMiddleware (robot, context, next, done) =>
-        @middleware.call @, robot, context, next, done
+      @robot.listenerMiddleware (context, next, done) =>
+        @middleware.call @, context, next, done
 
       @testMessage = new TextMessage @user, 'message123'
       @robot.hear /^message123$/, (response) ->
@@ -302,23 +301,11 @@ describe 'Middleware', ->
       @robot.server.close()
       @robot.shutdown()
 
-    describe 'robot', ->
-      it 'is the robot object', (testDone) ->
-        @robot.receive @testMessage, () =>
-          expect(@middleware).to.have.been.calledWithMatch(
-            sinon.match.same(@robot) # robot
-            sinon.match.any          # context
-            sinon.match.any          # next
-            sinon.match.any          # done
-          )
-          testDone()
-
     describe 'context', ->
       describe 'listener', ->
         it 'is the listener object that matched', (testDone) ->
           @robot.receive @testMessage, () =>
             expect(@middleware).to.have.been.calledWithMatch(
-              sinon.match.any                    # robot
               sinon.match.has('listener',
                 sinon.match.same(@testListener)) # context
               sinon.match.any                    # next
@@ -329,7 +316,6 @@ describe 'Middleware', ->
         it 'has options.id (metadata)', (testDone) ->
           @robot.receive @testMessage, () =>
             expect(@middleware).to.have.been.calledWithMatch(
-              sinon.match.any                    # robot
               sinon.match.has('listener',
                 sinon.match.has('options',
                   sinon.match.has('id')))        # context
@@ -342,7 +328,6 @@ describe 'Middleware', ->
         it 'is a Response that wraps the message', (testDone) ->
           @robot.receive @testMessage, () =>
             expect(@middleware).to.have.been.calledWithMatch(
-              sinon.match.any                         # robot
               sinon.match.has('response',
                 sinon.match.instanceOf(Response).and(
                   sinon.match.has('message',
@@ -356,7 +341,6 @@ describe 'Middleware', ->
       it 'is a function with arity one', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
-            sinon.match.any             # robot
             sinon.match.any             # context
             sinon.match.func.and(
               sinon.match.has('length',
@@ -369,7 +353,6 @@ describe 'Middleware', ->
       it 'is a function with arity zero', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
-            sinon.match.any             # robot
             sinon.match.any             # context
             sinon.match.any             # next
             sinon.match.func.and(

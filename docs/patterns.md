@@ -116,7 +116,7 @@ POWER_USERS = [
 ]
 
 module.exports = (robot) ->
-  robot.listenerMiddleware (robot, context, next, done) ->
+  robot.listenerMiddleware (context, next, done) ->
     if context.listener.options.id in POWER_COMMANDS
       if context.response.message.user.id in POWER_USERS
         # User is allowed access to this command

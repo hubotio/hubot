@@ -518,7 +518,7 @@ describe 'Robot', ->
       it 'allows listener callback execution', (testDone) ->
         listenerCallback = sinon.spy()
         @robot.hear /^message123$/, listenerCallback
-        @robot.listenerMiddleware (robot, context, next, done) ->
+        @robot.listenerMiddleware (context, next, done) ->
           # Allow Listener callback execution
           next done
 
@@ -530,7 +530,7 @@ describe 'Robot', ->
       it 'can block listener callback execution', (testDone) ->
         listenerCallback = sinon.spy()
         @robot.hear /^message123$/, listenerCallback
-        @robot.listenerMiddleware (robot, context, next, done) ->
+        @robot.listenerMiddleware (context, next, done) ->
           # Block Listener callback execution
           done()
 
@@ -544,10 +544,9 @@ describe 'Robot', ->
         testListener = @robot.listeners[0]
         testMessage = new TextMessage @user, 'message123'
 
-        @robot.listenerMiddleware (robot, context, next, done) =>
+        @robot.listenerMiddleware (context, next, done) =>
           # Escape middleware error handling for clearer test failures
           process.nextTick () =>
-            expect(robot).to.equal(@robot)
             expect(context.listener).to.equal(testListener)
             expect(context.response.message).to.equal(testMessage)
             expect(next).to.be.a('function')
@@ -559,13 +558,13 @@ describe 'Robot', ->
       it 'executes middleware in order of definition', (testDone) ->
         execution = []
 
-        testMiddlewareA = (robot, context, next, done) ->
+        testMiddlewareA = (context, next, done) ->
           execution.push 'middlewareA'
           next () ->
             execution.push 'doneA'
             done()
 
-        testMiddlewareB = (robot, context, next, done) ->
+        testMiddlewareB = (context, next, done) ->
           execution.push 'middlewareB'
           next () ->
             execution.push 'doneB'
