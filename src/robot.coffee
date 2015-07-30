@@ -3,12 +3,14 @@ Log            = require 'log'
 Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
+async          = require 'async'
 
 User = require './user'
 Brain = require './brain'
 Response = require './response'
 {Listener,TextListener} = require './listener'
 {EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+Middleware = require './middleware'
 
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
@@ -39,15 +41,17 @@ class Robot
   #
   # Returns nothing.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
-    @name      = name
-    @events    = new EventEmitter
-    @brain     = new Brain @
-    @alias     = false
-    @adapter   = null
-    @Response  = Response
-    @commands  = []
-    @listeners = []
-    @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @name       = name
+    @events     = new EventEmitter
+    @brain      = new Brain @
+    @alias      = false
+    @adapter    = null
+    @Response   = Response
+    @commands   = []
+    @listeners  = []
+    @middleware =
+      listener: new Middleware(@)
+    @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
     @globalHttpOptions = {}
 
@@ -217,24 +221,61 @@ class Robot
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
+  # Public: Registers new middleware for execution after matching but before
+  # Listener callbacks
+  #
+  # middleware - A function that determines whether or not a given matching
+  #              Listener should be executed. The function is called with
+  #              (robot, listener, response, next, done). If execution should
+  #              continue (next middleware, Listener callback), the middleware
+  #              should call the 'next' function with 'done' as an argument.
+  #              If not, the middleware should call the 'done' function with
+  #              no arguments.
+  #
+  # Returns nothing.
+  listenerMiddleware: (middleware) ->
+    @middleware.listener.register middleware
+    return undefined
+
   # Public: Passes the given message to any interested Listeners.
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
   #           prevent further execution.
   #
+  # cb - Optional callback that is called when message processing is complete
+  #
   # Returns nothing.
-  receive: (message) ->
-    results = []
-    for listener in @listeners
-      try
-        results.push listener.call(message)
-        break if message.done
-      catch error
-        @emit('error', error, new @Response(@, message, []))
+  # Returns before executing callback
+  receive: (message, cb) ->
+    # Try executing all registered Listeners in order of registration
+    # and return after message is done being processed
+    anyListenersExecuted = false
+    async.detectSeries(
+      @listeners,
+      (listener, cb) =>
+        try
+          listener.call message, @middleware.listener, (listenerExecuted) ->
+            anyListenersExecuted = anyListenersExecuted || listenerExecuted
+            # Defer to the event loop at least after every listener so the
+            # stack doesn't get too big
+            process.nextTick () ->
+              # Stop processing when message.done == true
+              cb(message.done)
+        catch err
+          @emit('error', err, new @Response(@, message, []))
+          # Continue to next listener when there is an error
+          cb(false)
+      ,
+      # Ignore the result ( == the listener that set message.done = true)
+      (_) =>
+        # If no registered Listener matched the message
+        if message not instanceof CatchAllMessage and not anyListenersExecuted
+          @logger.debug 'No listeners executed; falling back to catch-all'
+          @receive new CatchAllMessage(message), cb
+        else
+          process.nextTick cb if cb?
+    )
 
-        false
-    if message not instanceof CatchAllMessage and results.indexOf(true) is -1
-      @receive new CatchAllMessage(message)
 
   # Public: Loads a file in path.
   #

@@ -605,7 +605,7 @@ In addition to a regular expression and callback, the `hear` and `respond` funct
 
 The most important and most common metadata key is `id`. Every Listener should be given a unique name (options.id; defaults to `null`). Names should be scoped by module (e.g. 'my-module.my-listener'). These names allow other scripts to directly address individual listeners and extend them with additional functionality like authorization and rate limiting.
 
-Additional extensions may define and handle additional metadata keys.
+Additional extensions may define and handle additional metadata keys. For more information, see the [Listener Middleware section](#listener-middleware).
 
 Returning to an earlier example:
 
@@ -621,3 +621,101 @@ module.exports = (robot) ->
 These scoped identifiers allow you to externally specify new behaviors like:
 - authorization policy: "allow everyone in the `annoyers` group to execute `annoyance.*` commands"
 - rate limiting: "only allow executing `annoyance.start` once every 30 minutes"
+
+# Listener Middleware
+
+Hubot supports inserting logic between the listener matching a message and the listener executing. This allows you to create extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
+
+## Execution Process
+
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot listener middleware executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
+
+Middleware is called with:
+
+- a context object containing:
+  - matching Listener object (with associated metadata)
+  - response object (contains the original message)
+- next/done callbacks.
+
+For more details, see the [Listener Middleware API](#listener-middleware-api) section.
+
+### Error Handling
+
+For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
+
+## Listener Middleware Examples
+
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
+
+A simple example of middleware logging command executions:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.listenerMiddleware (context, next, done) ->
+    # Log commands
+    robot.logger.info "#{context.response.message.user.name} asked me to #{context.response.message.text}"
+    # Continue executing middleware
+    next(done)
+```
+
+In this example, a log message will be written for each chat message that matches a Listener.
+
+A more complex example making a rate limiting decision:
+
+```coffeescript
+module.exports = (robot) ->
+  # Map of listener ID to last time it was executed
+  lastExecutedTime = {}
+
+  robot.listenerMiddleware (context, next, done) ->
+    try
+      # Default to 1s unless listener provides a different minimum period
+      minPeriodMs = context.listener.options?.rateLimits?.minPeriodMs? or 1000
+
+      # See if command has been executed recently
+      if lastExecutedTime.hasOwnProperty(context.listener.options.id) and
+         lastExecutedTime[context.listener.options.id] > Date.now() - minPeriodMs
+        # Command is being executed too quickly!
+        done()
+      else
+        next () ->
+          lastExecutedTime[context.listener.options.id] = Date.now()
+          done()
+    catch err
+      robot.emit('error', err, context.response)
+```
+
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+
+This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (msg) ->
+    # This will execute no faster than once every ten seconds
+    msg.reply 'Why, hello there!'
+```
+
+## Listener Middleware API
+
+Although internal data structures are exposed, not all properties on the objects are considered part of the supported API. Below are the supported properties and usage information for each of the arguments middleware receives.
+
+- `context`
+  - `listener`
+    - `options`: a simple Object containing options set when defining the listener. See [Listener Metadata](#listener-metadata).
+    - all other properties should be considered internal
+
+  - `response`
+    - all parts of the standard response API are included in the middleware API. See [Send & Reply](#send--reply).
+    - middleware may decorate (but not modify) the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
+    - note: the textual message (`response.message.text`) should be considered immutable in listener middleware
+
+- `next`
+  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
+  - `next` should be called with a single argument: either the provided `done` function or a new function that eventually calls `done`
+
+- `done`
+ - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
+ - `done` should be called with no arguments
+
+Note that this API is protected by automated tests (`test/middleware_test.coffee`) to prevent breakage. Anything not covered by the tests is susceptible to change.

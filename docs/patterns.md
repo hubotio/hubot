@@ -77,3 +77,68 @@ module.export = (robot) ->
   robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 ```
+
+## Restricting access to commands
+
+One of the awesome features of Hubot is its ability to make changes to a production environment with a single chat message. However, not everyone with access to your chat service should be able to trigger production changes.
+
+There are a variety of different patterns for restricting access that you can follow depending on your specific needs:
+
+* Two buckets of access: full and restricted with whitelist/blacklist
+* specific access rules for every command (Role-based Access Control)
+
+### Simple (full vs restricted access)
+
+In some organizations, almost all employees are given the same level of access and only a select few need to be restricted (e.g. new hires, contractors, etc.). In this model, you partition the set of all listeners to separate the "power commands" from the "normal commands".
+
+Once you have segregated the listeners, you need to make some tradeoff decisions around whitelisting/blacklisting users and listeners.
+
+The key deciding factors for whitelisting vs blacklisting of users are the number of users in each category, the frequency of change in either category, and the level of security risk your organization is willing to accept.
+* Whitelisting users (users X, Y, Z have access to power commands; all other users only get access to normal commands) is a more secure method of access (new users have no default access to power commands), but has higher maintenance overhead (you need to add each new user to the "approved" list).
+* Blacklisting users (all users get access to power commands, except for users X, Y, Z, who only get access to normal commands) is a less secure method (new users have default access to power commands until they are added to the blacklist), but has a much lower maintenance overhead if the blacklist is small/rarely updated.
+
+The key deciding factors for selectively allowing vs restricting listeners are the number of listeners in each category, the ratio of internal to external scripts, and the level of security risk your organization is willing to accept.
+* Selectively allowing listeners (all listeners are power commands, except for listeners A, B, C, which are considered normal commands) is a more secure method (new listeners are restricted by default), but has a much higher maintenance overhead (every silly/fun listener needs to be explicity downgraded to "normal" status).
+* Selectively restricting listeners (listeners A, B, C are power commands, everything else is a normal command) is a less secure method (new listeners are put into the normal category by default, which could give unexpected access; external scripts are particularly scary here), but has a lower maintenance overhead (no need to modify/enumerate all the fun/culture scripts in your access policy).
+
+As an additional consideration, most scripts do not currently have listener IDs, so you will likely need to open PRs (or fork) any external scripts you use to add listener IDs. The actual modification is easy, but coordinating with lots of maintainers can be time consuming.
+
+Once you have decided which of the four possible models to follow, you need to build the appropriate lists of users and listeners to plug into your authorization middleware.
+
+Example: whitelist of users given access to selectively restricted power commands
+```coffeescript
+POWER_COMMANDS = [
+  'deploy.web' # String that matches the listener ID
+]
+
+POWER_USERS = [
+  'jdoe' # String that matches the user ID set by the adapter
+]
+
+module.exports = (robot) ->
+  robot.listenerMiddleware (context, next, done) ->
+    if context.listener.options.id in POWER_COMMANDS
+      if context.response.message.user.id in POWER_USERS
+        # User is allowed access to this command
+        next(done)
+      else
+        # Restricted command, but user isn't in whitelist
+        context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+        done()
+    else
+      # This is not a restricted command; allow everyone
+      next(done)
+```
+
+Remember that middleware executes for ALL listeners that match a given message (including `robot.hear /.+/`), so make sure you include them when categorizing your listeners.
+
+### Specific access rules per listener
+
+For larger organizations, a binary categorization of access is usually insufficient and more complex access rules are required.
+
+Example access policy:
+* Each development team has access to cut releases and deploy their service
+* The Operations group has access to deploy all services (but not cut releases)
+* The front desk cannot cut releases nor deploy services
+
+Complex policies like this are currently best implemented in code directly, though there is [ongoing work](https://github.com/michaelansel/hubot-rbac) to build a generalized framework for access management.
