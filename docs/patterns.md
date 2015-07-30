@@ -146,6 +146,6 @@ Complex policies like this are currently best implemented in code directly, thou
 
 ### Specific access rules per room
 
-For organizations that have a number of chat rooms that serve different purposes, often you want to be able to use the same instance of hubot but have a different set of commands allowed in each rooms
+Organizations that have a number of chat rooms that serve different purposes often want to be able to use the same instance of hubot but have a different set of commands allowed in each room.
 
 Work on generalized blacklist solution is [ongoing](https://github.com/kristenmills/hubot-command-blacklist). A whitelist soultion could take a similar approach.
