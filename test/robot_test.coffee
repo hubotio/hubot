@@ -35,6 +35,7 @@ describe 'Robot', ->
 
     # Re-throw AssertionErrors for clearer test failures
     @robot.on 'error', (name, err, response) ->
+      return unless err?
       if err.constructor.name == "AssertionError"
         process.nextTick () ->
           throw err
