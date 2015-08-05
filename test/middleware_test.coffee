@@ -270,7 +270,7 @@ describe 'Middleware', ->
   # Per the documentation in docs/scripting.md
   # Any new fields that are exposed to middleware should be explicitly
   # tested for.
-  describe 'Listener Middleware Public API', ->
+  describe 'Public Middleware APIs', ->
     beforeEach ->
       @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
       @robot.run
@@ -290,9 +290,6 @@ describe 'Middleware', ->
       @middleware = sinon.spy (context, next, done) ->
         next(done)
 
-      @robot.listenerMiddleware (context, next, done) =>
-        @middleware.call @, context, next, done
-
       @testMessage = new TextMessage @user, 'message123'
       @robot.hear /^message123$/, (response) ->
       @testListener = @robot.listeners[0]
@@ -301,7 +298,11 @@ describe 'Middleware', ->
       @robot.server.close()
       @robot.shutdown()
 
-    describe 'context', ->
+    describe 'listner middleware context', ->
+      beforeEach ->
+        @robot.listenerMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
       describe 'listener', ->
         it 'is the listener object that matched', (testDone) ->
           @robot.receive @testMessage, () =>
@@ -337,7 +338,29 @@ describe 'Middleware', ->
             )
             testDone()
 
+    describe 'receive middleware context', ->
+      beforeEach ->
+        @robot.receiveMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
+      describe 'response', ->
+        it 'is a match-less Response object', (testDone) ->
+          @robot.receive @testMessage, () =>
+            expect(@middleware).to.have.been.calledWithMatch(
+              sinon.match.has('response',
+                sinon.match.instanceOf(Response).and(
+                  sinon.match.has('message',
+                    sinon.match.same(@testMessage)))) # context
+              sinon.match.any                         # next
+              sinon.match.any                         # done
+            )
+            testDone()
+
     describe 'next', ->
+      beforeEach ->
+        @robot.listenerMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
       it 'is a function with arity one', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
@@ -350,6 +373,10 @@ describe 'Middleware', ->
           testDone()
 
     describe 'done', ->
+      beforeEach ->
+        @robot.listenerMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
       it 'is a function with arity zero', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
