@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "hubot-mock-adapter": "^1.0.0",
+    "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
     "sinon-chai": "^2.6.0"
