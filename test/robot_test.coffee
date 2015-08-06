@@ -647,3 +647,20 @@ describe 'Robot', ->
             'doneA'
           ])
           testDone()
+
+    describe 'Response Middleware', ->
+      it 'allows listener callback execution', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar."
+
+        @robot.responseMiddleware (context, next, done) ->
+          context.string = context.string.replace(/foobar/g, "barfoo")
+          console.log "string in middleware: #{context.string}"
+          next done
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(sendSpy.getCall(0).args[1]).to.equal('barfoo, sir, barfoo.')
+          testDone()

@@ -19,7 +19,18 @@ class Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.adapter.send @envelope, strings...
+    adapter = @robot.adapter
+    for string in strings
+      return string() if typeof(string) == 'function'
+      context = {response: @, string: string}
+      responseMiddlewareDone = ->
+      runAdapterSend = (_, done) =>
+        @robot.adapter.send @envelope, context.string, done
+      @robot.middleware.response.execute context,
+                                         runAdapterSend,
+                                         responseMiddlewareDone
+
+
 
   # Public: Posts an emote back to the chat source
   #
