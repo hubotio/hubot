@@ -266,9 +266,7 @@ class Robot
   receive: (message, cb) ->
     # When everything is finished (down the middleware stack and back up),
     # pass control back to the robot
-    receiveMiddlewareDone = () ->
-      if cb?
-        process.nextTick -> cb true
+    receiveMiddlewareDone = cb or ->
 
     @middleware.receive.execute(
       {response: new Response(this, message)}
