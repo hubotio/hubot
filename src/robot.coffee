@@ -266,12 +266,10 @@ class Robot
   receive: (message, cb) ->
     # When everything is finished (down the middleware stack and back up),
     # pass control back to the robot
-    receiveMiddlewareDone = cb or ->
-
     @middleware.receive.execute(
       {response: new Response(this, message)}
       @processListeners.bind this
-      receiveMiddlewareDone
+      cb
     )
 
   # Private: Passes the given message to any interested Listeners.

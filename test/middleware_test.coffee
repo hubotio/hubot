@@ -137,6 +137,17 @@ describe 'Middleware', ->
         @middleware.execute {}, (->), (->)
         finished = true
 
+      it 'creates a default "done" function', (testDone) ->
+        finished = false
+
+        @middleware.register (context, next, done) ->
+          expect(finished).to.be.ok
+          testDone()
+
+        # we're testing the lack of a third argument here.
+        @middleware.execute {}, (->)
+        finished = true
+
       it 'does the right thing with done callbacks', (testDone) ->
         # we want to ensure that the 'done' callbacks are nested correctly
         # (executed in reverse order of definition)
