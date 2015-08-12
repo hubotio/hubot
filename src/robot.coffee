@@ -270,7 +270,7 @@ class Robot
 
     @middleware.receive.execute(
       {response: new Response(this, message)}
-      @processListeners.bind this, message
+      @processListeners.bind this
       receiveMiddlewareDone
     )
 
@@ -283,7 +283,7 @@ class Robot
   #
   # Returns nothing.
   # Returns before executing callback
-  processListeners: (message, context, done) ->
+  processListeners: (context, done) ->
     # Try executing all registered Listeners in order of registration
     # and return after message is done being processed
     anyListenersExecuted = false
@@ -291,24 +291,24 @@ class Robot
       @listeners,
       (listener, cb) =>
         try
-          listener.call message, @middleware.listener, (listenerExecuted) ->
+          listener.call context.response.message, @middleware.listener, (listenerExecuted) ->
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
             # Defer to the event loop at least after every listener so the
             # stack doesn't get too big
             process.nextTick () ->
               # Stop processing when message.done == true
-              cb(message.done)
+              cb(context.response.message.done)
         catch err
-          @emit('error', err, new @Response(@, message, []))
+          @emit('error', err, new @Response(@, context.response.message, []))
           # Continue to next listener when there is an error
           cb(false)
       ,
       # Ignore the result ( == the listener that set message.done = true)
       (_) =>
         # If no registered Listener matched the message
-        if message not instanceof CatchAllMessage and not anyListenersExecuted
+        if context.response.message not instanceof CatchAllMessage and not anyListenersExecuted
           @logger.debug 'No listeners executed; falling back to catch-all'
-          @receive new CatchAllMessage(message), done
+          @receive new CatchAllMessage(context.response.message), done
         else
           process.nextTick done if done?
     )
