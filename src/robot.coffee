@@ -310,6 +310,7 @@ class Robot
         else
           process.nextTick done if done?
     )
+    return undefined
 
 
   # Public: Loads a file in path.
