@@ -26,7 +26,7 @@ class Middleware
     # logic).
     executeSingleMiddleware = (doneFunc, middlewareFunc, cb) =>
       # Match the async.reduce interface
-      nextFunc = (newDoneFunc) -> cb(null, newDoneFunc)
+      nextFunc = (newDoneFunc) -> cb(null, newDoneFunc or doneFunc)
       # Catch errors in synchronous middleware
       try
         middlewareFunc.call(undefined, context, nextFunc, doneFunc)
@@ -50,7 +50,8 @@ class Middleware
   #              continue the pipeline or interrupt it. The function is called
   #              with (robot, context, next, done). If execution should
   #              continue (next middleware, final callback), the middleware
-  #              should call the 'next' function with 'done' as an argument.
+  #              should call the 'next' function with 'done' as an optional
+  #              argument.
   #              If not, the middleware should call the 'done' function with
   #              no arguments. Middleware may wrap the 'done' function in
   #              order to execute logic after the final callback has been
