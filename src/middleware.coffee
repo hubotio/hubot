@@ -21,7 +21,7 @@ class Middleware
   # Returns nothing
   # Returns before executing any middleware
   execute: (context, next, done) ->
-    done ||= ->
+    done ?= ->
     # Execute a single piece of middleware and update the completion callback
     # (each piece of middleware can wrap the 'done' callback with additional
     # logic).
