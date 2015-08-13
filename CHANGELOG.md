@@ -1,3 +1,10 @@
+v2.14.0
+=======
+
+* Lots of documentation tweaks and new adapters
+* Added a code of conduct https://github.com/github/hubot/pull/1005
+* Add Listener Middleware https://github.com/github/hubot/pull/803
+
 v2.13.2
 =======
 

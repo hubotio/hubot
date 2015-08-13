@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.13.2",
+  "version": "2.14.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -15,6 +15,7 @@
     "url": "https://github.com/github/hubot.git"
   },
   "dependencies": {
+    "async": ">=0.1.0 <1.0.0",
     "chalk": "^1.0.0",
     "cline": "^0.8.2",
     "coffee-script": "1.6.3",
