@@ -72,7 +72,8 @@ class Robot
   # callback
   #
   # matcher  - A Function that determines whether to call the callback.
-  #            Expected to return a boolean.
+  #            Expected to return a truthy value if the callback should be
+  #            executed.
   # options  - An Object of additional parameters keyed on extension name
   #            (optional).
   # callback - A Function that is called with a Response object if the

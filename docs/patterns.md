@@ -84,7 +84,7 @@ In some situations, you want to dynamically match different messages (e.g. facto
 
 In a simple robot, this isn't much different from just putting the conditions in the Listener callback, but it makes a big difference when you are dealing with middleware: with the basic model, middleware will be executed for every match of the generic regex. With the dynamic matching model, middleware will only be executed when the dynamic conditions are matched.
 
-For example, the factoid lookup command could be reimplemented as:
+For example, the [factoid lookup command](https://github.com/github/hubot-scripts/blob/bd810f99f9394818a9dcc2ea3729427e4101b96d/src/scripts/factoid.coffee#L95-L99) could be reimplemented as:
 
 ```coffeescript
 module.exports = (robot) ->
