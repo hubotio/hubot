@@ -309,7 +309,7 @@ describe 'Middleware', ->
       @robot.server.close()
       @robot.shutdown()
 
-    describe 'listner middleware context', ->
+    describe 'listener middleware context', ->
       beforeEach ->
         @robot.listenerMiddleware (context, next, done) =>
           @middleware.call @, context, next, done

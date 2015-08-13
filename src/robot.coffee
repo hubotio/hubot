@@ -240,13 +240,12 @@ class Robot
 
   # Public: Registers new middleware for execution before matching
   #
-  # middleware - A function that determines whether or not a given matching
-  #              Listener should be executed. The function is called with
-  #              (context, next, done). If execution should
-  #              continue to the next middleware or matching phase,
-  #              should call the 'next' function with 'done' as an argument.
-  #              If not, the middleware should call the 'done' function with
-  #              no arguments.
+  # middleware - A function that determines whether or not listeners should be
+  #              checked. The function is called with (context, next, done). If
+  #              ext, next, done). If execution should continue to the next
+  #              middleware or matching phase, it should call the 'next'
+  #              function with 'done' as an argument. If not, the middleware
+  #              should call the 'done' function with no arguments.
   #
   # Returns nothing.
   receiveMiddleware: (middleware) ->
@@ -277,7 +276,7 @@ class Robot
   # message - A Message instance. Listeners can flag this message as 'done' to
   #           prevent further execution.
   #
-  # cb - Optional callback that is called when message processing is complete
+  # done - Optional callback that is called when message processing is complete
   #
   # Returns nothing.
   # Returns before executing callback
