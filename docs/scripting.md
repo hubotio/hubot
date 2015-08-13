@@ -655,7 +655,7 @@ module.exports = (robot) ->
     # Log commands
     robot.logger.info "#{context.response.message.user.name} asked me to #{context.response.message.text}"
     # Continue executing middleware
-    next(done)
+    next()
 ```
 
 In this example, a log message will be written for each chat message that matches a Listener.
@@ -678,7 +678,7 @@ module.exports = (robot) ->
         # Command is being executed too quickly!
         done()
       else
-        next () ->
+        next ->
           lastExecutedTime[context.listener.options.id] = Date.now()
           done()
     catch err
@@ -712,7 +712,7 @@ Although internal data structures are exposed, not all properties on the objects
 
 - `next`
   - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
-  - `next` should be called with a single argument: either the provided `done` function or a new function that eventually calls `done`
+  - `next` should be called with a single optional argument: either the provided `done` function or a new function that eventually calls `done`
 
 - `done`
  - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
