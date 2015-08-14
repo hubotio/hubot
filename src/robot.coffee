@@ -221,6 +221,16 @@ class Robot
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
+  # Public: Find the listener with matching ID. Behavior is undefined if
+  # multiple listeners have the same ID
+  #
+  # id - String that should exactly match listener.options.id
+  #
+  # Returns Listener instance
+  listenerById: (id) ->
+    results = @listeners.filter (listener) -> listener.options.id == id
+    results[0] or null
+
   # Public: Registers new middleware for execution after matching but before
   # Listener callbacks
   #
