@@ -262,9 +262,9 @@ describe 'Listener', ->
 
       it 'requires a callback', ->
         # No options
-        expect(() -> new Listener(@robot, sinon.spy(), undefined)).to.throw(Error)
+        expect(-> new Listener(@robot, sinon.spy())).to.throw(Error)
         # With options
-        expect(() -> new Listener(@robot, sinon.spy(), {}, undefined)).to.throw(Error)
+        expect(-> new Listener(@robot, sinon.spy(), {})).to.throw(Error)
 
       it 'gracefully handles missing options', ->
         testMatcher = sinon.spy()
