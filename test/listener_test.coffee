@@ -78,27 +78,24 @@ describe 'Listener', ->
 
 
         it 'returns true', () ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           result = testListener.call testMessage
           expect(result).to.be.ok
 
         it 'calls the provided callback with true', (done) ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           testListener.call testMessage, (result) ->
             expect(result).to.be.ok
             done()
 
         it 'calls the provided callback after the function returns', (done) ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           finished = false
           testListener.call testMessage, (result) ->
             expect(finished).to.be.ok
@@ -145,10 +142,9 @@ describe 'Listener', ->
           testListener.call testMessage, sinon.spy()
 
         it 'passes through the provided middleware stack', (testDone) ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           testMiddleware =
             execute: (context, next, done) ->
               expect(context.listener).to.be.equal(testListener)
@@ -225,27 +221,24 @@ describe 'Listener', ->
 
 
         it 'returns false', () ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           result = testListener.call testMessage
           expect(result).to.not.be.ok
 
         it 'calls the provided callback with false', (done) ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           testListener.call testMessage, (result) ->
             expect(result).to.not.be.ok
             done()
 
         it 'calls the provided callback after the function returns', (done) ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           finished = false
           testListener.call testMessage, (result) ->
             expect(finished).to.be.ok
@@ -253,10 +246,9 @@ describe 'Listener', ->
           finished = true
 
         it 'does not execute any middleware', (done) ->
-          listenerCallback = sinon.spy()
           testMessage = {}
 
-          testListener = @createListener listenerCallback
+          testListener = @createListener ->
           testMiddleware =
             execute: sinon.spy()
 
