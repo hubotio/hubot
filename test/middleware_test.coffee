@@ -144,20 +144,20 @@ describe 'Middleware', ->
 
         testMiddlewareA = (context, next, done) ->
           execution.push 'middlewareA'
-          next () ->
+          next ->
             execution.push 'doneA'
             done()
 
         testMiddlewareB = (context, next, done) ->
           execution.push 'middlewareB'
-          next () ->
+          next ->
             execution.push 'doneB'
             done()
 
         @middleware.register testMiddlewareA
         @middleware.register testMiddlewareB
 
-        allDone = () ->
+        allDone = ->
           expect(execution).to.deep.equal(['middlewareA', 'middlewareB', 'doneB', 'doneA'])
           testDone()
 
@@ -175,7 +175,7 @@ describe 'Middleware', ->
 
         testMiddlewareA = (context, next, done) ->
           execution.push 'middlewareA'
-          next () ->
+          next ->
             execution.push 'doneA'
             done()
 
@@ -186,7 +186,7 @@ describe 'Middleware', ->
         @middleware.register testMiddlewareA
         @middleware.register testMiddlewareB
 
-        allDone = () ->
+        allDone = ->
           expect(execution).to.deep.equal(['middlewareA', 'middlewareB', 'doneA'])
           testDone()
 
@@ -259,8 +259,7 @@ describe 'Middleware', ->
 
           testMiddlewareA = (context, next, done) ->
             # Goal: make sure that the middleware stack is unwound correctly
-            extraDoneFunc = sinon.spy () ->
-              done()
+            extraDoneFunc = sinon.spy done
             next extraDoneFunc
 
           testMiddlewareB = (context, next, done) ->
@@ -270,7 +269,7 @@ describe 'Middleware', ->
           @middleware.register testMiddlewareB
 
           middlewareFinished = sinon.spy()
-          middlewareFailed = () ->
+          middlewareFailed = ->
             # Sanity check that the error was actually thrown
             expect(middlewareFinished).to.not.have.been.called
 
@@ -307,7 +306,7 @@ describe 'Middleware', ->
       # Re-throw AssertionErrors for clearer test failures
       @robot.on 'error', (name, err, response) ->
         if err?.constructor?.name == "AssertionError"
-          process.nextTick () ->
+          process.nextTick ->
             throw err
 
       @user = @robot.brain.userForId '1', {

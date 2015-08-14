@@ -18,11 +18,11 @@ describe 'Listener', ->
       # Re-throw AssertionErrors for clearer test failures
       emit: (name, err, response) ->
         if err.constructor.name == "AssertionError"
-          process.nextTick () ->
+          process.nextTick ->
             throw err
       # Ignore log messages
       logger:
-        debug: () ->
+        debug: ->
       # Why is this part of the Robot object??
       Response: Response
 
@@ -77,7 +77,7 @@ describe 'Listener', ->
             done()
 
 
-        it 'returns true', () ->
+        it 'returns true', ->
           testMessage = {}
 
           testListener = @createListener ->
@@ -220,7 +220,7 @@ describe 'Listener', ->
             done()
 
 
-        it 'returns false', () ->
+        it 'returns false', ->
           testMessage = {}
 
           testListener = @createListener ->
@@ -258,7 +258,7 @@ describe 'Listener', ->
 
     describe '#constructor', ->
       it 'requires a matcher', ->
-        expect(() -> new Listener(@robot, undefined, {}, sinon.spy())).to.throw(Error)
+        expect(-> new Listener(@robot, undefined, {}, sinon.spy())).to.throw(Error)
 
       it 'requires a callback', ->
         # No options
