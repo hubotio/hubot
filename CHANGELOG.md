@@ -1,3 +1,10 @@
+v2.15.0
+=======
+
+* Document another middleware pattern https://github.com/github/hubot/pull/1017
+* Make Robot.respondPattern a public method https://github.com/github/hubot/pull/1011
+* Make "done" argument optional for middleware https://github.com/github/hubot/pull/1028
+
 v2.14.0
 =======
 
