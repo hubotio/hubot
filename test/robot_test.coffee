@@ -725,3 +725,24 @@ describe 'Robot', ->
             'doneA'
           ])
           testDone()
+
+      it 'allows editing the message portion of the given response', (testDone) ->
+        execution = []
+
+        testMiddlewareA = (context, next, done) ->
+          context.response.message.text = "foobar"
+          next()
+
+        testMiddlewareB = (context, next, done) ->
+          expect(context.response.message.text).to.equal("foobar")
+          next()
+
+        @robot.receiveMiddleware testMiddlewareA
+        @robot.receiveMiddleware testMiddlewareB
+
+        @robot.hear /^foobar$/, () ->
+          # We'll never get to this if testMiddlewareA has not modified the message.
+          testDone()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage
