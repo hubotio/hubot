@@ -1,7 +1,7 @@
-[v2.16.0](https://github.com/github/hubot/tree/HEAD)
+[v2.16.0](https://github.com/github/hubot/tree/v2.16.0)
 ========
 
-[Full Changelog](https://github.com/github/hubot/compare/v2.15.0...HEAD)
+[Full Changelog](https://github.com/github/hubot/compare/v2.15.0...v2.16.0)
 
 **Merged pull requests:**
 
