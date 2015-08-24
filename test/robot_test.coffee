@@ -35,6 +35,7 @@ describe 'Robot', ->
 
     # Re-throw AssertionErrors for clearer test failures
     @robot.on 'error', (name, err, response) ->
+      return unless err?.constructor?
       if err.constructor.name == "AssertionError"
         process.nextTick ->
           throw err
@@ -665,3 +666,101 @@ describe 'Robot', ->
             'doneA'
           ])
           testDone()
+
+    describe 'Receive Middleware', ->
+      it 'fires for all messages, including non-matching ones', (testDone) ->
+        middlewareSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, listenerCallback
+        @robot.receiveMiddleware (context, next, done) ->
+          middlewareSpy()
+          next(done)
+
+        testMessage = new TextMessage @user, 'not message 123'
+
+        @robot.receive testMessage, () ->
+          expect(listenerCallback).to.not.have.been.called
+          expect(middlewareSpy).to.have.been.called
+          testDone()
+
+      it 'can block listener execution', (testDone) ->
+        middlewareSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, listenerCallback
+        @robot.receiveMiddleware (context, next, done) ->
+          # Block Listener callback execution
+          middlewareSpy()
+          done()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(listenerCallback).to.not.have.been.called
+          expect(middlewareSpy).to.have.been.called
+          testDone()
+
+      it 'receives the correct arguments', (testDone) ->
+        @robot.hear /^message123$/, () ->
+        testMessage = new TextMessage @user, 'message123'
+
+        @robot.receiveMiddleware (context, next, done) ->
+          # Escape middleware error handling for clearer test failures
+          expect(context.response.message).to.equal(testMessage)
+          expect(next).to.be.a('function')
+          expect(done).to.be.a('function')
+          testDone()
+          next(done)
+
+        @robot.receive testMessage
+
+      it 'executes receive middleware in order of definition', (testDone) ->
+        execution = []
+
+        testMiddlewareA = (context, next, done) ->
+          execution.push 'middlewareA'
+          next () ->
+            execution.push 'doneA'
+            done()
+
+        testMiddlewareB = (context, next, done) ->
+          execution.push 'middlewareB'
+          next () ->
+            execution.push 'doneB'
+            done()
+
+        @robot.receiveMiddleware testMiddlewareA
+        @robot.receiveMiddleware testMiddlewareB
+
+        @robot.hear /^message123$/, () ->
+          execution.push 'listener'
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(execution).to.deep.equal([
+            'middlewareA'
+            'middlewareB'
+            'listener'
+            'doneB'
+            'doneA'
+          ])
+          testDone()
+
+      it 'allows editing the message portion of the given response', (testDone) ->
+        execution = []
+
+        testMiddlewareA = (context, next, done) ->
+          context.response.message.text = "foobar"
+          next()
+
+        testMiddlewareB = (context, next, done) ->
+          expect(context.response.message.text).to.equal("foobar")
+          next()
+
+        @robot.receiveMiddleware testMiddlewareA
+        @robot.receiveMiddleware testMiddlewareB
+
+        @robot.hear /^foobar$/, () ->
+          # We'll never get to this if testMiddlewareA has not modified the message.
+          testDone()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage

@@ -119,7 +119,7 @@ There are a variety of different patterns for restricting access that you can fo
 * Specific access rules for every command (Role-based Access Control)
 * Blacklisting/whitelisting commands in specific rooms
 
-### Simple (full vs restricted access)
+### Simple per-listener access
 
 In some organizations, almost all employees are given the same level of access and only a select few need to be restricted (e.g. new hires, contractors, etc.). In this model, you partition the set of all listeners to separate the "power commands" from the "normal commands".
 

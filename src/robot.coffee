@@ -51,6 +51,7 @@ class Robot
     @listeners  = []
     @middleware =
       listener: new Middleware(@)
+      receive:  new Middleware(@)
     @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
     @globalHttpOptions = {}
@@ -237,7 +238,7 @@ class Robot
   #
   # middleware - A function that determines whether or not a given matching
   #              Listener should be executed. The function is called with
-  #              (robot, listener, response, next, done). If execution should
+  #              (context, next, done). If execution should
   #              continue (next middleware, Listener callback), the middleware
   #              should call the 'next' function with 'done' as an argument.
   #              If not, the middleware should call the 'done' function with
@@ -248,7 +249,22 @@ class Robot
     @middleware.listener.register middleware
     return undefined
 
-  # Public: Passes the given message to any interested Listeners.
+  # Public: Registers new middleware for execution before matching
+  #
+  # middleware - A function that determines whether or not listeners should be
+  #              checked. The function is called with (context, next, done). If
+  #              ext, next, done). If execution should continue to the next
+  #              middleware or matching phase, it should call the 'next'
+  #              function with 'done' as an argument. If not, the middleware
+  #              should call the 'done' function with no arguments.
+  #
+  # Returns nothing.
+  receiveMiddleware: (middleware) ->
+    @middleware.receive.register middleware
+    return undefined
+
+  # Public: Passes the given message to any interested Listeners after running
+  #         receive middleware.
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
   #           prevent further execution.
@@ -258,6 +274,24 @@ class Robot
   # Returns nothing.
   # Returns before executing callback
   receive: (message, cb) ->
+    # When everything is finished (down the middleware stack and back up),
+    # pass control back to the robot
+    @middleware.receive.execute(
+      {response: new Response(this, message)}
+      @processListeners.bind this
+      cb
+    )
+
+  # Private: Passes the given message to any interested Listeners.
+  #
+  # message - A Message instance. Listeners can flag this message as 'done' to
+  #           prevent further execution.
+  #
+  # done - Optional callback that is called when message processing is complete
+  #
+  # Returns nothing.
+  # Returns before executing callback
+  processListeners: (context, done) ->
     # Try executing all registered Listeners in order of registration
     # and return after message is done being processed
     anyListenersExecuted = false
@@ -265,27 +299,28 @@ class Robot
       @listeners,
       (listener, cb) =>
         try
-          listener.call message, @middleware.listener, (listenerExecuted) ->
+          listener.call context.response.message, @middleware.listener, (listenerExecuted) ->
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
             # Defer to the event loop at least after every listener so the
             # stack doesn't get too big
             process.nextTick () ->
               # Stop processing when message.done == true
-              cb(message.done)
+              cb(context.response.message.done)
         catch err
-          @emit('error', err, new @Response(@, message, []))
+          @emit('error', err, new @Response(@, context.response.message, []))
           # Continue to next listener when there is an error
           cb(false)
       ,
       # Ignore the result ( == the listener that set message.done = true)
       (_) =>
         # If no registered Listener matched the message
-        if message not instanceof CatchAllMessage and not anyListenersExecuted
+        if context.response.message not instanceof CatchAllMessage and not anyListenersExecuted
           @logger.debug 'No listeners executed; falling back to catch-all'
-          @receive new CatchAllMessage(message), cb
+          @receive new CatchAllMessage(context.response.message), done
         else
-          process.nextTick cb if cb?
+          process.nextTick done if done?
     )
+    return undefined
 
 
   # Public: Loads a file in path.
