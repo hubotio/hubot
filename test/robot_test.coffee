@@ -36,7 +36,7 @@ describe 'Robot', ->
     # Re-throw AssertionErrors for clearer test failures
     @robot.on 'error', (name, err, response) ->
       if err.constructor.name == "AssertionError"
-        process.nextTick () ->
+        process.nextTick ->
           throw err
 
     @user = @robot.brain.userForId '1', {
@@ -194,7 +194,7 @@ describe 'Robot', ->
           listener
         ]
 
-        @robot.receive testMessage, () ->
+        @robot.receive testMessage, ->
           # When no listeners match, each listener is called twice: once with
           # the original message and once with a CatchAll message
           expect(listener.call).to.have.callCount(8)
@@ -237,8 +237,7 @@ describe 'Robot', ->
         ]
 
         # Call the original receive method that we want to test
-        oldReceive.call @robot, testMessage, () ->
-          done()
+        oldReceive.call @robot, testMessage, done
 
         # Ensure the function did not recurse
         expect(@robot.receive).to.not.have.been.called
@@ -260,7 +259,7 @@ describe 'Robot', ->
           listenerSpy
         ]
 
-        @robot.receive testMessage, () ->
+        @robot.receive testMessage, ->
           expect(listenerSpy.call).to.not.have.been.called
           done()
 
@@ -269,7 +268,7 @@ describe 'Robot', ->
         theError = new Error()
 
         badListener =
-          call: () ->
+          call: ->
             throw theError
 
         goodListenerCalled = false
@@ -498,7 +497,7 @@ describe 'Robot', ->
       @robot.hear /^message123$/, listenerCallback
       @robot.hear /^message123$/, listenerCallback
 
-      @robot.receive testMessage, () ->
+      @robot.receive testMessage, ->
         expect(listenersCalled).to.equal(2)
         done()
 
@@ -524,7 +523,7 @@ describe 'Robot', ->
       catchAllCallback = sinon.spy()
       @robot.catchAll catchAllCallback
 
-      @robot.receive testMessage, () ->
+      @robot.receive testMessage, ->
         expect(listenerCallback).to.have.been.called.once
         expect(catchAllCallback).to.not.have.been.called
         done()
@@ -538,7 +537,7 @@ describe 'Robot', ->
       listenerCallback = sinon.spy()
       @robot.hear /^message123$/, listenerCallback
 
-      @robot.receive testMessage, () ->
+      @robot.receive testMessage, ->
         expect(listenerCallback).to.not.have.been.called
         done()
 
@@ -555,11 +554,11 @@ describe 'Robot', ->
       testMessage = new TextMessage @user, 'message123'
       theError = new Error()
 
-      @robot.hear /^message123$/, () ->
+      @robot.hear /^message123$/, ->
         throw theError
 
       goodListenerCalled = false
-      @robot.hear /^message123$/, () ->
+      @robot.hear /^message123$/, ->
         goodListenerCalled = true
 
       [badListener,goodListener] = @robot.listeners
@@ -584,7 +583,7 @@ describe 'Robot', ->
           next done
 
         testMessage = new TextMessage @user, 'message123'
-        @robot.receive testMessage, () ->
+        @robot.receive testMessage, ->
           expect(listenerCallback).to.have.been.called
           testDone()
 
@@ -596,12 +595,12 @@ describe 'Robot', ->
           done()
 
         testMessage = new TextMessage @user, 'message123'
-        @robot.receive testMessage, () ->
+        @robot.receive testMessage, ->
           expect(listenerCallback).to.not.have.been.called
           testDone()
 
       it 'receives the correct arguments', (testDone) ->
-        @robot.hear /^message123$/, () ->
+        @robot.hear /^message123$/, ->
         testListener = @robot.listeners[0]
         testMessage = new TextMessage @user, 'message123'
 
@@ -621,24 +620,24 @@ describe 'Robot', ->
 
         testMiddlewareA = (context, next, done) ->
           execution.push 'middlewareA'
-          next () ->
+          next ->
             execution.push 'doneA'
             done()
 
         testMiddlewareB = (context, next, done) ->
           execution.push 'middlewareB'
-          next () ->
+          next ->
             execution.push 'doneB'
             done()
 
         @robot.listenerMiddleware testMiddlewareA
         @robot.listenerMiddleware testMiddlewareB
 
-        @robot.hear /^message123$/, () ->
+        @robot.hear /^message123$/, ->
           execution.push 'listener'
 
         testMessage = new TextMessage @user, 'message123'
-        @robot.receive testMessage, () ->
+        @robot.receive testMessage, ->
           expect(execution).to.deep.equal([
             'middlewareA'
             'middlewareB'
