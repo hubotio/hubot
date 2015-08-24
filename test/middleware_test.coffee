@@ -179,6 +179,35 @@ describe 'Middleware', ->
           allDone
         )
 
+      it 'defaults to the latest done callback if none is provided', (testDone) ->
+        # we want to ensure that the 'done' callbacks are nested correctly
+        # (executed in reverse order of definition)
+        execution = []
+
+        testMiddlewareA = (context, next, done) ->
+          execution.push 'middlewareA'
+          next () ->
+            execution.push 'doneA'
+            done()
+
+        testMiddlewareB = (context, next, done) ->
+          execution.push 'middlewareB'
+          next()
+
+        @middleware.register testMiddlewareA
+        @middleware.register testMiddlewareB
+
+        allDone = () ->
+          expect(execution).to.deep.equal(['middlewareA', 'middlewareB', 'doneA'])
+          testDone()
+
+        @middleware.execute(
+          {}
+          # Short circuit at the bottom of the middleware stack
+          (_, done) -> done()
+          allDone
+        )
+
       describe 'error handling', ->
         it 'does not execute subsequent middleware after the error is thrown', (testDone) ->
           middlewareExecution = []

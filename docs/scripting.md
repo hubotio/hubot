@@ -673,7 +673,7 @@ module.exports = (robot) ->
     # Log commands
     robot.logger.info "#{context.response.message.user.name} asked me to #{context.response.message.text}"
     # Continue executing middleware
-    next(done)
+    next()
 ```
 
 In this example, a log message will be written for each chat message that matches a Listener.
@@ -696,7 +696,7 @@ module.exports = (robot) ->
         # Command is being executed too quickly!
         done()
       else
-        next () ->
+        next ->
           lastExecutedTime[context.listener.options.id] = Date.now()
           done()
     catch err

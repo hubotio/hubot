@@ -98,7 +98,7 @@ class Robot
   respond: (regex, options, callback) ->
     @listeners.push new TextListener(@, @respondPattern(regex), options, callback)
 
-  # Private: Build a regular expression that matches messages addressed
+  # Public: Build a regular expression that matches messages addressed
   # directly to the robot
   #
   # regex - A RegExp for the message part that follows the robot's name/alias
