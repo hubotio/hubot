@@ -78,19 +78,17 @@ if Options.create
   console.error "    mkdir -p #{Options.path}"
   console.error "    cd #{Options.path}"
   console.error "    yo hubot"
-  console.error "See https://github.com/github/hubot/blob/master/docs/README.md for more details on getting started."
+  console.error "See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started."
   process.exit 1
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name, Options.alias
 
   if Options.version
     console.log robot.version
     process.exit 0
-
-  robot.alias = Options.alias
 
   loadScripts = ->
     scriptsPath = Path.resolve ".", "scripts"

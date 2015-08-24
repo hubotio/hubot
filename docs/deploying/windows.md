@@ -14,7 +14,7 @@ There are 4 primary steps to deploying and running hubot on a Windows machine:
 
 ## node and npm
 
-To start, your windows server will need node and npm. 
+To start, your windows server will need node and npm.
 The best way to do this is with [chocolatey](http://chocolatey.org) using the [nodejs.install](http://chocolatey.org/packages/nodejs.install) package.
 I've found that sometimes the system path variable is not correctly set; ensure you can run node/npm from the command line. If needed set the PATH variable with "setx PATH \"%PATH%;C:\Program Files\nodejs\" "
 
@@ -58,7 +58,7 @@ Remember to allow local unsigned PowerShell scripts if you are using the .ps1 fi
 
     Set-ExecutionPolicy RemoteSigned
 
-You can set this .ps1 as scheduled task on boot if you like or some other way to start your process. 
+You can set this .ps1 as scheduled task on boot if you like or some other way to start your process.
 
 ## Expanding the documentation
 

@@ -1,3 +1,17 @@
+v2.15.0
+=======
+
+* Document another middleware pattern https://github.com/github/hubot/pull/1017
+* Make Robot.respondPattern a public method https://github.com/github/hubot/pull/1011
+* Make "done" argument optional for middleware https://github.com/github/hubot/pull/1028
+
+v2.14.0
+=======
+
+* Lots of documentation tweaks and new adapters
+* Added a code of conduct https://github.com/github/hubot/pull/1005
+* Add Listener Middleware https://github.com/github/hubot/pull/803
+
 v2.13.2
 =======
 

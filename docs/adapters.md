@@ -22,6 +22,7 @@ to have yours added to the list:
 
 * [AIM](https://github.com/shaundubuque/hubot-aim)
 * [ChatWork](https://github.com/akiomik/hubot-chatwork)
+* [Dasher](https://github.com/nebulist/hubot-dasher)
 * [Fleep](https://github.com/anroots/hubot-fleep)
 * [Flowdock](https://github.com/flowdock/hubot-flowdock)
 * [Gitter](https://github.com/huafu/hubot-gitter2)
@@ -38,7 +39,9 @@ to have yours added to the list:
 * [Rocket.Chat](https://github.com/RocketChat/hubot-rocketchat)
 * [Slack](https://github.com/tinyspeck/hubot-slack)
 * [Skype](https://github.com/netpro2k/hubot-skype)
+* [SkypeWeb](https://github.com/sdimkov/hubot-skype-web)
 * [Talker](https://github.com/unixcharles/hubot-talker)
+* [Telegram](https://github.com/lukefx/hubot-telegram)
 * [Twilio](https://github.com/jkarmel/hubot-twilio)
 * [Twitter](https://github.com/MathildeLemee/hubot-twitter)
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
