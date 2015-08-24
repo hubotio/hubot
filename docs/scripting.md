@@ -260,6 +260,26 @@ module.exports = (robot) ->
     res.send res.random leaveReplies
 ```
 
+## Custom Listeners
+
+While the above helpers cover most of the functionality the average user needs (hear, respond, enter, leave, topic), sometimes you would like to have very specialized matching logic for listeners. If so, you can use `listen` to specify a custom match function instead of a regular expression.
+
+The match function must return a truthy value if the listener callback should be executed. The truthy return value of the match function is then passed to the callback as response.match.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.listen(
+    (message) -> # Match function
+      # Occassionally respond to things that Steve says
+      message.user.name is "Steve" and Math.random() > 0.8
+    (response) -> # Standard listener callback
+      # Let Steve know how happy you are that he exists
+      response.reply "HI STEVE! YOU'RE MY BEST FRIEND! (but only like #{response.match * 100}% of the time)"
+  )
+```
+
+See [the design patterns document](patterns.md) for examples of complex matchers.
+
 ## Environment variables
 
 Hubot can access the environment he's running in, just like any other node program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `HUBOT_` prefix.

@@ -78,6 +78,37 @@ module.export = (robot) ->
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 ```
 
+## Dynamic matching of messages
+
+In some situations, you want to dynamically match different messages (e.g. factoids, JIRA projects). Rather than defining an overly broad regular expression that always matches, you can tell Hubot to only match when certain conditions are met.
+
+In a simple robot, this isn't much different from just putting the conditions in the Listener callback, but it makes a big difference when you are dealing with middleware: with the basic model, middleware will be executed for every match of the generic regex. With the dynamic matching model, middleware will only be executed when the dynamic conditions are matched.
+
+For example, the [factoid lookup command](https://github.com/github/hubot-scripts/blob/bd810f99f9394818a9dcc2ea3729427e4101b96d/src/scripts/factoid.coffee#L95-L99) could be reimplemented as:
+
+```coffeescript
+module.exports = (robot) ->
+  # Dynamically populated list of factoids
+  facts =
+    fact1: 'stuff'
+    fact2: 'other stuff'
+
+  robot.listen(
+    # Matcher
+    (message) ->
+      match = message.match(/^~(.*)$/)
+      # Only match if there is a matching factoid
+      if match and match[1] in facts
+        match[1]
+      else
+        false
+    # Callback
+    (response) ->
+      fact = response.match
+      res.reply "#{fact} is #{facts[fact]}"
+  )
+```
+
 ## Restricting access to commands
 
 One of the awesome features of Hubot is its ability to make changes to a production environment with a single chat message. However, not everyone with access to your chat service should be able to trigger production changes.
