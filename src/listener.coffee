@@ -1,6 +1,7 @@
 {inspect} = require 'util'
 async     = require 'async'
 
+Response = require './response'
 {TextMessage} = require './message'
 Middleware = require './middleware'
 
@@ -75,7 +76,7 @@ class Listener
         if cb?
           process.nextTick -> cb true
 
-      response = new @robot.Response(@robot, message, match)
+      response = new Response(@robot, message, match)
       middleware.execute(
         {listener: @, response: response}
         executeListener
