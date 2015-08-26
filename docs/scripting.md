@@ -765,9 +765,15 @@ BLACKLISTED_USERS = [
 
 robot.receiveMiddleware (context, next, done) ->
   if context.response.message.user.id in BLACKLISTED_USERS
+    # Don't process this message further.
+    context.response.message.finish()
+
+    # If the message starts with 'hubot' or the alias pattern, this user was
+    # explicitly trying to run a command, so respond with an error message.
     if context.response.message.text?.match(robot.respondPattern(''))
       context.response.reply "I'm sorry @#{context.response.message.user.name}, but I'm configured to ignore your commands."
-    context.response.message.finish()
+
+    # Don't process further middleware.
     done()
   else
     next(done)
