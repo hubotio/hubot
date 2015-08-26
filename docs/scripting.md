@@ -765,9 +765,15 @@ BLACKLISTED_USERS = [
 
 robot.receiveMiddleware (context, next, done) ->
   if context.response.message.user.id in BLACKLISTED_USERS
+    # Don't process this message further.
+    context.response.message.finish()
+
+    # If the message starts with 'hubot' or the alias pattern, this user was
+    # explicitly trying to run a command, so respond with an error message.
     if context.response.message.text?.match(robot.respondPattern(''))
       context.response.reply "I'm sorry @#{context.response.message.user.name}, but I'm configured to ignore your commands."
-    context.response.message.finish()
+
+    # Don't process further middleware.
     done()
   else
     next(done)
@@ -779,7 +785,6 @@ Receive middleware callbacks receive three arguments, `context`, `next`, and
 `done`. See the [middleware API](#execution-process-and-api) for a description
 of `next` and `done`. Receive middleware context includes these fields:
   - `response`
-    - all parts of the standard response API are included in the middleware API. See [Send & Reply](#send--reply).
+    - this response object will not have a `match` property, as no listeners have been run yet to match it.
     - middleware may decorate the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
     - middleware may modify the `response.message` object
-    - note: the textual message (`response.message.text`) should be considered immutable in listener middleware
