@@ -748,19 +748,22 @@ describe 'Robot', ->
         execution = []
 
         testMiddlewareA = (context, next, done) ->
-          context.response.message.text = "foobar"
+          context.response.message.text = 'foobar'
           next()
 
         testMiddlewareB = (context, next, done) ->
+          # Subsequent middleware should see the modified message
           expect(context.response.message.text).to.equal("foobar")
           next()
 
         @robot.receiveMiddleware testMiddlewareA
         @robot.receiveMiddleware testMiddlewareB
 
-        @robot.hear /^foobar$/, () ->
-          # We'll never get to this if testMiddlewareA has not modified the message.
-          testDone()
+        testCallback = sinon.spy()
+        # We'll never get to this if testMiddlewareA has not modified the message.
+        @robot.hear /^foobar$/, testCallback
 
         testMessage = new TextMessage @user, 'message123'
-        @robot.receive testMessage
+        @robot.receive testMessage, ->
+          expect(testCallback).to.have.been.called
+          testDone()
