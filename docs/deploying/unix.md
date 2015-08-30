@@ -23,7 +23,7 @@ for [installing Node.js via package manager](https://github.com/joyent/node/wiki
 ## Updating code on the server
 
 The simplest way to update your hubot's code is going to be to have a git
-checkout of your hubot's source code (that you've created during [Getting Started](../README.md), not the [github/hubot repository](http://github.com/github/hubot), and just git pull to get change. This may
+checkout of your hubot's source code (that you've created during [Getting Started](../index.md), not the [github/hubot repository](http://github.com/github/hubot), and just git pull to get change. This may
 feel a dirty hack, but it works when you are starting out.
 
 If you have a Ruby background, you might be more comfortable using
@@ -53,11 +53,13 @@ really, you probably want some process monitoring using tools like
 [monit](http://mmonit.com/monit/),
 [god](http://godrb.com/),
 [bluepill](https://github.com/arya/bluepill),
-[upstart](http://upstart.ubuntu.com/).
+[upstart](http://upstart.ubuntu.com/),
+[systemd](http://freedesktop.org/wiki/Software/systemd/).
 
 For starting at boot, you can create an init script for appropriate your UNIX
 distribution, or if you are using one the process monitoring tools above, make
-sure it boots at startup.
+sure it boots at startup. See the [examples](https://github.com/github/hubot/tree/master/examples)
+for configuration examples.
 
 ## Recommendations
 

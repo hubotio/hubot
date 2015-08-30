@@ -63,6 +63,9 @@ Parser.on "config-check", (opt) ->
 Parser.on "version", (opt, value) ->
   Options.version = true
 
+Parser.on (opt, value) ->
+  console.warn "Unknown option: #{opt}"
+
 Parser.parse process.argv
 
 unless process.platform is "win32"
@@ -73,20 +76,19 @@ if Options.create
   console.error "'hubot --create' is deprecated. Use the yeoman generator instead:"
   console.error "    npm install -g yo generator-hubot"
   console.error "    mkdir -p #{Options.path}"
+  console.error "    cd #{Options.path}"
   console.error "    yo hubot"
-  console.error "See https://github.com/github/hubot/blob/master/docs/README.md for more details on getting started."
+  console.error "See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started."
   process.exit 1
 
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name, Options.alias
 
   if Options.version
     console.log robot.version
     process.exit 0
-
-  robot.alias = Options.alias
 
   loadScripts = ->
     scriptsPath = Path.resolve ".", "scripts"

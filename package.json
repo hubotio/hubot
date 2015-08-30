@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.12.0",
+  "version": "2.16.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -9,17 +9,13 @@
     "bot"
   ],
   "description": "A simple helpful robot for your Company",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://raw.github.com/github/hubot/master/LICENSE.md"
-    }
-  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/github/hubot.git"
   },
   "dependencies": {
+    "async": ">=0.1.0 <1.0.0",
     "chalk": "^1.0.0",
     "cline": "^0.8.2",
     "coffee-script": "1.6.3",
@@ -27,10 +23,11 @@
     "express": "3.18.1",
     "log": "1.4.0",
     "optparse": "1.0.4",
-    "scoped-http-client": "0.10.3"
+    "scoped-http-client": "0.11.0"
   },
   "devDependencies": {
     "hubot-mock-adapter": "^1.0.0",
+    "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
     "sinon-chai": "^2.6.0"
