@@ -769,17 +769,56 @@ describe 'Robot', ->
           testDone()
 
     describe 'Response Middleware', ->
-      it 'allows response middleware execution', (testDone) ->
+      it 'executes response middleware in order', (testDone) ->
         @robot.adapter.send = sendSpy = sinon.spy()
         listenerCallback = sinon.spy()
         @robot.hear /^message123$/, (response) ->
           response.send "foobar, sir, foobar."
 
         @robot.responseMiddleware (context, next, done) ->
-          context.string = context.string.replace(/foobar/g, "barfoo")
+          context.strings[0] = context.strings[0].replace(/foobar/g, "barfoo")
+          next()
+
+        @robot.responseMiddleware (context, next, done) ->
+          context.strings[0] = context.strings[0].replace(/barfoo/g, "replaced bar-foo")
           next()
 
         testMessage = new TextMessage @user, 'message123'
         @robot.receive testMessage, () ->
-          expect(sendSpy.getCall(0).args[1]).to.equal('barfoo, sir, barfoo.')
+          expect(sendSpy.getCall(0).args[1][0]).to.equal('replaced bar-foo, sir, replaced bar-foo.')
+          testDone()
+
+      it 'allows replacing outgoing strings', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar."
+
+        @robot.responseMiddleware (context, next, done) ->
+          context.strings = ["whatever I want."]
+          next()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(sendSpy.getCall(0).args[1]).to.deep.equal(["whatever I want."])
+          testDone()
+
+      it 'does not send trailing functions to middleware', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        asserted = false
+        postSendCallback = ->
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar.", postSendCallback
+
+        @robot.responseMiddleware (context, next, done) ->
+          # We don't send the callback function to middleware, so it's not here.
+          expect(context.strings).to.deep.equal ["foobar, sir, foobar."]
+          asserted = true
+          next()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, ->
+          expect(asserted).to.equal(true)
+          expect(sendSpy.getCall(0).args[1][0]).to.equal('foobar, sir, foobar.')
+          expect(sendSpy.getCall(0).args[1][1]).to.equal(postSendCallback)
           testDone()

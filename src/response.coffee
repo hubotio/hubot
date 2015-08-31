@@ -69,15 +69,20 @@ class Response
   # Private: Call with a method for the given strings using response
   # middleware.
   runWithMiddleware: (methodName, strings...) ->
-    for string in strings
-      return string() if typeof(string) == 'function'
-      context = {response: @, string: string}
-      responseMiddlewareDone = ->
-      runAdapterSend = (_, done) =>
-        @robot.adapter[methodName](@envelope, context.string, done)
-      @robot.middleware.response.execute context,
-                                         runAdapterSend,
-                                         responseMiddlewareDone
+    callback = undefined
+    copy = strings.slice(0)
+    if typeof(copy[copy.length - 1]) == 'function'
+      callback = copy.pop()
+    context = {response: @, strings: copy}
+    responseMiddlewareDone = ->
+    runAdapterSend = (_, done) =>
+      result = context.strings
+      result.push(callback) if callback?
+      @robot.adapter[methodName](@envelope, result)
+      done()
+    @robot.middleware.response.execute context,
+                                       runAdapterSend,
+                                       responseMiddlewareDone
 
   # Public: Picks a random item from the given items.
   #
