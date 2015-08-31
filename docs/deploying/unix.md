@@ -56,8 +56,8 @@ really, you probably want some process monitoring using tools like
 [upstart](http://upstart.ubuntu.com/),
 [systemd](http://freedesktop.org/wiki/Software/systemd/).
 
-For starting at boot, you can create an init script for appropriate your UNIX
-distribution, or if you are using one the process monitoring tools above, make
+For starting at boot, you can create an init script appropriate for your UNIX
+distribution. If you are using one of the process monitoring tools above, make
 sure it boots at startup. See the [examples](https://github.com/github/hubot/tree/master/examples)
 for configuration examples.
 
