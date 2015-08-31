@@ -644,21 +644,17 @@ These scoped identifiers allow you to externally specify new behaviors like:
 
 # Middleware
 
-There are two kinds of middleware: Receive middleware and Listener Middleware.
+There are three kinds of middleware: Receive, Listener and Response.
 
 Receive middleware runs once, before listeners are checked.
 Listener middleware runs for every listener that matches the message.
+Response middleware runs for every response sent to a message.
 
 ## Execution Process and API
 
-Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot listener middleware executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
 
 Middleware is called with:
-
-- a context object containing:
-  - matching Listener object (with associated metadata)
-  - response object (contains the original message)
-- next/done callbacks.
 
 - `context`
   - See the each middleware type's API to see what the context will expose.
@@ -788,3 +784,31 @@ of `next` and `done`. Receive middleware context includes these fields:
     - this response object will not have a `match` property, as no listeners have been run yet to match it.
     - middleware may decorate the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
     - middleware may modify the `response.message` object
+
+# Response Middleware
+
+Response middleware runs against every message hubot sends to a chat room. It's
+helpful for message formatting, preventing password leaks, metrics, and more.
+
+## Response Middleware Example
+
+This simple example changes the format of links sent to a chat room from
+markdown links (like [example](https://example.com)) to the format supported
+by [Slack](https://slack.com), <https://example.com|example>.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.responseMiddleware (context, next, done) ->
+    context.strings = (string.replace(/\[([^\[\]]*?)\]\((https?:\/\/.*?)\)/, "<$2|$1>") for string in context.strings)
+    next()
+```
+
+## Response Middleware API
+
+Response middleware callbacks receive three arguments, `context`, `next`, and
+`done`. See the [middleware API](#execution-process-and-api) for a description
+of `next` and `done`. Receive middleware context includes these fields:
+  - `response`
+    - This response object can be used to send new messages from the middleware. Middleware will be called on these new responses. Be careful not to create infinite loops.
+  - `strings`
+    - An array of strings being sent to the chat room adapter. You can edit these, or use `context.strings = ["new strings"]` to replace them.
