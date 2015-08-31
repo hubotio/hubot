@@ -260,6 +260,26 @@ module.exports = (robot) ->
     res.send res.random leaveReplies
 ```
 
+## Custom Listeners
+
+While the above helpers cover most of the functionality the average user needs (hear, respond, enter, leave, topic), sometimes you would like to have very specialized matching logic for listeners. If so, you can use `listen` to specify a custom match function instead of a regular expression.
+
+The match function must return a truthy value if the listener callback should be executed. The truthy return value of the match function is then passed to the callback as response.match.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.listen(
+    (message) -> # Match function
+      # Occassionally respond to things that Steve says
+      message.user.name is "Steve" and Math.random() > 0.8
+    (response) -> # Standard listener callback
+      # Let Steve know how happy you are that he exists
+      response.reply "HI STEVE! YOU'RE MY BEST FRIEND! (but only like #{response.match * 100}% of the time)"
+  )
+```
+
+See [the design patterns document](patterns.md) for examples of complex matchers.
+
 ## Environment variables
 
 Hubot can access the environment he's running in, just like any other node program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `HUBOT_` prefix.
@@ -622,11 +642,14 @@ These scoped identifiers allow you to externally specify new behaviors like:
 - authorization policy: "allow everyone in the `annoyers` group to execute `annoyance.*` commands"
 - rate limiting: "only allow executing `annoyance.start` once every 30 minutes"
 
-# Listener Middleware
+# Middleware
 
-Hubot supports inserting logic between the listener matching a message and the listener executing. This allows you to create extensions that apply to all scripts. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
+There are two kinds of middleware: Receive middleware and Listener Middleware.
 
-## Execution Process
+Receive middleware runs once, before listeners are checked.
+Listener middleware runs for every listener that matches the message.
+
+## Execution Process and API
 
 Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot listener middleware executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
 
@@ -637,11 +660,26 @@ Middleware is called with:
   - response object (contains the original message)
 - next/done callbacks.
 
-For more details, see the [Listener Middleware API](#listener-middleware-api) section.
+- `context`
+  - See the each middleware type's API to see what the context will expose.
+- `next`
+  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
+  - `next` should be called with a single, optional argument: either the provided `done` function or a new function that eventually calls `done`. If the argument is not given, the provided `done` will be assumed.
+- `done`
+ - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
+ - `done` should be called with no arguments
+
+Every middleware receives the same API signature of `context`, `next`, and
+`done`. Different kinds of middleware may receive different information in the
+`context` object. For more details, see the API for each type of middleware.
 
 ### Error Handling
 
 For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
+
+# Listener Middleware
+
+Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Listener Middleware Examples
 
@@ -655,7 +693,7 @@ module.exports = (robot) ->
     # Log commands
     robot.logger.info "#{context.response.message.user.name} asked me to #{context.response.message.text}"
     # Continue executing middleware
-    next(done)
+    next()
 ```
 
 In this example, a log message will be written for each chat message that matches a Listener.
@@ -678,7 +716,7 @@ module.exports = (robot) ->
         # Command is being executed too quickly!
         done()
       else
-        next () ->
+        next ->
           lastExecutedTime[context.listener.options.id] = Date.now()
           done()
     catch err
@@ -698,24 +736,55 @@ module.exports = (robot) ->
 
 ## Listener Middleware API
 
-Although internal data structures are exposed, not all properties on the objects are considered part of the supported API. Below are the supported properties and usage information for each of the arguments middleware receives.
-
-- `context`
+Listener middleware callbacks receive three arguments, `context`, `next`, and
+`done`. See the [middleware API](#execution-process-and-api) for a description
+of `next` and `done`. Listener middleware context includes these fields:
   - `listener`
     - `options`: a simple Object containing options set when defining the listener. See [Listener Metadata](#listener-metadata).
     - all other properties should be considered internal
-
   - `response`
     - all parts of the standard response API are included in the middleware API. See [Send & Reply](#send--reply).
     - middleware may decorate (but not modify) the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
     - note: the textual message (`response.message.text`) should be considered immutable in listener middleware
 
-- `next`
-  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
-  - `next` should be called with a single argument: either the provided `done` function or a new function that eventually calls `done`
+# Receive Middleware
 
-- `done`
- - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
- - `done` should be called with no arguments
+Receive middleware runs before any listeners have executed. It's suitable for
+blacklisting commands that have not been updated to add an ID, metrics, and more.
 
-Note that this API is protected by automated tests (`test/middleware_test.coffee`) to prevent breakage. Anything not covered by the tests is susceptible to change.
+## Receive Middleware Example
+
+This simple middlware bans hubot use by a particular user, including `hear`
+listeners. If the user attempts to run a command explicitly, it will return
+an error message.
+
+```coffeescript
+BLACKLISTED_USERS = [
+  '12345' # Restrict access for a user ID for a contractor
+]
+
+robot.receiveMiddleware (context, next, done) ->
+  if context.response.message.user.id in BLACKLISTED_USERS
+    # Don't process this message further.
+    context.response.message.finish()
+
+    # If the message starts with 'hubot' or the alias pattern, this user was
+    # explicitly trying to run a command, so respond with an error message.
+    if context.response.message.text?.match(robot.respondPattern(''))
+      context.response.reply "I'm sorry @#{context.response.message.user.name}, but I'm configured to ignore your commands."
+
+    # Don't process further middleware.
+    done()
+  else
+    next(done)
+```
+
+## Receive Middleware API
+
+Receive middleware callbacks receive three arguments, `context`, `next`, and
+`done`. See the [middleware API](#execution-process-and-api) for a description
+of `next` and `done`. Receive middleware context includes these fields:
+  - `response`
+    - this response object will not have a `match` property, as no listeners have been run yet to match it.
+    - middleware may decorate the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
+    - middleware may modify the `response.message` object

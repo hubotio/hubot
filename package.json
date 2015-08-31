@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.14.0",
+  "version": "2.16.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "hubot-mock-adapter": "^1.0.0",
+    "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
     "sinon-chai": "^2.6.0"

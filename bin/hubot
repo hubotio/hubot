@@ -84,13 +84,11 @@ if Options.create
 else
   adapterPath = Path.join __dirname, "..", "src", "adapters"
 
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name
+  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name, Options.alias
 
   if Options.version
     console.log robot.version
     process.exit 0
-
-  robot.alias = Options.alias
 
   loadScripts = ->
     scriptsPath = Path.resolve ".", "scripts"

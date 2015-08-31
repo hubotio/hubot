@@ -1,3 +1,24 @@
+[v2.16.0](https://github.com/github/hubot/tree/v2.16.0)
+========
+
+[Full Changelog](https://github.com/github/hubot/compare/v2.15.0...v2.16.0)
+
+**Merged pull requests:**
+
+- Update docs on keepalive support [\#1033](https://github.com/github/hubot/pull/1033) ([@bkeepers](https://github.com/bkeepers))
+- Cleanup tests [\#1032](https://github.com/github/hubot/pull/1032) ([@michaelansel](https://github.com/michaelansel))
+- Add coffee-errors to test scaffolding [\#1020](https://github.com/github/hubot/pull/1020) ([@bhuga](https://github.com/bhuga))
+- Receive middleware [\#1019](https://github.com/github/hubot/pull/1019) ([bhuga](https://github.com/bhuga))
+- Pass alias in Robot constructor. Fixes issue \#1002. [\#1003](https://github.com/github/hubot/pull/1003) ([@sdimkov](https://github.com/sdimkov))
+- Add Robot.listen [\#986](https://github.com/github/hubot/pull/986) ([@michaelansel](https://github.com/michaelansel))
+
+v2.15.0
+=======
+
+* Document another middleware pattern https://github.com/github/hubot/pull/1017
+* Make Robot.respondPattern a public method https://github.com/github/hubot/pull/1011
+* Make "done" argument optional for middleware https://github.com/github/hubot/pull/1028
+
 v2.14.0
 =======
 

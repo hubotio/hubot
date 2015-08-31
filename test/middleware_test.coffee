@@ -137,6 +137,17 @@ describe 'Middleware', ->
         @middleware.execute {}, (->), (->)
         finished = true
 
+      it 'creates a default "done" function', (testDone) ->
+        finished = false
+
+        @middleware.register (context, next, done) ->
+          expect(finished).to.be.ok
+          testDone()
+
+        # we're testing the lack of a third argument here.
+        @middleware.execute {}, (->)
+        finished = true
+
       it 'does the right thing with done callbacks', (testDone) ->
         # we want to ensure that the 'done' callbacks are nested correctly
         # (executed in reverse order of definition)
@@ -144,21 +155,50 @@ describe 'Middleware', ->
 
         testMiddlewareA = (context, next, done) ->
           execution.push 'middlewareA'
-          next () ->
+          next ->
             execution.push 'doneA'
             done()
 
         testMiddlewareB = (context, next, done) ->
           execution.push 'middlewareB'
-          next () ->
+          next ->
             execution.push 'doneB'
             done()
 
         @middleware.register testMiddlewareA
         @middleware.register testMiddlewareB
 
-        allDone = () ->
+        allDone = ->
           expect(execution).to.deep.equal(['middlewareA', 'middlewareB', 'doneB', 'doneA'])
+          testDone()
+
+        @middleware.execute(
+          {}
+          # Short circuit at the bottom of the middleware stack
+          (_, done) -> done()
+          allDone
+        )
+
+      it 'defaults to the latest done callback if none is provided', (testDone) ->
+        # we want to ensure that the 'done' callbacks are nested correctly
+        # (executed in reverse order of definition)
+        execution = []
+
+        testMiddlewareA = (context, next, done) ->
+          execution.push 'middlewareA'
+          next ->
+            execution.push 'doneA'
+            done()
+
+        testMiddlewareB = (context, next, done) ->
+          execution.push 'middlewareB'
+          next()
+
+        @middleware.register testMiddlewareA
+        @middleware.register testMiddlewareB
+
+        allDone = ->
+          expect(execution).to.deep.equal(['middlewareA', 'middlewareB', 'doneA'])
           testDone()
 
         @middleware.execute(
@@ -230,8 +270,7 @@ describe 'Middleware', ->
 
           testMiddlewareA = (context, next, done) ->
             # Goal: make sure that the middleware stack is unwound correctly
-            extraDoneFunc = sinon.spy () ->
-              done()
+            extraDoneFunc = sinon.spy done
             next extraDoneFunc
 
           testMiddlewareB = (context, next, done) ->
@@ -241,7 +280,7 @@ describe 'Middleware', ->
           @middleware.register testMiddlewareB
 
           middlewareFinished = sinon.spy()
-          middlewareFailed = () ->
+          middlewareFailed = ->
             # Sanity check that the error was actually thrown
             expect(middlewareFinished).to.not.have.been.called
 
@@ -270,7 +309,7 @@ describe 'Middleware', ->
   # Per the documentation in docs/scripting.md
   # Any new fields that are exposed to middleware should be explicitly
   # tested for.
-  describe 'Listener Middleware Public API', ->
+  describe 'Public Middleware APIs', ->
     beforeEach ->
       @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
       @robot.run
@@ -278,7 +317,7 @@ describe 'Middleware', ->
       # Re-throw AssertionErrors for clearer test failures
       @robot.on 'error', (name, err, response) ->
         if err?.constructor?.name == "AssertionError"
-          process.nextTick () ->
+          process.nextTick ->
             throw err
 
       @user = @robot.brain.userForId '1', {
@@ -290,9 +329,6 @@ describe 'Middleware', ->
       @middleware = sinon.spy (context, next, done) ->
         next(done)
 
-      @robot.listenerMiddleware (context, next, done) =>
-        @middleware.call @, context, next, done
-
       @testMessage = new TextMessage @user, 'message123'
       @robot.hear /^message123$/, (response) ->
       @testListener = @robot.listeners[0]
@@ -301,7 +337,11 @@ describe 'Middleware', ->
       @robot.server.close()
       @robot.shutdown()
 
-    describe 'context', ->
+    describe 'listener middleware context', ->
+      beforeEach ->
+        @robot.listenerMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
       describe 'listener', ->
         it 'is the listener object that matched', (testDone) ->
           @robot.receive @testMessage, () =>
@@ -337,7 +377,29 @@ describe 'Middleware', ->
             )
             testDone()
 
+    describe 'receive middleware context', ->
+      beforeEach ->
+        @robot.receiveMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
+      describe 'response', ->
+        it 'is a match-less Response object', (testDone) ->
+          @robot.receive @testMessage, () =>
+            expect(@middleware).to.have.been.calledWithMatch(
+              sinon.match.has('response',
+                sinon.match.instanceOf(Response).and(
+                  sinon.match.has('message',
+                    sinon.match.same(@testMessage)))) # context
+              sinon.match.any                         # next
+              sinon.match.any                         # done
+            )
+            testDone()
+
     describe 'next', ->
+      beforeEach ->
+        @robot.listenerMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
       it 'is a function with arity one', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(
@@ -350,6 +412,10 @@ describe 'Middleware', ->
           testDone()
 
     describe 'done', ->
+      beforeEach ->
+        @robot.listenerMiddleware (context, next, done) =>
+          @middleware.call @, context, next, done
+
       it 'is a function with arity zero', (testDone) ->
         @robot.receive @testMessage, () =>
           expect(@middleware).to.have.been.calledWithMatch(

@@ -40,11 +40,11 @@ class Robot
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot') ->
+  constructor: (adapterPath, adapter, httpd, name = 'Hubot', alias = false) ->
     @name       = name
     @events     = new EventEmitter
     @brain      = new Brain @
-    @alias      = false
+    @alias      = alias
     @adapter    = null
     @Response   = Response
     @commands   = []
@@ -52,6 +52,7 @@ class Robot
     @middleware =
       listener: new Middleware(@)
       response: new Middleware(@)
+      receive:  new Middleware(@)
     @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
     @globalHttpOptions = {}
@@ -72,6 +73,21 @@ class Robot
     @onUncaughtException = (err) =>
       @emit 'error', err
     process.on 'uncaughtException', @onUncaughtException
+
+  # Public: Adds a custom Listener with the provided matcher, options, and
+  # callback
+  #
+  # matcher  - A Function that determines whether to call the callback.
+  #            Expected to return a truthy value if the callback should be
+  #            executed.
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
+  # callback - A Function that is called with a Response object if the
+  #            matcher function returns true.
+  #
+  # Returns nothing.
+  listen: (matcher, options, callback) ->
+    @listeners.push new Listener(@, matcher, options, callback)
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -96,9 +112,9 @@ class Robot
   #
   # Returns nothing.
   respond: (regex, options, callback) ->
-    @listeners.push new TextListener(@, @respondPattern(regex), options, callback)
+    @hear(@respondPattern(regex), options, callback)
 
-  # Private: Build a regular expression that matches messages addressed
+  # Public: Build a regular expression that matches messages addressed
   # directly to the robot
   #
   # regex - A RegExp for the message part that follows the robot's name/alias
@@ -140,10 +156,9 @@ class Robot
   #
   # Returns nothing.
   enter: (options, callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof EnterMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof EnterMessage)
+      options
       callback
     )
 
@@ -155,10 +170,9 @@ class Robot
   #
   # Returns nothing.
   leave: (options, callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof LeaveMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof LeaveMessage)
+      options
       callback
     )
 
@@ -170,10 +184,9 @@ class Robot
   #
   # Returns nothing.
   topic: (options, callback) ->
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof TopicMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof TopicMessage)
+      options
       callback
     )
 
@@ -215,10 +228,9 @@ class Robot
       callback = options
       options = {}
 
-    @listeners.push new Listener(
-      @,
-      ((msg) -> msg instanceof CatchAllMessage),
-      options,
+    @listen(
+      ((msg) -> msg instanceof CatchAllMessage)
+      options
       ((msg) -> msg.message = msg.message.message; callback msg)
     )
 
@@ -227,7 +239,7 @@ class Robot
   #
   # middleware - A function that determines whether or not a given matching
   #              Listener should be executed. The function is called with
-  #              (robot, listener, response, next, done). If execution should
+  #              (context, next, done). If execution should
   #              continue (next middleware, Listener callback), the middleware
   #              should call the 'next' function with 'done' as an argument.
   #              If not, the middleware should call the 'done' function with
@@ -253,7 +265,22 @@ class Robot
     @middleware.response.register middleware
     return undefined
 
-  # Public: Passes the given message to any interested Listeners.
+  # Public: Registers new middleware for execution before matching
+  #
+  # middleware - A function that determines whether or not listeners should be
+  #              checked. The function is called with (context, next, done). If
+  #              ext, next, done). If execution should continue to the next
+  #              middleware or matching phase, it should call the 'next'
+  #              function with 'done' as an argument. If not, the middleware
+  #              should call the 'done' function with no arguments.
+  #
+  # Returns nothing.
+  receiveMiddleware: (middleware) ->
+    @middleware.receive.register middleware
+    return undefined
+
+  # Public: Passes the given message to any interested Listeners after running
+  #         receive middleware.
   #
   # message - A Message instance. Listeners can flag this message as 'done' to
   #           prevent further execution.
@@ -263,6 +290,24 @@ class Robot
   # Returns nothing.
   # Returns before executing callback
   receive: (message, cb) ->
+    # When everything is finished (down the middleware stack and back up),
+    # pass control back to the robot
+    @middleware.receive.execute(
+      {response: new Response(this, message)}
+      @processListeners.bind this
+      cb
+    )
+
+  # Private: Passes the given message to any interested Listeners.
+  #
+  # message - A Message instance. Listeners can flag this message as 'done' to
+  #           prevent further execution.
+  #
+  # done - Optional callback that is called when message processing is complete
+  #
+  # Returns nothing.
+  # Returns before executing callback
+  processListeners: (context, done) ->
     # Try executing all registered Listeners in order of registration
     # and return after message is done being processed
     anyListenersExecuted = false
@@ -270,27 +315,28 @@ class Robot
       @listeners,
       (listener, cb) =>
         try
-          listener.call message, @middleware.listener, (listenerExecuted) ->
+          listener.call context.response.message, @middleware.listener, (listenerExecuted) ->
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
             # Defer to the event loop at least after every listener so the
             # stack doesn't get too big
             process.nextTick () ->
               # Stop processing when message.done == true
-              cb(message.done)
+              cb(context.response.message.done)
         catch err
-          @emit('error', err, new @Response(@, message, []))
+          @emit('error', err, new @Response(@, context.response.message, []))
           # Continue to next listener when there is an error
           cb(false)
       ,
       # Ignore the result ( == the listener that set message.done = true)
       (_) =>
         # If no registered Listener matched the message
-        if message not instanceof CatchAllMessage and not anyListenersExecuted
+        if context.response.message not instanceof CatchAllMessage and not anyListenersExecuted
           @logger.debug 'No listeners executed; falling back to catch-all'
-          @receive new CatchAllMessage(message), cb
+          @receive new CatchAllMessage(context.response.message), done
         else
-          process.nextTick cb if cb?
+          process.nextTick done if done?
     )
+    return undefined
 
 
   # Public: Loads a file in path.

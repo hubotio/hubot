@@ -78,6 +78,37 @@ module.export = (robot) ->
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 ```
 
+## Dynamic matching of messages
+
+In some situations, you want to dynamically match different messages (e.g. factoids, JIRA projects). Rather than defining an overly broad regular expression that always matches, you can tell Hubot to only match when certain conditions are met.
+
+In a simple robot, this isn't much different from just putting the conditions in the Listener callback, but it makes a big difference when you are dealing with middleware: with the basic model, middleware will be executed for every match of the generic regex. With the dynamic matching model, middleware will only be executed when the dynamic conditions are matched.
+
+For example, the [factoid lookup command](https://github.com/github/hubot-scripts/blob/bd810f99f9394818a9dcc2ea3729427e4101b96d/src/scripts/factoid.coffee#L95-L99) could be reimplemented as:
+
+```coffeescript
+module.exports = (robot) ->
+  # Dynamically populated list of factoids
+  facts =
+    fact1: 'stuff'
+    fact2: 'other stuff'
+
+  robot.listen(
+    # Matcher
+    (message) ->
+      match = message.match(/^~(.*)$/)
+      # Only match if there is a matching factoid
+      if match and match[1] in facts
+        match[1]
+      else
+        false
+    # Callback
+    (response) ->
+      fact = response.match
+      res.reply "#{fact} is #{facts[fact]}"
+  )
+```
+
 ## Restricting access to commands
 
 One of the awesome features of Hubot is its ability to make changes to a production environment with a single chat message. However, not everyone with access to your chat service should be able to trigger production changes.
@@ -88,7 +119,7 @@ There are a variety of different patterns for restricting access that you can fo
 * Specific access rules for every command (Role-based Access Control)
 * Blacklisting/whitelisting commands in specific rooms
 
-### Simple (full vs restricted access)
+### Simple per-listener access
 
 In some organizations, almost all employees are given the same level of access and only a select few need to be restricted (e.g. new hires, contractors, etc.). In this model, you partition the set of all listeners to separate the "power commands" from the "normal commands".
 
@@ -121,14 +152,14 @@ module.exports = (robot) ->
     if context.listener.options.id in POWER_COMMANDS
       if context.response.message.user.id in POWER_USERS
         # User is allowed access to this command
-        next(done)
+        next()
       else
         # Restricted command, but user isn't in whitelist
         context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
         done()
     else
       # This is not a restricted command; allow everyone
-      next(done)
+      next()
 ```
 
 Remember that middleware executes for ALL listeners that match a given message (including `robot.hear /.+/`), so make sure you include them when categorizing your listeners.

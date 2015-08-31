@@ -21,7 +21,7 @@ Some things that will increase the chance that your pull request is accepted:
 
 * Use CoffeeScript [idioms](http://arcturo.github.io/library/coffeescript/04_idioms.html) and [style guide](https://github.com/polarmobile/coffeescript-style-guide)
 * Update the documentation: code comments, example code, guides. Basically,
-  update anything is affected by your contribution.
+  update everything affected by your contribution.
 * Include any information that would be relevant to reproducing bugs, use cases for new features, etc.
 
 * Discuss the impact on existing [hubot installs](docs/index.md), [hubot adapters](docs/adapters.md), and [hubot scripts](docs/scripting.md) (e.g. backwards compatibility)
