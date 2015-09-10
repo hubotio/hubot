@@ -813,6 +813,7 @@ describe 'Robot', ->
         @robot.responseMiddleware (context, next, done) ->
           # We don't send the callback function to middleware, so it's not here.
           expect(context.strings).to.deep.equal ["foobar, sir, foobar."]
+          expect(context.method).to.equal "send"
           asserted = true
           next()
 

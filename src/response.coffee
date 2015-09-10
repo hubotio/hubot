@@ -73,7 +73,7 @@ class Response
     copy = strings.slice(0)
     if typeof(copy[copy.length - 1]) == 'function'
       callback = copy.pop()
-    context = {response: @, strings: copy}
+    context = {response: @, strings: copy, method: methodName}
     responseMiddlewareDone = ->
     runAdapterSend = (_, done) =>
       result = context.strings
