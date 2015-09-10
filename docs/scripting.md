@@ -812,3 +812,5 @@ of `next` and `done`. Receive middleware context includes these fields:
     - This response object can be used to send new messages from the middleware. Middleware will be called on these new responses. Be careful not to create infinite loops.
   - `strings`
     - An array of strings being sent to the chat room adapter. You can edit these, or use `context.strings = ["new strings"]` to replace them.
+  - `method`
+    - A string representing which type of response message the listener sent, such as `send`, `reply`, `emote` or `topic`.
