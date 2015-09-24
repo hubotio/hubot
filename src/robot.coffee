@@ -400,8 +400,13 @@ class Robot
 
     express = require 'express'
     multipart = require 'connect-multiparty'
+    bodyParser = require 'body-parser'
 
     app = express()
+
+    app.use (req, res, next) =>
+      req.rawBody = ''
+      next()
 
     app.use (req, res, next) =>
       res.setHeader "X-Powered-By", "hubot/#{@name}"
@@ -410,8 +415,20 @@ class Robot
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
 
-    app.use express.json()
-    app.use express.urlencoded()
+    app.use bodyParser.json( verify: (req, res, buf, encoding) ->
+      req.rawBody = buf.toString()
+    )
+
+    app.use bodyParser.urlencoded( verify: (req, res, buf, encoding) ->
+      req.rawBody = buf.toString()
+    )
+
+    app.use bodyParser.text(
+      type: ['text/*', 'application/xml']
+      verify: (req, res, buf, encoding) ->
+        req.rawBody = buf.toString()
+    )
+
     # replacement for deprecated express.multipart/connect.multipart
     # limit to 100mb, as per the old behavior
     app.use multipart(maxFilesSize: 100 * 1024 * 1024)
