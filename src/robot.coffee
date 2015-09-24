@@ -415,12 +415,17 @@ class Robot
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
 
-    app.use bodyParser.json( verify: (req, res, buf, encoding) ->
-      req.rawBody = buf.toString()
+    app.use bodyParser.json(
+      verify: (req, res, buf, encoding) ->
+        req.rawBody = buf.toString()
     )
 
-    app.use bodyParser.urlencoded( verify: (req, res, buf, encoding) ->
-      req.rawBody = buf.toString()
+    # the extended false sets the parser to `querystring`
+    # https://github.com/expressjs/body-parser#bodyparserurlencodedoptions
+    app.use bodyParser.urlencoded(
+      verify: (req, res, buf, encoding) ->
+        req.rawBody = buf.toString()
+      extended: false
     )
 
     app.use bodyParser.text(
