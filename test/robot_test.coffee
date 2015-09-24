@@ -7,6 +7,8 @@ chai.use require 'sinon-chai'
 
 mockery = require 'mockery'
 
+request = require 'supertest'
+
 # Hubot classes
 Robot = require '../src/robot.coffee'
 { CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage } = require '../src/message'
@@ -28,6 +30,7 @@ mockery.disable()
 
 
 describe 'Robot', ->
+
   beforeEach ->
     @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
     @robot.alias = 'Hubot'
@@ -767,3 +770,128 @@ describe 'Robot', ->
         @robot.receive testMessage, ->
           expect(testCallback).to.have.been.called
           testDone()
+
+  describe 'Raw body mapping', ->
+
+      beforeEach ->
+        @caught = null
+
+
+      describe 'JSON request', ->
+
+        it 'has body property (Object)', (done) ->
+          # ensure default Express behavior
+          @robot.router.post '/hubot/post_test', (req, res) =>
+            try
+              expect(req.body).to.deep.equal({'fu': 'bar'})
+            catch error
+              @caught = error
+            res.send 'done'
+
+          error_handler = =>
+            if @caught
+              throw @caught
+            done()
+
+          request(@robot.router).post('/hubot/post_test').\
+            set('Content-Type', 'application/json').send('{"fu": "bar"}').\
+            end(error_handler)
+
+        it 'has rawBody property (String)', (done) ->
+          @robot.router.post '/hubot/post_test', (req, res) =>
+            try
+              expect(req.rawBody).to.equal('{"bar": "baz"}')
+            catch error
+              @caught = error
+            res.send 'done'
+
+          error_handler = =>
+            if @caught
+              throw @caught
+            done()
+
+          request(@robot.router).post('/hubot/post_test').\
+            set('Content-Type', 'application/json').send('{"bar": "baz"}').\
+            end(error_handler)
+
+      describe 'urlencoded request', ->
+
+        it 'has body property (Object)', (done) ->
+          # ensure default Express behavior
+          @robot.router.post '/hubot/post_test', (req, res) =>
+            try
+              expect(req.body).to.deep.equal({'fu': 'bar'})
+            catch error
+              @caught = error
+            res.send 'done'
+
+          error_handler = =>
+            if @caught
+              throw @caught
+            done()
+
+          request(@robot.router).post('/hubot/post_test').\
+            set('Content-Type', 'application/x-www-form-urlencoded').\
+            send('fu=bar').\
+            end(error_handler)
+
+        it 'has rawBody property (String)', (done) ->
+
+          @robot.router.post '/hubot/post_test', (req, res) =>
+            try
+              expect(req.rawBody).to.equal('bar=baz')
+            catch error
+              @caught = error
+            res.send 'done'
+
+          error_handler = =>
+            if @caught
+              throw @caught
+            done()
+
+          request(@robot.router).post('/hubot/post_test').\
+            set('Content-Type', 'application/x-www-form-urlencoded').\
+            send('bar=baz').\
+            end(error_handler)
+
+      describe 'text/* and application/xml requests', ->
+
+        it 'has body property (String)', (done) ->
+          # for example application/xml
+
+          @robot.router.post '/hubot/post_test', (req, res) =>
+            try
+              expect(req.body).to.equal('<?xml version="1.0" encoding="UTF-8"?><fu>bar</fu>')
+            catch error
+              @caught = error
+            res.send 'done'
+
+          error_handler = =>
+            if @caught
+              throw @caught
+            done()
+
+          request(@robot.router).post('/hubot/post_test').\
+            set('Content-Type', 'application/xml').\
+            send('<?xml version="1.0" encoding="UTF-8"?><fu>bar</fu>').\
+            end(error_handler)
+
+        it 'has rawBody property (String)', (done) ->
+          # for example application/xml
+
+          @robot.router.post '/hubot/post_test', (req, res) =>
+            try
+              expect(req.rawBody).to.equal('<?xml version="1.0" encoding="UTF-8"?><fu>bar</fu>')
+            catch error
+              @caught = error
+            res.send 'done'
+
+          error_handler = =>
+            if @caught
+              throw @caught
+            done()
+
+          request(@robot.router).post('/hubot/post_test').\
+            set('Content-Type', 'application/xml').\
+            send('<?xml version="1.0" encoding="UTF-8"?><fu>bar</fu>').\
+            end(error_handler)
