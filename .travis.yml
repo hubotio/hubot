@@ -7,9 +7,9 @@ matrix:
       # old versions of NPM don't include support for `^` dependency prefixes in package.json
     - node_js: "0.10"
     - node_js: "0.12"
-    - node_js: "4.0"
-    - node_js: "4.1"
-    - node_js: "4.2"
+    - node_js: "4"
+  allow_failures:
+    - node_js: "0.8"
 notifications:
   email: false
 
