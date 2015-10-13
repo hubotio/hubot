@@ -1,11 +1,16 @@
 language: node_js
-node_js:
-  - "0.11"
-  - "0.10"
+
 matrix:
   include:
     - node_js: "0.8"
+      before_install: npm  update -g  npm
       # old versions of NPM don't include support for `^` dependency prefixes in package.json
-      before_install: npm update -g npm
+    - node_js: "0.10"
+    - node_js: "0.12"
+    - node_js: "4.0"
+    - node_js: "4.1"
+    - node_js: "4.2"
 notifications:
   email: false
+
+sudo: false
