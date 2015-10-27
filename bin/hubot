@@ -132,6 +132,6 @@ else
     console.log "OK"
     process.exit 0
 
-  robot.adapter.on 'connected', loadScripts
+  robot.adapter.once 'connected', loadScripts
 
   robot.run()
