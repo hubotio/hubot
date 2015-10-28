@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "async": ">=0.1.0 <1.0.0",
+    "body-parser": "^1.14.0",
     "chalk": "^1.0.0",
     "cline": "^0.8.2",
     "coffee-script": "1.6.3",
@@ -30,7 +31,8 @@
     "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
-    "sinon-chai": "^2.6.0"
+    "sinon-chai": "^2.6.0",
+    "supertest": "^1.1.0"
   },
   "engines": {
     "node": ">= 0.8.x",

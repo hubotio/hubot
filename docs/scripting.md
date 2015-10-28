@@ -422,6 +422,37 @@ curl -d 'payload=%7B%22secret%22%3A%22C-TECH+Astronomy%22%7D' http://127.0.0.1:8
 
 All endpoint URLs should start with the literal string `/hubot` (regardless of what your robot's name is). This consistency makes it easier to set up webhooks (copy-pasteable URL) and guarantees that URLs are valid (not all bot names are URL-safe).
 
+### Get raw body string
+
+Hubot maps the raw body to the req.rawBody property. This is important,
+if you need to do some hashing on the body of the request.
+
+Below is a simple example how to validate GitHub's push webhook request (HMAC).
+
+```coffeescript
+crypto = require 'crypto'
+
+module.exports = (robot) ->
+  robot.router.post '/hubot/github_hook/:room', (req, res) ->
+    room   = req.params.room
+    raw_payload = req.rawBody
+    github_secret = process.env.HUBOT_REPO_GITHUB_SECRET
+
+    # sha1 key must be a buffer
+    hmac = crypto.createHmac("sha1", new Buffer(github_secret))
+    hmac.update raw_payload
+    digest = hmac.digest 'hex'
+    # catch HMAC mismatch
+    if "sha1=#{digest}" isnt req.headers['x-hub-signature']
+      console.log "Auth error"
+      res.json 401, { send: true, error: true }
+      return
+
+    robot.messageRoom room, "#{req.body.pusher.name} pushed to #{req.body.repository.name}"
+
+    res.json { send: true }
+```
+
 ## Events
 
 Hubot can also respond to events which can be used to pass data between scripts. This is done by encapsulating node.js's [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with `robot.emit` and `robot.on`.
