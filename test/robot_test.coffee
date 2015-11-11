@@ -785,7 +785,7 @@ describe 'Robot', ->
 
         testMessage = new TextMessage @user, 'message123'
         @robot.receive testMessage, () ->
-          expect(sendSpy.getCall(0).args[1][0]).to.equal('replaced bar-foo, sir, replaced bar-foo.')
+          expect(sendSpy.getCall(0).args[1]).to.equal('replaced bar-foo, sir, replaced bar-foo.')
           testDone()
 
       it 'allows replacing outgoing strings', (testDone) ->
@@ -800,7 +800,7 @@ describe 'Robot', ->
 
         testMessage = new TextMessage @user, 'message123'
         @robot.receive testMessage, () ->
-          expect(sendSpy.getCall(0).args[1]).to.deep.equal(["whatever I want."])
+          expect(sendSpy.getCall(0).args[1]).to.deep.equal("whatever I want.")
           testDone()
 
       it 'does not send trailing functions to middleware', (testDone) ->
@@ -820,6 +820,6 @@ describe 'Robot', ->
         testMessage = new TextMessage @user, 'message123'
         @robot.receive testMessage, ->
           expect(asserted).to.equal(true)
-          expect(sendSpy.getCall(0).args[1][0]).to.equal('foobar, sir, foobar.')
-          expect(sendSpy.getCall(0).args[1][1]).to.equal(postSendCallback)
+          expect(sendSpy.getCall(0).args[1]).to.equal('foobar, sir, foobar.')
+          expect(sendSpy.getCall(0).args[2]).to.equal(postSendCallback)
           testDone()
