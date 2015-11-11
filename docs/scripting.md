@@ -800,6 +800,7 @@ by [Slack](https://slack.com), <https://example.com|example>.
 ```coffeescript
 module.exports = (robot) ->
   robot.responseMiddleware (context, next, done) ->
+    return unless context.plaintext?
     context.strings = (string.replace(/\[([^\[\]]*?)\]\((https?:\/\/.*?)\)/, "<$2|$1>") for string in context.strings)
     next()
 ```
@@ -815,3 +816,5 @@ of `next` and `done`. Receive middleware context includes these fields:
     - An array of strings being sent to the chat room adapter. You can edit these, or use `context.strings = ["new strings"]` to replace them.
   - `method`
     - A string representing which type of response message the listener sent, such as `send`, `reply`, `emote` or `topic`.
+  - `plaintext`
+    - `true` or `undefined`. This will be set to `true` if the message is of a normal plaintext type, such as `send` or `reply`. This property should be treated as read-only.
