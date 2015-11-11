@@ -55,7 +55,7 @@ class Listener
     if match = @matcher message
       if @regex
         @robot.logger.debug \
-          "Message '#{message}' matched regex /#{inspect @regex}/"
+          "Message '#{message}' matched regex /#{inspect @regex}/; listener.options = #{inspect @options}"
 
       # special middleware-like function that always executes the Listener's
       # callback and calls done (never calls 'next')

@@ -400,6 +400,7 @@ The most common use of this is for providing HTTP end points for services with w
 
 ```coffeescript
 module.exports = (robot) ->
+  # the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
   robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
     room   = req.params.room
     data   = if req.body.payload? then JSON.parse req.body.payload else req.body
