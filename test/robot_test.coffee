@@ -803,6 +803,32 @@ describe 'Robot', ->
           expect(sendSpy.getCall(0).args[1]).to.deep.equal("whatever I want.")
           testDone()
 
+      it 'marks plaintext as plaintext', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar."
+        @robot.hear /^message456$/, (response) ->
+          response.play "good luck with that"
+
+        method = undefined
+        plaintext = undefined
+        @robot.responseMiddleware (context, next, done) ->
+          method = context.method
+          plaintext = context.plaintext
+          next(done)
+
+        testMessage = new TextMessage @user, 'message123'
+
+        @robot.receive testMessage, () =>
+          expect(plaintext).to.equal true
+          expect(method).to.equal "send"
+          testMessage2 = new TextMessage @user, 'message456'
+          @robot.receive testMessage2, () ->
+            expect(plaintext).to.equal undefined
+            expect(method).to.equal "play"
+            testDone()
+
       it 'does not send trailing functions to middleware', (testDone) ->
         @robot.adapter.send = sendSpy = sinon.spy()
         asserted = false

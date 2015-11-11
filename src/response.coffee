@@ -19,7 +19,7 @@ class Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @runWithMiddleware("send", strings...)
+    @runWithMiddleware("send", { plaintext: true }, strings...)
 
   # Public: Posts an emote back to the chat source
   #
@@ -28,7 +28,7 @@ class Response
   #
   # Returns nothing.
   emote: (strings...) ->
-    @runWithMiddleware("emote", strings...)
+    @runWithMiddleware("emote", { plaintext: true }, strings...)
 
   # Public: Posts a message mentioning the current user.
   #
@@ -37,7 +37,7 @@ class Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @runWithMiddleware("reply", strings...)
+    @runWithMiddleware("reply", { plaintext: true }, strings...)
 
   # Public: Posts a topic changing message
   #
@@ -46,7 +46,7 @@ class Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @runWithMiddleware("topic", strings...)
+    @runWithMiddleware("topic", { plaintext: true }, strings...)
 
   # Public: Play a sound in the chat source
   #
@@ -64,16 +64,17 @@ class Response
   #
   # Returns nothing
   locked: (strings...) ->
-    @runWithMiddleware("locked", strings...)
+    @runWithMiddleware("locked", { plaintext: true }, strings...)
 
   # Private: Call with a method for the given strings using response
   # middleware.
-  runWithMiddleware: (methodName, strings...) ->
+  runWithMiddleware: (methodName, opts, strings...) ->
     callback = undefined
     copy = strings.slice(0)
     if typeof(copy[copy.length - 1]) == 'function'
       callback = copy.pop()
     context = {response: @, strings: copy, method: methodName}
+    context.plaintext = true if opts.plaintext?
     responseMiddlewareDone = ->
     runAdapterSend = (_, done) =>
       result = context.strings
