@@ -73,7 +73,7 @@ class Listener
         # Yes, we tried to execute the listener callback (middleware may
         # have intercepted before actually executing though)
         if cb?
-          process.nextTick -> cb true
+          Middleware.ticker -> cb true
 
       response = new @robot.Response(@robot, message, match)
       middleware.execute(
