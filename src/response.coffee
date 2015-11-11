@@ -78,7 +78,7 @@ class Response
     runAdapterSend = (_, done) =>
       result = context.strings
       result.push(callback) if callback?
-      @robot.adapter[methodName](@envelope, result)
+      @robot.adapter[methodName](@envelope, result...)
       done()
     @robot.middleware.response.execute context,
                                        runAdapterSend,
