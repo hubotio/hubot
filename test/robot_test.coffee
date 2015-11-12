@@ -767,3 +767,85 @@ describe 'Robot', ->
         @robot.receive testMessage, ->
           expect(testCallback).to.have.been.called
           testDone()
+
+    describe 'Response Middleware', ->
+      it 'executes response middleware in order', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar."
+
+        @robot.responseMiddleware (context, next, done) ->
+          context.strings[0] = context.strings[0].replace(/foobar/g, "barfoo")
+          next()
+
+        @robot.responseMiddleware (context, next, done) ->
+          context.strings[0] = context.strings[0].replace(/barfoo/g, "replaced bar-foo")
+          next()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(sendSpy.getCall(0).args[1]).to.equal('replaced bar-foo, sir, replaced bar-foo.')
+          testDone()
+
+      it 'allows replacing outgoing strings', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar."
+
+        @robot.responseMiddleware (context, next, done) ->
+          context.strings = ["whatever I want."]
+          next()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, () ->
+          expect(sendSpy.getCall(0).args[1]).to.deep.equal("whatever I want.")
+          testDone()
+
+      it 'marks plaintext as plaintext', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        listenerCallback = sinon.spy()
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar."
+        @robot.hear /^message456$/, (response) ->
+          response.play "good luck with that"
+
+        method = undefined
+        plaintext = undefined
+        @robot.responseMiddleware (context, next, done) ->
+          method = context.method
+          plaintext = context.plaintext
+          next(done)
+
+        testMessage = new TextMessage @user, 'message123'
+
+        @robot.receive testMessage, () =>
+          expect(plaintext).to.equal true
+          expect(method).to.equal "send"
+          testMessage2 = new TextMessage @user, 'message456'
+          @robot.receive testMessage2, () ->
+            expect(plaintext).to.equal undefined
+            expect(method).to.equal "play"
+            testDone()
+
+      it 'does not send trailing functions to middleware', (testDone) ->
+        @robot.adapter.send = sendSpy = sinon.spy()
+        asserted = false
+        postSendCallback = ->
+        @robot.hear /^message123$/, (response) ->
+          response.send "foobar, sir, foobar.", postSendCallback
+
+        @robot.responseMiddleware (context, next, done) ->
+          # We don't send the callback function to middleware, so it's not here.
+          expect(context.strings).to.deep.equal ["foobar, sir, foobar."]
+          expect(context.method).to.equal "send"
+          asserted = true
+          next()
+
+        testMessage = new TextMessage @user, 'message123'
+        @robot.receive testMessage, ->
+          expect(asserted).to.equal(true)
+          expect(sendSpy.getCall(0).args[1]).to.equal('foobar, sir, foobar.')
+          expect(sendSpy.getCall(0).args[2]).to.equal(postSendCallback)
+          testDone()

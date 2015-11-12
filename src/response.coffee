@@ -19,7 +19,7 @@ class Response
   #
   # Returns nothing.
   send: (strings...) ->
-    @robot.adapter.send @envelope, strings...
+    @runWithMiddleware("send", { plaintext: true }, strings...)
 
   # Public: Posts an emote back to the chat source
   #
@@ -28,7 +28,7 @@ class Response
   #
   # Returns nothing.
   emote: (strings...) ->
-    @robot.adapter.emote @envelope, strings...
+    @runWithMiddleware("emote", { plaintext: true }, strings...)
 
   # Public: Posts a message mentioning the current user.
   #
@@ -37,7 +37,7 @@ class Response
   #
   # Returns nothing.
   reply: (strings...) ->
-    @robot.adapter.reply @envelope, strings...
+    @runWithMiddleware("reply", { plaintext: true }, strings...)
 
   # Public: Posts a topic changing message
   #
@@ -46,7 +46,7 @@ class Response
   #
   # Returns nothing.
   topic: (strings...) ->
-    @robot.adapter.topic @envelope, strings...
+    @runWithMiddleware("topic", { plaintext: true }, strings...)
 
   # Public: Play a sound in the chat source
   #
@@ -55,7 +55,7 @@ class Response
   #
   # Returns nothing
   play: (strings...) ->
-    @robot.adapter.play @envelope, strings...
+    @runWithMiddleware("play", strings...)
 
   # Public: Posts a message in an unlogged room
   #
@@ -64,7 +64,26 @@ class Response
   #
   # Returns nothing
   locked: (strings...) ->
-    @robot.adapter.locked @envelope, strings...
+    @runWithMiddleware("locked", { plaintext: true }, strings...)
+
+  # Private: Call with a method for the given strings using response
+  # middleware.
+  runWithMiddleware: (methodName, opts, strings...) ->
+    callback = undefined
+    copy = strings.slice(0)
+    if typeof(copy[copy.length - 1]) == 'function'
+      callback = copy.pop()
+    context = {response: @, strings: copy, method: methodName}
+    context.plaintext = true if opts.plaintext?
+    responseMiddlewareDone = ->
+    runAdapterSend = (_, done) =>
+      result = context.strings
+      result.push(callback) if callback?
+      @robot.adapter[methodName](@envelope, result...)
+      done()
+    @robot.middleware.response.execute context,
+                                       runAdapterSend,
+                                       responseMiddlewareDone
 
   # Public: Picks a random item from the given items.
   #
