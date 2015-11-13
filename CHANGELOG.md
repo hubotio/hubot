@@ -1,3 +1,23 @@
+[v2.17.0](https://github.com/github/hubot/tree/v2.17.0)
+========
+
+[Full Changelog](https://github.com/github/hubot/compare/v2.16.0...v2.17.0)
+
+**Merged pull requests:**
+
+- Add node v5 to travis [\#1077](https://github.com/github/hubot/pull/1077) ([@scboucher](https://github.com/scboucher))
+- Only loadScripts once [\#1069](https://github.com/github/hubot/pull/1069) ([@technicalpickles](https://github.com/technicalpickles))
+- Response middleware [\#1021](https://github.com/github/hubot/pull/1021) ([@bhuga](https://github.com/bhuga))
+- Debug listener options [\#1074](https://github.com/github/hubot/pull/1074) ([@msabramo](https://github.com/msabramo))
+- Add Node 4.2 to travis [\#1068](https://github.com/github/hubot/pull/1068) ([@scboucher](https://github.com/scboucher))
+- Clarify that a room token might be expected [\#1012](https://github.com/github/hubot/pull/1012) ([@alininja](https://github.com/alininja))
+- Fix link to heroku docs [\#1049](https://github.com/github/hubot/pull/1049) ([@doque](https://github.com/doque))
+- Doc tweaks [\#1042](https://github.com/github/hubot/pull/1042) ([@xuoe](https://github.com/xuoe))
+- Update Azure documentation [\#1041](https://github.com/github/hubot/pull/1041) ([@davidkassa](https://github.com/davidkassa))
+- Update slack adapter doc link [\#1039](https://github.com/github/hubot/pull/1039) ([@danielcompton](https://github.com/danielcompton))
+- Doc tweaks [\#1038](https://github.com/github/hubot/pull/1038) ([@bhuga](https://github.com/bhuga))
+- Test tweaks [\#1037](https://github.com/github/hubot/pull/1037) ([@michaelansel](https://github.com/michaelansel))
+
 [v2.16.0](https://github.com/github/hubot/tree/v2.16.0)
 ========
 
