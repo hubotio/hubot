@@ -5,6 +5,7 @@
 
 **Merged pull requests:**
 
+- Add node v5 to travis [\#1077](https://github.com/github/hubot/pull/1077) ([@scboucher](https://github.com/scboucher))
 - Only loadScripts once [\#1069](https://github.com/github/hubot/pull/1069) ([@technicalpickles](https://github.com/technicalpickles))
 - Response middleware [\#1021](https://github.com/github/hubot/pull/1021) ([@bhuga](https://github.com/bhuga))
 - Debug listener options [\#1074](https://github.com/github/hubot/pull/1074) ([@msabramo](https://github.com/msabramo))
