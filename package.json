@@ -30,7 +30,9 @@
     "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
-    "sinon-chai": "^2.6.0"
+    "sinon-chai": "^2.8.0",
+    "sinon":"~1.17.0",
+    "chai":"~2.1.0"
   },
   "engines": {
     "node": ">= 0.8.x",
