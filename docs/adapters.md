@@ -49,6 +49,7 @@ to have yours added to the list:
 * [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
 * [XMPP](https://github.com/markstory/hubot-xmpp)
 * [Yammer](https://github.com/athieriot/hubot-yammer)
+* [Mattermost](https://github.com/renanvicente/hubot-mattermost)
 
 ## Writing Your Own Adapter
 
