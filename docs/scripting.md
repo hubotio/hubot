@@ -620,6 +620,10 @@ If you are using git, the generated directory includes a .gitignore, so you can 
 
 You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.coffee` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
 
+You'll probably want to write some unit tests for your new script.  A sample test script is written to
+`test/awesome-script-test.coffee`, which you can run with `grunt`.  For more information on tests,
+see **Testing Hubot Scripts**.
+
 # Listener Metadata
 
 In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
@@ -818,3 +822,65 @@ of `next` and `done`. Receive middleware context includes these fields:
     - A string representing which type of response message the listener sent, such as `send`, `reply`, `emote` or `topic`.
   - `plaintext`
     - `true` or `undefined`. This will be set to `true` if the message is of a normal plaintext type, such as `send` or `reply`. This property should be treated as read-only.
+
+# Testing Hubot Scripts
+
+[hubot-test-helper](https://github.com/mtsmfm/hubot-test-helper) is a good
+framework for unit testing Hubot scripts.  (Note that, in order to use
+hubot-test-helper, you'll need a recent Node version with support for Promises.)
+
+Install the package in your Hubot instance:
+
+``` % npm install hubot-test-helper --save-dev ```
+
+You'll also need to install:
+
+ * a JavaScript testing framework such as *Mocha*
+ * an assertion library such as *chai* or *expect.js*
+
+You may also want to install:
+
+ * *coffee-script* (if you're writing your tests in CoffeeScript rather than JavaScript)
+ * a mocking library such as *Sinon.js* (if your script performs webservice calls or
+   other asynchronous actions)
+
+Here is a sample script that tests the first couple of commands in the
+[Hubot sample script](https://github.com/github/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
+
+**test/example-test.coffee**
+```coffeescript
+Helper = require('hubot-test-helper')
+chai = require 'chai'
+
+expect = chai.expect
+
+helper = new Helper('../scripts/example.coffee')
+
+describe 'example script', ->
+  beforeEach ->
+    @room = helper.createRoom()
+
+  afterEach ->
+    @room.destroy()
+
+  it 'doesn\'t need badgers', ->
+    @room.user.say('alice', 'did someone call for a badger?').then =>
+      expect(@room.messages).to.eql [
+        ['alice', 'did someone call for a badger?']
+        ['hubot', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
+      ]
+
+  it 'won\'t open the pod bay doors', ->
+    @room.user.say('bob', '@hubot open the pod bay doors').then =>
+      expect(@room.messages).to.eql [
+        ['bob', '@hubot open the pod bay doors']
+        ['hubot', '@bob I\'m afraid I can\'t let you do that.']
+      ]
+
+  it 'will open the dutch doors', ->
+    @room.user.say('bob', '@hubot open the dutch doors').then =>
+      expect(@room.messages).to.eql [
+        ['bob', '@hubot open the dutch doors']
+        ['hubot', '@bob Opening dutch doors']
+      ]
+```
