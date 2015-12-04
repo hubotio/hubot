@@ -884,3 +884,17 @@ describe 'example script', ->
         ['hubot', '@bob Opening dutch doors']
       ]
 ```
+
+**sample output**
+```bash
+% mocha --compilers "coffee:coffee-script/register" test/*.coffee
+
+
+  example script
+    ✓ doesn't need badgers
+    ✓ won't open the pod bay doors
+    ✓ will open the dutch doors
+
+
+  3 passing (212ms)
+```
