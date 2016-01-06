@@ -414,7 +414,7 @@ class Robot
     port       = process.env.EXPRESS_PORT or process.env.PORT or 8080
     address    = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
     limit      = process.env.EXPRESS_LIMIT or '100kb'
-    paramLimit = process.env.EXPRESS_PARAMETER_LIMIT or 1000
+    paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) or 1000
 
     express = require 'express'
     multipart = require 'connect-multiparty'
