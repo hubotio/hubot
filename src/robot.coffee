@@ -40,13 +40,11 @@ class Robot
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot', alias = false) ->
+  constructor: (adapterPath, adapter, httpd, @name = 'Hubot', @alias = false) ->
     @adapterPath ?= Path.join __dirname, "adapters"
 
-    @name       = name
     @events     = new EventEmitter
     @brain      = new Brain @
-    @alias      = alias
     @adapter    = null
     @Response   = Response
     @commands   = []
