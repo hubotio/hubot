@@ -82,9 +82,7 @@ if Options.create
   process.exit 1
 
 else
-  adapterPath = Path.join __dirname, "..", "src", "adapters"
-
-  robot = Hubot.loadBot adapterPath, Options.adapter, Options.enableHttpd, Options.name, Options.alias
+  robot = Hubot.loadBot undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias
 
   if Options.version
     console.log robot.version
