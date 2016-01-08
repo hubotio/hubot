@@ -113,6 +113,7 @@ class Campfire extends Adapter
 
     self.emit "connected"
 
+module.exports = exports = Campfire
 exports.use = (robot) ->
   new Campfire robot
 
