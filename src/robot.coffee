@@ -62,7 +62,7 @@ class Robot
     else
       @setupNullRouter()
 
-    @loadAdapter adapter
+    @loadAdapter adapter if adapter?
 
     @adapterName   = adapter
     @errorHandlers = []
@@ -568,6 +568,9 @@ class Robot
   #
   # Returns nothing.
   run: ->
+    unless @adapter
+      throw new Error("no adapter present. did you forget to specify one or not call 'loadApdapter'?")
+
     @emit "running"
     @adapter.run()
 
