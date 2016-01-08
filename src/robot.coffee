@@ -448,7 +448,6 @@ class Robot
 
   # Load the adapter Hubot is going to use.
   #
-  # path    - A String of the path to adapter if local.
   # adapter - A String of the adapter name to use.
   #
   # Returns nothing.
