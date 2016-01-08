@@ -20,8 +20,8 @@ we wanted to make a bot called myhubot:
     % yo hubot
 
 At this point, you'll be asked a few questions about who is creating the bot,
-and which [adapter](/docs/adapters.md) you'll be using. Adapters are hubot's way of
-integrating with different chat providers.
+and which [adapter](/docs/adapters.md) you'll be using. Adapters are hubot's
+way of integrating with different chat providers.
 
 If you are using git, the generated directory includes a .gitignore, so you can
 initialize and add everything:
@@ -46,7 +46,7 @@ You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
 and then launching your hubot.
 
-Hubot needs Redis to persist data, so before you can start hubot on your own computer, you should have Redis installed on your localhost. If just want to test Hubot without Redis, then you can remove `redis-brain.coffee` from `hubot-scripts.json`.
+Hubot needs Redis to persist data, so before you can start hubot on your own computer, you should have Redis installed on your localhost. If just want to test Hubot without Redis, then you can remove `hubot-redis-brain` from `external-scripts.json`.
 
     % bin/hubot
     Hubot>
