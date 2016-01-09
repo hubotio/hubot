@@ -3,7 +3,7 @@ permalink: /docs/scripting/index.html
 layout: docs
 ---
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.
+Hubot out of the box doesn't do too much but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.  You can create a custom script in hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
@@ -212,7 +212,7 @@ For those times that there isn't an API, there's always the possibility of scree
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned, hubot uses [node-scoped-http-client](https://github.com/technoweenie/node-scoped-http-client) to provide a simple interface for making HTTP and HTTP requests. Under its hood, it's using node's builtin [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) libraries, but providing an easy DSL for the most common kinds of interaction.
+As mentioned, hubot uses [node-scoped-http-client](https://github.com/technoweenie/node-scoped-http-client) to provide a simple interface for making HTTP and HTTPS requests. Under its hood, it's using node's builtin [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) libraries, but providing an easy DSL for the most common kinds of interaction.
 
 If you need to control options on http and https more directly, you pass a second argument to `robot.http` that will be passed on to node-scoped-http-client which will be passed on to http and https:
 
@@ -259,6 +259,26 @@ module.exports = (robot) ->
   robot.leave (res) ->
     res.send res.random leaveReplies
 ```
+
+## Custom Listeners
+
+While the above helpers cover most of the functionality the average user needs (hear, respond, enter, leave, topic), sometimes you would like to have very specialized matching logic for listeners. If so, you can use `listen` to specify a custom match function instead of a regular expression.
+
+The match function must return a truthy value if the listener callback should be executed. The truthy return value of the match function is then passed to the callback as response.match.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.listen(
+    (message) -> # Match function
+      # Occassionally respond to things that Steve says
+      message.user.name is "Steve" and Math.random() > 0.8
+    (response) -> # Standard listener callback
+      # Let Steve know how happy you are that he exists
+      response.reply "HI STEVE! YOU'RE MY BEST FRIEND! (but only like #{response.match * 100}% of the time)"
+  )
+```
+
+See [the design patterns document](patterns.md) for examples of complex matchers.
 
 ## Environment variables
 
@@ -380,6 +400,7 @@ The most common use of this is for providing HTTP end points for services with w
 
 ```coffeescript
 module.exports = (robot) ->
+  # the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
   robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
     room   = req.params.room
     data   = if req.body.payload? then JSON.parse req.body.payload else req.body
@@ -566,33 +587,50 @@ Scripts loaded from the `scripts/` directory are loaded in alphabetical order, s
 
 Once you've built some new scripts to extend the abilities of your robot friend, you should consider sharing them with the world! At the minimum, you need to package up your script and submit it to the [Node.js Package Registry](http://npmjs.org). You should also review the best practices for sharing scripts below.
 
+## See if a script already exists
+
+Start by [checking if an NPM package](/docs/index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+
 ## Creating A Script Package
 
-Creating a script package for hubot is very simple. Start by creating a normal
-`npm` package. Make sure you add a main file for the entry point (e.g.
-`index.js` or `index.coffee`).
+Creating a script package for hubot is very simple.  Start by installing the `hubot` [yeoman](http://yeoman.io/) generator:
 
-In this entry point file you're going to have to export a function that hubot
-will use to load the scripts in your package. Below is a simple example for
-loading each script in a `./scripts` directory in your package.
 
-```coffeescript
-Path = require 'path'
-
-module.exports = (robot) ->
-  path = Path.resolve __dirname, 'scripts'
-  robot.load path
+```
+% npm install -g yo generator-hubot
 ```
 
-After you've built your `npm` package you can publish it to [npmjs](http://npmjs.org).
+Once you've got the hubot generator installed, creating a hubot script is similar to creating a new hubot.  You create a directory for your hubot script and generate a new `hubot:script` in it.  For example, if we wanted to create a hubot script called "my-awesome-script":
 
-## Listener Metadata
+```
+% mkdir hubot-my-awesome-script
+% cd hubot-my-awesome-script
+% yo hubot:script
+```
+
+At this point, the you'll be asked a few questions about the author for the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+
+If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
+
+```
+% git init
+% git add .
+% git commit -m "Initial commit"
+```
+
+You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.coffee` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
+
+You'll probably want to write some unit tests for your new script.  A sample test script is written to
+`test/awesome-script-test.coffee`, which you can run with `grunt`.  For more information on tests,
+see **Testing Hubot Scripts**.
+
+# Listener Metadata
 
 In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
 
 The most important and most common metadata key is `id`. Every Listener should be given a unique name (options.id; defaults to `null`). Names should be scoped by module (e.g. 'my-module.my-listener'). These names allow other scripts to directly address individual listeners and extend them with additional functionality like authorization and rate limiting.
 
-Additional extensions may define and handle additional metadata keys.
+Additional extensions may define and handle additional metadata keys. For more information, see the [Listener Middleware section](#listener-middleware).
 
 Returning to an earlier example:
 
@@ -608,3 +646,255 @@ module.exports = (robot) ->
 These scoped identifiers allow you to externally specify new behaviors like:
 - authorization policy: "allow everyone in the `annoyers` group to execute `annoyance.*` commands"
 - rate limiting: "only allow executing `annoyance.start` once every 30 minutes"
+
+# Middleware
+
+There are three kinds of middleware: Receive, Listener and Response.
+
+Receive middleware runs once, before listeners are checked.
+Listener middleware runs for every listener that matches the message.
+Response middleware runs for every response sent to a message.
+
+## Execution Process and API
+
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
+
+Middleware is called with:
+
+- `context`
+  - See the each middleware type's API to see what the context will expose.
+- `next`
+  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
+  - `next` should be called with a single, optional argument: either the provided `done` function or a new function that eventually calls `done`. If the argument is not given, the provided `done` will be assumed.
+- `done`
+ - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
+ - `done` should be called with no arguments
+
+Every middleware receives the same API signature of `context`, `next`, and
+`done`. Different kinds of middleware may receive different information in the
+`context` object. For more details, see the API for each type of middleware.
+
+### Error Handling
+
+For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
+
+# Listener Middleware
+
+Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
+
+## Listener Middleware Examples
+
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
+
+A simple example of middleware logging command executions:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.listenerMiddleware (context, next, done) ->
+    # Log commands
+    robot.logger.info "#{context.response.message.user.name} asked me to #{context.response.message.text}"
+    # Continue executing middleware
+    next()
+```
+
+In this example, a log message will be written for each chat message that matches a Listener.
+
+A more complex example making a rate limiting decision:
+
+```coffeescript
+module.exports = (robot) ->
+  # Map of listener ID to last time it was executed
+  lastExecutedTime = {}
+
+  robot.listenerMiddleware (context, next, done) ->
+    try
+      # Default to 1s unless listener provides a different minimum period
+      minPeriodMs = context.listener.options?.rateLimits?.minPeriodMs? or 1000
+
+      # See if command has been executed recently
+      if lastExecutedTime.hasOwnProperty(context.listener.options.id) and
+         lastExecutedTime[context.listener.options.id] > Date.now() - minPeriodMs
+        # Command is being executed too quickly!
+        done()
+      else
+        next ->
+          lastExecutedTime[context.listener.options.id] = Date.now()
+          done()
+    catch err
+      robot.emit('error', err, context.response)
+```
+
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+
+This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (msg) ->
+    # This will execute no faster than once every ten seconds
+    msg.reply 'Why, hello there!'
+```
+
+## Listener Middleware API
+
+Listener middleware callbacks receive three arguments, `context`, `next`, and
+`done`. See the [middleware API](#execution-process-and-api) for a description
+of `next` and `done`. Listener middleware context includes these fields:
+  - `listener`
+    - `options`: a simple Object containing options set when defining the listener. See [Listener Metadata](#listener-metadata).
+    - all other properties should be considered internal
+  - `response`
+    - all parts of the standard response API are included in the middleware API. See [Send & Reply](#send--reply).
+    - middleware may decorate (but not modify) the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
+    - note: the textual message (`response.message.text`) should be considered immutable in listener middleware
+
+# Receive Middleware
+
+Receive middleware runs before any listeners have executed. It's suitable for
+blacklisting commands that have not been updated to add an ID, metrics, and more.
+
+## Receive Middleware Example
+
+This simple middlware bans hubot use by a particular user, including `hear`
+listeners. If the user attempts to run a command explicitly, it will return
+an error message.
+
+```coffeescript
+BLACKLISTED_USERS = [
+  '12345' # Restrict access for a user ID for a contractor
+]
+
+robot.receiveMiddleware (context, next, done) ->
+  if context.response.message.user.id in BLACKLISTED_USERS
+    # Don't process this message further.
+    context.response.message.finish()
+
+    # If the message starts with 'hubot' or the alias pattern, this user was
+    # explicitly trying to run a command, so respond with an error message.
+    if context.response.message.text?.match(robot.respondPattern(''))
+      context.response.reply "I'm sorry @#{context.response.message.user.name}, but I'm configured to ignore your commands."
+
+    # Don't process further middleware.
+    done()
+  else
+    next(done)
+```
+
+## Receive Middleware API
+
+Receive middleware callbacks receive three arguments, `context`, `next`, and
+`done`. See the [middleware API](#execution-process-and-api) for a description
+of `next` and `done`. Receive middleware context includes these fields:
+  - `response`
+    - this response object will not have a `match` property, as no listeners have been run yet to match it.
+    - middleware may decorate the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
+    - middleware may modify the `response.message` object
+
+# Response Middleware
+
+Response middleware runs against every message hubot sends to a chat room. It's
+helpful for message formatting, preventing password leaks, metrics, and more.
+
+## Response Middleware Example
+
+This simple example changes the format of links sent to a chat room from
+markdown links (like [example](https://example.com)) to the format supported
+by [Slack](https://slack.com), <https://example.com|example>.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.responseMiddleware (context, next, done) ->
+    return unless context.plaintext?
+    context.strings = (string.replace(/\[([^\[\]]*?)\]\((https?:\/\/.*?)\)/, "<$2|$1>") for string in context.strings)
+    next()
+```
+
+## Response Middleware API
+
+Response middleware callbacks receive three arguments, `context`, `next`, and
+`done`. See the [middleware API](#execution-process-and-api) for a description
+of `next` and `done`. Receive middleware context includes these fields:
+  - `response`
+    - This response object can be used to send new messages from the middleware. Middleware will be called on these new responses. Be careful not to create infinite loops.
+  - `strings`
+    - An array of strings being sent to the chat room adapter. You can edit these, or use `context.strings = ["new strings"]` to replace them.
+  - `method`
+    - A string representing which type of response message the listener sent, such as `send`, `reply`, `emote` or `topic`.
+  - `plaintext`
+    - `true` or `undefined`. This will be set to `true` if the message is of a normal plaintext type, such as `send` or `reply`. This property should be treated as read-only.
+
+# Testing Hubot Scripts
+
+[hubot-test-helper](https://github.com/mtsmfm/hubot-test-helper) is a good
+framework for unit testing Hubot scripts.  (Note that, in order to use
+hubot-test-helper, you'll need a recent Node version with support for Promises.)
+
+Install the package in your Hubot instance:
+
+``` % npm install hubot-test-helper --save-dev ```
+
+You'll also need to install:
+
+ * a JavaScript testing framework such as *Mocha*
+ * an assertion library such as *chai* or *expect.js*
+
+You may also want to install:
+
+ * *coffee-script* (if you're writing your tests in CoffeeScript rather than JavaScript)
+ * a mocking library such as *Sinon.js* (if your script performs webservice calls or
+   other asynchronous actions)
+
+Here is a sample script that tests the first couple of commands in the
+[Hubot sample script](https://github.com/github/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
+
+**test/example-test.coffee**
+```coffeescript
+Helper = require('hubot-test-helper')
+chai = require 'chai'
+
+expect = chai.expect
+
+helper = new Helper('../scripts/example.coffee')
+
+describe 'example script', ->
+  beforeEach ->
+    @room = helper.createRoom()
+
+  afterEach ->
+    @room.destroy()
+
+  it 'doesn\'t need badgers', ->
+    @room.user.say('alice', 'did someone call for a badger?').then =>
+      expect(@room.messages).to.eql [
+        ['alice', 'did someone call for a badger?']
+        ['hubot', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
+      ]
+
+  it 'won\'t open the pod bay doors', ->
+    @room.user.say('bob', '@hubot open the pod bay doors').then =>
+      expect(@room.messages).to.eql [
+        ['bob', '@hubot open the pod bay doors']
+        ['hubot', '@bob I\'m afraid I can\'t let you do that.']
+      ]
+
+  it 'will open the dutch doors', ->
+    @room.user.say('bob', '@hubot open the dutch doors').then =>
+      expect(@room.messages).to.eql [
+        ['bob', '@hubot open the dutch doors']
+        ['hubot', '@bob Opening dutch doors']
+      ]
+```
+
+**sample output**
+```bash
+% mocha --compilers "coffee:coffee-script/register" test/*.coffee
+
+
+  example script
+    ✓ doesn't need badgers
+    ✓ won't open the pod bay doors
+    ✓ will open the dutch doors
+
+
+  3 passing (212ms)
+```
