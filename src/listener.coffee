@@ -104,7 +104,21 @@ class TextListener extends Listener
         message.match @regex
     super @robot, @matcher, @options, @callback
 
+class RespondListener extends TextListener
+  # RespondListeners receive every message from the chat source and decide if they
+  # want to act on it.
+  #
+  # robot    - A Robot instance.
+  # regex    - A RegExp for the message part that follows the robot's name/alias.
+  # options  - An Object of additional parameters keyed on extension name
+  #            (optional).
+  # callback - A Function that is triggered if the incoming message matches.
+  constructor: (@robot, @originalRegex, @options, @callback) ->
+    @regex = @robot.respondPattern(@originalRegex)
+    super @robot, @regex, @options, @callback
+
 module.exports = {
   Listener
   TextListener
+  RespondListener
 }

@@ -82,6 +82,20 @@ describe 'Robot', ->
         httpClient = @robot.http('http://localhost', agent: agentB)
         expect(httpClient.options.agent).to.equal(agentB)
 
+    describe '#changeName', ->
+      it 'updates the name', ->
+        expect(@robot.name).to.equal('TestHubot')
+        @robot.changeName 'Testbot'
+        expect(@robot.name).to.equal('Testbot')
+
+      it 'updates listeners with the new name', ->
+        @robot.respond /.*/, ->
+        regex = @robot.listeners[0].regex.toString()
+        expect(regex).to.equal('/^\\s*[@]?(?:TestHubot[:,]?|Hubot[:,]?)\\s*(?:.*)/')
+        @robot.changeName 'Testbot'
+        regex = @robot.listeners[0].regex.toString()
+        expect(regex).to.equal('/^\\s*[@]?(?:Testbot[:,]?|Hubot[:,]?)\\s*(?:.*)/')
+
     describe '#respondPattern', ->
       it 'matches messages starting with robot\'s name', ->
         testMessage = @robot.name + 'message123'
@@ -155,10 +169,10 @@ describe 'Robot', ->
         expect(@robot.listeners).to.have.length(1)
 
     describe '#respond', ->
-      it 'registers a new listener using hear', ->
-        sinon.spy @robot, 'hear'
-        @robot.respond /.*/, ->
-        expect(@robot.hear).to.have.been.called
+      it 'registers a new listener directly', ->
+        expect(@robot.listeners).to.have.length(0)
+        @robot.hear /.*/, ->
+        expect(@robot.listeners).to.have.length(1)
 
     describe '#enter', ->
       it 'registers a new listener using listen', ->
@@ -413,6 +427,19 @@ describe 'Robot', ->
         result = testListener.matcher(testMessage)
 
         expect(result).to.not.be.ok
+
+    describe '#changeName', ->
+      it 'still matches TextMessages addressed to the robot', ->
+        callback = sinon.spy()
+        testMessage = new TextMessage(@user, 'Testbot Message123')
+        testRegex = /message123$/i
+
+        @robot.respond(testRegex, callback)
+        @robot.changeName 'Testbot'
+
+        testListener = @robot.listeners[0]
+        result = testListener.matcher(testMessage)
+        expect(result).to.be.ok
 
     describe '#enter', ->
       it 'matches EnterMessages', ->
