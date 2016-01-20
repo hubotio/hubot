@@ -42,7 +42,10 @@ class Shell extends Adapter
     @cli = cline()
 
     @cli.command '*', (input) =>
-      userId = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+      userId = process.env.HUBOT_SHELL_USER_ID or '1'
+      if userId.match (/\A\d+\z/)
+        userId = parseInt(userId)
+
       userName = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
       user = @robot.brain.userForId userId, name: userName, room: 'Shell'
       @receive new TextMessage user, input, 'messageId'
