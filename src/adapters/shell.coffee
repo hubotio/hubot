@@ -17,7 +17,7 @@ historyPath = ".hubot_history"
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
-    console.log chalk.green.bold("#{str}") for str in strings
+    console.log chalk.bold("#{str}") for str in strings
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
