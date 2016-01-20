@@ -1,3 +1,45 @@
+## [v2.18.0](https://github.com/github/hubot/tree/v2.18.0) (2016-01-19)
+[Full Changelog](https://github.com/github/hubot/compare/v2.17.0...v2.18.0)
+
+**Implemented enhancements:**
+
+- Only coerce ids that are all digits into integers [\#1052](https://github.com/github/hubot/pull/1052) ([technicalpickles](https://github.com/technicalpickles))
+
+
+**Closed issues:**
+
+- Allow for non-integer user id in the shell adapter. [\#1117](https://github.com/github/hubot/issues/1117)
+- Markdown syntax in docs/adapters.md preventing update of hubot.github.com [\#1100](https://github.com/github/hubot/issues/1100)
+- Possible Error in Docs [\#1096](https://github.com/github/hubot/issues/1096)
+- Propose adding Hubot-Mattermost to list of Hubot adapters [\#1089](https://github.com/github/hubot/issues/1089)
+- bug\(hubot@2.17.0\): adapters don't run script [\#1086](https://github.com/github/hubot/issues/1086)
+- Depressing Pug Picture [\#1084](https://github.com/github/hubot/issues/1084)
+- Hubot - robot.http get method returns null body & res.  Suspecting hubot timing out [\#1080](https://github.com/github/hubot/issues/1080)
+- Steam + Hubot [\#1076](https://github.com/github/hubot/issues/1076)
+- Hubot won't start on Heroku because of node modules [\#1071](https://github.com/github/hubot/issues/1071)
+- Documentation 404 [\#1064](https://github.com/github/hubot/issues/1064)
+- Can't make HTTP requests [\#1060](https://github.com/github/hubot/issues/1060)
+- Define and document testing patterns for scripts [\#985](https://github.com/github/hubot/issues/985)
+
+**Merged pull requests:**
+
+- Mattermost adapter [\#1120](https://github.com/github/hubot/pull/1120) ([technicalpickles](https://github.com/technicalpickles))
+- Upgrade express to v3.21.2 [\#1119](https://github.com/github/hubot/pull/1119) ([sgerrand](https://github.com/sgerrand))
+- Fixed link to getting started [\#1116](https://github.com/github/hubot/pull/1116) ([jackmawer](https://github.com/jackmawer))
+- Fix http and https documentation [\#1114](https://github.com/github/hubot/pull/1114) ([technicalpickles](https://github.com/technicalpickles))
+- \[shell\] don't color hubot responses green, to be more visible on light backgrounds [\#1111](https://github.com/github/hubot/pull/1111) ([technicalpickles](https://g
+ithub.com/technicalpickles))
+- Determine adapterPath in robot.coffee, rather than bin/hubot [\#1109](https://github.com/github/hubot/pull/1109) ([technicalpickles](https://github.com/technicalpickl
+es))
+- Updated copyright to 2016 [\#1103](https://github.com/github/hubot/pull/1103) ([aqnouch](https://github.com/aqnouch))
+- Update docs to reflect external scripts brain location [\#1101](https://github.com/github/hubot/pull/1101) ([cycomachead](https://github.com/cycomachead))
+- Added Twilio IP Messaging adapter to the list. [\#1099](https://github.com/github/hubot/pull/1099) ([philnash](https://github.com/philnash))
+- Add Skyweb to a list of adapters [\#1097](https://github.com/github/hubot/pull/1097) ([EllisV](https://github.com/EllisV))
+- Instructions for deploying hubot to IBM Bluemix [\#1095](https://github.com/github/hubot/pull/1095) ([kauffecup](https://github.com/kauffecup))
+- Adding documentation for testing Hubot scripts [\#1094](https://github.com/github/hubot/pull/1094) ([mdelagrange](https://github.com/mdelagrange))
+- Proxy instructions: typo + foolproof [\#1092](https://github.com/github/hubot/pull/1092) ([jbick](https://github.com/jbick))
+- Optionally use setImmediate instead of nextTick in middleware [\#1081](https://github.com/github/hubot/pull/1081) ([bhuga](https://github.com/bhuga))
+
 [v2.17.0](https://github.com/github/hubot/tree/v2.17.0)
 ========
 
