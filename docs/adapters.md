@@ -18,7 +18,6 @@ Third-party adapters are available as `npm` packages. Here is a list of known
 adapters, but please [submit an issue](https://github.com/github/hubot/issues)
 to have yours added to the list:
 
-* [Proxy](https://github.com/Hammertime38/hubot-proxy) - This adapter allows the base application to observe, handle, and control events sent to the proxied adapter, all defined in a config object at the root of the module.
 
 * [AIM](https://github.com/shaundubuque/hubot-aim)
 * [ChatWork](https://github.com/akiomik/hubot-chatwork)
@@ -37,6 +36,7 @@ to have yours added to the list:
 * [Mattermost](https://github.com/renanvicente/hubot-mattermost)
 * [QQ](https://github.com/xhan/qqbot)
 * [Partychat](https://github.com/iangreenleaf/hubot-partychat-hooks)
+* [Proxy](https://github.com/Hammertime38/hubot-proxy) - This adapter allows the base application to observe, handle, and control events sent to the proxied adapter, all defined in a config object at the root of the module.
 * [Rocket.Chat](https://github.com/RocketChat/hubot-rocketchat)
 * [Slack](https://github.com/slackhq/hubot-slack)
 * [Skype](https://github.com/netpro2k/hubot-skype)
