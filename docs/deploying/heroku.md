@@ -58,6 +58,6 @@ before:
 
 Some scripts needs Redis to work, Heroku offers an addon called [Redis Cloud](https://addons.heroku.com/rediscloud), which has a free plan. To use it:
 
-    % heroku addons:add rediscloud
+    % heroku addons:create rediscloud
 
 Free dynos on Heroku will [sleep after 30 minutes of inactivity](https://devcenter.heroku.com/articles/dyno-sleeping). That means your hubot would leave the chat room and only rejoin when it does get traffic. This is extremely inconvenient since most interaction is done through chat, and hubot has to be online and in the room to respond to messages. To get around this, you can use the [hubot-heroku-keepalive](https://github.com/hubot-scripts/hubot-heroku-keepalive) script, which will keep your free dyno alive for up to 18 hours/day. If you never want Hubot to sleep, you will need to [upgrade to Heroku's hobby plan](https://www.heroku.com/pricing).
