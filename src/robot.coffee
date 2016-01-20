@@ -321,7 +321,7 @@ class Robot
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
             # Defer to the event loop at least after every listener so the
             # stack doesn't get too big
-            process.nextTick () ->
+            Middleware.ticker () ->
               # Stop processing when message.done == true
               cb(context.response.message.done)
         catch err

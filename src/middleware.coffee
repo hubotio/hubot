@@ -1,6 +1,9 @@
 async = require 'async'
 
 class Middleware
+  # We use this recursively, and using nextTick recursively is deprecated in node 0.10.
+  @ticker: if typeof setImmediate is "function" then setImmediate else process.nextTick
+
   constructor: (@robot) ->
     @stack = []
 
