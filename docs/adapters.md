@@ -34,6 +34,7 @@ to have yours added to the list:
 * [Jabbr](https://github.com/smoak/hubot-jabbr)
 * [Let's Chat](https://github.com/sdelements/hubot-lets-chat)
 * [Lingr](https://github.com/miyagawa/hubot-lingr)
+* [Mattermost](https://github.com/renanvicente/hubot-mattermost)
 * [QQ](https://github.com/xhan/qqbot)
 * [Partychat](https://github.com/iangreenleaf/hubot-partychat-hooks)
 * [Rocket.Chat](https://github.com/RocketChat/hubot-rocketchat)
