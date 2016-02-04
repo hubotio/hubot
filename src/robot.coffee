@@ -354,6 +354,10 @@ class Robot
       try
         script = require(full)
 
+        # Support Babel 6's `export default function`
+        if typeof script.default is 'function'
+          script = script.default
+
         if typeof script is 'function'
           script @
           @parseHelp Path.join(path, file)
