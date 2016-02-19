@@ -1,6 +1,7 @@
 User                                                                 = require './src/user'
 Brain                                                                = require './src/brain'
 Robot                                                                = require './src/robot'
+Basebot                                                              = require './src/basebot'
 Adapter                                                              = require './src/adapter'
 Response                                                             = require './src/response'
 {Listener,TextListener}                                              = require './src/listener'
@@ -9,6 +10,7 @@ Response                                                             = require '
 module.exports = {
   User
   Brain
+  Basebot
   Robot
   Adapter
   Response
