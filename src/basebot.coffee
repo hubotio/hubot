@@ -1,5 +1,4 @@
 Log            = require 'log'
-HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
 async          = require 'async'
 
@@ -15,11 +14,10 @@ class Basebot
   # dispatch them to matching listeners.
   #
   # adapter     - A String of the adapter name.
-  # httpd       - A Boolean whether to enable the HTTP daemon.
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (httpd, name = 'Hubot', alias = false) ->
+  constructor: (name = 'Hubot', alias = false) ->
     @name       = name
     @events     = new EventEmitter
     @brain      = new Brain @
@@ -37,6 +35,7 @@ class Basebot
     @globalHttpOptions = {}
 
     @setupRouter(@nullRouter())
+    @setupHTTP(@nullHTTP())
 
     @errorHandlers = []
 
@@ -329,6 +328,21 @@ class Basebot
       delete: ()=> @logger.warning msg
     }
 
+  setupHTTP: (httpClient) ->
+    @http = httpClient
+
+  nullHTTP: ->
+    msg = "A script has tried making a HTTP request while the HTTP client has not been initialized."
+    return -> {
+      query: ()=> @logger.warning msg; ->
+      header: ()=> @logger.warning msg; ->
+      headers: ()=> @logger.warning msg; ->
+      get: ()=> @logger.warning msg; ->
+      post: ()=> @logger.warning msg; ->
+      put: ()=> @logger.warning msg; ->
+      delete: ()=> @logger.warning msg; ->
+    }
+
 
   # Load the adapter Hubot is going to use.
   #
@@ -407,42 +421,6 @@ class Basebot
     process.removeListener 'uncaughtException', @onUncaughtException
     @adapter.close()
     @brain.close()
-
-  # Public: Creates a scoped http client with chainable methods for
-  # modifying the request. This doesn't actually make a request though.
-  # Once your request is assembled, you can call `get()`/`post()`/etc to
-  # send the request.
-  #
-  # url - String URL to access.
-  # options - Optional options to pass on to the client
-  #
-  # Examples:
-  #
-  #     robot.http("http://example.com")
-  #       # set a single header
-  #       .header('Authorization', 'bearer abcdef')
-  #
-  #       # set multiple headers
-  #       .headers(Authorization: 'bearer abcdef', Accept: 'application/json')
-  #
-  #       # add URI query parameters
-  #       .query(a: 1, b: 'foo & bar')
-  #
-  #       # make the actual request
-  #       .get() (err, res, body) ->
-  #         console.log body
-  #
-  #       # or, you can POST data
-  #       .post(data) (err, res, body) ->
-  #         console.log body
-  #
-  #    # Can also set options
-  #    robot.http("https://example.com", {rejectUnauthorized: false})
-  #
-  # Returns a ScopedClient instance.
-  http: (url, options) ->
-    HttpClient.create(url, @extend({}, @globalHttpOptions, options))
-      .header('User-Agent', "Hubot/#{@version}")
 
   # Private: Extend obj with objects passed as additional args.
   #

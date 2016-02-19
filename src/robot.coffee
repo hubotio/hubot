@@ -34,13 +34,15 @@ class Robot extends Basebot
   constructor: (adapterPath, adapterName, httpd, name = 'Hubot', alias = false) ->
     @adapterPath ?= Path.join __dirname, "adapters"
     @adapterName = adapterName
-    super httpd, name, alias
+    super name, alias
 
     adapter = @loadAdapterFile @adapterName
     @adapter = adapter.use @
 
     if httpd
       @setupExpress()
+
+    @setupScopedHTTPClient()
 
     @parseVersion()
 
@@ -135,6 +137,10 @@ class Robot extends Basebot
   setupExpress: ->
     router = require('./express') @
     @setupRouter router
+
+  setupScopedHTTPClient: ->
+    client = require('./scopedHTTPClient') @
+    @setupHTTP client
 
 
   # Public: Help Commands for Running Scripts.
