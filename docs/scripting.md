@@ -622,7 +622,7 @@ You now have a hubot script repository that's ready to roll! Feel free to crack 
 
 You'll probably want to write some unit tests for your new script.  A sample test script is written to
 `test/awesome-script-test.coffee`, which you can run with `grunt`.  For more information on tests,
-see **Testing Hubot Scripts**.
+see the [Testing Hubot Scripts](#testing-hubot-scripts) section.
 
 # Listener Metadata
 
