@@ -534,22 +534,22 @@ class Robot
   # Public: A helper send function which delegates to the adapter's send
   # function.
   #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
+  # envelope - A Object with message, room and user details.
+  # strings  - One or more Strings for each message to send.
   #
   # Returns nothing.
-  send: (user, strings...) ->
-    @adapter.send user, strings...
+  send: (envelope, strings...) ->
+    @adapter.send envelope, strings...
 
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
   #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
+  # envelope - A Object with message, room and user details.
+  # strings  - One or more Strings for each message to send.
   #
   # Returns nothing.
-  reply: (user, strings...) ->
-    @adapter.reply user, strings...
+  reply: (envelope, strings...) ->
+    @adapter.reply envelope, strings...
 
   # Public: A helper send function to message a room that the robot is in.
   #
@@ -558,8 +558,8 @@ class Robot
   #
   # Returns nothing.
   messageRoom: (room, strings...) ->
-    user = { room: room }
-    @adapter.send user, strings...
+    envelope = { room: room }
+    @adapter.send envelope, strings...
 
   # Public: A wrapper around the EventEmitter API to make usage
   # semantically better.
