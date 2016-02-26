@@ -35,7 +35,7 @@ First, run the follow command to add `deploy.cmd` to your hubot directory. This 
 Then, edit this file and look for the sections that give you steps 1, 2 and 3. You're going to add a 4th step:
 
     :: 4. Create Hubot file with a coffee extension
-    copy /Y “%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot” “%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot.coffee”
+    copy /Y "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot" "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot.coffee"
 
 Now, create a new file in the base directory of hubot called `server.js` and put these two lines into it:
 
@@ -60,7 +60,7 @@ Azure offers a marketplace where you can use the default heroku-redis-brain usin
 
 Then add the following line in `external-scripts.json` in the list with the other external scripts
 
-    "hubot-azure-scripts/brain/azure-blob-brain"
+    "hubot-azure-scripts/brain/storage-blob-brain"
 
 Finally, add two more environment variables to your website. You can do this either via the GUI or the following PowerShell commands.
 
