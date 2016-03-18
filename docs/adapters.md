@@ -50,6 +50,7 @@ to have yours added to the list:
 * [Typetalk](https://github.com/nulab/hubot-typetalk)
 * [VictorOps](https://github.com/victorops/hubot-victorops)
 * [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
+* [Weixin](https://github.com/KasperDeng/Hubot-WeChat)
 * [XMPP](https://github.com/markstory/hubot-xmpp)
 * [Yammer](https://github.com/athieriot/hubot-yammer)
 
