@@ -42,13 +42,6 @@ describe 'Adapter', ->
       it 'does nothing', ->
         @adapter.topic({}, 'nothing')
 
-    describe 'topic', ->
-      it 'is a function', ->
-        expect(@adapter.topic).to.be.a('function')
-
-      it 'does nothing', ->
-        @adapter.topic({}, 'nothing')
-
     describe 'play', ->
       it 'is a function', ->
         expect(@adapter.play).to.be.a('function')
@@ -75,7 +68,7 @@ describe 'Adapter', ->
     @robot.receive = sinon.spy()
     @adapter = new Adapter(@robot)
     @message = sinon.spy()
-    
+
     @adapter.receive(@message)
 
     expect(@robot.receive).to.have.been.calledWith(@message)
