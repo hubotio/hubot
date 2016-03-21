@@ -7,6 +7,8 @@ Hubot    = require '..'
 Fs       = require 'fs'
 OptParse = require 'optparse'
 Path     = require 'path'
+env      = require 'node-env-file'
+env('.env', {verbose: false, raise: false})
 
 Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],

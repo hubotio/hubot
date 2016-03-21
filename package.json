@@ -22,6 +22,7 @@
     "connect-multiparty": "^1.2.5",
     "express": "^3.21.2",
     "log": "1.4.0",
+    "node-env-file": "^0.1.8",
     "optparse": "1.0.4",
     "scoped-http-client": "0.11.0"
   },
