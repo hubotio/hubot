@@ -35,11 +35,11 @@ There are two primary entry points for middleware:
 
 ## Persistence
 
-Hubot has an in-memory key-value store exposed as `robot.brain` that can be used to store and retrieve data.
-Furthermore, `hubot-redis-brain` enables persistence across Hubot restarts.
-This package requires a Redis server.
+Hubot has a memory exposed as the `robot.brain` object that can be used to store and retrieve data.
+Furthermore, Hubot scripts exist to enable persistence across Hubot restarts.
+`hubot-redis-brain` is such a script and uses a backend Redis server.
 
 By default, the brain contains a list of all users seen by Hubot.
 Therefore, without persistence across restarts, the brain will contain the list of users encountered so far, during the current run of Hubot.
 On the other hand, with persistence across restarts, the brain will contain all users encountered by Hubot during all of its runs.
-This list of users can be accessed through `hubot.brain.users` and [other utility methods](https://github.com/github/hubot/blob/master/src/brain.coffee#L94-L136).
+This list of users can be accessed through `hubot.brain.users()` and other utility methods.
