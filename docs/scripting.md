@@ -1,4 +1,4 @@
----
+Â---
 permalink: /docs/scripting/index.html
 layout: docs
 ---
@@ -74,6 +74,33 @@ module.exports = (robot) ->
 The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
+
+## Messages to a room or user
+
+Messages can be sent to a specified room or user using the messageRoom function.
+For slack rooms, do not put the `#` prefix in front of the room name.
+
+```coffeescript
+module.exports = (robot) ->
+
+  robot.hear /green eggs/i, (res) ->
+    room = "mytestroom"
+    robot.messageRoom room, "I do not like green eggs and ham.  I do not like them sam-I-am."
+```
+
+User name can be explicitely specified if desired ( for a cc to an admin/manager), or using
+the response object a private message can be sent to the original sender.
+
+```coffeescript
+  robot.respond /I don't like Sam-I-am/i, (res) ->
+    room =  'joemanager'
+    robot.messageRoom room, "Someone does not like Dr. Seus"
+    res.reply  "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+
+  robot.hear /Sam-I-am/i, (res) ->
+    room =  res.envelope.user.name
+    robot.messageRoom room, "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+```
 
 ## Capturing data
 
