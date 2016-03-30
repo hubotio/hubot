@@ -40,7 +40,7 @@ class Robot
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot', alias = false) ->
+  constructor: (adapterPath, adapter, httpd, name = 'Hubot', alias = false, logLevel = 'info', logFile = null) ->
     @adapterPath ?= Path.join __dirname, "adapters"
 
     @name       = name
@@ -55,7 +55,7 @@ class Robot
       listener: new Middleware(@)
       response: new Middleware(@)
       receive:  new Middleware(@)
-    @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+    @logger     = @createLogger(logLevel, logFile)
     @pingIntervalId = null
     @globalHttpOptions = {}
 
@@ -649,5 +649,9 @@ class Robot
       obj[key] = value for own key, value of source
     obj
 
+  # Private: Create a logger with the specificed level and file.
+  # Returns a Log instance: https://www.npmjs.com/package/log.
+  createLogger: (logLevel = 'info', logFile = null) ->
+    new Log logLevel, (Fs.createWriteStream(logFile, { flags: 'a' }) if logFile?)
 
 module.exports = Robot

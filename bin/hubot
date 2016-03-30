@@ -9,15 +9,17 @@ OptParse = require 'optparse'
 Path     = require 'path'
 
 Switches = [
-  [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-c", "--create PATH",     "Create a deployable hubot" ],
-  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
-  [ "-h", "--help",            "Display the help information" ],
-  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
-  [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-r", "--require PATH",    "Alternative scripts path" ],
-  [ "-t", "--config-check",    "Test hubot's config to make sure it won't fail at startup"]
-  [ "-v", "--version",         "Displays the version of hubot installed" ]
+  [ "-a", "--adapter ADAPTER",     "The Adapter to use" ],
+  [ "-c", "--create PATH",         "Create a deployable hubot" ],
+  [ "-d", "--disable-httpd",       "Disable the HTTP server" ],
+  [ "-h", "--help",                "Display the help information" ],
+  [ "-l", "--alias ALIAS",         "Enable replacing the robot's name with alias" ],
+  [ "-n", "--name NAME",           "The name of the robot in chat" ],
+  [ "-r", "--require PATH",        "Alternative scripts path" ],
+  [ "-t", "--config-check",        "Test hubot's config to make sure it won't fail at startup"]
+  [ "-v", "--version",             "Displays the version of hubot installed" ]
+  [ "-e", "--log-level LOG_LEVEL", "Log level" ]
+  [ "-f", "--log-file LOG_FILE",   "Log file" ]
 ]
 
 Options =
@@ -29,6 +31,8 @@ Options =
   name:        process.env.HUBOT_NAME    or "Hubot"
   path:        process.env.HUBOT_PATH    or "."
   configCheck: false
+  logLevel:    process.env.HUBOT_LOG_LEVEL or "info"
+  logFile:     process.env.HUBOT_LOG_FILE or null
 
 Parser = new OptParse.OptionParser(Switches)
 Parser.banner = "Usage hubot [options]"
@@ -63,6 +67,12 @@ Parser.on "config-check", (opt) ->
 Parser.on "version", (opt, value) ->
   Options.version = true
 
+Parser.on "log-level", (opt, value) ->
+  Options.logLevel = value
+
+Parser.on "log-file", (opt, value) ->
+  Options.logFile = value
+
 Parser.on (opt, value) ->
   console.warn "Unknown option: #{opt}"
 
@@ -82,7 +92,7 @@ if Options.create
   process.exit 1
 
 else
-  robot = Hubot.loadBot undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias
+  robot = Hubot.loadBot undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias, Options.logLevel, Options.logFile
 
   if Options.version
     console.log robot.version

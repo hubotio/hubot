@@ -493,6 +493,16 @@ Using previous examples:
 
 For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting.
 
+## Logging
+Hubot uses [log](https://www.npmjs.com/package/log) to manage logging.
+You can set log level and file via `HUBOT_LOG_LEVEL` and `HUBOT_LOG_FILE` configs, or `--log-level` and `--log-file` as command line options.
+
+```coffeescript
+robot.logger.debug('this way!')
+robot.logger.error('hubot already faced a huge bug')
+robot.logger.info('LEGENDARY')
+```
+
 ## Documenting Scripts
 
 Hubot scripts can be documented with comments at the top of their file, for example:
