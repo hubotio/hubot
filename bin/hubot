@@ -2,7 +2,7 @@
 # vim:ft=coffee ts=2 sw=2 et :
 # -*- mode:coffee -*-
 
-Hubot    = require '..'
+Hubot    = require '../dist'
 
 Fs       = require 'fs'
 OptParse = require 'optparse'

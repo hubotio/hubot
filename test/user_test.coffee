@@ -1,5 +1,5 @@
 {expect} = require 'chai'
-User = require '../src/user.coffee'
+User = require '../src/user'
 
 describe 'User', ->
   describe 'new', ->

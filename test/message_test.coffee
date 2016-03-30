@@ -6,7 +6,7 @@ chai.use require 'sinon-chai'
 { expect } = chai
 
 # Hubot classes
-User = require '../src/user.coffee'
+User = require '../src/user'
 { CatchAllMessage, EnterMessage, Message, TextMessage } = require '../src/message'
 
 describe 'Message', ->
