@@ -495,12 +495,19 @@ For the second example, it's worth thinking about what messages the user would s
 
 ## Logging
 Hubot uses [log](https://www.npmjs.com/package/log) to manage logging.
-You can set log level and file via `HUBOT_LOG_LEVEL` and `HUBOT_LOG_FILE` configs, or `--log-level` and `--log-file` as command line options.
+By default, logging done to stdout, but you can redirect to a file using `HUBOT_LOG_FILE` config or `--log-file` option.
+You also can specify the log level using `HUBOT_LOG_LEVEL` config or `--log-level` option.
 
 ```coffeescript
-robot.logger.debug('this way!')
-robot.logger.error('hubot already faced a huge bug')
-robot.logger.info('LEGENDARY')
+s3.putObject { Bucket: bucket, Key: brain_file_name, ACL: 'private', ContentType: 'application/json', Body: buffer }, (err, response) ->
+  if err
+    # log an error using robot.logger.error() API
+    robot.logger.error util.inspect(err)
+  else if response
+    # log a debug message using robot.logger.debug() API
+    robot.logger.debug "Saved brain to S3 path #{bucket}#{brain_file_name}"
+
+  if callback then callback(err, response)
 ```
 
 ## Documenting Scripts
