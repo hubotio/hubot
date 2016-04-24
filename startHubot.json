@@ -6,7 +6,7 @@
     "args"             : "--adapter slack",
     "error_file"       : "log/hubot.stderr.log",
     "out_file"         : "log/hubot.stdout.log",
-    "watch": ["bin", "src", "script"],
+    "watch": ["bin", "src", "script", "scrips"],
     "ignore_watch"      : ["[\\/\\\\]\\./", "node_modules", "README.md"],
     "log_date_format"  : "DD-MM-YYYY HH:mm ",
     "merge_logs"       : true,
