@@ -2,3 +2,5 @@ node_modules
 .hubot_history
 .node-version
 log
+run
+.hubotrc
