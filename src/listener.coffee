@@ -1,5 +1,6 @@
 {inspect} = require 'util'
 async     = require 'async'
+isPromise = require 'is-promise'
 
 {TextMessage} = require './message'
 Middleware = require './middleware'
@@ -61,10 +62,18 @@ class Listener
       # callback and calls done (never calls 'next')
       executeListener = (context, done) =>
         @robot.logger.debug "Executing listener callback for Message '#{message}'"
+        emitError = (err) => @robot.emit('error', err, context.response)
+        
         try
-          @callback context.response
+          callbackResult = @callback context.response
         catch err
-          @robot.emit('error', err, context.response)
+          emitError(err)
+
+        if isPromise(callbackResult)
+          return callbackResult
+            .then(done)
+            .catch emitError
+
         done()
 
       # When everything is finished (down the middleware stack and back up),
