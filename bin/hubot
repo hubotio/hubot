@@ -114,11 +114,11 @@ else
         if scripts.length is 0
           hubotScriptsWarning += "Your hubot-scripts.json is empty, so you just need to remove it."
         else
-
           hubotScriptsReplacements = Path.resolve "node_modules", "hubot-scripts", "replacements.json"
 
           if Fs.existsSync(hubotScriptsReplacements)
             hubotScriptsWarning += "The following scripts have known replacements. Follow the link for installation instructions, then remove it from hubot-scripts.json:\n"
+
             replacementsData = Fs.readFileSync(hubotScriptsReplacements)
             replacements = JSON.parse(replacementsData)
             scriptsWithoutReplacements = []
