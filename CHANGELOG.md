@@ -1,3 +1,16 @@
+## [v2.19.0](https://github.com/github/hubot/tree/v2.19.0) (2016-05-0-6)
+[Full Changelog](https://github.com/github/hubot/compare/v2.18.0...v2.19.0)
+
+**Implemented enhancements:**
+
+- Print warning for loading deprecated hubot-scripts.json [\#970](https://github.com/github/hubot/pull/970) ([bkeepers](https://github.com/bkeepers) and [technicalpickles](https://github.com/technicalpickles)
+
+**Merged pull requests:**
+
+- Add link to Facebook Messenger Platform adapter [\#1166](https://github.com/github/hubot/pull/1166) ([MrSaints](https://github.com/MrSaints))
+- Add Hubot-Wechat to the adapter-list. [\#1147](https://github.com/github/hubot/pull/1147) ([KasperDeng](https://github.com/KasperDeng))
+- Fix broken links in docs [\#1147](https://github.com/github/hubot/pull/1148) ([akameco](https://github.com/akameco))
+
 ## [v2.18.0](https://github.com/github/hubot/tree/v2.18.0) (2016-01-19)
 [Full Changelog](https://github.com/github/hubot/compare/v2.17.0...v2.18.0)
 
