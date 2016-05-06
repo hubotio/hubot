@@ -17,7 +17,7 @@ historyPath = ".hubot_history"
 
 class Shell extends Adapter
   send: (envelope, strings...) ->
-    console.log chalk.green.bold("#{str}") for str in strings
+    console.log chalk.bold("#{str}") for str in strings
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
@@ -42,7 +42,10 @@ class Shell extends Adapter
     @cli = cline()
 
     @cli.command '*', (input) =>
-      userId = parseInt(process.env.HUBOT_SHELL_USER_ID or '1')
+      userId = process.env.HUBOT_SHELL_USER_ID or '1'
+      if userId.match (/\A\d+\z/)
+        userId = parseInt(userId)
+
       userName = process.env.HUBOT_SHELL_USER_NAME or 'Shell'
       user = @robot.brain.userForId userId, name: userName, room: 'Shell'
       @receive new TextMessage user, input, 'messageId'

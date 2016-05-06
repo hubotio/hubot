@@ -67,7 +67,7 @@ is mostly useful for development. Make note of  `Hubot>`; this is the name your 
     hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
     hubot mustache me <url> - Adds a mustache to the specified URL.
     hubot ping - Reply with pong
-    hubot pronounce <phrase> in <language> - Provides pronounciation of <phrase> (<language> is optional)
+    hubot pronounce <phrase> in <language> - Provides pronunciation of <phrase> (<language> is optional)
     hubot pug bomb N - get N pugs
     hubot pug me - Receive a pug
     hubot the rules - Make sure hubot still knows the rules.

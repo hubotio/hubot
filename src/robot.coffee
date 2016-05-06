@@ -34,13 +34,15 @@ class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
   # dispatch them to matching listeners.
   #
-  # adapterPath - A String of the path to local adapters.
+  # adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
   # adapter     - A String of the adapter name.
   # httpd       - A Boolean whether to enable the HTTP daemon.
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
   constructor: (adapterPath, adapter, httpd, name = 'Hubot', alias = false) ->
+    @adapterPath ?= Path.join __dirname, "adapters"
+
     @name       = name
     @events     = new EventEmitter
     @brain      = new Brain @
@@ -63,7 +65,7 @@ class Robot
     else
       @setupNullRouter()
 
-    @loadAdapter adapterPath, adapter
+    @loadAdapter adapter
 
     @adapterName   = adapter
     @errorHandlers = []
@@ -319,7 +321,7 @@ class Robot
             anyListenersExecuted = anyListenersExecuted || listenerExecuted
             # Defer to the event loop at least after every listener so the
             # stack doesn't get too big
-            process.nextTick () ->
+            Middleware.ticker () ->
               # Stop processing when message.done == true
               cb(context.response.message.done)
         catch err
@@ -468,12 +470,12 @@ class Robot
   # adapter - A String of the adapter name to use.
   #
   # Returns nothing.
-  loadAdapter: (path, adapter) ->
+  loadAdapter: (adapter) ->
     @logger.debug "Loading adapter #{adapter}"
 
     try
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
-        "#{path}/#{adapter}"
+        "#{@adapterPath}/#{adapter}"
       else
         "hubot-#{adapter}"
 
@@ -532,22 +534,22 @@ class Robot
   # Public: A helper send function which delegates to the adapter's send
   # function.
   #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
+  # envelope - A Object with message, room and user details.
+  # strings  - One or more Strings for each message to send.
   #
   # Returns nothing.
-  send: (user, strings...) ->
-    @adapter.send user, strings...
+  send: (envelope, strings...) ->
+    @adapter.send envelope, strings...
 
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
   #
-  # user    - A User instance.
-  # strings - One or more Strings for each message to send.
+  # envelope - A Object with message, room and user details.
+  # strings  - One or more Strings for each message to send.
   #
   # Returns nothing.
-  reply: (user, strings...) ->
-    @adapter.reply user, strings...
+  reply: (envelope, strings...) ->
+    @adapter.reply envelope, strings...
 
   # Public: A helper send function to message a room that the robot is in.
   #
@@ -556,8 +558,8 @@ class Robot
   #
   # Returns nothing.
   messageRoom: (room, strings...) ->
-    user = { room: room }
-    @adapter.send user, strings...
+    envelope = { room: room }
+    @adapter.send envelope, strings...
 
   # Public: A wrapper around the EventEmitter API to make usage
   # semantically better.
