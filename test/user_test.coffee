@@ -1,3 +1,4 @@
+require 'core-js'
 {expect} = require 'chai'
 User = require '../src/user'
 
