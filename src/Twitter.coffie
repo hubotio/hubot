@@ -1,0 +1,34 @@
+Robot        = require('hubot').robot()
+Adapter      = require('hubot').adapter()
+
+HTTPS        = require 'https'
+EventEmitter = require('events').EventEmitter
+oauth        = require('oauth')
+
+class Twitter extends Adapter
+ send: (user, strings...) ->
+   strings.forEach (str) =>
+     text = str
+     console.log text
+     tweetsText = str.split('\n')
+     tweetsText.forEach (tweetText) =>
+       @bot.send(user,tweetText)
+
+ reply: (user, strings...) ->
+   strings.forEach (text) =>
+       @bot.reply(user,text)
+
+ run: ->
+   self = @
+   options =
+    key         : process.env.HUBOT_TWITTER_KEY
+    secret      : process.env.HUBOT_TWITTER_SECRET
+    token       : process.env.HUBOT_TWITTER_TOKEN
+    tokensecret : process.env.HUBOT_TWITTER_TOKEN_SECRET
+   bot = new TwitterStreaming(options)
+
+   bot.tweet self.robot.name, (err, data) ->
+     reg = new RegExp('@'+self.robot.name,'i')
+     console.log "received #{data.text} from #{data.user.screen_name}"
+     self.receive new Robot.TextMessage data.user.screen_name,data.text.replace reg, self.robot.name
+     if err
