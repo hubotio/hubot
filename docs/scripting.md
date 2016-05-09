@@ -1,4 +1,3 @@
-Â---
 permalink: /docs/scripting/index.html
 layout: docs
 ---
