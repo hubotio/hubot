@@ -13,6 +13,8 @@ are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTI
 
 If you'd like to chat, drop by [#hubot](http://webchat.freenode.net/?channels=#hubot) on FreeNode IRC.
 
+w00p w00p!
+
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
