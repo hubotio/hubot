@@ -3,7 +3,7 @@ permalink: /docs/deploying/azure/index.html
 layout: docs
 ---
 
-If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
+If you've been following along with [Getting Started](/docs/index.md), it's time to deploy so you can use it beyond just your local machine.
 [Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](/docs/deploying/heroku.md).
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
