@@ -42,6 +42,10 @@ Now, create a new file in the base directory of hubot called `server.js` and put
     require('coffee-script/register');
     module.exports = require('hubot/bin/hubot.coffee');
 
+Install coffee-script package.
+
+    npm install coffee-script --save
+
 Finally you will need to add the environment variables to the website to make sure it runs properly. You can either do it through the GUI (under configuration) or you can use the Azure PowerShell command line, as follows (example is showing slack as an adapter and mynewhubot as the website name).
 
     % $settings = New-Object Hashtable
