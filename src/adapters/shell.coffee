@@ -64,7 +64,8 @@ class Shell extends Adapter
         startIndex = history.length - historySize
         history = history.reverse().splice(startIndex, historySize)
 
-        outstream = fs.createWriteStream(historyPath)
+        fileOpts = { mode:0o600 }
+        outstream = fs.createWriteStream(historyPath, fileOpts)
         # >= node 0.10
         outstream.on 'finish', () =>
           @shutdown()
