@@ -78,7 +78,6 @@ If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod 
 ## Messages to a room or user
 
 Messages can be sent to a specified room or user using the messageRoom function.
-For slack rooms, do not put the `#` prefix in front of the room name.
 
 ```coffeescript
 module.exports = (robot) ->
