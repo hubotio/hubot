@@ -105,8 +105,8 @@ class Brain extends EventEmitter
     unless user
       user = new User id, options
       @data.users[id] = user
-
-    if options and options.room and (!user.room or user.room isnt options.room)
+    if (options and options.room and (!user.room or user.room isnt options.room)) or (options and options.roles and (!user.roles))
+      options = lodashMerge user, options
       user = new User id, options
       @data.users[id] = user
 
