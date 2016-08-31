@@ -123,7 +123,18 @@ class Brain extends EventEmitter
       if userName? and userName.toString().toLowerCase() is lowerName
         result = @data.users[k]
     result
-
+    
+  # Public: Get a User object given a mention_name.
+  #
+  # Returns a User intance for the user with the specified mention_name.
+  userForMentionName: (mention_name) ->
+    result = null
+    lowerMentionName = mention_name.toLowerCase()
+    for k of (@data.users or { })
+      userMentionName = @data.users[k]['mention_name']
+      if userMentionName? and userMentionName.toLowerCase() is lowerMentionName
+        result = @data.users[k]
+    result
   # Public: Get all users whose names match fuzzyName. Currently, match
   # means 'starts with', but this could be extended to match initials,
   # nicknames, etc.
