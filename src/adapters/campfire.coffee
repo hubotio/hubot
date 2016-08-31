@@ -169,6 +169,9 @@ class CampfireStreaming extends EventEmitter
     sound: (text, callback) ->
       @message text, "SoundMessage", callback
 
+    tweet: (text, callback) ->
+      @message text, "TweetMessage", callback
+
     speak: (text, callback) ->
       body = { message: { "body":text } }
       self.post "/room/#{id}/speak", body, callback
