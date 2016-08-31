@@ -48,6 +48,14 @@ class Response
   topic: (strings...) ->
     @runWithMiddleware("topic", { plaintext: true }, strings...)
 
+  # Public: Posts a custom message
+  #
+  # objects - One or more objects to be posted
+  #
+  # Returns nothing.
+  custom: (objects...) ->
+    @robot.adapter.custom @envelope, objects...
+
   # Public: Play a sound in the chat source
   #
   # strings - One or more strings to be posted as sounds to play. The order of
