@@ -6,6 +6,7 @@ layout: docs
 
 ## Getting Started With Hubot
 
+A better line
 You will need [node.js and npm](https://docs.npmjs.com/getting-started/installing-node). Once those are installed, we can install the hubot generator:
 
     %  npm install -g yo generator-hubot
