@@ -413,6 +413,7 @@ class Robot
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
+    env     = process.env.NODE_ENV or 'development'
     port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
     address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
@@ -423,6 +424,12 @@ class Robot
     app = express()
 
     app.use (req, res, next) =>
+      if req.headers['x-forwarded-proto'] != 'https' and env == 'production'
+        return res.redirect(301, [
+          'https://'
+          req.get('Host')
+          req.url
+        ].join(''))
       res.setHeader "X-Powered-By", "hubot/#{@name}"
       next()
 
