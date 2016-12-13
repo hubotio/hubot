@@ -418,6 +418,7 @@ class Robot
 
     express = require 'express'
     multipart = require 'connect-multiparty'
+    bodyParser = require 'body-parser'
 
     app = express()
 
