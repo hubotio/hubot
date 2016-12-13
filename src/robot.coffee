@@ -423,6 +423,8 @@ class Robot
     app = express()
 
     app.use (req, res, next) =>
+      if(!req.secure)
+        return res.redirect(['https://', req.get('Host'), req.url].join(''));
       res.setHeader "X-Powered-By", "hubot/#{@name}"
       next()
 
