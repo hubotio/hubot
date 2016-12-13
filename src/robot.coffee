@@ -431,8 +431,11 @@ class Robot
     ## set the view engine to ejs
     app.set('view engine', 'ejs')
 
-    app.use express.json()
-    app.use express.urlencoded()
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
+
     # replacement for deprecated express.multipart/connect.multipart
     # limit to 100mb, as per the old behavior
     app.use multipart(maxFilesSize: 100 * 1024 * 1024)
