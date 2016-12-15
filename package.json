@@ -1,9 +1,9 @@
 {
-  "name": "sqweelygig",
+  "name": "hubot-as-mebot",
   "version": "0.0.0",
   "author": "Andrew Lucas <sqweelygig@googlemail.com>",
   "description": "A simple helpful robot for you",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "coffee-script": "1.6.3",
     "hubot": "^2.19.0",
@@ -38,5 +38,25 @@
   },
   "engines": {
     "node": "0.10.x"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": " "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/resin-io/hubot-as-mebot.git"
+  },
+  "keywords": [
+    "hubot"
+  ],
+  "bugs": {
+    "url": "https://github.com/resin-io/hubot-as-mebot/issues"
+  },
+  "homepage": "https://github.com/resin-io/hubot-as-mebot#readme"
 }
