@@ -1,7 +1,6 @@
 {
   "name": "sqweelygig",
   "version": "0.0.0",
-  "private": true,
   "author": "Andrew Lucas <sqweelygig@googlemail.com>",
   "description": "A simple helpful robot for you",
   "license": "Apache 2.0",
