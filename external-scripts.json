@@ -1,7 +1,7 @@
 [
   "hubot-redis-brain",
-  "hubot-ignore",
-  "hubot-ignore-self",
+  "hubot-ignore-by-prefix",
+  "hubot-ignore-own-output",
   "hubot-room-select",
   "hubot-annoying-song",
   "hubot-gitter-echo",
