@@ -596,6 +596,7 @@ class Robot
     clearInterval @pingIntervalId if @pingIntervalId?
     process.removeListener 'uncaughtException', @onUncaughtException
     @adapter.close()
+    @server.close() if @server
     @brain.close()
 
   # Public: The version of Hubot from npm

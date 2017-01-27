@@ -46,7 +46,6 @@ describe 'Robot', ->
     }
 
   afterEach ->
-   @robot.server.close()
    @robot.shutdown()
 
   describe 'Unit Tests', ->
