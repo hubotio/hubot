@@ -66,15 +66,15 @@ exports.use = (robot) ->
 There is a an open issue in the node community around [npm linked peer dependencies not working](https://github.com/npm/npm/issues/5875).  To get this working for our project you will need to do some minor changes to your code.
 
 1. For the import in your `hubot-sample` adapter, add the following code
-```coffee
-try
-  {Robot,Adapter,TextMessage,User} = require 'hubot'
-catch
-  prequire = require('parent-require')
-  {Robot,Adapter,TextMessage,User} = prequire 'hubot'
+  ```coffee
+  try
+    {Robot,Adapter,TextMessage,User} = require 'hubot'
+  catch
+    prequire = require('parent-require')
+    {Robot,Adapter,TextMessage,User} = prequire 'hubot'
   ```
 2. In your `hubot-sample` folder, modify the `package.json` to include the following dependency so this custom import mechanism will work
-```json
+  ```json
   "dependencies": {
     "parent-require": "^1.0.0"
   }
