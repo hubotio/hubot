@@ -223,7 +223,7 @@ If you need to control options on http and https more directly, you pass a secon
   robot.http("https://midnight-train", options)
 ```
 
-In addition, if node-scoped-http-client doesn't suit you, you can use [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) yourself directly, or any other node library like [request](https://github.com/request/request).
+In addition, if node-scoped-http-client doesn't suit you, you can can use [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) yourself directly, or any other node library like [request](https://github.com/request/request).
 
 ## Random
 
