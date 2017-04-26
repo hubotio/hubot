@@ -23,7 +23,7 @@ Your other option is to install directly from [NodeJS](https://nodejs.org/) and 
 
 ## Updating code on the server
 
-To get the code on your server, you can follow the instructions at [Getting Started](/docs/index.md) on your local development machine or directly on the server. If you are building locally, push your hubot to GitHub and clone the repo onto your server. Don't clone the normal [github/hubot repository](http://github.com/github/hubot), make sure you're using the Yo Generator to build your own hubot.
+To get the code on your server, you can follow the instructions at [Getting Started](../index.md) on your local development machine or directly on the server. If you are building locally, push your hubot to GitHub and clone the repo onto your server. Don't clone the normal [github/hubot repository](http://github.com/github/hubot), make sure you're using the Yo Generator to build your own hubot.
 
 ## Setting up environment vars
 
@@ -46,7 +46,7 @@ There are a few issues if you call it manually, though.
 * hubot dies, for any reason, and doesn't start again
 * it doesn't start up at boot automatically
 
-To fix this, you will want to create a .ps1 file with whatever name makes you happy that you will call from your hubot directory. There is a copy of this file in the `examples` directory [here](/examples/hubot-start.ps1). It should contain the following:
+To fix this, you will want to create a .ps1 file with whatever name makes you happy that you will call from your hubot directory. There is a copy of this file in the `examples` directory [here](../../examples/hubot-start.ps1). It should contain the following:
 
     Write-Host "Starting Hubot Watcher"
     While (1)

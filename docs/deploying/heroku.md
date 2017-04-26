@@ -33,7 +33,7 @@ Then create a Heroku application:
 
 Before you deploy the application, you'll need to configure some environment
 variables for hubot to use. The specific variables you'll need depends on which
-[adapter](/docs/adapters.md) and scripts you are using. For Campfire, with no other
+[adapter](../adapters.md) and scripts you are using. For Campfire, with no other
 scripts, you'd need to set the following environment variables:
 
     % heroku config:set HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
