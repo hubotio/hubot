@@ -1,6 +1,6 @@
 ---
 layout: docs
-permalink: /docs/adapters/development/index.html
+permalink: /docs/adapters/development/
 ---
 
 # Adapter Basics
@@ -54,7 +54,7 @@ exports.use = (robot) ->
     "coffee-script": ">=1.2.0"
   }
   ```
-  
+
 7. Generate your Hubot using the `yo hubot` [command](https://hubot.github.com/docs/)
 8. Change working directories to the `hubot` you created in step 7.
 9. Now perform an `npm link` to add your adapter to `hubot`

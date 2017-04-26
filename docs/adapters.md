@@ -1,5 +1,5 @@
 ---
-permalink: /docs/adapters/index.html
+permalink: /docs/adapters/
 layout: docs
 ---
 

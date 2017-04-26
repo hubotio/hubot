@@ -1,5 +1,5 @@
 ---
-permalink: /docs/deploying/bluemix/index.html
+permalink: /docs/deploying/bluemix/
 layout: docs
 ---
 

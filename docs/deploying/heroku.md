@@ -1,5 +1,5 @@
 ---
-permalink: /docs/deploying/heroku/index.html
+permalink: /docs/deploying/heroku/
 layout: docs
 ---
 

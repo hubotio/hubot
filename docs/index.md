@@ -1,6 +1,6 @@
 ---
 title: Hubot
-permalink: /docs/index.html
+permalink: /docs/
 layout: docs
 ---
 

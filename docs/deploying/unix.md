@@ -1,5 +1,5 @@
 ---
-permalink: /docs/deploying/unix/index.html
+permalink: /docs/deploying/unix/
 layout: docs
 ---
 

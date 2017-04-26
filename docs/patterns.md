@@ -1,5 +1,5 @@
 ---
-permalink: /docs/patterns/index.html
+permalink: /docs/patterns/
 layout: docs
 ---
 

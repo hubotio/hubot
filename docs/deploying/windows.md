@@ -1,5 +1,5 @@
 ---
-permalink: /docs/deploying/windows/index.html
+permalink: /docs/deploying/windows/
 layout: docs
 ---
 

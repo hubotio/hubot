@@ -1,6 +1,6 @@
 ---
 title: Implementation Notes
-permalink: /docs/implementation/index.html
+permalink: /docs/implementation/
 layout: docs
 ---
 

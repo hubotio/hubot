@@ -1,5 +1,5 @@
 ---
-permalink: /docs/adapters/shell/index.html
+permalink: /docs/adapters/shell/
 layout: docs
 ---
 

@@ -1,5 +1,5 @@
 ---
-permalink: /docs/deploying/azure/index.html
+permalink: /docs/deploying/azure/
 layout: docs
 ---
 

@@ -1,5 +1,5 @@
 ---
-permalink: /docs/adapters/campfire/index.html
+permalink: /docs/adapters/campfire/
 layout: docs
 ---
 

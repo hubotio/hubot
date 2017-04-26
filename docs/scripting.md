@@ -1,5 +1,5 @@
 ---
-permalink: /docs/scripting/index.html
+permalink: /docs/scripting/
 layout: docs
 ---
 

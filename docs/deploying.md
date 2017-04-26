@@ -1,5 +1,5 @@
 ---
-permalink: /docs/deploying/index.html
+permalink: /docs/deploying/
 layout: docs
 ---
 
