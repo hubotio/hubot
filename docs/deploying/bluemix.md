@@ -1,6 +1,5 @@
 ---
 permalink: /docs/deploying/bluemix/
-layout: docs
 ---
 
 If you've been following along with [Getting Started](../index.md), it's time

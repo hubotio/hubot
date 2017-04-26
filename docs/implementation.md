@@ -1,7 +1,6 @@
 ---
 title: Implementation Notes
 permalink: /docs/implementation/
-layout: docs
 ---
 
 For the purpose of maintainability, several internal flows are documented here.

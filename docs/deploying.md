@@ -1,6 +1,5 @@
 ---
 permalink: /docs/deploying/
-layout: docs
 ---
 
 - [Azure](/docs/deploying/azure.md)

@@ -1,6 +1,5 @@
 ---
 permalink: /docs/adapters/shell/
-layout: docs
 ---
 
 The shell adapter provides a simple read-eval-print loop for interacting with a hubot locally.

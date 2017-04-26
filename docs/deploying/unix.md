@@ -1,6 +1,5 @@
 ---
 permalink: /docs/deploying/unix/
-layout: docs
 ---
 
 Because there are so many variations of Linux, and more generally UNIX, it's

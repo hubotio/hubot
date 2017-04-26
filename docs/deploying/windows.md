@@ -1,6 +1,5 @@
 ---
 permalink: /docs/deploying/windows/
-layout: docs
 ---
 
 Hasn't been fully tested - YMMV

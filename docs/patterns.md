@@ -1,6 +1,5 @@
 ---
 permalink: /docs/patterns/
-layout: docs
 ---
 
 Shared patterns for dealing with common Hubot scenarios.

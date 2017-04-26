@@ -1,5 +1,4 @@
 ---
-layout: docs
 permalink: /docs/adapters/development/
 ---
 

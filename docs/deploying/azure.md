@@ -1,6 +1,5 @@
 ---
 permalink: /docs/deploying/azure/
-layout: docs
 ---
 
 If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
