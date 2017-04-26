@@ -2,6 +2,8 @@
 permalink: /docs/deploying/bluemix/
 ---
 
+# Deploying to Bluemix
+
 If you've been following along with [Getting Started](../index.md), it's time
 to deploy so you can use it beyond just your local machine.
 [IBM Bluemix](http://bluemix.net) is a way to deploy hubot as an alternative to

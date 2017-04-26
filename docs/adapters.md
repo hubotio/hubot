@@ -2,6 +2,8 @@
 permalink: /docs/adapters/
 ---
 
+# Adapters
+
 Adapters are the interface to the service you want your hubot to run on.
 
 ## Official Adapters

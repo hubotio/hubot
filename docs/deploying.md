@@ -2,6 +2,8 @@
 permalink: /docs/deploying/
 ---
 
+# Deploying
+
 - [Azure](/docs/deploying/azure.md)
 - [Bluemix](/docs/deploying/bluemix.md)
 - [Heroku](/docs/deploying/heroku.md)

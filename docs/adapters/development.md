@@ -2,7 +2,9 @@
 permalink: /docs/adapters/development/
 ---
 
-# Adapter Basics
+# Development adapter
+
+## Adapter Basics
 
 All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
 
@@ -31,7 +33,7 @@ exports.use = (robot) ->
   new Sample robot
 ```
 
-# Setting Up Your Development Environment
+## Setting Up Your Development Environment
 
 1. Create a new folder for your adapter `hubot-sample`
   - `mkdir hubot-sample`
@@ -60,7 +62,7 @@ exports.use = (robot) ->
   - `npm link ../hubot-sample`
 10. Run `hubot -a sample`
 
-# Gotchas
+## Gotchas
 
 There is a an open issue in the node community around [npm linked peer dependencies not working](https://github.com/npm/npm/issues/5875).  To get this working for our project you will need to do some minor changes to your code.
 

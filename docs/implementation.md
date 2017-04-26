@@ -3,6 +3,8 @@ title: Implementation Notes
 permalink: /docs/implementation/
 ---
 
+# Implementation
+
 For the purpose of maintainability, several internal flows are documented here.
 
 ## Message Processing

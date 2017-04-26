@@ -2,6 +2,8 @@
 permalink: /docs/deploying/windows/
 ---
 
+# Deploying to Windows
+
 Hasn't been fully tested - YMMV
 
 There are 4 primary steps to deploying and running hubot on a Windows machine:

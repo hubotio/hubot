@@ -2,6 +2,8 @@
 permalink: /docs/patterns/
 ---
 
+# Patterns
+
 Shared patterns for dealing with common Hubot scenarios.
 
 ## Renaming the Hubot instance

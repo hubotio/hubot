@@ -2,6 +2,8 @@
 permalink: /docs/deploying/azure/
 ---
 
+# Deploying to Azure
+
 If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
 [Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](/docs/deploying/heroku.md).
 

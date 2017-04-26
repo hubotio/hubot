@@ -2,6 +2,8 @@
 permalink: /docs/adapters/campfire/
 ---
 
+# Campfire adapter
+
 [Campfire](http://campfirenow.com/) is a web based chat application built by
 [37signals](http://37signals.com). The Campfire adapter is one of the original
 adapters in Hubot.
