@@ -385,7 +385,7 @@ module.exports = (robot) ->
   robot.respond /unannoy me/, (res) ->
     if annoyIntervalId
       res.send "GUYS, GUYS, GUYS!"
-      clearInterval(annoyIntervalId) ->
+      clearInterval(annoyIntervalId)
       annoyIntervalId = null
     else
       res.send "Not annoying you right now, am I?"
