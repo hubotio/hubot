@@ -608,7 +608,7 @@ Once you've got the hubot generator installed, creating a hubot script is simila
 % yo hubot:script
 ```
 
-At this point, the you'll be asked a few questions about the author for the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+At this point, you'll be asked a few questions about the author of the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
 
 If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
 
