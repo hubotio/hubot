@@ -481,7 +481,7 @@ Using previous examples:
     # rest of the code here
 
 
-  robot.hear /midnight train/i, (res)
+  robot.hear /midnight train/i, (res) ->
     robot.http("https://midnight-train")
       .get() (err, res, body) ->
         if err
