@@ -481,11 +481,11 @@ Using previous examples:
     # rest of the code here
 
 
-  robot.hear /midnight train/i, (msg) ->
+  robot.hear /midnight train/i, (res) ->
     robot.http("https://midnight-train")
       .get() (err, res, body) ->
         if err
-          msg.reply "Had problems taking the midnight train"
+          res.reply "Had problems taking the midnight train"
           robot.emit 'error', err, res
           return
         # rest of code here
