@@ -1,15 +1,20 @@
 {EventEmitter} = require 'events'
 
 User = require './user'
+BrainData = require './brain_data'
 
 class Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot. Extend this.
   #
   # Returns a new Brain with no external storage.
   constructor: (robot) ->
-    @data =
+    emitChanges = (property, oldValue, newValue) ->
+      @emit 'mutated', [property, JSON.stringify(oldValue), JSON.stringify(newValue)]
+
+    @data = BrainData({
       users:    { }
       _private: { }
+    }, emitChanges)
 
     @autoSave = true
 
