@@ -3,7 +3,7 @@ permalink: /docs/deploying/azure/index.html
 layout: docs
 ---
 
-If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
+If you've been following along with [Getting Started](/docs/index.md), it's time to deploy so you can use it beyond just your local machine.
 [Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](/docs/deploying/heroku.md).
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
@@ -41,6 +41,10 @@ Now, create a new file in the base directory of hubot called `server.js` and put
 
     require('coffee-script/register');
     module.exports = require('hubot/bin/hubot.coffee');
+
+Install coffee-script package.
+
+    npm install coffee-script --save
 
 Finally you will need to add the environment variables to the website to make sure it runs properly. You can either do it through the GUI (under configuration) or you can use the Azure PowerShell command line, as follows (example is showing slack as an adapter and mynewhubot as the website name).
 
