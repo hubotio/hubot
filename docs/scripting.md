@@ -75,6 +75,32 @@ The `robot.hear /badgers/` callback sends a message exactly as specified regardl
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
 
+## Messages to a room or user
+
+Messages can be sent to a specified room or user using the messageRoom function.
+
+```coffeescript
+module.exports = (robot) ->
+
+  robot.hear /green eggs/i, (res) ->
+    room = "mytestroom"
+    robot.messageRoom room, "I do not like green eggs and ham.  I do not like them sam-I-am."
+```
+
+User name can be explicitely specified if desired ( for a cc to an admin/manager), or using
+the response object a private message can be sent to the original sender.
+
+```coffeescript
+  robot.respond /I don't like Sam-I-am/i, (res) ->
+    room =  'joemanager'
+    robot.messageRoom room, "Someone does not like Dr. Seus"
+    res.reply  "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+
+  robot.hear /Sam-I-am/i, (res) ->
+    room =  res.envelope.user.name
+    robot.messageRoom room, "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+```
+
 ## Capturing data
 
 So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update a script like:
