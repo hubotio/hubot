@@ -1,12 +1,13 @@
 ---
-permalink: /docs/deploying/bluemix/index.html
-layout: docs
+permalink: /docs/deploying/bluemix/
 ---
+
+# Deploying to Bluemix
 
 If you've been following along with [Getting Started](../index.md), it's time
 to deploy so you can use it beyond just your local machine.
 [IBM Bluemix](http://bluemix.net) is a way to deploy hubot as an alternative to
-[Heroku](/docs/deploying/heroku.md). It is built on the open-source project
+[Heroku](heroku.md). It is built on the open-source project
 [Cloud Foundry](https://www.cloudfoundry.org/), so we'll be using the `cf cli`
 throughout these examples.
 

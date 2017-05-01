@@ -1,7 +1,8 @@
 ---
-permalink: /docs/deploying/unix/index.html
-layout: docs
+permalink: /docs/deploying/unix/
 ---
+
+# Deploying to Unix
 
 Because there are so many variations of Linux, and more generally UNIX, it's
 difficult for the hubot team to have canonical documentation for installing and

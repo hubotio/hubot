@@ -40,8 +40,7 @@
 - Upgrade express to v3.21.2 [\#1119](https://github.com/github/hubot/pull/1119) ([sgerrand](https://github.com/sgerrand))
 - Fixed link to getting started [\#1116](https://github.com/github/hubot/pull/1116) ([jackmawer](https://github.com/jackmawer))
 - Fix http and https documentation [\#1114](https://github.com/github/hubot/pull/1114) ([technicalpickles](https://github.com/technicalpickles))
-- \[shell\] don't color hubot responses green, to be more visible on light backgrounds [\#1111](https://github.com/github/hubot/pull/1111) ([technicalpickles](https://g
-ithub.com/technicalpickles))
+- \[shell\] don't color hubot responses green, to be more visible on light backgrounds [\#1111](https://github.com/github/hubot/pull/1111) ([technicalpickles](https://github.com/technicalpickles))
 - Determine adapterPath in robot.coffee, rather than bin/hubot [\#1109](https://github.com/github/hubot/pull/1109) ([technicalpickles](https://github.com/technicalpickl
 es))
 - Updated copyright to 2016 [\#1103](https://github.com/github/hubot/pull/1103) ([aqnouch](https://github.com/aqnouch))
