@@ -2,9 +2,6 @@
 permalink: /docs/deploying/windows/index.html
 layout: docs
 ---
-
-Hasn't been fully tested - YMMV
-
 There are 4 primary steps to deploying and running hubot on a Windows machine:
 
   * node and npm
@@ -12,11 +9,32 @@ There are 4 primary steps to deploying and running hubot on a Windows machine:
   * setting up environment variables for hubot
   * a way to start hubot, start it up if it crashes, and restart it when code updates
 
+# PowerShell Module
+
+A PowerShell Module called `PoshHubot` is available which will allow you to install and configure Hubot for Windows with a few commands.
+
+If you have PowerShell v5 installed you can simple run the following command to install the module:
+
+```
+Install-Module -Name PoshHubot
+```
+Details about using Hubot on Windows with PowerShell can be found in this blog post: https://hodgkins.io/chatops-on-windows-with-hubot-and-powershell
+
+# Manually
+Hasn't been fully tested - YMMV
 ## node and npm
 
-To start, your windows server will need node and npm.
-The best way to do this is with [chocolatey](http://chocolatey.org) using the [nodejs.install](http://chocolatey.org/packages/nodejs.install) package.
-I've found that sometimes the system path variable is not correctly set; ensure you can run node/npm from the command line. If needed set the PATH variable with "setx PATH \"%PATH%;C:\Program Files\nodejs\" "
+To start, your Windows server will need node and npm.
+
+### Use Chocolatey to Install Node.js
+One way to easily install node.js is with [chocolatey](http://chocolatey.org) using the [nodejs.install](http://chocolatey.org/packages/nodejs.install) package.
+
+Once installed, ensure you can run node/npm from the command line. If needed, set the PATH variable with
+```
+SET PATH=%PATH%;C:\Program Files\Nodejs
+```
+
+### Install Node.js Manually
 
 Your other option is to install directly from [NodeJS](https://nodejs.org/) and run the current download (v0.12.4 as of this documentation). This should set your PATH variables for you.
 
