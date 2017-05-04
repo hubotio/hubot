@@ -56,6 +56,7 @@ to have yours added to the list:
 * [Weixin](https://github.com/KasperDeng/Hubot-WeChat)
 * [XMPP](https://github.com/markstory/hubot-xmpp)
 * [Yammer](https://github.com/athieriot/hubot-yammer)
+* [Mattermost](https://github.com/renanvicente/hubot-mattermost)
 
 ## Writing Your Own Adapter
 
