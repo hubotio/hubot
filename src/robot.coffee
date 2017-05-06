@@ -50,6 +50,7 @@ class Robot
     @adapter    = null
     @Response   = Response
     @commands   = []
+    @commandsNew = []
     @listeners  = []
     @middleware =
       listener: new Middleware(@)
@@ -115,6 +116,15 @@ class Robot
   # Returns nothing.
   respond: (regex, options, callback) ->
     @hear(@respondPattern(regex), options, callback)
+
+  command: (word, options, callback) ->
+    unless word.match(/^[\w\d-_:]+$/)
+      throw new Error("invalid command, only letters, numbers,- , and _ are allowed")
+
+    @commandsNew.push(word)
+
+    re = new RegExp("#{word}(?:$|\\s+(.*))", 'i')
+    @respond re, options, callback
 
   # Public: Build a regular expression that matches messages addressed
   # directly to the robot
