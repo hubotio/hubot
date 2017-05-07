@@ -435,6 +435,7 @@ class Robot
     app.use multipart(maxFilesSize: 100 * 1024 * 1024)
 
     app.use express.static stat if stat
+    app.use express.static Path.normalize("#{__dirname}/#{stat}") if stat
 
     try
       @server = app.listen(port, address)
