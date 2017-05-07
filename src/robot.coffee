@@ -477,7 +477,10 @@ class Robot
       path = if adapter in HUBOT_DEFAULT_ADAPTERS
         "#{@adapterPath}/#{adapter}"
       else
-        "hubot-#{adapter}"
+        if Fs.existsSync(path)
+          "#{path}/#{adapter}"
+        else
+          "hubot-#{adapter}"
 
       @adapter = require(path).use @
     catch err
