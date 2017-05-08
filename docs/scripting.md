@@ -287,6 +287,18 @@ module.exports = (robot) ->
     res.send res.random leaveReplies
 ```
 
+## Eavesdrop
+
+Hubot can match 'anti-respond' messages: messages that are specifically *not* addressed to the robot.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.eavesdrop /hello/, (msg) ->
+    # This will match "hello", but not "Hubot: hello"
+  robot.respond /hello/, (msg) ->
+    # This will match "Hubot: hello", but not "hello"
+```
+
 ## Custom Listeners
 
 While the above helpers cover most of the functionality the average user needs (hear, respond, enter, leave, topic), sometimes you would like to have very specialized matching logic for listeners. If so, you can use `listen` to specify a custom match function instead of a regular expression.
