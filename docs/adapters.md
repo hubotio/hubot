@@ -45,6 +45,7 @@ to have yours added to the list:
 * [Skype](https://github.com/netpro2k/hubot-skype)
 * [SkypeWeb](https://github.com/sdimkov/hubot-skype-web)
 * [Skyweb](https://github.com/EllisV/hubot-skyweb)
+* [SkypeBots](https://github.com/ivadim/hubot-skypebots) - Using official skype bot api
 * [Talker](https://github.com/unixcharles/hubot-talker)
 * [Telegram](https://github.com/lukefx/hubot-telegram)
 * [Twilio IP Messaging](https://github.com/philnash/hubot-twilio-ip-messaging)
