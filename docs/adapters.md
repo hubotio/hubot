@@ -20,7 +20,7 @@ There are Third-party adapaters are available for most chat services. Here are t
 * [Slack](https://github.com/slackhq/hubot-slack)
 * [XMPP](https://github.com/markstory/hubot-xmpp)
 
-[View all adapters](https://github.com/search?q=topic%3Ahubot-adapter&type=Repositories). Add the `hubot-adapter` [topic](https://help.github.com/articles/classifying-your-repository-with-topics/) to your repository on GitHub to include it in this list.
+Browse all [repositories with the `hubot-adapter` topic on GitHub](https://github.com/search?q=topic%3Ahubot-adapter&type=Repositories) or [search for adapters on NPM](https://www.npmjs.com/search?q=hubot%20adapter&ranking=popularity). Add the `hubot-adapter` [topic](https://help.github.com/articles/classifying-your-repository-with-topics/) to your repository on GitHub to include it in this list.
 
 ## Writing Your Own Adapter
 
