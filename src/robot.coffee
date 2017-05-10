@@ -399,9 +399,11 @@ class Robot
       if packages instanceof Array
         for pkg in packages
           require(pkg)(@)
+          @parseHelp(require.resolve(pkg))
       else
         for pkg, scripts of packages
           require(pkg)(@, scripts)
+          @parseHelp(require.resolve(pkg))
     catch err
       @logger.error "Error loading scripts from npm package - #{err.stack}"
       process.exit(1)
