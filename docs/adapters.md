@@ -22,6 +22,7 @@ to have yours added to the list:
 
 * [AIM](https://github.com/shaundubuque/hubot-aim)
 * [ChatWork](https://github.com/akiomik/hubot-chatwork)
+* [DCPP](https://github.com/ParthKolekar/hubot-dc)
 * [Dasher](https://github.com/nebulist/hubot-dasher)
 * [Fleep](https://github.com/anroots/hubot-fleep)
 * [Flowdock](https://github.com/flowdock/hubot-flowdock)
