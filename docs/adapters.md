@@ -6,56 +6,21 @@ permalink: /docs/adapters/
 
 Adapters are the interface to the service you want your hubot to run on.
 
-## Official Adapters
-
 Hubot includes two official adapters:
 
 * [Shell](./adapters/shell.md), i.e. for use with development
 * [Campfire](./adapters/campfire.md)
 
-## Third-party Adapters
+There are Third-party adapaters are available for most chat services. Here are the most popular ones:
 
-Third-party adapters are available as `npm` packages. Here is a list of known
-adapters, but please [submit an issue](https://github.com/github/hubot/issues)
-to have yours added to the list:
-
-
-* [AIM](https://github.com/shaundubuque/hubot-aim)
-* [ChatWork](https://github.com/akiomik/hubot-chatwork)
-* [Dasher](https://github.com/nebulist/hubot-dasher)
-* [Fleep](https://github.com/anroots/hubot-fleep)
-* [Flowdock](https://github.com/flowdock/hubot-flowdock)
 * [Gitter](https://github.com/huafu/hubot-gitter2)
-* [Gtalk](https://github.com/atmos/hubot-gtalk)
-* [Hall](https://github.com/Hall/hubot-hall)
 * [HipChat](https://github.com/hipchat/hubot-hipchat)
-* [iMessage](https://github.com/lazerwalker/hubot-imessage)
 * [IRC](https://github.com/nandub/hubot-irc)
-* [Jabbr](https://github.com/smoak/hubot-jabbr)
-* [Let's Chat](https://github.com/sdelements/hubot-lets-chat)
-* [Lingr](https://github.com/miyagawa/hubot-lingr)
-* [Mattermost](https://github.com/renanvicente/hubot-mattermost)
-* [Mattermost](https://github.com/loafoe/hubot-matteruser) - websocket
-* [Messenger Platform](https://github.com/ClaudeBot/hubot-messenger-bot)
-* [QQ](https://github.com/xhan/qqbot)
-* [Partychat](https://github.com/iangreenleaf/hubot-partychat-hooks)
-* [Proxy](https://github.com/Hammertime38/hubot-proxy) - This adapter allows the base application to observe, handle, and control events sent to the proxied adapter, all defined in a config object at the root of the module.
 * [Rocket.Chat](https://github.com/RocketChat/hubot-rocketchat)
 * [Slack](https://github.com/slackhq/hubot-slack)
-* [Skype](https://github.com/netpro2k/hubot-skype)
-* [SkypeWeb](https://github.com/sdimkov/hubot-skype-web)
-* [Skyweb](https://github.com/EllisV/hubot-skyweb)
-* [Talker](https://github.com/unixcharles/hubot-talker)
-* [Telegram](https://github.com/lukefx/hubot-telegram)
-* [Twilio IP Messaging](https://github.com/philnash/hubot-twilio-ip-messaging)
-* [Twilio SMS](https://github.com/jkarmel/hubot-twilio)
-* [Twitter](https://github.com/MathildeLemee/hubot-twitter)
-* [Typetalk](https://github.com/nulab/hubot-typetalk)
-* [VictorOps](https://github.com/victorops/hubot-victorops)
-* [Visual Studio Online](https://github.com/scrumdod/hubot-VSOnline)
-* [Weixin](https://github.com/KasperDeng/Hubot-WeChat)
 * [XMPP](https://github.com/markstory/hubot-xmpp)
-* [Yammer](https://github.com/athieriot/hubot-yammer)
+
+Browse all [repositories with the `hubot-adapter` topic on GitHub](https://github.com/search?q=topic%3Ahubot-adapter&type=Repositories) or [search for adapters on NPM](https://www.npmjs.com/search?q=hubot%20adapter&ranking=popularity). Add the `hubot-adapter` [topic](https://help.github.com/articles/classifying-your-repository-with-topics/) to your repository on GitHub to include it in this list.
 
 ## Writing Your Own Adapter
 
