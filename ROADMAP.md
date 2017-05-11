@@ -10,7 +10,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 - [ ] Document all maintainer processes (triage, release, etc.)
 - [ ] Create an issue template that addresses common requests
 - [ ] Configure automation ([probot stale](https://github.com/probot/stale), [Greenkeeper](https://greenkeeper.io/), [semantic-release](https://github.com/semantic-release/semantic-release))
-- [ ] Review all [open PRs](https://github.com/github/hubot/pulls)
+- [ ] Review all [open PRs](https://github.com/github/hubot/pulls) and triage [open issues](https://github.com/github/hubot/issues)
 - [ ] Establish a release process and regular release cadence of the first Tuesday of every month.
 
 ## 2. Modernize the community
