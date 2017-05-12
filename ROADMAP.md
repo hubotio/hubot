@@ -6,7 +6,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 
 ## 1. Return to a “maintained” status
 
-- [x] Create a Hubot core team with at least 2 GitHub employees and at least 1 community member. The core team is @technicalpickles, @bkeepers, @mose, and @gr2m
+- [x] Create a Hubot core team with at least 2 GitHub employees and at least 1 community member. The core team is [@technicalpickles](https://github.com/technicalpickles), [@bkeepers](https://github.com/bkeepers), [@mose](https://github.com/mose), and [@gr2m](https://github.com/gr2m)
 - [ ] Document all maintainer processes (triage, release, etc.)
 - [ ] Create an issue template that addresses common requests
 - [ ] Configure automation ([probot stale](https://github.com/probot/stale), [Greenkeeper](https://greenkeeper.io/), [semantic-release](https://github.com/semantic-release/semantic-release))
