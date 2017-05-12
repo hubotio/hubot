@@ -6,12 +6,13 @@ This roadmap represents some of priorities for us over the next couple months. I
 
 ## 1. Return to a “maintained” status
 
-- [ ] Create a Hubot core team with at least 2 GitHub employees and at least 1 community member. Core team members will be expected to participate in a a first-responder rotation, which will aim to reduce the average time to first response on all new Issues and PRs to 48 hours.
+- [x] Create a Hubot core team with at least 2 GitHub employees and at least 1 community member. The core team is [@technicalpickles](https://github.com/technicalpickles), [@bkeepers](https://github.com/bkeepers), [@mose](https://github.com/mose), and [@gr2m](https://github.com/gr2m)
 - [ ] Document all maintainer processes (triage, release, etc.)
 - [ ] Create an issue template that addresses common requests
 - [ ] Configure automation ([probot stale](https://github.com/probot/stale), [Greenkeeper](https://greenkeeper.io/), [semantic-release](https://github.com/semantic-release/semantic-release))
 - [ ] Review all [open PRs](https://github.com/github/hubot/pulls) and triage [open issues](https://github.com/github/hubot/issues)
 - [ ] Establish a release process and regular release cadence of the first Tuesday of every month.
+- [ ] Establish a first-responder rotation, which will aim to reduce the average time to first response on all new Issues and PRs to 48 hours.
 
 ## 2. Modernize the community
 
