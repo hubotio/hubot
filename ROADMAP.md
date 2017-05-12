@@ -6,7 +6,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 
 ## 1. Return to a “maintained” status
 
-- [x] [#1323](https://github.com/github/hubot/pull/1323) Create a Hubot core team with at least 2 GitHub employees and at least 1 community member. The core team is [@technicalpickles](https://github.com/technicalpickles), [@bkeepers](https://github.com/bkeepers), [@mose](https://github.com/mose), and [@gr2m](https://github.com/gr2m)
+- [x] Create a Hubot core team with at least 2 GitHub employees and at least 1 community member. The core team is [@technicalpickles](https://github.com/technicalpickles), [@bkeepers](https://github.com/bkeepers), [@mose](https://github.com/mose), and [@gr2m](https://github.com/gr2m) ([#1323](https://github.com/github/hubot/pull/1323))
 - [ ] Document all maintainer processes (triage, release, etc.)
 - [ ] Create an issue template that addresses common requests
 - [ ] Configure automation ([probot stale](https://github.com/probot/stale), [Greenkeeper](https://greenkeeper.io/), [semantic-release](https://github.com/semantic-release/semantic-release))
@@ -16,7 +16,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 
 ## 2. Modernize the community
 
-- [ ] [#1327](https://github.com/github/hubot/issues/1327) Consolidate all officially supported Hubot projects into a single GitHub organization. This will include github/hubot and a handful of supported scripts, but will not include all community scripts in https://github.com/hubot-scripts
+- [ ] Consolidate all officially supported Hubot projects into a single GitHub organization. This will include github/hubot and a handful of supported scripts, but will not include all community scripts in https://github.com/hubot-scripts ([#1327](https://github.com/github/hubot/issues/1327))
 - [ ] Create a community forum to provide a place for people to ask questions, get help, and share best practices. [Discourse](https://www.discourse.org/) is the obvious choice here.
 - [ ] Choose a chat platform for maintainers and contributors, and post notices in various existing places (#hubot on freenode, github/hubot on Gitter). Slack is the obvious choice here.
 - [ ] Add a code of conduct based on http://contributor-covenant.org/ and processes to enforce it in all official spaces.
