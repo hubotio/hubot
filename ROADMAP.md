@@ -18,7 +18,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 
 - [ ] Consolidate all officially supported Hubot projects into a single GitHub organization. This will include github/hubot and a handful of supported scripts, but will not include all community scripts in https://github.com/hubot-scripts ([#1327](https://github.com/github/hubot/issues/1327))
 - [ ] Create a community forum to provide a place for people to ask questions, get help, and share best practices. [Discourse](https://www.discourse.org/) is the obvious choice here.
-- [ ] Choose a chat platform for maintainers and contributors, and post notices in various existing places (#hubot on freenode, github/hubot on Gitter). Slack is the obvious choice here.
+- [x] Choose a chat platform for maintainers and contributors, and post notices in various existing places (#hubot on freenode, github/hubot on Gitter). Slack is the obvious choice here. [Join us on Slack](https://hubot-slackin.herokuapp.com/).
 - [ ] Add a code of conduct based on http://contributor-covenant.org/ and processes to enforce it in all official spaces.
 - [ ] Publish weekly community updates (blog, newsletter, etc) which highlight recent and upcoming changes, give shoutouts to contributors / maintainers, and maybe mention interesting uses of Hubot
 - [ ] Create Hubot Evolution—inspired by [Swift Evolution](https://github.com/apple/swift-evolution)—for proposing user-visible enhancements. This roadmap will be moved there and all future proposals will follow the process laid out in that repository.
