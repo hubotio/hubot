@@ -28,6 +28,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 Each of these proposals will go through the “Hubot Evolution” process.
 
 - [ ] Translate from CoffeeScript to JavaScript and update to modern versions of Node.js and NPM (or Yarn)
+- [ ] Revisit new bot generator (yeoman has a ton of dependencies, some of which can be error prone on windows)
 - [ ] Support for running multiple adapters and archetypes (chat, deployment, CI, github, etc)
 - [ ] Merge with [@probot](https://github.com/probot) and build out first class GitHub integration.
 - [ ] Introduce "Commands”, an explicit interface for registering commands (like Slack’s slash commands) as an alternative to regular expressions
