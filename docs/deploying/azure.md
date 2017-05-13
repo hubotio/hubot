@@ -91,3 +91,6 @@ while : ; do
     [[ $STATUSCODE -ne 200 ]] || break
 done
 ```
+
+### Slack Integration
+Currently the Slack integration has trouble finding hubot when deployed to Azure. Adding a `NODE_PATH` application setting with the value `D:\home\site\wwwroot\node_modules` will allow the Slack module to find hubot.
