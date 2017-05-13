@@ -93,4 +93,4 @@ done
 ```
 
 ### Slack Integration
-Currently the Slack integration has trouble finding hubot when deployed to Azure. Adding `NODE_PATH = D:\home\site\wwwroot\node_modules` will allow the Slack module to find hubot.
+Currently the Slack integration has trouble finding hubot when deployed to Azure. Adding a `NODE_PATH` application setting with the value `D:\home\site\wwwroot\node_modules` will allow the Slack module to find hubot.
