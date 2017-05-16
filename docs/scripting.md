@@ -129,7 +129,7 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # your code here
 ```
 
@@ -141,7 +141,7 @@ A post looks like:
   })
   robot.http("https://midnight-train")
     .header('Content-Type', 'application/json')
-    .post(data) (err, res, body) ->
+    .post(data) (err, response, body) ->
       # your code here
 ```
 
@@ -150,9 +150,9 @@ A post looks like:
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       if err
-        res.send "Encountered an error :( #{err}"
+        response.send "Encountered an error :( #{err}"
         return
       # your code here, knowing it was successful
 ```
@@ -161,16 +161,16 @@ A post looks like:
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # pretend there's error checking code here
 
-      if res.statusCode isnt 200
-        res.send "Request didn't come back HTTP 200 :("
+      if response.statusCode isnt 200
+        response.send "Request didn't come back HTTP 200 :("
         return
 
-      rateLimitRemaining = parseInt res.getHeader('X-RateLimit-Limit') if res.getHeader('X-RateLimit-Limit')
+      rateLimitRemaining = parseInt response.getHeader('X-RateLimit-Limit') if response.getHeader('X-RateLimit-Limit')
       if rateLimitRemaining and rateLimitRemaining < 1
-        res.send "Rate Limit hit, stop believing for awhile"
+        response.send "Rate Limit hit, stop believing for awhile"
 
       # rest of your code
 ```
@@ -179,7 +179,7 @@ A post looks like:
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # error checking code here
 
       res.send "Got back #{body}"
@@ -192,11 +192,11 @@ If you are talking to APIs, the easiest way is going to be JSON because it doesn
 ```coffeescript
   robot.http("https://midnight-train")
     .header('Accept', 'application/json')
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # error checking code here
 
       data = JSON.parse body
-      res.send "#{data.passenger} taking midnight train going #{data.destination}"
+      response.send "#{data.passenger} taking midnight train going #{data.destination}"
 ```
 
 It's possible to get non-JSON back, like if the API hit an error and it tries to render a normal HTML error instead of JSON. To be on the safe side, you should check the `Content-Type`, and catch any errors while parsing.
@@ -204,18 +204,18 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
 ```coffeescript
   robot.http("https://midnight-train")
     .header('Accept', 'application/json')
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # err & response status checking code here
 
       if response.getHeader('Content-Type') isnt 'application/json'
-        res.send "Didn't get back JSON :("
+        response.send "Didn't get back JSON :("
         return
 
       data = null
       try
         data = JSON.parse body
       catch error
-       res.send "Ran into an error parsing JSON :("
+       response.send "Ran into an error parsing JSON :("
        return
 
       # your code here
@@ -428,14 +428,14 @@ The most common use of this is for providing HTTP end points for services with w
 ```coffeescript
 module.exports = (robot) ->
   # the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
-  robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
-    room   = req.params.room
-    data   = if req.body.payload? then JSON.parse req.body.payload else req.body
+  robot.router.post '/hubot/chatsecrets/:room', (request, response) ->
+    room   = request.params.room
+    data   = if request.body.payload? then JSON.parse request.body.payload else request.body
     secret = data.secret
 
     robot.messageRoom room, "I have a secret: #{secret}"
 
-    res.send 'OK'
+    response.send 'OK'
 ```
 
 Test it with curl; also see section on [error handling](#error-handling) below.
@@ -458,11 +458,11 @@ One use case for this would be to have one script for handling interactions with
 ```coffeescript
 # src/scripts/github-commits.coffee
 module.exports = (robot) ->
-  robot.router.post "/hubot/gh-commits", (req, res) ->
+  robot.router.post "/hubot/gh-commits", (request, response) ->
     robot.emit "commit", {
         user    : {}, #hubot user object
         repo    : 'https://github.com/github/hubot',
-        hash  : '2e1951c089bd865839328592ff673d2f08153643'
+        hash    : '2e1951c089bd865839328592ff673d2f08153643'
     }
 ```
 
@@ -497,11 +497,11 @@ Under the hood, there is an 'error' event emitted, with the error handlers consu
 Using previous examples:
 
 ```coffeescript
-  robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
-    room = req.params.room
+  robot.router.post '/hubot/chatsecrets/:room', (request, response) ->
+    room = request.params.room
     data = null
     try
-      data = JSON.parse req.body.payload
+      data = JSON.parse request.body.payload
     catch err
       robot.emit 'error', err
 
@@ -510,10 +510,10 @@ Using previous examples:
 
   robot.hear /midnight train/i, (res) ->
     robot.http("https://midnight-train")
-      .get() (err, res, body) ->
+      .get() (err, response, body) ->
         if err
-          res.reply "Had problems taking the midnight train"
-          robot.emit 'error', err, res
+          response.reply "Had problems taking the midnight train"
+          robot.emit 'error', err, response
           return
         # rest of code here
 ```
@@ -570,14 +570,13 @@ robot.respond /have a soda/i, (res) ->
 
   if sodasHad > 4
     res.reply "I'm too fizzy.."
-
   else
     res.reply 'Sure!'
+    robot.brain.set 'totalSodas', sodasHad + 1
 
-    robot.brain.set 'totalSodas', sodasHad+1
 robot.respond /sleep it off/i, (res) ->
   robot.brain.set 'totalSodas', 0
-  msg.reply 'zzzzz'
+  res.reply 'zzzzz'
 ```
 
 If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
@@ -663,10 +662,10 @@ Returning to an earlier example:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.respond /annoy me/, id:'annoyance.start', (msg)
+  robot.respond /annoy me/, id:'annoyance.start', (res)
     # code to annoy someone
 
-  robot.respond /unannoy me/, id:'annoyance.stop', (msg)
+  robot.respond /unannoy me/, id:'annoyance.stop', (res)
     # code to stop annoying someone
 ```
 
@@ -757,9 +756,9 @@ This example also shows how listener-specific metadata can be leveraged to creat
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (msg) ->
+  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (res) ->
     # This will execute no faster than once every ten seconds
-    msg.reply 'Why, hello there!'
+    res.reply 'Why, hello there!'
 ```
 
 ## Listener Middleware API
