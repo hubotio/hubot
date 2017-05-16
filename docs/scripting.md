@@ -152,7 +152,7 @@ A post looks like:
   robot.http("https://midnight-train")
     .get() (err, response, body) ->
       if err
-        response.send "Encountered an error :( #{err}"
+        res.send "Encountered an error :( #{err}"
         return
       # your code here, knowing it was successful
 ```
@@ -165,12 +165,12 @@ A post looks like:
       # pretend there's error checking code here
 
       if response.statusCode isnt 200
-        response.send "Request didn't come back HTTP 200 :("
+        res.send "Request didn't come back HTTP 200 :("
         return
 
       rateLimitRemaining = parseInt response.getHeader('X-RateLimit-Limit') if response.getHeader('X-RateLimit-Limit')
       if rateLimitRemaining and rateLimitRemaining < 1
-        response.send "Rate Limit hit, stop believing for awhile"
+        res.send "Rate Limit hit, stop believing for awhile"
 
       # rest of your code
 ```
@@ -196,7 +196,7 @@ If you are talking to APIs, the easiest way is going to be JSON because it doesn
       # error checking code here
 
       data = JSON.parse body
-      response.send "#{data.passenger} taking midnight train going #{data.destination}"
+      res.send "#{data.passenger} taking midnight train going #{data.destination}"
 ```
 
 It's possible to get non-JSON back, like if the API hit an error and it tries to render a normal HTML error instead of JSON. To be on the safe side, you should check the `Content-Type`, and catch any errors while parsing.
@@ -208,14 +208,14 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
       # err & response status checking code here
 
       if response.getHeader('Content-Type') isnt 'application/json'
-        response.send "Didn't get back JSON :("
+        res.send "Didn't get back JSON :("
         return
 
       data = null
       try
         data = JSON.parse body
       catch error
-       response.send "Ran into an error parsing JSON :("
+       res.send "Ran into an error parsing JSON :("
        return
 
       # your code here
@@ -512,7 +512,7 @@ Using previous examples:
     robot.http("https://midnight-train")
       .get() (err, response, body) ->
         if err
-          response.reply "Had problems taking the midnight train"
+          res.reply "Had problems taking the midnight train"
           robot.emit 'error', err, response
           return
         # rest of code here
