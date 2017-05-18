@@ -513,7 +513,7 @@ Using previous examples:
       .get() (err, response, body) ->
         if err
           res.reply "Had problems taking the midnight train"
-          robot.emit 'error', err, response
+          robot.emit 'error', err, res
           return
         # rest of code here
 ```
