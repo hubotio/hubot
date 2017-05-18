@@ -1,7 +1,7 @@
 # Contributing
 
-This project adheres to the [Open Code of Conduct][code-of-conduct]. By participating, you are expected to uphold this code.
-[code-of-conduct]: http://todogroup.org/opencodeofconduct/#Hubot/opensource@github.com
+This project adheres to the [Contributor Covenant Code of Conduct](http://contributor-covenant.org). By participating, you are expected to uphold this code.
+
 
 We love pull requests. Here's a quick guide:
 
