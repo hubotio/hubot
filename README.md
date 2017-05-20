@@ -13,6 +13,8 @@ are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTI
 
 If you'd like to chat with Hubot users and developers, [join us on Slack](https://hubot-slackin.herokuapp.com/).
 
+w00p w00p!
+
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
