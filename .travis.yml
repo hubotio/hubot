@@ -6,6 +6,7 @@ node_js:
   - "5"
   - "4"
   - "0.12"
+  - "0.10"
 notifications:
   email: false
 sudo: false
