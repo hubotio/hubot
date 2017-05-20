@@ -305,7 +305,7 @@ module.exports = (robot) ->
   )
 ```
 
-See [the design patterns document](patterns.md) for examples of complex matchers.
+See [the design patterns document](https://hubot.github.com/docs/patterns/#dynamic-matching-of-messages) for examples of complex matchers.
 
 ## Environment variables
 
