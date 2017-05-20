@@ -66,6 +66,38 @@ module.exports = (robot) ->
 
 ```
 
+## Preventing Hubot from Running Scripts Concurrently
+
+Sometimes you have scripts that take several minutes to execute.  If these scripts are doing something that could be interfered
+with by running subsequent commands, you may wish to code your scripts to prevent concurrent access.
+
+To do this, you can set up a lock in the Hubot [brain](scripting.md#persistence) object.  The lock is set up here so that different scripts
+can share the same lock if necessary.
+
+Setting up the lock looks something like this:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.brain.on 'loaded', ->
+    # Clear the lock on startup in case Hubot has restarted and Hubot's brain has persistence (e.g. redis).
+    # We don't want any orphaned locks preventing us from running commands.
+    robot.brain.remove('yourLockName')
+
+  robot.respond /longrunningthing/i, (msg) ->
+    lock = robot.brain.get('yourLockName')
+
+    if lock?
+      msg.send "I'm sorry, #{msg.message.user.name}, I'm afraid I can't do that. I'm busy doing something for #{lock.user.name}."
+      return
+
+    robot.brain.set('yourLockName', msg.message)  # includes user, room, etc about who locked
+
+    yourLongClobberingAsyncThing (err, response) ->
+      # Clear the lock
+      robot.brain.remove('yourLockName')
+      msg.reply "Finally Done"
+```
+
 ## Forwarding all HTTP requests through a proxy
 
 In many corporate environments, a web proxy is required to access the Internet and/or protected resources. For one-off control, use can specify an [Agent](https://nodejs.org/api/http.html) to use with `robot.http`. However, this would require modifying every script your robot uses to point at the proxy. Instead, you can specify the agent at the global level and have all HTTP requests use the agent by default.
@@ -185,3 +217,4 @@ Complex policies like this are currently best implemented in code directly, thou
 Organizations that have a number of chat rooms that serve different purposes often want to be able to use the same instance of hubot but have a different set of commands allowed in each room.
 
 Work on generalized blacklist solution is [ongoing](https://github.com/kristenmills/hubot-command-blacklist). A whitelist soultion could take a similar approach.
+
