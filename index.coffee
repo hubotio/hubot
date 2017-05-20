@@ -1,3 +1,4 @@
+require 'core-js'
 User                                                                 = require './src/user'
 Brain                                                                = require './src/brain'
 Robot                                                                = require './src/robot'

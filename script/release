@@ -11,6 +11,9 @@ cd $(dirname "$0")/..
 
 npm update && script/smoke-test
 
+# compile hubot to dist/
+npm run build
+
 # Make sure we're on the master branch.
 
 (git branch | grep -q '* master') || {

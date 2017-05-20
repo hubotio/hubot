@@ -9,7 +9,7 @@ chai.use require 'sinon-chai'
 { CatchAllMessage, EnterMessage, TextMessage } = require '../src/message'
 { Listener, TextListener } = require '../src/listener'
 Response = require '../src/response.coffee'
-User = require '../src/user.coffee'
+User = require '../src/user'
 
 describe 'Listener', ->
   beforeEach ->
@@ -287,21 +287,21 @@ describe 'Listener', ->
           testMessage = new TextMessage(@user, 'test')
           testMessage.match = sinon.stub().returns(true)
           testRegex = /test/
- 
+
           testListener = new TextListener(@robot, testRegex, callback)
           result = testListener.matcher(testMessage)
- 
+
           expect(result).to.be.ok
           expect(testMessage.match).to.have.been.calledWith(testRegex)
- 
+
         it 'does not match EnterMessages', ->
           callback = sinon.spy()
           testMessage = new EnterMessage(@user)
           testMessage.match = sinon.stub().returns(true)
           testRegex = /test/
- 
+
           testListener = new TextListener(@robot, testRegex, callback)
           result = testListener.matcher(testMessage)
- 
+
           expect(result).to.not.be.ok
           expect(testMessage.match).to.not.have.been.called

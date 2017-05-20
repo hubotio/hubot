@@ -7,7 +7,7 @@ chai.use require 'sinon-chai'
 
 # Hubot classes
 Brain = require '../src/brain.coffee'
-User = require '../src/user.coffee'
+User = require '../src/user'
 
 describe 'Brain', ->
   beforeEach ->
