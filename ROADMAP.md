@@ -21,7 +21,7 @@ This roadmap represents some of priorities for us over the next couple months. I
 - [x] Choose a chat platform for maintainers and contributors, and post notices in various existing places (#hubot on freenode, github/hubot on Gitter). Slack is the obvious choice here. [Join us on Slack](https://hubot-slackin.herokuapp.com/).
 - [x] Add a code of conduct based on http://contributor-covenant.org/ and processes to enforce it in all official spaces. ([#1334](https://github.com/github/hubot/pull/1334))
 - [ ] Publish weekly community updates (blog, newsletter, etc) which highlight recent and upcoming changes, give shoutouts to contributors / maintainers, and maybe mention interesting uses of Hubot
-- [ ] Create Hubot Evolution—inspired by [Swift Evolution](https://github.com/apple/swift-evolution)—for proposing user-visible enhancements. This roadmap will be moved there and all future proposals will follow the process laid out in that repository.
+- [ ] Create Hubot Evolution—inspired by [Swift Evolution](https://github.com/apple/swift-evolution)—for proposing user-visible enhancements. This roadmap will be moved there and all future proposals will follow the process laid out in that repository. ([hubotio/evolution#1](https://github.com/hubotio/evolution/pull/1))
 
 ## 3. Modernize the project
 
