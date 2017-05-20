@@ -579,7 +579,7 @@ robot.respond /sleep it off/i, (res) ->
   res.reply 'zzzzz'
 ```
 
-If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
+If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `usersForFuzzyName`, and `usersForRawFuzzyName`.
 
 ```coffeescript
 module.exports = (robot) ->
