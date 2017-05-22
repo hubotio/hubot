@@ -208,6 +208,40 @@ describe 'Middleware', ->
           allDone
         )
 
+      it 'returns a promise that resolves when async middleware stack is complete', (testDone) ->
+        
+        clock = sinon.useFakeTimers()
+        
+        testMiddlewareA = (context, next, done) =>
+          setTimeout -> 
+            context.A = 'done'
+            next(done)
+          , 250
+
+        testMiddlewareB = (context, next, done) ->
+          setTimeout -> 
+            context.B = 'done'
+            next(done)
+          , 250
+
+        @middleware.register testMiddlewareA
+        @middleware.register testMiddlewareB
+
+        middlewareFinished = -> clock.restore()
+
+        middlewarePromise = @middleware.execute(
+          {}
+          (_, done) -> done()
+          middlewareFinished
+        )
+        
+        middlewarePromise.then (finalContext) ->
+          expect(finalContext).to.deep.equal A: 'done', B: 'done'
+          testDone()
+        
+        clock.tick 600
+        clock.restore()
+
       describe 'error handling', ->
         it 'does not execute subsequent middleware after the error is thrown', (testDone) ->
           middlewareExecution = []

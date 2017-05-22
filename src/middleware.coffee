@@ -39,14 +39,18 @@ class Middleware
         @robot.emit('error', err, context.response)
         # Forcibly fail the middleware and stop executing deeper
         doneFunc()
-
-    # Executed when the middleware stack is finished
-    allDone = (_, finalDoneFunc) -> next(context, finalDoneFunc)
-
-    # Execute each piece of middleware, collecting the latest 'done' callback
-    # at each step.
-    process.nextTick =>
-      async.reduce(@stack, done, executeSingleMiddleware, allDone)
+    
+    new Promise (resolve, reject) =>
+      
+      # Executed when the middleware stack is finished
+      allDone = (_, finalDoneFunc) ->
+        next context, finalDoneFunc
+        resolve context
+      
+      # Execute each piece of middleware, collecting the latest 'done' callback
+      # at each step.
+      process.nextTick =>
+        async.reduce(@stack, done, executeSingleMiddleware, allDone)
 
   # Public: Registers new middleware
   #
