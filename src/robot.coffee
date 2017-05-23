@@ -416,6 +416,8 @@ class Robot
     port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
     address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
+    expressRequestJsonSize = process.env.EXPRESS_REQUEST_JSON_SIZE or '1mb'
+
     express = require 'express'
     multipart = require 'connect-multiparty'
 
@@ -428,8 +430,9 @@ class Robot
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
 
-    app.use express.json()
+    app.use express.json({limit: expressRequestJsonSize})
     app.use express.urlencoded()
+
     # replacement for deprecated express.multipart/connect.multipart
     # limit to 100mb, as per the old behavior
     app.use multipart(maxFilesSize: 100 * 1024 * 1024)
