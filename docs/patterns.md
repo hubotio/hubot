@@ -1,7 +1,8 @@
 ---
-permalink: /docs/patterns/index.html
-layout: docs
+permalink: /docs/patterns/
 ---
+
+# Patterns
 
 Shared patterns for dealing with common Hubot scenarios.
 
@@ -14,7 +15,7 @@ When you rename Hubot, he will no longer respond to his former name. In order to
 
 Setting this up is very easy:
 
-1. Create a [bundled script](/docs/scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
+1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
 2. Add the following code, modified for your needs:
 
 ```coffeescript
@@ -71,9 +72,13 @@ In many corporate environments, a web proxy is required to access the Internet a
 
 Due to the way node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
 
+1. Install ProxyAgent. `npm install proxy-agent`
+2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.coffee`
+3. Add the following code, modified for your needs:
+
 ```coffeescript
 proxy = require 'proxy-agent'
-module.export = (robot) ->
+module.exports = (robot) ->
   robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 ```

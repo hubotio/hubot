@@ -1,8 +1,11 @@
 ---
-permalink: /docs/deploying/index.html
-layout: docs
+permalink: /docs/deploying/
 ---
 
-- [Heroku](/docs/deploying/heroku.md)
-- [Unix](/docs/deploying/unix.md)
-- [Windows](/docs/deploying/windows.md)
+# Deploying
+
+- [Azure](./deploying/azure.md)
+- [Bluemix](./deploying/bluemix.md)
+- [Heroku](./deploying/heroku.md)
+- [Unix](./deploying/unix.md)
+- [Windows](./deploying/windows.md)

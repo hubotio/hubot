@@ -1,7 +1,8 @@
 ---
-permalink: /docs/deploying/unix/index.html
-layout: docs
+permalink: /docs/deploying/unix/
 ---
+
+# Deploying to Unix
 
 Because there are so many variations of Linux, and more generally UNIX, it's
 difficult for the hubot team to have canonical documentation for installing and
@@ -29,8 +30,8 @@ feel a dirty hack, but it works when you are starting out.
 If you have a Ruby background, you might be more comfortable using
 [capistrano](https://github.com/capistrano/capistrano).
 
-If you have a [Chef](http://www.opscode.com/chef/) background, there's a
-[deploy](http://docs.opscode.com/resource_deploy.html) resource for managing
+If you have a [Chef](http://www.chef.io/chef/) background, there's a
+[deploy](https://docs.chef.io/resource_deploy.html) resource for managing
 deployments.
 
 ## Starting, stopping, and restarting hubot
@@ -54,6 +55,7 @@ really, you probably want some process monitoring using tools like
 [god](http://godrb.com/),
 [bluepill](https://github.com/arya/bluepill),
 [upstart](http://upstart.ubuntu.com/),
+[runit](http://smarden.org/runit/),
 [systemd](http://freedesktop.org/wiki/Software/systemd/).
 
 For starting at boot, you can create an init script appropriate for your UNIX

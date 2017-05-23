@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.16.0",
+  "version": "2.19.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -20,7 +20,7 @@
     "cline": "^0.8.2",
     "coffee-script": "1.6.3",
     "connect-multiparty": "^1.2.5",
-    "express": "3.18.1",
+    "express": "^3.21.2",
     "log": "1.4.0",
     "optparse": "1.0.4",
     "scoped-http-client": "0.11.0"
@@ -31,7 +31,9 @@
     "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
-    "sinon-chai": "^2.6.0",
+    "sinon-chai": "^2.8.0",
+    "sinon": "~1.17.0",
+    "chai": "~2.1.0",
     "yo": "^1.4.7"
   },
   "engines": {

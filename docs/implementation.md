@@ -1,8 +1,9 @@
 ---
 title: Implementation Notes
-permalink: /docs/implementation/index.html
-layout: docs
+permalink: /docs/implementation/
 ---
+
+# Implementation
 
 For the purpose of maintainability, several internal flows are documented here.
 
@@ -32,3 +33,14 @@ There are two primary entry points for middleware:
 
 1. `robot.listenerMiddleware` - registers a new piece of middleware in a global array
 2. `middleware.execute` - executes all registered middleware in order
+
+## Persistence
+
+Hubot has a memory exposed as the `robot.brain` object that can be used to store and retrieve data.
+Furthermore, Hubot scripts exist to enable persistence across Hubot restarts.
+`hubot-redis-brain` is such a script and uses a backend Redis server.
+
+By default, the brain contains a list of all users seen by Hubot.
+Therefore, without persistence across restarts, the brain will contain the list of users encountered so far, during the current run of Hubot.
+On the other hand, with persistence across restarts, the brain will contain all users encountered by Hubot during all of its runs.
+This list of users can be accessed through `hubot.brain.users()` and other utility methods.

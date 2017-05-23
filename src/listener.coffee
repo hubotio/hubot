@@ -55,7 +55,7 @@ class Listener
     if match = @matcher message
       if @regex
         @robot.logger.debug \
-          "Message '#{message}' matched regex /#{inspect @regex}/"
+          "Message '#{message}' matched regex /#{inspect @regex}/; listener.options = #{inspect @options}"
 
       # special middleware-like function that always executes the Listener's
       # callback and calls done (never calls 'next')
@@ -73,7 +73,7 @@ class Listener
         # Yes, we tried to execute the listener callback (middleware may
         # have intercepted before actually executing though)
         if cb?
-          process.nextTick -> cb true
+          Middleware.ticker -> cb true
 
       response = new @robot.Response(@robot, message, match)
       middleware.execute(
