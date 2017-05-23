@@ -1,4 +1,5 @@
 async = require 'async'
+Promise = global.Promise || require('es6-promise').Promise
 
 class Middleware
   # We use this recursively, and using nextTick recursively is deprecated in node 0.10.
