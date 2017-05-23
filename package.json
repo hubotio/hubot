@@ -43,6 +43,14 @@
     "hubot": "./bin/hubot"
   },
   "scripts": {
-    "test": "./script/test"
+    "clean": "rm -rf lib/",
+    "preinstall": "script/dotenv",
+    "prestart": "script/dotenv",
+    "start": "bin/hubot",
+    "pretest": "script/dotenv",
+    "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
+    "test:smoke": "coffee src/**/*.coffee",
+    "compile": "coffee --compile --bare --output lib src",
+    "compile:watch": "coffee --compile --bare --output lib --watch src"
   }
 }

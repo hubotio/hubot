@@ -1,4 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-source script/bootstrap
-mocha --require coffee-errors --compilers coffee:coffee-script "$@"
+npm test -- "$@"
