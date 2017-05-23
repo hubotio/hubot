@@ -62,7 +62,7 @@ class Response
   # strings - One or more strings to be posted. The order of these strings
   #           should be kept intact.
   #
-  # Returns nothing
+  # Returns promise - resolves with context when middleware completes
   locked: (strings...) ->
     @runWithMiddleware("locked", { plaintext: true }, strings...)
 

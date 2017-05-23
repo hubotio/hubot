@@ -22,7 +22,7 @@ class Middleware
   # done() - Initial (final) completion callback. May be wrapped by
   #     executed middleware.
   #
-  # Returns nothing
+  # Returns promise - resolves with context when middleware completes
   # Returns before executing any middleware
   execute: (context, next, done) ->
     done ?= ->

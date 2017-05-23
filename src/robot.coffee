@@ -289,7 +289,7 @@ class Robot
   #
   # cb - Optional callback that is called when message processing is complete
   #
-  # Returns nothing.
+  # Returns promise - resolves with context when middleware completes
   # Returns before executing callback
   receive: (message, cb) ->
     # When everything is finished (down the middleware stack and back up),
