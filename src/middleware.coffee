@@ -25,24 +25,26 @@ class Middleware
   # Returns promise - resolves with context when middleware completes
   # Returns before executing any middleware
   execute: (context, next, done) ->
-    done ?= ->
-    # Execute a single piece of middleware and update the completion callback
-    # (each piece of middleware can wrap the 'done' callback with additional
-    # logic).
-    executeSingleMiddleware = (doneFunc, middlewareFunc, cb) =>
-      # Match the async.reduce interface
-      nextFunc = (newDoneFunc) -> cb(null, newDoneFunc or doneFunc)
-      # Catch errors in synchronous middleware
-      try
-        middlewareFunc.call(undefined, context, nextFunc, doneFunc)
-      catch err
-        # Maintaining the existing error interface (Response object)
-        @robot.emit('error', err, context.response)
-        # Forcibly fail the middleware and stop executing deeper
-        doneFunc()
-    
+
     new Promise (resolve, reject) =>
-      
+
+      done ?= ->
+      # Execute a single piece of middleware and update the completion callback
+      # (each piece of middleware can wrap the 'done' callback with additional
+      # logic).
+      executeSingleMiddleware = (doneFunc, middlewareFunc, cb) =>
+        # Match the async.reduce interface
+        nextFunc = (newDoneFunc) -> cb(null, newDoneFunc or doneFunc)
+        # Catch errors in synchronous middleware
+        try
+          middlewareFunc.call(undefined, context, nextFunc, doneFunc)
+        catch err
+          # Maintaining the existing error interface (Response object)
+          @robot.emit('error', err, context.response)
+          # Forcibly fail the middleware and stop executing deeper
+          doneFunc()
+          reject err, context
+        
       # Executed when the middleware stack is finished
       allDone = (_, finalDoneFunc) ->
         next context, finalDoneFunc

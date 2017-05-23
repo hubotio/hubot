@@ -210,24 +210,22 @@ describe 'Middleware', ->
 
       it 'returns a promise that resolves when async middleware stack is complete', (testDone) ->
         
-        clock = sinon.useFakeTimers()
-        
-        testMiddlewareA = (context, next, done) =>
-          setTimeout -> 
+        testMiddlewareA = (context, next, done) ->
+          setTimeout ->
             context.A = 'done'
             next(done)
-          , 250
+          , 50
 
         testMiddlewareB = (context, next, done) ->
-          setTimeout -> 
+          setTimeout ->
             context.B = 'done'
             next(done)
-          , 250
+          , 50
 
         @middleware.register testMiddlewareA
         @middleware.register testMiddlewareB
 
-        middlewareFinished = -> clock.restore()
+        middlewareFinished = ->
 
         middlewarePromise = @middleware.execute(
           {}
@@ -236,11 +234,37 @@ describe 'Middleware', ->
         )
         
         middlewarePromise.then (finalContext) ->
-          expect(finalContext).to.deep.equal A: 'done', B: 'done'
+          expect(finalContext).to.eql A: 'done', B: 'done'
           testDone()
+      
+      it 'promise resolves when middleware completes early, with context at that point', (testDone) ->
         
-        clock.tick 600
-        clock.restore()
+        testMiddlewareA = (context, next, done) ->
+          setTimeout ->
+            context.A = 'done'
+            done()
+          , 50
+        
+        testMiddlewareB = (context, next, done) ->
+          setTimeout ->
+            context.B = 'done'
+            next(done)
+          , 50
+        
+        @middleware.register testMiddlewareA
+        @middleware.register testMiddlewareB
+
+        middlewareFinished = ->
+
+        middlewarePromise = @middleware.execute(
+          {}
+          (_, done) -> done()
+          middlewareFinished
+        )
+        
+        middlewarePromise.then (finalContext) ->
+          expect(finalContext).to.eql A: 'done'
+          testDone()
 
       describe 'error handling', ->
         it 'does not execute subsequent middleware after the error is thrown', (testDone) ->
@@ -272,7 +296,7 @@ describe 'Middleware', ->
             {}
             middlewareFinished
             middlewareFailed
-          )
+          ).catch (reason) -> # supress warning re unhandled promise rejection
 
         it 'emits an error event', (testDone) ->
           testResponse = {}
@@ -297,7 +321,7 @@ describe 'Middleware', ->
             {response: testResponse},
             middlewareFinished,
             middlewareFailed
-          )
+          ).catch (reason) -> # supress warning re unhandled promise rejection
 
         it 'unwinds the middleware stack (calling all done functions)', (testDone) ->
           extraDoneFunc = null
@@ -325,7 +349,7 @@ describe 'Middleware', ->
             {}
             middlewareFinished
             middlewareFailed
-          )
+          ).catch (reason) -> # supress warning re unhandled promise rejection
 
     describe '#register', ->
       it 'adds to the list of middleware', ->
