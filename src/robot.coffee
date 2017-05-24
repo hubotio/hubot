@@ -413,23 +413,37 @@ class Robot
     user    = process.env.EXPRESS_USER
     pass    = process.env.EXPRESS_PASSWORD
     stat    = process.env.EXPRESS_STATIC
+    env     = process.env.NODE_ENV or 'development'
     port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
     address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
 
     express = require 'express'
     multipart = require 'connect-multiparty'
+    bodyParser = require 'body-parser'
 
     app = express()
 
     app.use (req, res, next) =>
+      if req.headers['x-forwarded-proto'] != 'https' and env == 'production'
+        return res.redirect(301, [
+          'https://'
+          req.get('Host')
+          req.url
+        ].join(''))
       res.setHeader "X-Powered-By", "hubot/#{@name}"
       next()
 
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
 
-    app.use express.json()
-    app.use express.urlencoded()
+    ## set the view engine to ejs
+    app.set('view engine', 'ejs')
+
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
+
     # replacement for deprecated express.multipart/connect.multipart
     # limit to 100mb, as per the old behavior
     app.use multipart(maxFilesSize: 100 * 1024 * 1024)

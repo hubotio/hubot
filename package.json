@@ -16,11 +16,13 @@
   },
   "dependencies": {
     "async": ">=0.1.0 <1.0.0",
+    "body-parser": "^1.15.2",
     "chalk": "^1.0.0",
     "cline": "^0.8.2",
     "coffee-script": "1.6.3",
     "connect-multiparty": "^1.2.5",
-    "express": "^3.21.2",
+    "ejs": "^2.5.5",
+    "express": "^4.14.0",
     "log": "1.4.0",
     "optparse": "1.0.4",
     "scoped-http-client": "0.11.0"
