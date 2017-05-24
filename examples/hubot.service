@@ -14,8 +14,12 @@ User=change-to-hubot-user
 Restart=always
 RestartSec=10
 
-; Configure Hubot environment variables, make sure to use quotes around whitespace as shown below.
-Environment=HUBOT_aaa=xxx "HUBOT_bbb='yyy yyy'"
+; Configure Hubot environment variables, use quotes around vars with whitespace as shown below.
+Environment="HUBOT_aaa=xxx"
+Environment="HUBOT_bbb='yyy yyy'"
+
+; Alternatively multiple environment variables can loaded from an external file
+;EnvironmentFile=/etc/hubot-environment
 
 ExecStart=/path/to/hubot/bin/hubot --adapter zzz
 

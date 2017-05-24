@@ -1,10 +1,11 @@
 ---
-permalink: /docs/deploying/azure/index.html
-layout: docs
+permalink: /docs/deploying/azure/
 ---
 
+# Deploying to Azure
+
 If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
-[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](/docs/deploying/heroku.md).
+[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](heroku.md).
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
 
@@ -69,7 +70,7 @@ Finally, add two more environment variables to your website. You can do this eit
     % $settings["HUBOT_BRAIN_AZURE_STORAGE_ACCESS_KEY"] = "your Azure storage account key"
     % Set-AzureWebsite -AppSettings $settings mynewhubot
 
-Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](/docs/scripting.md). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
+Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](../scripting.md). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
 
 ### Troubleshooting tips and tricks
 
@@ -90,3 +91,6 @@ while : ; do
     [[ $STATUSCODE -ne 200 ]] || break
 done
 ```
+
+### Slack Integration
+Currently the Slack integration has trouble finding hubot when deployed to Azure. Adding a `NODE_PATH` application setting with the value `D:\home\site\wwwroot\node_modules` will allow the Slack module to find hubot.

@@ -1,9 +1,10 @@
 ---
-permalink: /docs/scripting/index.html
-layout: docs
+permalink: /docs/scripting/
 ---
 
-Hubot out of the box doesn't do too much but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](/docs/#scripts.md) and it's easy to write your own.  You can create a custom script in hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
+# Scripting
+
+Hubot out of the box doesn't do too much but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](index.md#scripts) and it's easy to write your own.  You can create a custom script in hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
@@ -75,6 +76,32 @@ The `robot.hear /badgers/` callback sends a message exactly as specified regardl
 
 If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
 
+## Messages to a room or user
+
+Messages can be sent to a specified room or user using the messageRoom function.
+
+```coffeescript
+module.exports = (robot) ->
+
+  robot.hear /green eggs/i, (res) ->
+    room = "mytestroom"
+    robot.messageRoom room, "I do not like green eggs and ham.  I do not like them sam-I-am."
+```
+
+User name can be explicitely specified if desired ( for a cc to an admin/manager), or using
+the response object a private message can be sent to the original sender.
+
+```coffeescript
+  robot.respond /I don't like Sam-I-am/i, (res) ->
+    room =  'joemanager'
+    robot.messageRoom room, "Someone does not like Dr. Seus"
+    res.reply  "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+
+  robot.hear /Sam-I-am/i, (res) ->
+    room =  res.envelope.user.name
+    robot.messageRoom room, "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+```
+
 ## Capturing data
 
 So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update a script like:
@@ -102,7 +129,7 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # your code here
 ```
 
@@ -114,7 +141,7 @@ A post looks like:
   })
   robot.http("https://midnight-train")
     .header('Content-Type', 'application/json')
-    .post(data) (err, res, body) ->
+    .post(data) (err, response, body) ->
       # your code here
 ```
 
@@ -123,7 +150,7 @@ A post looks like:
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       if err
         res.send "Encountered an error :( #{err}"
         return
@@ -134,14 +161,14 @@ A post looks like:
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # pretend there's error checking code here
 
-      if res.statusCode isnt 200
+      if response.statusCode isnt 200
         res.send "Request didn't come back HTTP 200 :("
         return
 
-      rateLimitRemaining = parseInt res.getHeader('X-RateLimit-Limit') if res.getHeader('X-RateLimit-Limit')
+      rateLimitRemaining = parseInt response.getHeader('X-RateLimit-Limit') if response.getHeader('X-RateLimit-Limit')
       if rateLimitRemaining and rateLimitRemaining < 1
         res.send "Rate Limit hit, stop believing for awhile"
 
@@ -152,7 +179,7 @@ A post looks like:
 
 ```coffeescript
   robot.http("https://midnight-train")
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # error checking code here
 
       res.send "Got back #{body}"
@@ -165,7 +192,7 @@ If you are talking to APIs, the easiest way is going to be JSON because it doesn
 ```coffeescript
   robot.http("https://midnight-train")
     .header('Accept', 'application/json')
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # error checking code here
 
       data = JSON.parse body
@@ -177,7 +204,7 @@ It's possible to get non-JSON back, like if the API hit an error and it tries to
 ```coffeescript
   robot.http("https://midnight-train")
     .header('Accept', 'application/json')
-    .get() (err, res, body) ->
+    .get() (err, response, body) ->
       # err & response status checking code here
 
       if response.getHeader('Content-Type') isnt 'application/json'
@@ -385,7 +412,7 @@ module.exports = (robot) ->
   robot.respond /unannoy me/, (res) ->
     if annoyIntervalId
       res.send "GUYS, GUYS, GUYS!"
-      clearInterval(annoyIntervalId) ->
+      clearInterval(annoyIntervalId)
       annoyIntervalId = null
     else
       res.send "Not annoying you right now, am I?"
@@ -401,14 +428,14 @@ The most common use of this is for providing HTTP end points for services with w
 ```coffeescript
 module.exports = (robot) ->
   # the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
-  robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
-    room   = req.params.room
-    data   = if req.body.payload? then JSON.parse req.body.payload else req.body
+  robot.router.post '/hubot/chatsecrets/:room', (request, response) ->
+    room   = request.params.room
+    data   = if request.body.payload? then JSON.parse request.body.payload else request.body
     secret = data.secret
 
     robot.messageRoom room, "I have a secret: #{secret}"
 
-    res.send 'OK'
+    response.send 'OK'
 ```
 
 Test it with curl; also see section on [error handling](#error-handling) below.
@@ -431,11 +458,11 @@ One use case for this would be to have one script for handling interactions with
 ```coffeescript
 # src/scripts/github-commits.coffee
 module.exports = (robot) ->
-  robot.router.post "/hubot/gh-commits", (req, res) ->
+  robot.router.post "/hubot/gh-commits", (request, response) ->
     robot.emit "commit", {
         user    : {}, #hubot user object
         repo    : 'https://github.com/github/hubot',
-        hash  : '2e1951c089bd865839328592ff673d2f08153643'
+        hash    : '2e1951c089bd865839328592ff673d2f08153643'
     }
 ```
 
@@ -470,20 +497,20 @@ Under the hood, there is an 'error' event emitted, with the error handlers consu
 Using previous examples:
 
 ```coffeescript
-  robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
-    room = req.params.room
+  robot.router.post '/hubot/chatsecrets/:room', (request, response) ->
+    room = request.params.room
     data = null
     try
-      data = JSON.parse req.body.payload
+      data = JSON.parse request.body.payload
     catch err
       robot.emit 'error', err
 
     # rest of the code here
 
 
-  robot.hear /midnight train/i, (res)
+  robot.hear /midnight train/i, (res) ->
     robot.http("https://midnight-train")
-      .get() (err, res, body) ->
+      .get() (err, response, body) ->
         if err
           res.reply "Had problems taking the midnight train"
           robot.emit 'error', err, res
@@ -543,14 +570,13 @@ robot.respond /have a soda/i, (res) ->
 
   if sodasHad > 4
     res.reply "I'm too fizzy.."
-
   else
     res.reply 'Sure!'
+    robot.brain.set 'totalSodas', sodasHad + 1
 
-    robot.brain.set 'totalSodas', sodasHad+1
 robot.respond /sleep it off/i, (res) ->
   robot.brain.set 'totalSodas', 0
-  msg.reply 'zzzzz'
+  res.reply 'zzzzz'
 ```
 
 If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
@@ -589,7 +615,7 @@ Once you've built some new scripts to extend the abilities of your robot friend,
 
 ## See if a script already exists
 
-Start by [checking if an NPM package](/docs/index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+Start by [checking if an NPM package](index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
 
 ## Creating A Script Package
 
@@ -608,7 +634,7 @@ Once you've got the hubot generator installed, creating a hubot script is simila
 % yo hubot:script
 ```
 
-At this point, the you'll be asked a few questions about the author for the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+At this point, you'll be asked a few questions about the author of the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
 
 If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
 
@@ -636,10 +662,10 @@ Returning to an earlier example:
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.respond /annoy me/, id:'annoyance.start', (msg)
+  robot.respond /annoy me/, id:'annoyance.start', (res)
     # code to annoy someone
 
-  robot.respond /unannoy me/, id:'annoyance.stop', (msg)
+  robot.respond /unannoy me/, id:'annoyance.stop', (res)
     # code to stop annoying someone
 ```
 
@@ -730,9 +756,9 @@ This example also shows how listener-specific metadata can be leveraged to creat
 
 ```coffeescript
 module.exports = (robot) ->
-  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (msg) ->
+  robot.hear /hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (res) ->
     # This will execute no faster than once every ten seconds
-    msg.reply 'Why, hello there!'
+    res.reply 'Why, hello there!'
 ```
 
 ## Listener Middleware API
