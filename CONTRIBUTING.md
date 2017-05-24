@@ -1,18 +1,20 @@
 # Contributing
 
-This project adheres to the [Contributor Covenant Code of Conduct](http://contributor-covenant.org). By participating, you are expected to uphold this code.
+Everyone is welcome to contribute to Hubot. Contributing doesn’t just mean submitting pull requests—there are many different ways for you to get involved, including answering questions in [chat](https://hubot-slackin.herokuapp.com/), reporting or triaging [issues](https://github.com/github/hubot/issues), and participating in the [Hubot Evolution](https://github.com/hubotio/evolution) process.
 
+No matter how you want to get involved, we ask that you first learn what’s expected of anyone who participates in the project by reading the [Contributor Covenant Code of Conduct](http://contributor-covenant.org). By participating, you are expected to uphold this code.
 
 We love pull requests. Here's a quick guide:
 
+1. If you're adding a new feature or changing user-facing APIs, check out the [Hubot Evolution](https://github.com/hubotio/evolution) process.
 1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/commits/master)
-2. Fork the repo, and clone it locally
-3. `npm link` to make your cloned repo available to npm
-4. Follow [Getting Started](docs/index.md) to generate a testbot
-5. `npm link hubot` in your newly created bot to use your hubot fork
-6. Create a new branch for your contribution
-7. Add [tests](test/) (run with `npm test`)
-8. Push to your fork and submit a pull request
+1. Fork the repo, and clone it locally
+1. `npm link` to make your cloned repo available to npm
+1. Follow [Getting Started](docs/index.md) to generate a testbot
+1. `npm link hubot` in your newly created bot to use your hubot fork
+1. Create a new branch for your contribution
+1. Add [tests](test/) (run with `npm test`)
+1. Push to your fork and submit a pull request
 
 At this point you're waiting on us. We like to at least comment on, if not
 accept, pull requests within a few days. We may suggest some changes or improvements or alternatives.
