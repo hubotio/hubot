@@ -522,6 +522,23 @@ Using previous examples:
 
 For the second example, it's worth thinking about what messages the user would see. If you have an error handler that replies to the user, you may not need to add a custom message and could send back the error message provided to the `get()` request, but of course it depends on how public you want to be with your exception reporting.
 
+## Logging
+Hubot uses [log](https://www.npmjs.com/package/log) to manage logging.
+By default, logging done to stdout, but you can redirect to a file using `HUBOT_LOG_FILE` config or `--log-file` option.
+You also can specify the log level using `HUBOT_LOG_LEVEL` config or `--log-level` option.
+
+```coffeescript
+s3.putObject { Bucket: bucket, Key: brain_file_name, ACL: 'private', ContentType: 'application/json', Body: buffer }, (err, response) ->
+  if err
+    # log an error using robot.logger.error() API
+    robot.logger.error util.inspect(err)
+  else if response
+    # log a debug message using robot.logger.debug() API
+    robot.logger.debug "Saved brain to S3 path #{bucket}#{brain_file_name}"
+
+  if callback then callback(err, response)
+```
+
 ## Documenting Scripts
 
 Hubot scripts can be documented with comments at the top of their file, for example:
