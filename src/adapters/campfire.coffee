@@ -177,6 +177,9 @@ class CampfireStreaming extends EventEmitter
       body = { message: { "body":text, "type":type } }
       self.post "/room/#{id}/speak", body, callback
 
+    recentMessages: (limit, callback) ->
+      self.get "/room/#{id}/recent?limit=#{limit}", callback
+
     # listen for activity in channels
     listen: ->
       headers =
