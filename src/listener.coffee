@@ -23,6 +23,7 @@ class Listener
     if not @callback?
       @callback = @options
       @options = {}
+      @options.listenerType = @callback.listenerType if @callback.listenerType?
 
     if not @options.id?
       @options.id = null
