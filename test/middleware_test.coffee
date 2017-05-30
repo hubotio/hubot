@@ -392,7 +392,6 @@ describe 'Middleware', ->
       @testListener = @robot.listeners[0]
 
     afterEach ->
-      @robot.server.close()
       @robot.shutdown()
 
     describe 'listener middleware context', ->

@@ -21,17 +21,17 @@ This roadmap represents some of priorities for us over the next couple months. I
 - [x] Choose a chat platform for maintainers and contributors, and post notices in various existing places (#hubot on freenode, github/hubot on Gitter). Slack is the obvious choice here. [Join us on Slack](https://hubot-slackin.herokuapp.com/).
 - [x] Add a code of conduct based on http://contributor-covenant.org/ and processes to enforce it in all official spaces. ([#1334](https://github.com/github/hubot/pull/1334))
 - [ ] Publish weekly community updates (blog, newsletter, etc) which highlight recent and upcoming changes, give shoutouts to contributors / maintainers, and maybe mention interesting uses of Hubot
-- [ ] Create Hubot Evolution—inspired by [Swift Evolution](https://github.com/apple/swift-evolution)—for proposing user-visible enhancements. This roadmap will be moved there and all future proposals will follow the process laid out in that repository. ([hubotio/evolution#1](https://github.com/hubotio/evolution/pull/1))
+- [x] Create Hubot Evolution—inspired by [Swift Evolution](https://github.com/apple/swift-evolution)—for proposing user-visible enhancements. ([hubotio/evolution#1](https://github.com/hubotio/evolution/pull/1))
 
 ## 3. Modernize the project
 
-Each of these proposals will go through the “Hubot Evolution” process.
+Each of these proposals will go through the [Hubot Evolution](https://github.com/hubotio/evolution) process.
 
-- [ ] Translate from CoffeeScript to JavaScript and update to modern versions of Node.js and NPM (or Yarn)
-- [ ] Revisit new bot generator (yeoman has a ton of dependencies, some of which can be error prone on windows)
-- [ ] Support for running multiple adapters and archetypes (chat, deployment, CI, github, etc)
-- [ ] Merge with [@probot](https://github.com/probot) and build out first class GitHub integration.
-- [ ] Introduce "Commands”, an explicit interface for registering commands (like Slack’s slash commands) as an alternative to regular expressions
-- [ ] Publish a ChatOps RPC spec and implement support for Hubot acting as both a client and a server.
-- [ ] Support rich messages and interactions on platforms that support it
-- [ ] Publish a public script directory backed by NPM
+- Translate from CoffeeScript to JavaScript and update to modern versions of Node.js and NPM (or Yarn)
+- Revisit new bot generator (yeoman has a ton of dependencies, some of which can be error prone on windows)
+- Support for running multiple adapters and archetypes (chat, deployment, CI, github, etc)
+- Merge with [@probot](https://github.com/probot) and build out first class GitHub integration.
+- Introduce "Commands”, an explicit interface for registering commands (like Slack’s slash commands) as an alternative to regular expressions
+- Publish a ChatOps RPC spec and implement support for Hubot acting as both a client and a server.
+- Support rich messages and interactions on platforms that support it
+- Publish a public script directory backed by NPM

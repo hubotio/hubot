@@ -410,11 +410,13 @@ class Robot
   #
   # Returns nothing.
   setupExpress: ->
-    user    = process.env.EXPRESS_USER
-    pass    = process.env.EXPRESS_PASSWORD
-    stat    = process.env.EXPRESS_STATIC
-    port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
-    address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
+    user       = process.env.EXPRESS_USER
+    pass       = process.env.EXPRESS_PASSWORD
+    stat       = process.env.EXPRESS_STATIC
+    port       = process.env.EXPRESS_PORT or process.env.PORT or 8080
+    address    = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
+    limit      = process.env.EXPRESS_LIMIT or '100kb'
+    paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) or 1000
 
     express = require 'express'
     multipart = require 'connect-multiparty'
@@ -429,7 +431,7 @@ class Robot
     app.use express.query()
 
     app.use express.json()
-    app.use express.urlencoded()
+    app.use express.urlencoded(limit: limit, parameterLimit: paramLimit)
     # replacement for deprecated express.multipart/connect.multipart
     # limit to 100mb, as per the old behavior
     app.use multipart(maxFilesSize: 100 * 1024 * 1024)
@@ -596,6 +598,7 @@ class Robot
     clearInterval @pingIntervalId if @pingIntervalId?
     process.removeListener 'uncaughtException', @onUncaughtException
     @adapter.close()
+    @server.close() if @server
     @brain.close()
 
   # Public: The version of Hubot from npm

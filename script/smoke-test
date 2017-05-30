@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
 
-set -ex
-
-coffee src/**/*.coffee
+npm run test:smoke
