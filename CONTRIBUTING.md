@@ -40,7 +40,7 @@ Syntax:
   * `a = b` and not `a=b`.
   * Follow the conventions you see used in the source already.
 
-# Stale Issue & Pull Request Policy
+# Stale issue and pull request policy
 
 Issues and pull requests have a shelf life and sometimes they are no longer relevant. All issues and pull requests that have not had any activity for 90 days will be marked as `stale`. Simply leave a comment with information about why it may still be relevant to keep it open. If no activity occurs in the next 7 days, it will be automatically closed.
 
