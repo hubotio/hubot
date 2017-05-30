@@ -40,6 +40,12 @@ Syntax:
   * `a = b` and not `a=b`.
   * Follow the conventions you see used in the source already.
 
+# Stale Issue & Pull Request Policy
+
+Issues and pull requests have a shelf life and sometimes they are no longer relevant. All issues and pull requests that have not had any activity for 90 days will be marked as `stale`. Simply leave a comment with information about why it may still be relevant to keep it open. If no activity occurs in the next 7 days, it will be automatically closed.
+
+The goal of this process is to keep the list of open issues and pull requests focused on work that is actionable and important for the maintainers and the community.
+
 # Releasing
 
 This section is for maintainers of hubot. Here's the current process for releasing:
