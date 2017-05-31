@@ -29,6 +29,12 @@ class Middleware
     new Promise (resolve, reject) =>
 
       done ?= ->
+        
+      # Allow each middleware to resolve the promise early if it calls done()
+      pieceDone = ->
+        done()
+        resolve context
+        
       # Execute a single piece of middleware and update the completion callback
       # (each piece of middleware can wrap the 'done' callback with additional
       # logic).
@@ -53,7 +59,7 @@ class Middleware
       # Execute each piece of middleware, collecting the latest 'done' callback
       # at each step.
       process.nextTick =>
-        async.reduce(@stack, done, executeSingleMiddleware, allDone)
+        async.reduce(@stack, pieceDone, executeSingleMiddleware, allDone)
 
   # Public: Registers new middleware
   #
