@@ -873,7 +873,7 @@ You may also want to install:
    other asynchronous actions)
 
 Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/github/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
+[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
 ```coffeescript
