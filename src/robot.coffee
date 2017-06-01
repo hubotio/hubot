@@ -430,6 +430,9 @@ class Robot
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
 
+    ## set the view engine to ejs
+    app.set('view engine', 'ejs')
+
     app.use express.json()
     app.use express.urlencoded(limit: limit, parameterLimit: paramLimit)
     # replacement for deprecated express.multipart/connect.multipart
