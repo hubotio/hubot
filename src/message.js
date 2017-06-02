@@ -29,7 +29,6 @@ class TextMessage extends Message {
   // id   - A String of the message ID.
   constructor (user, text, id) {
     super(user)
-    this.user = user
     this.text = text
     this.id = id
   }
