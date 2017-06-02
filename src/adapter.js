@@ -1,5 +1,7 @@
 'use strict'
 
+const inherits = require('util').inherits
+
 var _require = require('events')
 
 const EventEmitter = _require.EventEmitter
@@ -130,4 +132,10 @@ class Adapter extends EventEmitter {
   }
 }
 
-module.exports = Adapter
+function AdapterCompatibleWithCoffeeScript () {
+  const Hack = Function.prototype.bind.apply(Adapter, [ null ].concat([].slice.call(arguments)))
+  return new Hack()
+}
+inherits(AdapterCompatibleWithCoffeeScript, Adapter)
+
+module.exports = AdapterCompatibleWithCoffeeScript
