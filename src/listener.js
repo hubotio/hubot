@@ -121,16 +121,14 @@ class TextListener extends Listener {
   //            (optional).
   // callback - A Function that is triggered if the incoming message matches.
   constructor (robot, regex, options, callback) {
-    super(robot, regex, options, callback)
-    this.robot = robot
-    this.regex = regex
-    this.options = options
-    this.callback = callback
-    this.matcher = message => {
+    function matcher (message) {
       if (message instanceof TextMessage) {
-        return message.match(this.regex)
+        return message.match(regex)
       }
     }
+
+    super(robot, matcher, options, callback)
+    this.regex = regex
   }
 }
 
