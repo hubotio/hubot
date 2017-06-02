@@ -250,8 +250,9 @@ class Robot {
       options = {}
     }
 
-    return this.listen(msg => msg instanceof CatchAllMessage, options, function (msg) {
-      msg.message = msg.message.message; return callback(msg)
+    this.listen(isCatchAllMessage, options, function listenCallback (msg) {
+      msg.message = msg.message.message
+      callback(msg)
     })
   }
 
@@ -332,6 +333,7 @@ class Robot {
     // Try executing all registered Listeners in order of registration
     // and return after message is done being processed
     let anyListenersExecuted = false
+
     async.detectSeries(this.listeners, (listener, cb) => {
       try {
         return listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
@@ -351,6 +353,7 @@ class Robot {
     // Ignore the result ( == the listener that set message.done = true)
     _ => {
       // If no registered Listener matched the message
+
       if (!(context.response.message instanceof CatchAllMessage) && !anyListenersExecuted) {
         this.logger.debug('No listeners executed; falling back to catch-all')
         return this.receive(new CatchAllMessage(context.response.message), done)
@@ -852,3 +855,7 @@ class Robot {
 }
 
 module.exports = Robot
+
+function isCatchAllMessage (message) {
+  return message instanceof CatchAllMessage
+}
