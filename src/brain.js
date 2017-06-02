@@ -9,7 +9,7 @@ class Brain extends EventEmitter {
   //
   // Returns a new Brain with no external storage.
   constructor (robot) {
-    super(robot)
+    super()
     this.data = {
       users: {},
       _private: {}
