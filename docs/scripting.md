@@ -671,6 +671,20 @@ module.exports = (robot) ->
     # code to stop annoying someone
 ```
 
+You can scope all listeners in a file with the `listenerOptions` function:
+
+```coffeescript
+module.exports = (robot) ->
+  robot.listenerOptions annoying: true
+  robot.respond /annoy me/, (msg) ->
+    # code to annoy someone. This listener will have annoying: true as its
+    # metadata.
+
+  robot.respond /unannoy me/, annoying: false, (msg) ->
+    # Code to stop annoying someone. This lisenter will have annoying: false
+    # as its metadata
+```
+
 These scoped identifiers allow you to externally specify new behaviors like:
 - authorization policy: "allow everyone in the `annoyers` group to execute `annoyance.*` commands"
 - rate limiting: "only allow executing `annoyance.start` once every 30 minutes"

@@ -340,6 +340,31 @@ describe 'Robot', ->
           @robot.loadFile('./scripts', 'test-script.coffee')
           expect(@robot.parseHelp).to.have.been.calledWith('scripts/test-script.coffee')
 
+      describe 'scoped metadata', ->
+        it 'applies file-scoped metadata to listeners defined with defaultOptions', ->
+          module = require 'module'
+          @script = sinon.spy (robot) ->
+            robot.listenerOptions fooEnabled: true
+            robot.respond /foo/, barEnabled: true, (response) ->
+              response.send "foo"
+            robot.respond /bar/, fooEnabled: false, (response) ->
+              response.send "bar"
+
+          @scriptWithoutDefaults = sinon.spy (robot) ->
+            robot.respond /baz/, (response) ->
+              response.send "foo"
+
+          stub = @sandbox.stub(module, '_load').onCall(0).returns(@script)
+          stub.onCall(0).returns(@script)
+          stub.onCall(1).returns(@scriptWithoutDefaults)
+          @sandbox.stub @robot, 'parseHelp'
+
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          @robot.loadFile('./scripts', 'test-script-2.coffee')
+          expect(@robot.listeners[0].options).to.deep.equal { fooEnabled: true, barEnabled: true, id: null }
+          expect(@robot.listeners[1].options).to.deep.equal { fooEnabled: false, id: null }
+          expect(@robot.listeners[2].options).to.deep.equal { id: null }
+
       describe 'non-Function script', ->
         beforeEach ->
           module = require 'module'
@@ -365,7 +390,7 @@ describe 'Robot', ->
 
         expect(testListener.matcher).to.equal(matcher)
         expect(testListener.callback).to.equal(callback)
-        expect(testListener.options).to.equal(options)
+        expect(testListener.options).to.deep.equal(options)
 
     describe '#hear', ->
       it 'matches TextMessages', ->

@@ -27,6 +27,14 @@ class Listener
     if not @options.id?
       @options.id = null
 
+    if @robot.defaultOptions?
+      newOptions = {}
+      for key, val of @robot.defaultOptions
+        newOptions[key] = val
+      for key, val of @options
+        newOptions[key] = val
+      @options = newOptions
+
     if not @callback? or typeof @callback != 'function'
       throw new Error "Missing a callback for Listener"
 

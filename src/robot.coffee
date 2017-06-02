@@ -340,6 +340,12 @@ class Robot
     )
     return undefined
 
+  # Public: Adds default metadata for all remaining listeners defined in a
+  # given file.
+  #
+  # Returns nothing.
+  listenerOptions: (metadata) ->
+    @defaultOptions = metadata
 
   # Public: Loads a file in path.
   #
@@ -356,6 +362,7 @@ class Robot
 
         if typeof script is 'function'
           script @
+          @listenerOptions(undefined)
           @parseHelp Path.join(path, file)
         else
           @logger.warning "Expected #{full} to assign a function to module.exports, got #{typeof script}"
