@@ -150,6 +150,47 @@ class Robot
 
     newRegex
 
+  # Public: Updates the robot name and its listeners accordingly.
+  #
+  # newName - A String of the new robot name.
+  #
+  # Returns nothing.
+  changeName: (newName) ->
+    # Escapes names:
+    alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+    oldNameRegex = @name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+    newNameRegex = newName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+
+    # Updates the name.
+    @name = newName
+
+    # Updates listeners:
+    listeners = []
+    for listener in @listeners
+      if listener instanceof TextListener
+        # Extracts regex and modifiers:
+        re = listener.regex.toString().split('/')
+        re.shift()
+        modifiers = re.pop()
+        oldRegex = re.join('/')
+
+        if @alias
+        # Listener's regex also contains an alias.
+          [a,b] = if oldNameRegex.length > alias.length then [oldNameRegex,alias] else [alias,oldNameRegex]
+          oldStartRegex = "^\\s*[@]?(?:#{a}[:,]?|#{b}[:,]?)\\s*(?:"
+          [c,d] = if newNameRegex.length > alias.length then [newNameRegex,alias] else [alias,newNameRegex]
+          newStartRegex = "^\\s*[@]?(?:#{c}[:,]?|#{d}[:,]?)\\s*(?:"
+          regex = oldRegex.replace(oldStartRegex, newStartRegex)
+        else
+          oldStartRegex = "^\\s*[@]?#{oldNameRegex}[:,]?\\s*(?:"
+          newStartRegex = "^\\s*[@]?#{newNameRegex}[:,]?\\s*(?:"
+          regex = oldRegex.replace(oldNameRegex, newNameRegex)
+        re = new RegExp(regex, modifiers)
+        listeners.push new TextListener(@, re, listener.options, listener.callback)
+      else
+        listeners.push listener
+    @listeners = listeners
+
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
   # options  - An Object of additional parameters keyed on extension name
