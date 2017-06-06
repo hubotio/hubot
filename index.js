@@ -1,29 +1,26 @@
 'use strict'
 
-const User = require('./src/user')
-const Brain = require('./src/brain')
-const Robot = require('./src/robot')
-const Adapter = require('./src/adapter')
-const Response = require('./src/response')
-const Listener = require('./src/listener')
-const Message = require('./src/message')
+const inherits = require('util').inherits
 
-module.exports = {
-  User,
-  Brain,
-  Robot,
-  Adapter,
-  Response,
-  Listener: Listener.Listener,
-  TextListener: Listener.TextListener,
-  Message: Message.Message,
-  TextMessage: Message.TextMessage,
-  EnterMessage: Message.EnterMessage,
-  LeaveMessage: Message.LeaveMessage,
-  TopicMessage: Message.TopicMessage,
-  CatchAllMessage: Message.CatchAllMessage,
+const hubotExport = require('./es2015')
 
-  loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
-    return new Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+// make all es2015 class declarations compatible with CoffeeScript’s extend
+// see https://github.com/hubotio/evolution/pull/4#issuecomment-306437501
+module.exports = Object.keys(hubotExport).reduce((map, current) => {
+  if (current !== 'loadBot') {
+    map[current] = makeClassCoffeeScriptCompatible(hubotExport[current])
+  } else {
+    map[current] = hubotExport[current]
   }
+  return map
+}, {})
+
+function makeClassCoffeeScriptCompatible (klass) {
+  function CoffeeScriptCompatibleClass () {
+    const Hack = Function.prototype.bind.apply(klass, [ null ].concat([].slice.call(arguments)))
+    return new Hack()
+  }
+  inherits(CoffeeScriptCompatibleClass, klass)
+
+  return CoffeeScriptCompatibleClass
 }
