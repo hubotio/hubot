@@ -6,10 +6,7 @@ class Message {
   // user - A User instance that sent the message.
   constructor (user, done) {
     this.user = user
-    if (done == null) {
-      done = false
-    }
-    this.done = done
+    this.done = done || false
     this.room = this.user.room
   }
 

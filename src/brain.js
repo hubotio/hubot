@@ -18,7 +18,7 @@ class Brain extends EventEmitter {
     this.autoSave = true
 
     robot.on('running', () => {
-      return this.resetSaveInterval(5)
+      this.resetSaveInterval(5)
     })
   }
 
@@ -35,8 +35,12 @@ class Brain extends EventEmitter {
       pair[key] = value
     }
 
-    extend(this.data._private, pair)
+    Object.keys(pair).forEach((key) => {
+      this.data._private[key] = pair[key]
+    })
+
     this.emit('loaded', this.data)
+
     return this
   }
 
@@ -56,6 +60,7 @@ class Brain extends EventEmitter {
     if (this.data._private[key] != null) {
       delete this.data._private[key]
     }
+
     return this
   }
 
@@ -64,7 +69,7 @@ class Brain extends EventEmitter {
   //
   // Returns nothing.
   save () {
-    return this.emit('save', this.data)
+    this.emit('save', this.data)
   }
 
   // Public: Emits the 'close' event so that 'brain' scripts can handle closing.
@@ -73,7 +78,7 @@ class Brain extends EventEmitter {
   close () {
     clearInterval(this.saveInterval)
     this.save()
-    return this.emit('close')
+    this.emit('close')
   }
 
   // Public: Enable or disable the automatic saving
@@ -96,7 +101,7 @@ class Brain extends EventEmitter {
     }
     this.saveInterval = setInterval(() => {
       if (this.autoSave) {
-        return this.save()
+        this.save()
       }
     }, seconds * 1000)
   }
@@ -126,6 +131,7 @@ class Brain extends EventEmitter {
   // Returns a User instance of the specified user.
   userForId (id, options) {
     let user = this.data.users[id]
+
     if (!user) {
       user = new User(id, options)
       this.data.users[id] = user
@@ -145,12 +151,14 @@ class Brain extends EventEmitter {
   userForName (name) {
     let result = null
     const lowerName = name.toLowerCase()
+
     for (let k in this.data.users || {}) {
       const userName = this.data.users[k]['name']
       if (userName != null && userName.toString().toLowerCase() === lowerName) {
         result = this.data.users[k]
       }
     }
+
     return result
   }
 
@@ -161,17 +169,16 @@ class Brain extends EventEmitter {
   // Returns an Array of User instances matching the fuzzy name.
   usersForRawFuzzyName (fuzzyName) {
     const lowerFuzzyName = fuzzyName.toLowerCase()
-    return (() => {
-      const result = []
-      const object = this.data.users || {}
-      for (let key in object) {
-        const user = object[key]
-        if (user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) === 0) {
-          result.push(user)
-        }
+
+    const users = this.data.users || {}
+
+    return Object.keys(users).reduce((result, key) => {
+      const user = users[key]
+      if (user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) === 0) {
+        result.push(user)
       }
       return result
-    })()
+    }, [])
   }
 
   // Public: If fuzzyName is an exact match for a user, returns an array with
@@ -182,89 +189,10 @@ class Brain extends EventEmitter {
   usersForFuzzyName (fuzzyName) {
     const matchedUsers = this.usersForRawFuzzyName(fuzzyName)
     const lowerFuzzyName = fuzzyName.toLowerCase()
-    var _iteratorNormalCompletion = true
-    var _didIteratorError = false
-    var _iteratorError
+    const fuzzyMatchedUsers = matchedUsers.filter(user => user.name.toLowerCase() === lowerFuzzyName)
 
-    try {
-      for (var _iterator = Array.from(matchedUsers)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        let user = _step.value
-
-        if (user.name.toLowerCase() === lowerFuzzyName) {
-          return [user]
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true
-      _iteratorError = err
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return()
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError
-        }
-      }
-    }
-
-    return matchedUsers
+    return fuzzyMatchedUsers.length > 0 ? fuzzyMatchedUsers : matchedUsers
   }
-}
-
-// Private: Extend obj with objects passed as additional args.
-//
-// Returns the original object with updated changes.
-var extend = function extend (obj/* , ...sources */) {
-  const sources = [].slice.call(arguments, 1)
-  var _iteratorNormalCompletion2 = true
-  var _didIteratorError2 = false
-  var _iteratorError2
-
-  try {
-    for (var _iterator2 = Array.from(sources)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      let source = _step2.value
-      var _iteratorNormalCompletion3 = true
-      var _didIteratorError3 = false
-      var _iteratorError3
-
-      try {
-        for (var _iterator3 = Object.keys(source || {})[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          let key = _step3.value
-          const value = source[key]; obj[key] = value
-        }
-      } catch (err) {
-        _didIteratorError3 = true
-        _iteratorError3 = err
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return()
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3
-          }
-        }
-      }
-    }
-  } catch (err) {
-    _didIteratorError2 = true
-    _iteratorError2 = err
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return()
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2
-      }
-    }
-  }
-
-  return obj
 }
 
 module.exports = Brain

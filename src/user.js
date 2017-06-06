@@ -7,14 +7,17 @@ class User {
   // options - An optional Hash of key, value pairs for this user.
   constructor (id, options) {
     this.id = id
+
     if (options == null) {
       options = {}
     }
-    for (let k in options || {}) {
-      this[k] = options[k]
-    }
-    if (!this['name']) {
-      this['name'] = this.id.toString()
+
+    Object.keys(options).forEach((key) => {
+      this[key] = options[key]
+    })
+
+    if (!this.name) {
+      this.name = this.id.toString()
     }
   }
 }

@@ -3,11 +3,6 @@
 const async = require('async')
 
 class Middleware {
-  static initClass () {
-    // We use this recursively, and using nextTick recursively is deprecated in node 0.10.
-    this.ticker = typeof setImmediate === 'function' ? setImmediate : process.nextTick
-  }
-
   constructor (robot) {
     this.robot = robot
     this.stack = []
@@ -30,34 +25,40 @@ class Middleware {
   // Returns nothing
   // Returns before executing any middleware
   execute (context, next, done) {
+    const self = this
+
     if (done == null) {
-      done = function done () {}
+      done = function () {}
     }
+
     // Execute a single piece of middleware and update the completion callback
     // (each piece of middleware can wrap the 'done' callback with additional
     // logic).
-    const executeSingleMiddleware = (doneFunc, middlewareFunc, cb) => {
+    function executeSingleMiddleware (doneFunc, middlewareFunc, cb) {
       // Match the async.reduce interface
-      const nextFunc = newDoneFunc => cb(null, newDoneFunc || doneFunc)
+      function nextFunc (newDoneFunc) {
+        cb(null, newDoneFunc || doneFunc)
+      }
+
       // Catch errors in synchronous middleware
       try {
-        return middlewareFunc(context, nextFunc, doneFunc)
+        middlewareFunc(context, nextFunc, doneFunc)
       } catch (err) {
         // Maintaining the existing error interface (Response object)
-        this.robot.emit('error', err, context.response)
+        self.robot.emit('error', err, context.response)
         // Forcibly fail the middleware and stop executing deeper
-        return doneFunc()
+        doneFunc()
       }
     }
 
     // Executed when the middleware stack is finished
-    const allDone = (_, finalDoneFunc) => next(context, finalDoneFunc)
+    function allDone (_, finalDoneFunc) {
+      next(context, finalDoneFunc)
+    }
 
     // Execute each piece of middleware, collecting the latest 'done' callback
     // at each step.
-    return process.nextTick(() => {
-      return async.reduce(this.stack, done, executeSingleMiddleware, allDone)
-    })
+    process.nextTick(async.reduce.bind(null, this.stack, done, executeSingleMiddleware, allDone))
   }
 
   // Public: Registers new middleware
@@ -79,9 +80,7 @@ class Middleware {
       throw new Error(`Incorrect number of arguments for middleware callback (expected 3, got ${middleware.length})`)
     }
     this.stack.push(middleware)
-    return undefined
   }
 }
-Middleware.initClass()
 
 module.exports = Middleware

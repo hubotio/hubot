@@ -1,83 +1,85 @@
 'use strict'
 
 const HTTPS = require('https')
+const EventEmitter = require('events').EventEmitter
 
-var _require = require('events')
-
-const EventEmitter = _require.EventEmitter
-
-const Robot = require('../robot')
 const Adapter = require('../adapter')
 
-var _require2 = require('../message')
+const Message = require('../message')
 
-const TextMessage = _require2.TextMessage,
-  EnterMessage = _require2.EnterMessage,
-  LeaveMessage = _require2.LeaveMessage,
-  TopicMessage = _require2.TopicMessage
+const TextMessage = Message.TextMessage
+const EnterMessage = Message.EnterMessage
+const LeaveMessage = Message.LeaveMessage
+const TopicMessage = Message.TopicMessage
 
 class Campfire extends Adapter {
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    if (strings.length > 0) {
-      const string = strings.shift()
-      if (typeof string === 'function') {
-        string()
-        return this.send.apply(this, [envelope].concat(strings))
-      } else {
-        return this.bot.Room(envelope.room).speak(string, (err, data) => {
-          if (err != null) {
-            this.robot.logger.error(`Campfire send error: ${err}`)
-          }
-          return this.send.apply(this, [envelope].concat(strings))
-        })
-      }
+
+    if (strings.length === 0) {
+      return
     }
+
+    const string = strings.shift()
+    if (typeof string === 'function') {
+      string()
+      this.send.apply(this, [envelope].concat(strings))
+      return
+    }
+
+    this.bot.Room(envelope.room).speak(string, (error, data) => {
+      if (error != null) {
+        this.robot.logger.error(`Campfire send error: ${error}`)
+      }
+      this.send.apply(this, [envelope].concat(strings))
+    })
   }
 
   emote (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return this.send.apply(this, [envelope].concat(strings.map(str => `*${str}*`)))
+    this.send.apply(this, [envelope].concat(strings.map(str => `*${str}*`)))
   }
 
   reply (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return this.send.apply(this, [envelope].concat(strings.map(str => `${envelope.user.name}: ${str}`)))
+    this.send.apply(this, [envelope].concat(strings.map(str => `${envelope.user.name}: ${str}`)))
   }
 
   topic (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return this.bot.Room(envelope.room).topic(strings.join(' / '), (err, data) => {
+    this.bot.Room(envelope.room).topic(strings.join(' / '), (err, data) => {
       if (err != null) {
-        return this.robot.logger.error(`Campfire topic error: ${err}`)
+        this.robot.logger.error(`Campfire topic error: ${err}`)
       }
     })
   }
 
   play (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return this.bot.Room(envelope.room).sound(strings.shift(), (err, data) => {
+    this.bot.Room(envelope.room).sound(strings.shift(), (err, data) => {
       if (err != null) {
         this.robot.logger.error(`Campfire sound error: ${err}`)
       }
-      return this.play.apply(this, [envelope].concat(strings))
+      this.play.apply(this, [envelope].concat(strings))
     })
   }
 
   locked (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
+
     if (envelope.message.private) {
-      return this.send.apply(this, [envelope].concat(strings))
-    } else {
-      return this.bot.Room(envelope.room).lock(() => {
-        strings.push(() => {
-          // campfire won't send messages from just before a room unlock. 3000
-          // is the 3-second poll.
-          return setTimeout(() => this.bot.Room(envelope.room).unlock(), 3000)
-        })
-        return this.send.apply(this, [envelope].concat(strings))
-      })
+      this.send.apply(this, [envelope].concat(strings))
     }
+
+    this.bot.Room(envelope.room).lock(() => {
+      strings.push(() => {
+        // campfire won't send messages from just before a room unlock. 3000
+        // is the 3-second poll.
+        setTimeout(() => this.bot.Room(envelope.room).unlock(), 3000)
+      })
+
+      this.send.apply(this, [envelope].concat(strings))
+    })
   }
 
   run () {
@@ -91,59 +93,67 @@ class Campfire extends Adapter {
 
     const bot = new CampfireStreaming(options, this.robot)
 
-    const withAuthor = callback => (id, created, room, user, body) => bot.User(user, function (err, userData) {
-      if (userData.user) {
-        const author = self.robot.brain.userForId(userData.user.id, userData.user)
-        const userId = userData.user.id
-        self.robot.brain.data.users[userId].name = userData.user.name
-        self.robot.brain.data.users[userId].email_address = userData.user.email_address
-        author.room = room
-        return callback(id, created, room, user, body, author)
+    function withAuthor (callback) {
+      return function (id, created, room, user, body) {
+        bot.User(user, function (_err, userData) {
+          if (userData.user) {
+            const author = self.robot.brain.userForId(userData.user.id, userData.user)
+            const userId = userData.user.id
+            self.robot.brain.data.users[userId].name = userData.user.name
+            self.robot.brain.data.users[userId].email_address = userData.user.email_address
+            author.room = room
+            return callback(id, created, room, user, body, author)
+          }
+        })
       }
-    })
+    }
 
     bot.on('TextMessage', withAuthor(function (id, created, room, user, body, author) {
       if (bot.info.id !== author.id) {
         const message = new TextMessage(author, body, id)
         message.private = bot.private[room]
-        return self.receive(message)
+        self.receive(message)
       }
     }))
 
     bot.on('EnterMessage', withAuthor(function (id, created, room, user, body, author) {
       if (bot.info.id !== author.id) {
-        return self.receive(new EnterMessage(author, null, id))
+        self.receive(new EnterMessage(author, null, id))
       }
     }))
 
     bot.on('LeaveMessage', withAuthor(function (id, created, room, user, body, author) {
       if (bot.info.id !== author.id) {
-        return self.receive(new LeaveMessage(author, null, id))
+        self.receive(new LeaveMessage(author, null, id))
       }
     }))
 
     bot.on('TopicChangeMessage', withAuthor(function (id, created, room, user, body, author) {
       if (bot.info.id !== author.id) {
-        return self.receive(new TopicMessage(author, body, id))
+        self.receive(new TopicMessage(author, body, id))
       }
     }))
 
-    bot.on('LockMessage', withAuthor((id, created, room, user, body, author) => bot.private[room] = true))
+    bot.on('LockMessage', withAuthor((id, created, room, user, body, author) => {
+      bot.private[room] = true
+    }))
 
-    bot.on('UnlockMessage', withAuthor((id, created, room, user, body, author) => bot.private[room] = false))
+    bot.on('UnlockMessage', withAuthor((id, created, room, user, body, author) => {
+      bot.private[room] = false
+    }))
 
-    bot.Me(function (err, data) {
+    bot.Me(function (_err, data) {
       bot.info = data.user
       bot.name = bot.info.name
 
-      return Array.from(bot.rooms).map(roomId => (roomId => bot.Room(roomId).join((err, callback) => bot.Room(roomId).listen()))(roomId))
+      return Array.from(bot.rooms).map(roomId => (roomId => bot.Room(roomId).join((_err, callback) => bot.Room(roomId).listen()))(roomId))
     })
 
-    bot.on('reconnect', roomId => bot.Room(roomId).join((err, callback) => bot.Room(roomId).listen()))
+    bot.on('reconnect', roomId => bot.Room(roomId).join((_err, callback) => bot.Room(roomId).listen()))
 
     this.bot = bot
 
-    return self.emit('connected')
+    self.emit('connected')
   }
 }
 
@@ -151,17 +161,8 @@ exports.use = robot => new Campfire(robot)
 
 class CampfireStreaming extends EventEmitter {
   constructor (options, robot) {
-    {
-      // Hack: trick babel into allowing this before super.
-      if (false) {
-        super()
-      }
-      let thisFn = (() => {
-        this
-      }).toString()
-      let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim()
-      eval(`${thisName} = this;`)
-    }
+    super()
+
     this.robot = robot
     if (options.token == null || options.rooms == null || options.account == null) {
       this.robot.logger.error('Not enough parameters provided. I need a token, rooms and account')
@@ -282,13 +283,13 @@ class CampfireStreaming extends EventEmitter {
                     try {
                       const data = JSON.parse(part)
                       item = self.emit(data.type, data.id, data.created_at, data.room_id, data.user_id, data.body)
-                    } catch (error1) {
-                      const error = error1
+                    } catch (error) {
                       item = logger.error(`Campfire data error: ${error}\n${error.stack}`)
                     }
                   }
                   result.push(item)
                 }
+
                 return result
               })()
             }
@@ -352,14 +353,15 @@ class CampfireStreaming extends EventEmitter {
     const request = HTTPS.request(options, function (response) {
       let data = ''
 
-      response.on('data', chunk => data += chunk)
+      response.on('data', chunk => {
+        data += chunk
+      })
 
       response.on('end', function () {
         if (response.statusCode >= 400) {
           switch (response.statusCode) {
             case 401:
               throw new Error('Invalid access token provided')
-              break
             default:
               logger.error(`Campfire HTTPS status code: ${response.statusCode}`)
               logger.error(`Campfire HTTPS response data: ${data}`)
@@ -369,8 +371,7 @@ class CampfireStreaming extends EventEmitter {
         if (callback) {
           try {
             return callback(null, JSON.parse(data))
-          } catch (error1) {
-            const error = error1
+          } catch (_err) {
             return callback(null, data || {})
           }
         }

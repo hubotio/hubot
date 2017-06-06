@@ -27,7 +27,7 @@ class Response {
   // Returns nothing.
   send (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    return this.runWithMiddleware.apply(this, ['send', { plaintext: true }].concat(strings))
+    this.runWithMiddleware.apply(this, ['send', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts an emote back to the chat source
@@ -38,7 +38,7 @@ class Response {
   // Returns nothing.
   emote (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    return this.runWithMiddleware.apply(this, ['emote', { plaintext: true }].concat(strings))
+    this.runWithMiddleware.apply(this, ['emote', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts a message mentioning the current user.
@@ -49,7 +49,7 @@ class Response {
   // Returns nothing.
   reply (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    return this.runWithMiddleware.apply(this, ['reply', { plaintext: true }].concat(strings))
+    this.runWithMiddleware.apply(this, ['reply', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts a topic changing message
@@ -60,7 +60,7 @@ class Response {
   // Returns nothing.
   topic (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    return this.runWithMiddleware.apply(this, ['topic', { plaintext: true }].concat(strings))
+    this.runWithMiddleware.apply(this, ['topic', { plaintext: true }].concat(strings))
   }
 
   // Public: Play a sound in the chat source
@@ -71,7 +71,7 @@ class Response {
   // Returns nothing
   play (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    return this.runWithMiddleware.apply(this, ['play'].concat(strings))
+    this.runWithMiddleware.apply(this, ['play'].concat(strings))
   }
 
   // Public: Posts a message in an unlogged room
@@ -82,31 +82,41 @@ class Response {
   // Returns nothing
   locked (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    return this.runWithMiddleware.apply(this, ['locked', { plaintext: true }].concat(strings))
+    this.runWithMiddleware.apply(this, ['locked', { plaintext: true }].concat(strings))
   }
 
   // Private: Call with a method for the given strings using response
   // middleware.
   runWithMiddleware (methodName, opts/* , ...strings */) {
+    const self = this
     const strings = [].slice.call(arguments, 2)
-    let callback
     const copy = strings.slice(0)
+    let callback
+
     if (typeof copy[copy.length - 1] === 'function') {
       callback = copy.pop()
     }
-    const context = { response: this, strings: copy, method: methodName }
+
+    const context = {
+      response: this,
+      strings: copy,
+      method: methodName
+    }
+
     if (opts.plaintext != null) {
       context.plaintext = true
     }
-    const responseMiddlewareDone = function responseMiddlewareDone () {}
-    const runAdapterSend = (_, done) => {
+
+    function responseMiddlewareDone () {}
+    function runAdapterSend (_, done) {
       const result = context.strings
       if (callback != null) {
         result.push(callback)
       }
-      this.robot.adapter[methodName].apply(this.robot.adapter, [this.envelope].concat(result))
-      return done()
+      self.robot.adapter[methodName].apply(self.robot.adapter, [self.envelope].concat(result))
+      done()
     }
+
     return this.robot.middleware.response.execute(context, runAdapterSend, responseMiddlewareDone)
   }
 
@@ -123,7 +133,7 @@ class Response {
   //
   // Returns nothing.
   finish () {
-    return this.message.finish()
+    this.message.finish()
   }
 
   // Public: Creates a scoped http client with chainable methods for

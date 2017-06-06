@@ -2,11 +2,10 @@
 
 const fs = require('fs')
 const readline = require('readline')
-const stream = require('stream')
+const Stream = require('stream')
 const cline = require('cline')
 const chalk = require('chalk')
 
-const Robot = require('../robot')
 const Adapter = require('../adapter')
 
 var _require = require('../message')
@@ -26,19 +25,19 @@ class Shell extends Adapter {
 
   emote (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return Array.from(strings).map(str => this.send(envelope, `* ${str}`))
+    Array.from(strings).map(str => this.send(envelope, `* ${str}`))
   }
 
   reply (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1).map((s) => `${envelope.user.name}: ${s}`)
 
-    return this.send.apply(this, [envelope].concat(strings))
+    this.send.apply(this, [envelope].concat(strings))
   }
 
   run () {
     this.buildCli()
 
-    return this.loadHistory(history => {
+    this.loadHistory(history => {
       this.cli.history(history)
       this.cli.interact(`${this.robot.name}> `)
       return this.emit('connected')
@@ -55,75 +54,53 @@ class Shell extends Adapter {
 
     this.cli.command('*', input => {
       let userId = process.env.HUBOT_SHELL_USER_ID || '1'
-      if (userId.match(/\A\d+\z/)) {
+      if (userId.match(/A\d+z/)) {
         userId = parseInt(userId)
       }
 
       const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
-      return this.receive(new TextMessage(user, input, 'messageId'))
+      this.receive(new TextMessage(user, input, 'messageId'))
     })
 
     this.cli.command('history', () => {
-      return Array.from(this.cli.history()).map(item => console.log(item))
+      Array.from(this.cli.history()).map(item => console.log(item))
     })
 
     this.cli.on('history', item => {
       if (item.length > 0 && item !== 'exit' && item !== 'history') {
-        return fs.appendFile(historyPath, `${item}\n`, err => {
-          if (err) {
-            return this.robot.emit('error', err)
+        fs.appendFile(historyPath, `${item}\n`, error => {
+          if (error) {
+            this.robot.emit('error', error)
           }
         })
       }
     })
 
-    return this.cli.on('close', () => {
-      let history = this.cli.history()
-      if (history.length > historySize) {
-        const startIndex = history.length - historySize
-        history = history.reverse().splice(startIndex, historySize)
+    this.cli.on('close', () => {
+      let fileOpts, history, i, item, len, outstream, startIndex
 
-        const fileOpts = { mode: 0o600 }
-        const outstream = fs.createWriteStream(historyPath, fileOpts)
-        // >= node 0.10
-        outstream.on('finish', () => {
-          return this.shutdown()
-        })
+      history = this.cli.history()
 
-        var _iteratorNormalCompletion = true
-        var _didIteratorError = false
-        var _iteratorError
-
-        try {
-          for (var _iterator = Array.from(history)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            let item = _step.value
-
-            outstream.write(`${item}\n`)
-          }
-
-          // < node 0.10
-        } catch (err) {
-          _didIteratorError = true
-          _iteratorError = err
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return()
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError
-            }
-          }
-        }
-
-        return outstream.end(() => {
-          return this.shutdown()
-        })
-      } else {
+      if (history.length <= historySize) {
         return this.shutdown()
       }
+
+      startIndex = history.length - historySize
+      history = history.reverse().splice(startIndex, historySize)
+      fileOpts = {
+        mode: 0x180
+      }
+
+      outstream = fs.createWriteStream(historyPath, fileOpts)
+      outstream.on('finish', this.shutdown.bind(this))
+
+      for (i = 0, len = history.length; i < len; i++) {
+        item = history[i]
+        outstream.write(item + '\n')
+      }
+
+      outstream.end(this.shutdown.bind(this))
     })
   }
 
@@ -132,24 +109,25 @@ class Shell extends Adapter {
   // callback - A Function that is called with the loaded history items (or an empty array if there is no history)
   loadHistory (callback) {
     return fs.exists(historyPath, function (exists) {
-      if (exists) {
-        const instream = fs.createReadStream(historyPath)
-        const outstream = new stream()
-        outstream.readable = true
-        outstream.writable = true
-
-        const items = []
-        const rl = readline.createInterface({ input: instream, output: outstream, terminal: false })
-        rl.on('line', function (line) {
-          line = line.trim()
-          if (line.length > 0) {
-            return items.push(line)
-          }
-        })
-        return rl.on('close', () => callback(items))
-      } else {
+      if (!exists) {
         return callback([])
       }
+
+      const instream = fs.createReadStream(historyPath)
+      const outstream = new Stream()
+      outstream.readable = true
+      outstream.writable = true
+
+      const items = []
+
+      readline.createInterface({ input: instream, output: outstream, terminal: false })
+        .on('line', function (line) {
+          line = line.trim()
+          if (line.length > 0) {
+            items.push(line)
+          }
+        })
+        .on('close', () => callback(items))
     })
   }
 }

@@ -1,13 +1,8 @@
 'use strict'
 
-var _require = require('util')
+const inspect = require('util').inspect
 
-const inspect = _require.inspect
-
-var _require2 = require('./message')
-
-const TextMessage = _require2.TextMessage
-
+const TextMessage = require('./message').TextMessage
 const Middleware = require('./middleware')
 
 class Listener {
@@ -27,6 +22,7 @@ class Listener {
     this.matcher = matcher
     this.options = options
     this.callback = callback
+
     if (this.matcher == null) {
       throw new Error('Missing a matcher for Listener')
     }
@@ -84,7 +80,7 @@ class Listener {
         } catch (err) {
           this.robot.emit('error', err, context.response)
         }
-        return done()
+        done()
       }
 
       // When everything is finished (down the middleware stack and back up),
@@ -93,7 +89,7 @@ class Listener {
         // Yes, we tried to execute the listener callback (middleware may
         // have intercepted before actually executing though)
         if (cb != null) {
-          return Middleware.ticker(() => cb(true))
+          process.nextTick(() => cb(true))
         }
       }
 

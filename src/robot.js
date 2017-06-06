@@ -1,38 +1,20 @@
 'use strict'
 
-var _slicedToArray = (function () { function sliceIterator (arr, i) { var _arr = []; var _n = true; var _d = false; var _e; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break } } catch (err) { _d = true; _e = err } finally { try { if (!_n && _i['return']) _i['return']() } finally { if (_d) throw _e } } return _arr } return function (arr, i) { if (Array.isArray(arr)) { return arr } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i) } else { throw new TypeError('Invalid attempt to destructure non-iterable instance') } } }())
-
-const Fs = require('fs')
-const Log = require('log')
-const Path = require('path')
-const HttpClient = require('scoped-http-client')
-
-var _require = require('events')
-
-const EventEmitter = _require.EventEmitter
+const EventEmitter = require('events').EventEmitter
+const fs = require('fs')
+const path = require('path')
 
 const async = require('async')
+const Log = require('log')
+const HttpClient = require('scoped-http-client')
 
-const User = require('./user')
 const Brain = require('./brain')
 const Response = require('./response')
-
-var _require2 = require('./listener')
-
-const Listener = _require2.Listener,
-  TextListener = _require2.TextListener
-
-var _require3 = require('./message')
-
-const EnterMessage = _require3.EnterMessage,
-  LeaveMessage = _require3.LeaveMessage,
-  TopicMessage = _require3.TopicMessage,
-  CatchAllMessage = _require3.CatchAllMessage
-
+const Listener = require('./listener')
+const Message = require('./message')
 const Middleware = require('./middleware')
 
 const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell']
-
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
 class Robot {
@@ -43,8 +25,6 @@ class Robot {
   // adapter     - A String of the adapter name.
   // httpd       - A Boolean whether to enable the HTTP daemon.
   // name        - A String of the robot name, defaults to Hubot.
-  //
-  // Returns nothing.
   constructor (adapterPath, adapter, httpd, name, alias) {
     if (name == null) {
       name = 'Hubot'
@@ -52,9 +32,7 @@ class Robot {
     if (alias == null) {
       alias = false
     }
-    if (this.adapterPath == null) {
-      this.adapterPath = Path.join(__dirname, 'adapters')
-    }
+    this.adapterPath = path.join(__dirname, 'adapters')
 
     this.name = name
     this.events = new EventEmitter()
@@ -107,7 +85,7 @@ class Robot {
   //
   // Returns nothing.
   listen (matcher, options, callback) {
-    return this.listeners.push(new Listener(this, matcher, options, callback))
+    this.listeners.push(new Listener.Listener(this, matcher, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages based on
@@ -120,7 +98,7 @@ class Robot {
   //
   // Returns nothing.
   hear (regex, options, callback) {
-    return this.listeners.push(new TextListener(this, regex, options, callback))
+    this.listeners.push(new Listener.TextListener(this, regex, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages directed
@@ -134,7 +112,7 @@ class Robot {
   //
   // Returns nothing.
   respond (regex, options, callback) {
-    return this.hear(this.respondPattern(regex), options, callback)
+    this.hear(this.respondPattern(regex), options, callback)
   }
 
   // Public: Build a regular expression that matches messages addressed
@@ -144,34 +122,31 @@ class Robot {
   //
   // Returns RegExp.
   respondPattern (regex) {
-    let newRegex
-    const re = regex.toString().split('/')
-    re.shift()
-    const modifiers = re.pop()
+    const regexWithoutModifiers = regex.toString().split('/')
+    regexWithoutModifiers.shift()
+    const modifiers = regexWithoutModifiers.pop()
+    const regexStartsWithAnchor = regexWithoutModifiers[0] && regexWithoutModifiers[0][0] === '^'
+    const pattern = regexWithoutModifiers.join('/')
+    const name = this.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 
-    if (re[0] && re[0][0] === '^') {
-      this.logger.warning("Anchors don't work well with respond, perhaps you want to use 'hear'")
+    if (regexStartsWithAnchor) {
+      this.logger.warning(`Anchors don’t work well with respond, perhaps you want to use 'hear'`)
       this.logger.warning(`The regex in question was ${regex.toString()}`)
     }
 
-    const pattern = re.join('/')
-    const name = this.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
-
-    if (this.alias) {
-      const alias = this.alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
-
-      var _Array$from = Array.from(name.length > alias.length ? [name, alias] : [alias, name]),
-        _Array$from2 = _slicedToArray(_Array$from, 2)
-
-      const a = _Array$from2[0],
-        b = _Array$from2[1]
-
-      newRegex = new RegExp(`^\\s*[@]?(?:${a}[:,]?|${b}[:,]?)\\s*(?:${pattern})`, modifiers)
-    } else {
-      newRegex = new RegExp(`^\\s*[@]?${name}[:,]?\\s*(?:${pattern})`, modifiers)
+    if (!this.alias) {
+      return new RegExp('^\\s*[@]?' + name + '[:,]?\\s*(?:' + pattern + ')', modifiers)
     }
 
-    return newRegex
+    const alias = this.alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+
+    // matches properly when alias is substring of name
+    if (name.length > alias.length) {
+      return new RegExp('^\\s*[@]?(?:' + name + '[:,]?|' + alias + '[:,]?)\\s*(?:' + pattern + ')', modifiers)
+    }
+
+    // matches properly when name is substring of alias
+    return new RegExp('^\\s*[@]?(?:' + alias + '[:,]?|' + name + '[:,]?)\\s*(?:' + pattern + ')', modifiers)
   }
 
   // Public: Adds a Listener that triggers when anyone enters the room.
@@ -182,7 +157,7 @@ class Robot {
   //
   // Returns nothing.
   enter (options, callback) {
-    return this.listen(msg => msg instanceof EnterMessage, options, callback)
+    this.listen(msg => msg instanceof Message.EnterMessage, options, callback)
   }
 
   // Public: Adds a Listener that triggers when anyone leaves the room.
@@ -193,7 +168,7 @@ class Robot {
   //
   // Returns nothing.
   leave (options, callback) {
-    return this.listen(msg => msg instanceof LeaveMessage, options, callback)
+    this.listen(msg => msg instanceof Message.LeaveMessage, options, callback)
   }
 
   // Public: Adds a Listener that triggers when anyone changes the topic.
@@ -204,7 +179,7 @@ class Robot {
   //
   // Returns nothing.
   topic (options, callback) {
-    return this.listen(msg => msg instanceof TopicMessage, options, callback)
+    this.listen(msg => msg instanceof Message.TopicMessage, options, callback)
   }
 
   // Public: Adds an error handler when an uncaught exception or user emitted
@@ -214,7 +189,7 @@ class Robot {
   //
   // Returns nothing.
   error (callback) {
-    return this.errorHandlers.push(callback)
+    this.errorHandlers.push(callback)
   }
 
   // Calls and passes any registered error handlers for unhandled exceptions or
@@ -224,15 +199,16 @@ class Robot {
   // res - An optional Response object that generated the error
   //
   // Returns nothing.
-  invokeErrorHandlers (err, res) {
-    this.logger.error(err.stack)
-    return Array.from(this.errorHandlers).map(errorHandler => (() => {
+  invokeErrorHandlers (error, res) {
+    this.logger.error(error.stack)
+
+    this.errorHandlers.map((errorHandler) => {
       try {
-        return errorHandler(err, res)
-      } catch (errErr) {
-        return this.logger.error(`while invoking error handler: ${errErr}\n${errErr.stack}`)
+        errorHandler(error, res)
+      } catch (errorHandlerError) {
+        this.logger.error(`while invoking error handler: ${errorHandlerError}\n${errorHandlerError.stack}`)
       }
-    })())
+    })
   }
 
   // Public: Adds a Listener that triggers when no other text matchers match.
@@ -270,7 +246,6 @@ class Robot {
   // Returns nothing.
   listenerMiddleware (middleware) {
     this.middleware.listener.register(middleware)
-    return undefined
   }
 
   // Public: Registers new middleware for execution as a response to any
@@ -279,14 +254,13 @@ class Robot {
   // middleware - A function that examines an outgoing message and can modify
   //              it or prevent its sending. The function is called with
   //              (context, next, done). If execution should continue,
-  //              the middleware should call next(done). If execution should stop,
-  //              the middleware should call done(). To modify the outgoing message,
-  //              set context.string to a new message.
+  //              the middleware should call next(done). If execution should
+  //              stop, the middleware should call done(). To modify the
+  //              outgoing message, set context.string to a new message.
   //
   // Returns nothing.
   responseMiddleware (middleware) {
     this.middleware.response.register(middleware)
-    return undefined
   }
 
   // Public: Registers new middleware for execution before matching
@@ -301,7 +275,6 @@ class Robot {
   // Returns nothing.
   receiveMiddleware (middleware) {
     this.middleware.receive.register(middleware)
-    return undefined
   }
 
   // Public: Passes the given message to any interested Listeners after running
@@ -317,7 +290,7 @@ class Robot {
   receive (message, cb) {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
-    return this.middleware.receive.execute({ response: new Response(this, message) }, this.processListeners.bind(this), cb)
+    this.middleware.receive.execute({ response: new Response(this, message) }, this.processListeners.bind(this), cb)
   }
 
   // Private: Passes the given message to any interested Listeners.
@@ -336,58 +309,59 @@ class Robot {
 
     async.detectSeries(this.listeners, (listener, cb) => {
       try {
-        return listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
+        listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
           anyListenersExecuted = anyListenersExecuted || listenerExecuted
           // Defer to the event loop at least after every listener so the
           // stack doesn't get too big
-          return Middleware.ticker(() =>
-          // Stop processing when message.done == true
-          cb(context.response.message.done))
+          process.nextTick(() =>
+            // Stop processing when message.done == true
+            cb(context.response.message.done)
+          )
         })
       } catch (err) {
         this.emit('error', err, new this.Response(this, context.response.message, []))
         // Continue to next listener when there is an error
-        return cb(false)
+        cb(false)
       }
     },
     // Ignore the result ( == the listener that set message.done = true)
     _ => {
       // If no registered Listener matched the message
 
-      if (!(context.response.message instanceof CatchAllMessage) && !anyListenersExecuted) {
+      if (!(context.response.message instanceof Message.CatchAllMessage) && !anyListenersExecuted) {
         this.logger.debug('No listeners executed; falling back to catch-all')
-        return this.receive(new CatchAllMessage(context.response.message), done)
+        this.receive(new Message.CatchAllMessage(context.response.message), done)
       } else {
         if (done != null) {
-          return process.nextTick(done)
+          process.nextTick(done)
         }
       }
     })
-    return undefined
   }
 
   // Public: Loads a file in path.
   //
-  // path - A String path on the filesystem.
-  // file - A String filename in path on the filesystem.
+  // filepath - A String path on the filesystem.
+  // filename - A String filename in path on the filesystem.
   //
   // Returns nothing.
-  loadFile (path, file) {
-    const ext = Path.extname(file)
-    const full = Path.join(path, Path.basename(file, ext))
+  loadFile (filepath, filename) {
+    const ext = path.extname(filename)
+    const full = path.join(filepath, path.basename(filename, ext))
+
     if (require.extensions[ext]) {
       try {
         const script = require(full)
 
         if (typeof script === 'function') {
           script(this)
-          return this.parseHelp(Path.join(path, file))
+          this.parseHelp(path.join(filepath, filename))
         } else {
-          return this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
+          this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
         }
       } catch (error) {
         this.logger.error(`Unable to load ${full}: ${error.stack}`)
-        return process.exit(1)
+        process.exit(1)
       }
     }
   }
@@ -400,8 +374,8 @@ class Robot {
   load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
 
-    if (Fs.existsSync(path)) {
-      return Array.from(Fs.readdirSync(path).sort()).map(file => this.loadFile(path, file))
+    if (fs.existsSync(path)) {
+      fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
     }
   }
 
@@ -413,7 +387,7 @@ class Robot {
   // Returns nothing.
   loadHubotScripts (path, scripts) {
     this.logger.debug(`Loading hubot-scripts from ${path}`)
-    return Array.from(scripts).map(script => this.loadFile(path, script))
+    Array.from(scripts).map(script => this.loadFile(path, script))
   }
 
   // Public: Load scripts from packages specified in the
@@ -424,51 +398,16 @@ class Robot {
   // Returns nothing.
   loadExternalScripts (packages) {
     this.logger.debug('Loading external-scripts from npm packages')
+
     try {
-      let pkg
-      if (packages instanceof Array) {
-        return (() => {
-          const result = []
-          var _iteratorNormalCompletion = true
-          var _didIteratorError = false
-          var _iteratorError
-
-          try {
-            for (var _iterator = Array.from(packages)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              pkg = _step.value
-
-              result.push(require(pkg)(this))
-            }
-          } catch (err) {
-            _didIteratorError = true
-            _iteratorError = err
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return()
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError
-              }
-            }
-          }
-
-          return result
-        })()
-      } else {
-        return (() => {
-          const result1 = []
-          for (pkg in packages) {
-            const scripts = packages[pkg]
-            result1.push(require(pkg)(this, scripts))
-          }
-          return result1
-        })()
+      if (Array.isArray(packages)) {
+        return packages.forEach(pkg => require(pkg)(this))
       }
-    } catch (err) {
-      this.logger.error(`Error loading scripts from npm package - ${err.stack}`)
-      return process.exit(1)
+
+      Object.keys(packages).forEach(key => require(key)(this, packages[key]))
+    } catch (error) {
+      this.logger.error(`Error loading scripts from npm package - ${error.stack}`)
+      process.exit(1)
     }
   }
 
@@ -524,9 +463,9 @@ class Robot {
       if (!/\/$/.test(herokuUrl)) {
         herokuUrl += '/'
       }
-      return this.pingIntervalId = setInterval(() => {
-        return HttpClient.create(`${herokuUrl}hubot/ping`).post()((err, res, body) => {
-          return this.logger.info('keep alive ping!')
+      this.pingIntervalId = setInterval(() => {
+        HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
+          this.logger.info('keep alive ping!')
         })
       }, 5 * 60 * 1000)
     }
@@ -537,7 +476,8 @@ class Robot {
   // returns nothing
   setupNullRouter () {
     const msg = 'A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd.'
-    return this.router = {
+
+    this.router = {
       get: () => this.logger.warning(msg),
       post: () => this.logger.warning(msg),
       put: () => this.logger.warning(msg),
@@ -557,10 +497,10 @@ class Robot {
     try {
       const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
 
-      return this.adapter = require(path).use(this)
+      this.adapter = require(path).use(this)
     } catch (err) {
       this.logger.error(`Cannot load adapter ${adapter} - ${err}`)
-      return process.exit(1)
+      process.exit(1)
     }
   }
 
@@ -577,59 +517,33 @@ class Robot {
   //
   // Returns nothing.
   parseHelp (path) {
-    let cleanedLine
-    this.logger.debug(`Parsing help for ${path}`)
-    const scriptName = Path.basename(path).replace(/\.(coffee|js)$/, '')
     const scriptDocumentation = {}
-
-    const body = Fs.readFileSync(path, 'utf-8')
-
+    const body = fs.readFileSync(path, 'utf-8')
+    const lines = body.split('\n')
+      .reduce(toHeaderCommentBlock, {lines: [], isHeader: true}).lines
+      .filter(Boolean) // remove empty lines
     let currentSection = null
-    var _iteratorNormalCompletion2 = true
-    var _didIteratorError2 = false
-    var _iteratorError2
+    let nextSection
 
-    try {
-      for (var _iterator2 = Array.from(body.split('\n'))[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var line = _step2.value
+    this.logger.debug(`Parsing help for ${path}`)
 
-        if (line[0] !== '#' && line.substr(0, 2) !== '//') {
-          break
-        }
+    for (let i = 0, line; i < lines.length; i++) {
+      line = lines[i]
 
-        cleanedLine = line.replace(/^(#|\/\/)\s?/, '').trim()
-
-        if (cleanedLine.length === 0) {
-          continue
-        }
-        if (cleanedLine.toLowerCase() === 'none') {
-          continue
-        }
-
-        const nextSection = cleanedLine.toLowerCase().replace(':', '')
-        if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
-          currentSection = nextSection
-          scriptDocumentation[currentSection] = []
-        } else {
-          if (currentSection) {
-            scriptDocumentation[currentSection].push(cleanedLine.trim())
-            if (currentSection === 'commands') {
-              this.commands.push(cleanedLine.trim())
-            }
-          }
-        }
+      if (line.toLowerCase() === 'none') {
+        continue
       }
-    } catch (err) {
-      _didIteratorError2 = true
-      _iteratorError2 = err
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return()
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2
+
+      nextSection = line.toLowerCase().replace(':', '')
+      if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
+        currentSection = nextSection
+        scriptDocumentation[currentSection] = []
+      } else {
+        if (currentSection) {
+          scriptDocumentation[currentSection].push(line)
+          if (currentSection === 'commands') {
+            this.commands.push(line)
+          }
         }
       }
     }
@@ -637,43 +551,16 @@ class Robot {
     if (currentSection === null) {
       this.logger.info(`${path} is using deprecated documentation syntax`)
       scriptDocumentation.commands = []
-      return (() => {
-        const result = []
-        var _iteratorNormalCompletion3 = true
-        var _didIteratorError3 = false
-        var _iteratorError3
-
-        try {
-          for (var _iterator3 = Array.from(body.split('\n'))[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            line = _step3.value
-
-            if (!(line[0] === '#' || line.substr(0, 2) === '//')) {
-              break
-            }
-            if (!line.match('-')) {
-              continue
-            }
-            cleanedLine = line.slice(2, +line.length + 1 || undefined).replace(/^hubot/i, this.name).trim()
-            scriptDocumentation.commands.push(cleanedLine)
-            result.push(this.commands.push(cleanedLine))
-          }
-        } catch (err) {
-          _didIteratorError3 = true
-          _iteratorError3 = err
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-              _iterator3.return()
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3
-            }
-          }
+      for (let i = 0, line, cleanedLine; i < lines.length; i++) {
+        line = lines[i]
+        if (line.match('-')) {
+          continue
         }
 
-        return result
-      })()
+        cleanedLine = line.slice(2, +line.length + 1 || 9e9).replace(/^hubot/i, this.name).trim()
+        scriptDocumentation.commands.push(cleanedLine)
+        this.commands.push(cleanedLine)
+      }
     }
   }
 
@@ -686,7 +573,8 @@ class Robot {
   // Returns nothing.
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return this.adapter.send.apply(this, [envelope].concat(strings))
+
+    this.adapter.send.apply(this, [envelope].concat(strings))
   }
 
   // Public: A helper reply function which delegates to the adapter's reply
@@ -698,7 +586,8 @@ class Robot {
   // Returns nothing.
   reply (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
-    return this.adapter.reply.apply(this, [envelope].concat(strings))
+
+    this.adapter.reply.apply(this, [envelope].concat(strings))
   }
 
   // Public: A helper send function to message a room that the robot is in.
@@ -710,7 +599,8 @@ class Robot {
   messageRoom (room/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
     const envelope = { room }
-    return this.adapter.send.apply(this, [envelope].concat(strings))
+
+    this.adapter.send.apply(this, [envelope].concat(strings))
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
@@ -723,7 +613,8 @@ class Robot {
   // Returns nothing.
   on (event/* , ...args */) {
     const args = [].slice.call(arguments, 1)
-    return this.events.on.apply(this, [event].concat(args))
+
+    this.events.on.apply(this, [event].concat(args))
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
@@ -735,7 +626,8 @@ class Robot {
   // Returns nothing.
   emit (event/* , ...args */) {
     const args = [].slice.call(arguments, 1)
-    return this.events.emit.apply(this, [event].concat(args))
+
+    this.events.emit.apply(this, [event].concat(args))
   }
 
   // Public: Kick off the event loop for the adapter
@@ -743,7 +635,8 @@ class Robot {
   // Returns nothing.
   run () {
     this.emit('running')
-    return this.adapter.run()
+
+    this.adapter.run()
   }
 
   // Public: Gracefully shutdown the robot process
@@ -758,15 +651,18 @@ class Robot {
     if (this.server) {
       this.server.close()
     }
-    return this.brain.close()
+
+    this.brain.close()
   }
 
   // Public: The version of Hubot from npm
   //
   // Returns a String of the version number.
   parseVersion () {
-    const pkg = require(Path.join(__dirname, '..', 'package.json'))
-    return this.version = pkg.version
+    const pkg = require(path.join(__dirname, '..', 'package.json'))
+    this.version = pkg.version
+
+    return this.version
   }
 
   // Public: Creates a scoped http client with chainable methods for
@@ -802,66 +698,52 @@ class Robot {
   //
   // Returns a ScopedClient instance.
   http (url, options) {
-    return HttpClient.create(url, this.extend({}, this.globalHttpOptions, options)).header('User-Agent', `Hubot/${this.version}`)
-  }
+    const httpOptions = extend({}, this.globalHttpOptions, options)
 
-  // Private: Extend obj with objects passed as additional args.
-  //
-  // Returns the original object with updated changes.
-  extend (obj/* , ...sources */) {
-    const sources = [].slice.call(arguments, 1)
-    var _iteratorNormalCompletion4 = true
-    var _didIteratorError4 = false
-    var _iteratorError4
-
-    try {
-      for (var _iterator4 = Array.from(sources)[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-        let source = _step4.value
-        var _iteratorNormalCompletion5 = true
-        var _didIteratorError5 = false
-        var _iteratorError5
-
-        try {
-          for (var _iterator5 = Object.keys(source || {})[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            let key = _step5.value
-            const value = source[key]; obj[key] = value
-          }
-        } catch (err) {
-          _didIteratorError5 = true
-          _iteratorError5 = err
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-              _iterator5.return()
-            }
-          } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5
-            }
-          }
-        }
-      }
-    } catch (err) {
-      _didIteratorError4 = true
-      _iteratorError4 = err
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion4 && _iterator4.return) {
-          _iterator4.return()
-        }
-      } finally {
-        if (_didIteratorError4) {
-          throw _iteratorError4
-        }
-      }
-    }
-
-    return obj
+    return HttpClient.create(url, httpOptions).header('User-Agent', `Hubot/${this.version}`)
   }
 }
 
 module.exports = Robot
 
 function isCatchAllMessage (message) {
-  return message instanceof CatchAllMessage
+  return message instanceof Message.CatchAllMessage
+}
+
+function toHeaderCommentBlock (block, currentLine) {
+  if (!block.isHeader) {
+    return block
+  }
+
+  if (isCommentLine(currentLine)) {
+    block.lines.push(removeCommentPrefix(currentLine))
+  } else {
+    block.isHeader = false
+  }
+
+  return block
+}
+
+function isCommentLine (line) {
+  return /^(#|\/\/)/.test(line)
+}
+
+function removeCommentPrefix (line) {
+  return line.replace(/^[#/]+\s*/, '')
+}
+
+function extend (obj/* , ...sources */) {
+  const sources = [].slice.call(arguments, 1)
+
+  sources.forEach((source) => {
+    if (typeof source !== 'object') {
+      return
+    }
+
+    Object.keys(source).forEach((key) => {
+      obj[key] = source[key]
+    })
+  })
+
+  return obj
 }
