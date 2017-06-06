@@ -25,8 +25,9 @@ class Response {
   //           should be kept intact.
   //
   // Returns nothing.
-  send (...strings) {
-    return this.runWithMiddleware('send', { plaintext: true }, ...Array.from(strings))
+  send (/* ...strings */) {
+    const strings = [].slice.call(arguments)
+    return this.runWithMiddleware.apply(this, ['send', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts an emote back to the chat source
@@ -35,8 +36,9 @@ class Response {
   //           should be kept intact.
   //
   // Returns nothing.
-  emote (...strings) {
-    return this.runWithMiddleware('emote', { plaintext: true }, ...Array.from(strings))
+  emote (/* ...strings */) {
+    const strings = [].slice.call(arguments)
+    return this.runWithMiddleware.apply(this, ['emote', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts a message mentioning the current user.
@@ -45,8 +47,9 @@ class Response {
   //           should be kept intact.
   //
   // Returns nothing.
-  reply (...strings) {
-    return this.runWithMiddleware('reply', { plaintext: true }, ...Array.from(strings))
+  reply (/* ...strings */) {
+    const strings = [].slice.call(arguments)
+    return this.runWithMiddleware.apply(this, ['reply', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts a topic changing message
@@ -55,8 +58,9 @@ class Response {
   //           room the bot is in.
   //
   // Returns nothing.
-  topic (...strings) {
-    return this.runWithMiddleware('topic', { plaintext: true }, ...Array.from(strings))
+  topic (/* ...strings */) {
+    const strings = [].slice.call(arguments)
+    return this.runWithMiddleware.apply(this, ['topic', { plaintext: true }].concat(strings))
   }
 
   // Public: Play a sound in the chat source
@@ -65,8 +69,9 @@ class Response {
   //           these strings should be kept intact.
   //
   // Returns nothing
-  play (...strings) {
-    return this.runWithMiddleware('play', ...Array.from(strings))
+  play (/* ...strings */) {
+    const strings = [].slice.call(arguments)
+    return this.runWithMiddleware.apply(this, ['play'].concat(strings))
   }
 
   // Public: Posts a message in an unlogged room
@@ -75,13 +80,15 @@ class Response {
   //           should be kept intact.
   //
   // Returns nothing
-  locked (...strings) {
-    return this.runWithMiddleware('locked', { plaintext: true }, ...Array.from(strings))
+  locked (/* ...strings */) {
+    const strings = [].slice.call(arguments)
+    return this.runWithMiddleware.apply(this, ['locked', { plaintext: true }].concat(strings))
   }
 
   // Private: Call with a method for the given strings using response
   // middleware.
-  runWithMiddleware (methodName, opts, ...strings) {
+  runWithMiddleware (methodName, opts/* , ...strings */) {
+    const strings = [].slice.call(arguments, 2)
     let callback
     const copy = strings.slice(0)
     if (typeof copy[copy.length - 1] === 'function') {
@@ -97,7 +104,7 @@ class Response {
       if (callback != null) {
         result.push(callback)
       }
-      this.robot.adapter[methodName](this.envelope, ...Array.from(result))
+      this.robot.adapter[methodName].apply(this.robot.adapter, [this.envelope].concat(result))
       return done()
     }
     return this.robot.middleware.response.execute(context, runAdapterSend, responseMiddlewareDone)

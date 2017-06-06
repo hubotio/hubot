@@ -555,7 +555,7 @@ class Robot {
     this.logger.debug(`Loading adapter ${adapter}`)
 
     try {
-      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).includes(adapter) ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
 
       return this.adapter = require(path).use(this)
     } catch (err) {
@@ -607,7 +607,7 @@ class Robot {
         }
 
         const nextSection = cleanedLine.toLowerCase().replace(':', '')
-        if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).includes(nextSection)) {
+        if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
           currentSection = nextSection
           scriptDocumentation[currentSection] = []
         } else {
@@ -684,8 +684,9 @@ class Robot {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  send (envelope, ...strings) {
-    return this.adapter.send(envelope, ...Array.from(strings))
+  send (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
+    return this.adapter.send.apply(this, [envelope].concat(strings))
   }
 
   // Public: A helper reply function which delegates to the adapter's reply
@@ -695,8 +696,9 @@ class Robot {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  reply (envelope, ...strings) {
-    return this.adapter.reply(envelope, ...Array.from(strings))
+  reply (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
+    return this.adapter.reply.apply(this, [envelope].concat(strings))
   }
 
   // Public: A helper send function to message a room that the robot is in.
@@ -705,9 +707,10 @@ class Robot {
   // strings - One or more Strings for each message to send.
   //
   // Returns nothing.
-  messageRoom (room, ...strings) {
+  messageRoom (room/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
     const envelope = { room }
-    return this.adapter.send(envelope, ...Array.from(strings))
+    return this.adapter.send.apply(this, [envelope].concat(strings))
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
@@ -718,8 +721,9 @@ class Robot {
   //            when event happens.
   //
   // Returns nothing.
-  on (event, ...args) {
-    return this.events.on(event, ...Array.from(args))
+  on (event/* , ...args */) {
+    const args = [].slice.call(arguments, 1)
+    return this.events.on.apply(this, [event].concat(args))
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
@@ -729,8 +733,9 @@ class Robot {
   // args...  - Arguments emitted by the event
   //
   // Returns nothing.
-  emit (event, ...args) {
-    return this.events.emit(event, ...Array.from(args))
+  emit (event/* , ...args */) {
+    const args = [].slice.call(arguments, 1)
+    return this.events.emit.apply(this, [event].concat(args))
   }
 
   // Public: Kick off the event loop for the adapter
@@ -803,7 +808,8 @@ class Robot {
   // Private: Extend obj with objects passed as additional args.
   //
   // Returns the original object with updated changes.
-  extend (obj, ...sources) {
+  extend (obj/* , ...sources */) {
+    const sources = [].slice.call(arguments, 1)
     var _iteratorNormalCompletion4 = true
     var _didIteratorError4 = false
     var _iteratorError4

@@ -17,32 +17,36 @@ const TextMessage = _require2.TextMessage,
   TopicMessage = _require2.TopicMessage
 
 class Campfire extends Adapter {
-  send (envelope, ...strings) {
+  send (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
     if (strings.length > 0) {
       const string = strings.shift()
       if (typeof string === 'function') {
         string()
-        return this.send(envelope, ...Array.from(strings))
+        return this.send.apply(this, [envelope].concat(strings))
       } else {
         return this.bot.Room(envelope.room).speak(string, (err, data) => {
           if (err != null) {
             this.robot.logger.error(`Campfire send error: ${err}`)
           }
-          return this.send(envelope, ...Array.from(strings))
+          return this.send.apply(this, [envelope].concat(strings))
         })
       }
     }
   }
 
-  emote (envelope, ...strings) {
-    return this.send(envelope, ...Array.from(strings.map(str => `*${str}*`)))
+  emote (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
+    return this.send.apply(this, [envelope].concat(strings.map(str => `*${str}*`)))
   }
 
-  reply (envelope, ...strings) {
-    return this.send(envelope, ...Array.from(strings.map(str => `${envelope.user.name}: ${str}`)))
+  reply (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
+    return this.send.apply(this, [envelope].concat(strings.map(str => `${envelope.user.name}: ${str}`)))
   }
 
-  topic (envelope, ...strings) {
+  topic (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
     return this.bot.Room(envelope.room).topic(strings.join(' / '), (err, data) => {
       if (err != null) {
         return this.robot.logger.error(`Campfire topic error: ${err}`)
@@ -50,26 +54,28 @@ class Campfire extends Adapter {
     })
   }
 
-  play (envelope, ...strings) {
+  play (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
     return this.bot.Room(envelope.room).sound(strings.shift(), (err, data) => {
       if (err != null) {
         this.robot.logger.error(`Campfire sound error: ${err}`)
       }
-      return this.play(envelope, ...Array.from(strings))
+      return this.play.apply(this, [envelope].concat(strings))
     })
   }
 
-  locked (envelope, ...strings) {
+  locked (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
     if (envelope.message.private) {
-      return this.send(envelope, ...Array.from(strings))
+      return this.send.apply(this, [envelope].concat(strings))
     } else {
-      return this.bot.Room(envelope.room).lock((...args) => {
+      return this.bot.Room(envelope.room).lock(() => {
         strings.push(() => {
           // campfire won't send messages from just before a room unlock. 3000
           // is the 3-second poll.
           return setTimeout(() => this.bot.Room(envelope.room).unlock(), 3000)
         })
-        return this.send(envelope, ...Array.from(strings))
+        return this.send.apply(this, [envelope].concat(strings))
       })
     }
   }

@@ -216,7 +216,8 @@ class Brain extends EventEmitter {
 // Private: Extend obj with objects passed as additional args.
 //
 // Returns the original object with updated changes.
-var extend = function extend (obj, ...sources) {
+var extend = function extend (obj/* , ...sources */) {
+  const sources = [].slice.call(arguments, 1)
   var _iteratorNormalCompletion2 = true
   var _didIteratorError2 = false
   var _iteratorError2

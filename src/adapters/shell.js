@@ -18,17 +18,21 @@ const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.
 const historyPath = '.hubot_history'
 
 class Shell extends Adapter {
-  send (envelope, ...strings) {
-    return Array.from(strings).map(str => console.log(chalk.bold(`${str}`)))
+  send (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
+
+    Array.from(strings).forEach(str => console.log(chalk.bold(`${str}`)))
   }
 
-  emote (envelope, ...strings) {
+  emote (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1)
     return Array.from(strings).map(str => this.send(envelope, `* ${str}`))
   }
 
-  reply (envelope, ...strings) {
-    strings = strings.map(s => `${envelope.user.name}: ${s}`)
-    return this.send(envelope, ...Array.from(strings))
+  reply (envelope/* , ...strings */) {
+    const strings = [].slice.call(arguments, 1).map((s) => `${envelope.user.name}: ${s}`)
+
+    return this.send.apply(this, [envelope].concat(strings))
   }
 
   run () {
