@@ -173,7 +173,7 @@ class CampfireStreaming extends EventEmitter {
     this.rooms = options.rooms.split(',')
     this.account = options.account
     this.host = this.account + '.campfirenow.com'
-    this.authorization = `Basic ${new Buffer(`${this.token}:x`).toString('base64')}`
+    this.authorization = `Basic ${Buffer.from(`${this.token}:x`).toString('base64')}`
     this.private = {}
   }
 
@@ -346,7 +346,7 @@ class CampfireStreaming extends EventEmitter {
         body = JSON.stringify(body)
       }
 
-      body = new Buffer(body)
+      body = Buffer.from(body)
       options.headers['Content-Length'] = body.length
     }
 

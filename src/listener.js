@@ -53,10 +53,10 @@ class Listener {
   //
   // Returns a boolean of whether the matcher matched.
   // Returns before executing callback
-  call (message, middleware, cb) {
+  call (message, middleware, didMatchCallback) {
     // middleware argument is optional
-    if (cb == null && typeof middleware === 'function') {
-      cb = middleware
+    if (didMatchCallback == null && typeof middleware === 'function') {
+      didMatchCallback = middleware
       middleware = undefined
     }
 
@@ -88,8 +88,8 @@ class Listener {
       const allDone = function allDone () {
         // Yes, we tried to execute the listener callback (middleware may
         // have intercepted before actually executing though)
-        if (cb != null) {
-          process.nextTick(() => cb(true))
+        if (didMatchCallback != null) {
+          process.nextTick(() => didMatchCallback(true))
         }
       }
 
@@ -97,9 +97,9 @@ class Listener {
       middleware.execute({ listener: this, response }, executeListener, allDone)
       return true
     } else {
-      if (cb != null) {
+      if (didMatchCallback != null) {
         // No, we didn't try to execute the listener callback
-        process.nextTick(() => cb(false))
+        process.nextTick(() => didMatchCallback(false))
       }
       return false
     }

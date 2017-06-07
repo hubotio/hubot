@@ -37,7 +37,11 @@ class Shell extends Adapter {
   run () {
     this.buildCli()
 
-    this.loadHistory(history => {
+    loadHistory((error, history) => {
+      if (error) {
+        console.log(error.message)
+      }
+
       this.cli.history(history)
       this.cli.interact(`${this.robot.name}> `)
       return this.emit('connected')
@@ -103,33 +107,32 @@ class Shell extends Adapter {
       outstream.end(this.shutdown.bind(this))
     })
   }
-
-  // Private: load history from .hubot_history.
-  //
-  // callback - A Function that is called with the loaded history items (or an empty array if there is no history)
-  loadHistory (callback) {
-    return fs.exists(historyPath, function (exists) {
-      if (!exists) {
-        return callback([])
-      }
-
-      const instream = fs.createReadStream(historyPath)
-      const outstream = new Stream()
-      outstream.readable = true
-      outstream.writable = true
-
-      const items = []
-
-      readline.createInterface({ input: instream, output: outstream, terminal: false })
-        .on('line', function (line) {
-          line = line.trim()
-          if (line.length > 0) {
-            items.push(line)
-          }
-        })
-        .on('close', () => callback(items))
-    })
-  }
 }
 
 exports.use = robot => new Shell(robot)
+
+// load history from .hubot_history.
+//
+// callback - A Function that is called with the loaded history items (or an empty array if there is no history)
+function loadHistory (callback) {
+  if (!fs.existsSync(historyPath)) {
+    return callback(new Error('No history available'))
+  }
+
+  const instream = fs.createReadStream(historyPath)
+  const outstream = new Stream()
+  outstream.readable = true
+  outstream.writable = true
+
+  const items = []
+
+  readline.createInterface({ input: instream, output: outstream, terminal: false })
+    .on('line', function (line) {
+      line = line.trim()
+      if (line.length > 0) {
+        items.push(line)
+      }
+    })
+    .on('close', () => callback(null, items))
+    .on('error', callback)
+}

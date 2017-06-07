@@ -307,7 +307,7 @@ class Robot {
     // and return after message is done being processed
     let anyListenersExecuted = false
 
-    async.detectSeries(this.listeners, (listener, cb) => {
+    async.detectSeries(this.listeners, (listener, done) => {
       try {
         listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
           anyListenersExecuted = anyListenersExecuted || listenerExecuted
@@ -315,13 +315,13 @@ class Robot {
           // stack doesn't get too big
           process.nextTick(() =>
             // Stop processing when message.done == true
-            cb(context.response.message.done)
+            done(context.response.message.done)
           )
         })
       } catch (err) {
         this.emit('error', err, new this.Response(this, context.response.message, []))
         // Continue to next listener when there is an error
-        cb(false)
+        done(false)
       }
     },
     // Ignore the result ( == the listener that set message.done = true)
@@ -349,20 +349,18 @@ class Robot {
     const ext = path.extname(filename)
     const full = path.join(filepath, path.basename(filename, ext))
 
-    if (require.extensions[ext]) {
-      try {
-        const script = require(full)
+    try {
+      const script = require(full)
 
-        if (typeof script === 'function') {
-          script(this)
-          this.parseHelp(path.join(filepath, filename))
-        } else {
-          this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
-        }
-      } catch (error) {
-        this.logger.error(`Unable to load ${full}: ${error.stack}`)
-        process.exit(1)
+      if (typeof script === 'function') {
+        script(this)
+        this.parseHelp(path.join(filepath, filename))
+      } else {
+        this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
       }
+    } catch (error) {
+      this.logger.error(`Unable to load ${full}: ${error.stack}`)
+      process.exit(1)
     }
   }
 
