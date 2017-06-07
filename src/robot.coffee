@@ -350,6 +350,13 @@ class Robot
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
+    if  require.cache[require.resolve(full)]
+      try
+        cacheobj = require.resolve(full)
+        @logger.debug "require cache for #{cacheobj} invalidated."
+        delete require.cache[cacheobj]
+      catch error
+        @logger.error "Unable to invalidate #{cacheobj}: #{error.stack}"
     if require.extensions[ext]
       try
         script = require(full)
