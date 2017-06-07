@@ -334,6 +334,22 @@ describe 'Robot', ->
           @robot.loadFile('./scripts', 'test-script.coffee')
           expect(@robot.parseHelp).to.have.been.calledWith('scripts/test-script.coffee')
 
+      describe "script generated using Babel 6's export default", ->
+        beforeEach ->
+          module = require 'module'
+
+          @script = default: sinon.spy((robot) ->)
+          @sandbox.stub(module, '_load').returns(@script)
+          @sandbox.stub @robot, 'parseHelp'
+
+        it 'should call the script with the Robot', ->
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@script.default).to.have.been.calledWith(@robot)
+
+        it 'should parse the script documentation', ->
+          @robot.loadFile('./scripts', 'test-script.coffee')
+          expect(@robot.parseHelp).to.have.been.calledWith('scripts/test-script.coffee')
+
       describe 'non-Function script', ->
         beforeEach ->
           module = require 'module'
