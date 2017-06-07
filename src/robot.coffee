@@ -8,7 +8,7 @@ async          = require 'async'
 User = require './user'
 Brain = require './brain'
 Response = require './response'
-{Listener,TextListener} = require './listener'
+{Listener,TextListener,RespondListener} = require './listener'
 {EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
 Middleware = require './middleware'
 
@@ -114,7 +114,7 @@ class Robot
   #
   # Returns nothing.
   respond: (regex, options, callback) ->
-    @hear(@respondPattern(regex), options, callback)
+    @listeners.push new RespondListener(@, regex, options, callback)
 
   # Public: Build a regular expression that matches messages addressed
   # directly to the robot
@@ -149,6 +149,24 @@ class Robot
       )
 
     newRegex
+
+  # Public: Updates the robot name and its listeners accordingly.
+  #
+  # newName - A String of the new robot name.
+  #
+  # Returns nothing.
+  changeName: (newName) ->
+    # Updates the name.
+    @name = newName
+
+    # Reconstructs respond listeners:
+    listeners = []
+    for listener in @listeners
+      if listener instanceof RespondListener
+        listeners.push new RespondListener(@, listener.originalRegex, listener.options, listener.callback)
+      else
+        listeners.push listener
+    @listeners = listeners
 
   # Public: Adds a Listener that triggers when anyone enters the room.
   #
