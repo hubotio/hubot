@@ -595,6 +595,7 @@ class Robot
   #
   # Returns nothing.
   shutdown: ->
+    @emit "stopping"
     clearInterval @pingIntervalId if @pingIntervalId?
     process.removeListener 'uncaughtException', @onUncaughtException
     @adapter.close()
