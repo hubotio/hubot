@@ -26,7 +26,6 @@
     "scoped-http-client": "0.11.0"
   },
   "devDependencies": {
-    "coffee-errors": "0.8.6",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
     "sinon-chai": "^2.8.0",
@@ -42,11 +41,8 @@
     "hubot": "./bin/hubot"
   },
   "scripts": {
-    "clean": "rm -rf lib/",
     "start": "bin/hubot",
-    "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
-    "test:smoke": "coffee src/**/*.coffee",
-    "compile": "coffee --compile --bare --output lib src",
-    "compile:watch": "coffee --compile --bare --output lib --watch src"
+    "test": "mocha",
+    "test:smoke": "node src/**/*.js"
   }
 }
