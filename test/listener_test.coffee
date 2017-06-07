@@ -8,8 +8,8 @@ chai.use require 'sinon-chai'
 # Hubot classes
 { CatchAllMessage, EnterMessage, TextMessage } = require '../src/message'
 { Listener, TextListener } = require '../src/listener'
-Response = require '../src/response.coffee'
-User = require '../src/user.coffee'
+Response = require '../src/response'
+User = require '../src/user'
 
 describe 'Listener', ->
   beforeEach ->
