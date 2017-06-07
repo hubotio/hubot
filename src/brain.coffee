@@ -2,6 +2,8 @@
 
 User = require './user'
 
+lodashMerge = require 'lodash.merge'
+
 class Brain extends EventEmitter
   # Represents somewhat persistent storage for the robot. Extend this.
   #
@@ -86,9 +88,7 @@ class Brain extends EventEmitter
   #
   # Caveats: Deeply nested structures don't merge well.
   mergeData: (data) ->
-    for k of (data or { })
-      @data[k] = data[k]
-
+    @data = lodashMerge @data, data
     @emit 'loaded', @data
 
   # Public: Get an Array of User objects stored in the brain.
@@ -105,8 +105,8 @@ class Brain extends EventEmitter
     unless user
       user = new User id, options
       @data.users[id] = user
-
-    if options and options.room and (!user.room or user.room isnt options.room)
+    if (options and options.room and (!user.room or user.room isnt options.room)) or (options and options.roles and (!user.roles))
+      options = lodashMerge user, options
       user = new User id, options
       @data.users[id] = user
 
