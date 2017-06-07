@@ -30,6 +30,7 @@
     "mockery": "^1.4.0",
     "sinon-chai": "^2.8.0",
     "sinon": "~1.17.0",
+    "standard": "^10.0.2",
     "chai": "~2.1.0"
   },
   "engines": {
@@ -42,6 +43,7 @@
   },
   "scripts": {
     "start": "bin/hubot",
+    "pretest": "standard",
     "test": "mocha",
     "test:smoke": "node src/**/*.js"
   }
