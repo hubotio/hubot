@@ -101,5 +101,7 @@ class Shell extends Adapter
       else
         callback([])
 
+module.exports = exports = Shell
+
 exports.use = (robot) ->
   new Shell robot

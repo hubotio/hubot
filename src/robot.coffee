@@ -40,13 +40,11 @@ class Robot
   # name        - A String of the robot name, defaults to Hubot.
   #
   # Returns nothing.
-  constructor: (adapterPath, adapter, httpd, name = 'Hubot', alias = false) ->
+  constructor: (adapterPath, adapter, httpd, @name = 'Hubot', @alias = false) ->
     @adapterPath ?= Path.join __dirname, "adapters"
 
-    @name       = name
     @events     = new EventEmitter
     @brain      = new Brain @
-    @alias      = alias
     @adapter    = null
     @Response   = Response
     @commands   = []
@@ -65,7 +63,7 @@ class Robot
     else
       @setupNullRouter()
 
-    @loadAdapter adapter
+    @loadAdapter adapter if adapter?
 
     @adapterName   = adapter
     @errorHandlers = []
@@ -394,17 +392,33 @@ class Robot
   #
   # Returns nothing.
   loadExternalScripts: (packages) ->
-    @logger.debug "Loading external-scripts from npm packages"
     try
       if packages instanceof Array
-        for pkg in packages
-          require(pkg)(@)
+        @loadScriptPackage(pkg) for pkg in packages
       else
-        for pkg, scripts of packages
-          require(pkg)(@, scripts)
+        @loadScriptPackage(pkg, scripts) for pkg, scripts of packages
+
+  # Public: load a script from an npm module
+  #
+  # pkg - A string of the package to load, or a script that has been required, but hasn't been loaded yet
+  # scripts - An Array of scripts to load from the package (optional)
+  #
+  # Examples:
+  #   robot.loadScriptPackage require('hubot-help')
+  #   robot.loadScriptPackage 'hubot-help'
+  #
+  # Note:
+  #   Specifying package as string may fail depending on your NODE_PATH settings.
+  #   This can be fixed by requiring the package, and passing that to this function.
+  #
+  # Returns nothing
+  loadScriptPackage: (pkg, scripts) ->
+    try
+      pkg = require(pkg) unless typeof(pkg) is 'function'
     catch err
       @logger.error "Error loading scripts from npm package - #{err.stack}"
       process.exit(1)
+    pkg(@, scripts)
 
   # Setup the Express server's defaults.
   #
@@ -468,7 +482,6 @@ class Robot
 
   # Load the adapter Hubot is going to use.
   #
-  # path    - A String of the path to adapter if local.
   # adapter - A String of the adapter name to use.
   #
   # Returns nothing.
@@ -588,6 +601,9 @@ class Robot
   #
   # Returns nothing.
   run: ->
+    unless @adapter
+      throw new Error("no adapter present. did you forget to specify one or not call 'loadApdapter'?")
+
     @emit "running"
     @adapter.run()
 
