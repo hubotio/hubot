@@ -14,6 +14,16 @@ class Adapter extends EventEmitter
   # Returns nothing.
   send: (envelope, strings...) ->
 
+  # Public: Posts an image back to the chat source
+  #
+  # envelope - A Object with message, room and user details.
+  # url      - URL of the image resource
+  # strings  - One or more strings to be posted. The order of these strings
+  #            should be kept intact.
+  #
+  # Returns nothing.
+  sendImage: (envelope, url, strings...) ->
+
   # Public: Raw method for sending emote data back to the chat source.
   # Defaults as an alias for send
   #
