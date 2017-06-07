@@ -1,3 +1,5 @@
+'use strict'
+
 /* global describe, beforeEach, it */
 
 // Assertions and Stubbing
@@ -5,11 +7,13 @@ const chai = require('chai')
 const sinon = require('sinon')
 chai.use(require('sinon-chai'))
 
-const { expect } = chai
+const expect = chai.expect
 
 // Hubot classes
-const { EnterMessage, TextMessage } = require('../src/message')
-const { Listener, TextListener } = require('../src/listener')
+const EnterMessage = require('../src/message').EnterMessage
+const TextMessage = require('../src/message').TextMessage
+const Listener = require('../src/listener').Listener
+const TextListener = require('../src/listener').TextListener
 const Response = require('../src/response')
 const User = require('../src/user')
 
@@ -298,8 +302,7 @@ describe('Listener', function () {
           const testMessage = {}
 
           const testListener = this.createListener(function () {})
-          const testMiddleware =
-            {execute: sinon.spy()}
+          const testMiddleware = {execute: sinon.spy()}
 
           testListener.call(testMessage, result => {
             expect(testMiddleware.execute).to.not.have.been.called

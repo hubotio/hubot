@@ -1,10 +1,12 @@
+'use strict'
+
 /* global describe, beforeEach, it */
 
 const chai = require('chai')
 const sinon = require('sinon')
 chai.use(require('sinon-chai'))
 
-const { expect } = chai
+const expect = chai.expect
 
 const Adapter = require('../src/adapter')
 

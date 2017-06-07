@@ -1,14 +1,17 @@
+'use strict'
+
 /* global describe, beforeEach, it */
 
 // Assertions and Stubbing
 const chai = require('chai')
 chai.use(require('sinon-chai'))
 
-const { expect } = chai
+const expect = chai.expect
 
 // Hubot classes
 const User = require('../src/user')
-const { Message, TextMessage } = require('../src/message')
+const Message = require('../src/message').Message
+const TextMessage = require('../src/message').TextMessage
 
 describe('Message', function () {
   beforeEach(function () {

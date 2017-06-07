@@ -1,3 +1,5 @@
+'use strict'
+
 /* global describe, beforeEach, afterEach, it */
 
 // Assertions and Stubbing
@@ -5,7 +7,7 @@ const chai = require('chai')
 const sinon = require('sinon')
 chai.use(require('sinon-chai'))
 
-const { expect } = chai
+const expect = chai.expect
 
 // Hubot classes
 const Brain = require('../src/brain')
@@ -42,8 +44,7 @@ describe('Brain', function () {
           2: 'old'
         }
 
-        this.brain.mergeData({
-          2: 'new'})
+        this.brain.mergeData({2: 'new'})
 
         expect(this.brain.data).to.deep.equal({
           1: 'old',
@@ -58,30 +59,26 @@ describe('Brain', function () {
       })
     })
 
-    describe('#save', () =>
-      it('emits a save event', function () {
-        sinon.spy(this.brain, 'emit')
-        this.brain.save()
-        expect(this.brain.emit).to.have.been.calledWith('save', this.brain.data)
-      })
-    )
+    describe('#save', () => it('emits a save event', function () {
+      sinon.spy(this.brain, 'emit')
+      this.brain.save()
+      expect(this.brain.emit).to.have.been.calledWith('save', this.brain.data)
+    }))
 
-    describe('#resetSaveInterval', () =>
-      it('updates the auto-save interval', function () {
-        sinon.spy(this.brain, 'save')
-        // default is 5s
-        this.brain.resetSaveInterval(10)
-        // make sure autosave is on
-        this.brain.setAutoSave(true)
+    describe('#resetSaveInterval', () => it('updates the auto-save interval', function () {
+      sinon.spy(this.brain, 'save')
+      // default is 5s
+      this.brain.resetSaveInterval(10)
+      // make sure autosave is on
+      this.brain.setAutoSave(true)
 
-        this.clock.tick(5000)
-        // old interval has passed
-        expect(this.brain.save).to.not.have.been.called
-        this.clock.tick(5000)
-        // new interval has passed
-        expect(this.brain.save).to.have.been.calledOnce
-      })
-    )
+      this.clock.tick(5000)
+      // old interval has passed
+      expect(this.brain.save).to.not.have.been.called
+      this.clock.tick(5000)
+      // new interval has passed
+      expect(this.brain.save).to.have.been.calledOnce
+    }))
 
     describe('#close', function () {
       it('saves', function () {
@@ -164,13 +161,11 @@ describe('Brain', function () {
       })
     })
 
-    describe('#remove', () =>
-      it('removes the specified key', function () {
-        this.brain.data._private['test-key'] = 'value'
-        this.brain.remove('test-key')
-        expect(this.brain.data._private).to.not.include.keys('test-key')
-      })
-    )
+    describe('#remove', () => it('removes the specified key', function () {
+      this.brain.data._private['test-key'] = 'value'
+      this.brain.remove('test-key')
+      expect(this.brain.data._private).to.not.include.keys('test-key')
+    }))
 
     describe('#userForId', function () {
       it('returns the user object', function () {
@@ -188,11 +183,11 @@ describe('Brain', function () {
         expect(this.brain.userForId(1).room).to.be.undefined
 
         // undefined -> having a room
-        const newUser1 = this.brain.userForId(1, {room: 'room1'})
+        const newUser1 = this.brain.userForId(1, { room: 'room1' })
         expect(newUser1).to.not.equal(this.user1)
 
         // changing the room
-        const newUser2 = this.brain.userForId(1, {room: 'room2'})
+        const newUser2 = this.brain.userForId(1, { room: 'room2' })
         expect(newUser2).to.not.equal(newUser1)
       })
 

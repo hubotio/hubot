@@ -1,6 +1,8 @@
+'use strict'
+
 /* global describe, it */
 
-const {expect} = require('chai')
+const expect = require('chai').expect
 const User = require('../src/user')
 
 describe('User', () =>

@@ -1,3 +1,5 @@
+'use strict'
+
 /* global describe, beforeEach, it, afterEach */
 
 // Assertions and Stubbing
@@ -5,11 +7,11 @@ const chai = require('chai')
 const sinon = require('sinon')
 chai.use(require('sinon-chai'))
 
-const { expect } = chai
+const expect = chai.expect
 
 // Hubot classes
 const Robot = require('../src/robot')
-const { TextMessage } = require('../src/message')
+const TextMessage = require('../src/message').TextMessage
 const Response = require('../src/response')
 const Middleware = require('../src/middleware')
 
@@ -19,9 +21,8 @@ const mockery = require('mockery')
 describe('Middleware', function () {
   describe('Unit Tests', function () {
     beforeEach(function () {
-      this.robot =
-        // Stub out event emitting
-        {emit: sinon.spy()}
+      // Stub out event emitting
+      this.robot = {emit: sinon.spy()}
 
       this.middleware = new Middleware(this.robot)
     })
