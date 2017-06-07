@@ -100,17 +100,11 @@ class Brain extends EventEmitter
   # Public: Get a User object given a unique identifier.
   #
   # Returns a User instance of the specified user.
-  userForId: (id, options) ->
-    user = @data.users[id]
-    unless user
-      user = new User id, options
-      @data.users[id] = user
-
-    if options and options.room and (!user.room or user.room isnt options.room)
-      user = new User id, options
-      @data.users[id] = user
-
-    user
+  # If a second argument is passed the used is updated with any attributes contained in that object
+  userForId: (id, new_attribs) ->
+    return @data.users[id] unless new_attribs? # If no new attribs just return the existing user
+    options = extend {}, (@data.users[id] or {}), (new_attribs or {})
+    @data.users[id] = new User id, options
 
   # Public: Get a User object given a name.
   #
