@@ -58,6 +58,7 @@ class Robot
     @logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
     @pingIntervalId = null
     @globalHttpOptions = {}
+    @scriptDocumentation = []
 
     @parseVersion()
     if httpd
@@ -532,6 +533,8 @@ class Robot
         cleanedLine = line[2..line.length].replace(/^hubot/i, @name).trim()
         scriptDocumentation.commands.push cleanedLine
         @commands.push cleanedLine
+
+    @scriptDocumentation.push scriptDocumentation
 
   # Public: A helper send function which delegates to the adapter's send
   # function.
