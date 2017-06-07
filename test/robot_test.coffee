@@ -5,30 +5,23 @@ chai.use require 'sinon-chai'
 
 { expect } = chai
 
-mockery = require 'mockery'
-
 # Hubot classes
-Robot = require '../src/robot.coffee'
+Robot = require '../src/robot'
 { CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage } = require '../src/message'
 Adapter = require '../src/adapter'
 
 ScopedHttpClient = require 'scoped-http-client'
 
-# Preload the Hubot mock adapter but substitute in the latest version of Adapter
-mockery.enable()
-mockery.registerAllowable 'hubot-mock-adapter'
-mockery.registerAllowable 'lodash' # hubot-mock-adapter uses lodash
-# Force hubot-mock-adapter to use the latest version of Adapter
-mockery.registerMock 'hubot/src/adapter', Adapter
-# Load the mock adapter into the cache
-require 'hubot-mock-adapter'
-# We're done with mockery
-mockery.deregisterMock 'hubot/src/adapter'
-mockery.disable()
-
+# mock `hubot-mock-adapter` module from fixture
+mockery = require 'mockery'
 
 describe 'Robot', ->
   beforeEach ->
+    mockery.enable({
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    })
+    mockery.registerMock 'hubot-mock-adapter', require('./fixtures/mock-adapter')
     @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
     @robot.alias = 'Hubot'
     @robot.run
@@ -46,7 +39,8 @@ describe 'Robot', ->
     }
 
   afterEach ->
-   @robot.shutdown()
+    mockery.disable()
+    @robot.shutdown()
 
   describe 'Unit Tests', ->
     describe '#http', ->

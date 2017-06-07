@@ -6,8 +6,8 @@ chai.use require 'sinon-chai'
 { expect } = chai
 
 # Hubot classes
-Brain = require '../src/brain.coffee'
-User = require '../src/user.coffee'
+Brain = require '../src/brain'
+User = require '../src/user'
 
 describe 'Brain', ->
   beforeEach ->

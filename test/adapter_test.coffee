@@ -4,7 +4,7 @@ chai.use require 'sinon-chai'
 
 expect = chai.expect
 
-Adapter = require '../src/adapter.coffee'
+Adapter = require '../src/adapter'
 
 describe 'Adapter', ->
   beforeEach ->
