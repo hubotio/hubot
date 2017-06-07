@@ -4,12 +4,13 @@ Path           = require 'path'
 HttpClient     = require 'scoped-http-client'
 {EventEmitter} = require 'events'
 async          = require 'async'
+{inspect}      = require 'util'
 
 User = require './user'
 Brain = require './brain'
 Response = require './response'
 {Listener,TextListener} = require './listener'
-{EnterMessage,LeaveMessage,TopicMessage,CatchAllMessage} = require './message'
+{EnterMessage,LeaveMessage,TextMessage,TopicMessage,CatchAllMessage} = require './message'
 Middleware = require './middleware'
 
 HUBOT_DEFAULT_ADAPTERS = [
@@ -115,6 +116,28 @@ class Robot
   # Returns nothing.
   respond: (regex, options, callback) ->
     @hear(@respondPattern(regex), options, callback)
+
+  # Public: Adds a Listener that attempts to match incoming messages based on
+  # a Regex, but rejects all messages that are addressed to the robot
+  # (i.e. anti-respond).
+  #
+  # regex    - A Regex that determines if the callback should be called.
+  # callback - A Function that is called with a Response object.
+  #
+  # Returns nothing.
+  eavesdrop: (regex, options, callback) ->
+    antiPattern = @respondPattern(/.*/)
+    @listen(
+      (message) ->
+        if message instanceof TextMessage and not message.match(antiPattern)
+          match = message.match(regex)
+          if match
+            @robot.logger.debug \
+              "Message '#{message}' matched regex /#{inspect regex}/"
+          match
+      options
+      callback
+    )
 
   # Public: Build a regular expression that matches messages addressed
   # directly to the robot
