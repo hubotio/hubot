@@ -1,3 +1,16 @@
+## [v2.19.0](https://github.com/github/hubot/tree/v3.0.0) (2017-06-09)
+[Full Changelog](https://github.com/github/hubot/compare/v2.19.0...v3.0.0)
+
+### Breaking Changes
+
+- node@0.10 and node@0.12 are no longer supported
+- Deep requires like `require('hubot/src/adapter')` are no longer support, use `require('hubot').Adapter` instead.
+- `Middleware.ticker()` has been removed. Use `process.nextTick()` instead
+
+### Features
+
+- We now export es2015 `class` declarations of all Hubot classes at `require('hubot/es2015')`
+
 ## [v2.19.0](https://github.com/github/hubot/tree/v2.19.0) (2016-05-0-6)
 [Full Changelog](https://github.com/github/hubot/compare/v2.18.0...v2.19.0)
 
