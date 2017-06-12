@@ -26,12 +26,14 @@
     "scoped-http-client": "0.11.0"
   },
   "devDependencies": {
+    "chai": "~2.1.0",
+    "coveralls": "^2.13.1",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
-    "sinon-chai": "^2.8.0",
+    "nyc": "^11.0.2",
     "sinon": "~1.17.0",
-    "standard": "^10.0.2",
-    "chai": "~2.1.0"
+    "sinon-chai": "^2.8.0",
+    "standard": "^10.0.2"
   },
   "engines": {
     "node": ">= 0.8.x",
@@ -44,7 +46,8 @@
   "scripts": {
     "start": "bin/hubot",
     "pretest": "standard",
-    "test": "mocha",
+    "test": "nyc --reporter=html --reporter=text mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "test:smoke": "node src/**/*.js"
   }
 }

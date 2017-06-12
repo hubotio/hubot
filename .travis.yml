@@ -6,3 +6,4 @@ node_js:
 notifications:
   email: false
 sudo: false
+after_success: npm run coverage
