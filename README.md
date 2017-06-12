@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/espy/hubot/badge.svg?branch=master)](https://coveralls.io/github/espy/hubot?branch=master)
+
 # Hubot
 
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
