@@ -1,3 +1,4 @@
 node_modules
 .hubot_history
 .node-version
+.nyc_output/
