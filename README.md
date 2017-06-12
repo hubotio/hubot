@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/espy/hubot/badge.svg?branch=master)](https://coveralls.io/github/espy/hubot?branch=master)
+[![Build Status](https://travis-ci.org/espy/hubot.svg?branch=master)](https://travis-ci.org/espy/hubot) [![Coverage Status](https://coveralls.io/repos/github/espy/hubot/badge.svg?branch=master)](https://coveralls.io/github/espy/hubot?branch=master)
 
 # Hubot
 
