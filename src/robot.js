@@ -516,8 +516,10 @@ class Robot {
   // Returns nothing.
   parseHelp (path) {
     const scriptDocumentation = {}
-    const body = fs.readFileSync(path, 'utf-8')
-    const lines = body.split('\n')
+    const body = fs.readFileSync(require.resolve(path), 'utf-8')
+
+    const useStrictHeaderRegex = /^["']use strict['"];?\s+/
+    const lines = body.replace(useStrictHeaderRegex, '').split('\n')
       .reduce(toHeaderCommentBlock, {lines: [], isHeader: true}).lines
       .filter(Boolean) // remove empty lines
     let currentSection = null
