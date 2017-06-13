@@ -21,7 +21,7 @@ accept, pull requests within a few days. We may suggest some changes or improvem
 
 Some things that will increase the chance that your pull request is accepted:
 
-* Use CoffeeScript [idioms](http://arcturo.github.io/library/coffeescript/04_idioms.html) and [style guide](https://github.com/polarmobile/coffeescript-style-guide)
+* Make sure the tests pass
 * Update the documentation: code comments, example code, guides. Basically,
   update everything affected by your contribution.
 * Include any information that would be relevant to reproducing bugs, use cases for new features, etc.
@@ -32,16 +32,6 @@ Some things that will increase the chance that your pull request is accepted:
 * Make pull requests against a feature branch,
 * Don't update the version in `package.json`, as the maintainers will manage that in a follow-up PR to release
 
-Syntax:
-
-  * Two spaces, no tabs.
-  * No trailing whitespace. Blank lines should not have any space.
-  * Prefer `and` and `or` over `&&` and `||`
-  * Prefer single quotes over double quotes unless interpolating strings.
-  * `MyClass.myMethod(my_arg)` not `myMethod( my_arg )` or `myMethod my_arg`.
-  * `a = b` and not `a=b`.
-  * Follow the conventions you see used in the source already.
-
 # Stale issue and pull request policy
 
 Issues and pull requests have a shelf life and sometimes they are no longer relevant. All issues and pull requests that have not had any activity for 90 days will be marked as `stale`. Simply leave a comment with information about why it may still be relevant to keep it open. If no activity occurs in the next 7 days, it will be automatically closed.
@@ -50,7 +40,7 @@ The goal of this process is to keep the list of open issues and pull requests fo
 
 # Releasing
 
-This section is for maintainers of hubot. Here's the current process for releasing:
+This section is for maintainers of Hubot. Here's the current process for releasing:
 
 * review unreleased changes since last release on https://github.com/github/hubot/commits/master
 * determine what version to release as:
