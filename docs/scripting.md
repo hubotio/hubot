@@ -297,6 +297,9 @@ The match function must return a truthy value if the listener callback should be
 module.exports = (robot) ->
   robot.listen(
     (message) -> # Match function
+      # only match messages with text (ie ignore enter and other events)
+      return unless message.text
+
       # Occassionally respond to things that Steve says
       message.user.name is "Steve" and Math.random() > 0.8
     (response) -> # Standard listener callback
