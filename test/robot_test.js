@@ -418,6 +418,21 @@ describe('Robot', function () {
           expect(this.robot.logger.warning).to.have.been.called
         })
       })
+
+      describe('unsupported file extension', function () {
+        beforeEach(function () {
+          const module = require('module')
+
+          this.script = sinon.spy(function (robot) {})
+          this.sandbox.stub(module, '_load').returns(this.script)
+          this.sandbox.stub(this.robot, 'parseHelp')
+        })
+
+        it('should not be loaded by the Robot', function () {
+          this.robot.loadFile('./scripts', 'unsupported.yml')
+          expect(this.script).to.not.have.been.calledWith(this.robot)
+        })
+      })
     })
   })
 
