@@ -24,6 +24,6 @@ module.exports = {
   CatchAllMessage: Message.CatchAllMessage,
 
   loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
-    return new Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+    return new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
   }
 }
