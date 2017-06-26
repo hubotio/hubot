@@ -349,6 +349,11 @@ class Robot {
     const ext = path.extname(filename)
     const full = path.join(filepath, path.basename(filename, ext))
 
+    // see https://github.com/hubotio/hubot/issues/1355
+    if (!require.extensions[ext]) { // eslint-disable-line
+      return
+    }
+
     try {
       const script = require(full)
 
