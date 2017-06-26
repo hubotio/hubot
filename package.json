@@ -12,7 +12,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/github/hubot.git"
+    "url": "https://github.com/hubotio/hubot.git"
   },
   "dependencies": {
     "async": ">=0.1.0 <1.0.0",
