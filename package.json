@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "2.19.0",
+  "version": "0.0.0-development",
   "author": "hubot",
   "keywords": [
     "github",
@@ -33,7 +33,8 @@
     "nyc": "^11.0.2",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0",
-    "standard": "^10.0.2"
+    "standard": "^10.0.2",
+    "semantic-release": "^6.3.6"
   },
   "engines": {
     "node": ">4",
@@ -48,6 +49,7 @@
     "pretest": "standard",
     "test": "nyc --reporter=html --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test:smoke": "node src/**/*.js"
+    "test:smoke": "node src/**/*.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   }
 }
