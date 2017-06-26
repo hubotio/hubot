@@ -6,4 +6,9 @@ node_js:
 notifications:
   email: false
 sudo: false
+addons:
+  apt:
+    packages:
+    - expect
+before_script: bin/e2e-test.sh
 after_success: npm run coverage
