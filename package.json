@@ -1,7 +1,7 @@
 {
   "name": "hubot",
   "version": "0.0.0-development",
-  "publishconfig": {
+  "publishConfig": {
     "tag": "next"
   },
   "author": "hubot",
