@@ -10,5 +10,12 @@ addons:
   apt:
     packages:
     - expect
-before_script: bin/e2e-test.sh
-after_success: npm run coverage
+before_script:
+  - npm prune
+  - bin/e2e-test.sh
+after_success:
+  - npm run coverage
+  - npm run semantic-release
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/

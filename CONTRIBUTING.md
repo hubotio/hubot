@@ -30,7 +30,20 @@ Some things that will increase the chance that your pull request is accepted:
   * If the change does break compatibility, how can it be updated to become backwards compatible, while directing users to the new way of doing things?
 * Your commits are associated with your GitHub user: https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/
 * Make pull requests against a feature branch,
-* Don't update the version in `package.json`, as the maintainers will manage that in a follow-up PR to release
+* Follow our commit message conventions:
+  * use imperative, present tense: “change” not “changed” nor “changes”
+  * Commit test files with `test: …` or `test(scope): …` prefix.
+  * Commit bug fixes with `fix: …` or `fix(scope): …` prefix
+  * Commit features with `feat: …` or `feat(scope): …` prefix
+  * Commit breaking changes by adding `BREAKING CHANGE:` in the commit body.
+    The commit subject does not matter. A commit can have multiple `BREAKING CHANGE:`
+    sections
+  * Commit changes to `package.json`, `.gitignore` and other meta files with
+  `chore(filenamewithout.ext): …`
+  * Commit changes to README files or comments with `docs(README): …`
+  * Cody style changes with `style: standard`
+  * see [Angular’s Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153)
+    for a full list of recommendations.
 
 # Stale issue and pull request policy
 
@@ -38,18 +51,10 @@ Issues and pull requests have a shelf life and sometimes they are no longer rele
 
 The goal of this process is to keep the list of open issues and pull requests focused on work that is actionable and important for the maintainers and the community.
 
-# Releasing
+# Pull Request Reviews & releasing
 
-This section is for maintainers of Hubot. Here's the current process for releasing:
+Releasing `hubot` is fully automated using [semantic-release](https://github.com/semantic-release/semantic-release). Once merged into the `master` branch, `semantic-release` will automatically release a new version based on the commit messages of the pull request. For it to work correctly, make sure that the correct commit message conventions have been used. The ones relevant are
 
-* review unreleased changes since last release on https://github.com/github/hubot/commits/master
-* determine what version to release as:
-  * bug or documentation fix? patch release
-  * new functionality that is backwards compatible? minor version
-  * breaking change? major release, but think about if it can be fixed to be a minor release instead
-* create a `release-vX.X.X` branch to release from
-* update `package.json`'s `version`
-* summarize changes in `CHANGELOG.md` (see https://github.com/github/hubot/blob/master/CHANGELOG.md#v2120 for an example)
-* create a pull request, and cc pull requests included in this release, as well as their contributors (see https://github.com/github/hubot/pull/887 as an example)
-* merge pull request
-* checkout master branch, and run `script/release`
+* `fix: …` will bump the fix version, e.g. 1.2.3 → 1.2.4
+* `feat: …` will bump the feature version, e.g. 1.2.3 → 1.3.0
+* `BREAKING CHANGE: …` in the commit body will bump the breaking change version, e.g. 1.2.3 → 2.0.0
