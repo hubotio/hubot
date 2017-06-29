@@ -40,8 +40,8 @@
     "semantic-release": "^6.3.6"
   },
   "engines": {
-    "node": ">4",
-    "npm": ">2"
+    "node": "> 4.0.0",
+    "npm": "> 2.0.0"
   },
   "main": "./index",
   "bin": {
