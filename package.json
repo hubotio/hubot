@@ -1,6 +1,9 @@
 {
   "name": "hubot",
-  "version": "2.19.0",
+  "version": "0.0.0-development",
+  "publishConfig": {
+    "tag": "next"
+  },
   "author": "hubot",
   "keywords": [
     "github",
@@ -12,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/github/hubot.git"
+    "url": "https://github.com/hubotio/hubot.git"
   },
   "dependencies": {
     "async": ">=0.1.0 <1.0.0",
@@ -27,28 +30,30 @@
     "scoped-http-client": "0.11.0"
   },
   "devDependencies": {
-    "hubot-mock-adapter": "^1.0.0",
-    "coffee-errors": "0.8.6",
+    "chai": "~2.1.0",
+    "coveralls": "^2.13.1",
     "mocha": "^2.1.0",
     "mockery": "^1.4.0",
-    "sinon-chai": "^2.8.0",
+    "nyc": "^11.0.2",
     "sinon": "~1.17.0",
-    "chai": "~2.1.0"
+    "sinon-chai": "^2.8.0",
+    "standard": "^10.0.2",
+    "semantic-release": "^6.3.6"
   },
   "engines": {
-    "node": ">= 0.8.x",
-    "npm": ">= 1.1.x"
+    "node": ">4",
+    "npm": ">2"
   },
   "main": "./index",
   "bin": {
     "hubot": "./bin/hubot"
   },
   "scripts": {
-    "clean": "rm -rf lib/",
     "start": "bin/hubot",
-    "test": "mocha --require coffee-errors --compilers coffee:coffee-script",
-    "test:smoke": "coffee src/**/*.coffee",
-    "compile": "coffee --compile --bare --output lib src",
-    "compile:watch": "coffee --compile --bare --output lib --watch src"
+    "pretest": "standard",
+    "test": "nyc --reporter=html --reporter=text mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "test:smoke": "node src/**/*.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   }
 }

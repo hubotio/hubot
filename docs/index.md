@@ -50,43 +50,43 @@ Hubot needs Redis to persist data, so before you can start hubot on your own com
     Hubot>
 
 This starts hubot using the [shell adapter](./adapters/shell.md), which
-is mostly useful for development. Make note of  `Hubot>`; this is the name your hubot will
-`respond` to with commands. For example, to list available commands:
+is mostly useful for development. Make note of the name in the `hubot>` prompt;
+this is the name your hubot will respond to with commands. If the prompt
+reads `myhubot>` then your commands must start with `myhubot <command>`
+
+For example, to list available commands:
 
     % bin/hubot
-    hubot> hubot help
-    hubot adapter - Reply with the adapter
-    hubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
-    hubot echo <text> - Reply back with <text>
-    hubot help - Displays all of the help commands that hubot knows about.
-    hubot help <query> - Displays all help commands that match <query>.
-    hubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
-    hubot map me <query> - Returns a map view of the area returned by `query`.
-    hubot mustache me <query> - Searches Google Images for the specified query and mustaches it.
-    hubot mustache me <url> - Adds a mustache to the specified URL.
-    hubot ping - Reply with pong
-    hubot pronounce <phrase> in <language> - Provides pronunciation of <phrase> (<language> is optional)
-    hubot pug bomb N - get N pugs
-    hubot pug me - Receive a pug
-    hubot the rules - Make sure hubot still knows the rules.
-    hubot time - Reply with current time
-    hubot translate me <phrase> - Searches for a translation for the <phrase> and then prints that bad boy out.
-    hubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
-    hubot youtube me <query> - Searches YouTube for the query and returns the video embed link.
+    myhubot> myhubot help
+    myhubot> Shell: myhubot adapter - Reply with the adapter
+    myhubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
+    myhubot echo <text> - Reply back with <text>
+    myhubot help - Displays all of the help commands that Hubot knows about.
+    myhubot help <query> - Displays all help commands that match <query>.
+    myhubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
+    myhubot map me <query> - Returns a map view of the area returned by `query`.
+    myhubot mustache me <url|query> - Adds a mustache to the specified URL or query result.
+    myhubot ping - Reply with pong
+    myhubot pug bomb N - get N pugs
+    myhubot pug me - Receive a pug
+    myhubot the rules - Make sure hubot still knows the rules.
+    myhubot time - Reply with current time
+    myhubot translate me <phrase> - Searches for a translation for the <phrase> and then prints that bad boy out.
+    myhubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
     ship it - Display a motivation squirrel
 
 You almost definitely will want to change your hubot's name to add character. bin/hubot takes a `--name`:
 
-    % bin/hubot --name myhubot
-    myhubot>
+    % bin/hubot --name sam
+    sam>
 
-Your hubot will now respond as `myhubot`. This is
+Your hubot will now respond as `sam`. This is
 case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are equivalent:
 
-    MYHUBOT help
-    myhubot help
-    @myhubot help
-    myhubot: help
+    SAM help
+    sam help
+    @sam help
+    sam: help
 
 ## Scripts
 

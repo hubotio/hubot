@@ -1,12 +1,21 @@
 language: node_js
 node_js:
-  - "node" # latest stable Node.js release
-  - "7"
+  - "8"
   - "6"
-  - "5"
   - "4"
-  - "0.12"
-  - "0.10"
 notifications:
   email: false
 sudo: false
+addons:
+  apt:
+    packages:
+    - expect
+before_script:
+  - npm prune
+  - bin/e2e-test.sh
+after_success:
+  - npm run coverage
+  - npm run semantic-release
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/

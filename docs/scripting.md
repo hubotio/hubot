@@ -297,6 +297,9 @@ The match function must return a truthy value if the listener callback should be
 module.exports = (robot) ->
   robot.listen(
     (message) -> # Match function
+      # only match messages with text (ie ignore enter and other events)
+      return unless message.text
+
       # Occassionally respond to things that Steve says
       message.user.name is "Steve" and Math.random() > 0.8
     (response) -> # Standard listener callback
@@ -877,7 +880,7 @@ You may also want to install:
    other asynchronous actions)
 
 Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/github/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
+[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
 ```coffeescript
