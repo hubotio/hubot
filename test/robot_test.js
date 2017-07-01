@@ -28,8 +28,7 @@ describe('Robot', function () {
       warnOnUnregistered: false
     })
     mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
-    this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
-    this.robot.alias = 'Hubot'
+    this.robot = new Robot({adapter: 'mock-adapter', httpd: false, name: 'TestHubot', alias: 'Hubot'})
     this.robot.run()
 
     // Re-throw AssertionErrors for clearer test failures
@@ -1009,5 +1008,28 @@ describe('Robot', function () {
         })
       })
     })
+  })
+})
+
+describe('Robot deprecated constructor', function () {
+  beforeEach(function () {
+    mockery.enable({
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    })
+    mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+  })
+
+  afterEach(function () {
+    mockery.disable()
+    this.robot.shutdown()
+  })
+
+  it('works but is deprecated', function () {
+    this.robot = new Robot(null, 'mock-adapter', false, 'TestHubot', 'Hubot')
+    expect(this.robot.adapterName).to.equal('mock-adapter')
+    // TODO test that false got passed in? that value isn't set, instead it determines if null route setup or not
+    expect(this.robot.name).to.equal('TestHubot')
+    expect(this.robot.alias).to.equal('Hubot')
   })
 })
