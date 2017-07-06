@@ -18,9 +18,8 @@ const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
 class Robot {
-  // Robots receive messages from a chat source (Campfire, irc, etc), and
-  // dispatch them to matching listeners.
-  //
+  // Robots receive messages from a chat source (Campfire, irc, etc), and dispatch them to matching listeners.
+  
   // adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
   // adapter     - A String of the adapter name.
   // httpd       - A Boolean whether to enable the HTTP daemon.
@@ -72,28 +71,22 @@ class Robot {
     process.on('uncaughtException', this.onUncaughtException)
   }
 
-  // Public: Adds a custom Listener with the provided matcher, options, and
-  // callback
-  //
+  // Public: Adds a custom Listener with the provided matcher, options, and callback
+
   // matcher  - A Function that determines whether to call the callback.
-  //            Expected to return a truthy value if the callback should be
-  //            executed.
-  // options  - An Object of additional parameters keyed on extension name
-  //            (optional).
-  // callback - A Function that is called with a Response object if the
-  //            matcher function returns true.
+  //            Expected to return a truthy value if the callback should be executed.
+  // options  - An Object of additional parameters keyed on extension name (optional).
+  // callback - A Function that is called with a Response object if the matcher function returns true.
   //
   // Returns nothing.
   listen (matcher, options, callback) {
     this.listeners.push(new Listener.Listener(this, matcher, options, callback))
   }
 
-  // Public: Adds a Listener that attempts to match incoming messages based on
-  // a Regex.
+  // Public: Adds a Listener that attempts to match incoming messages based on a Regex.
   //
   // regex    - A Regex that determines if the callback should be called.
-  // options  - An Object of additional parameters keyed on extension name
-  //            (optional).
+  // options  - An Object of additional parameters keyed on extension name (optional).
   // callback - A Function that is called with a Response object.
   //
   // Returns nothing.
@@ -101,13 +94,14 @@ class Robot {
     this.listeners.push(new Listener.TextListener(this, regex, options, callback))
   }
 
-  // Public: Adds a Listener that attempts to match incoming messages directed
-  // at the robot based on a Regex. All regexes treat patterns like they begin
-  // with a '^'
+  /* 
+    Public: Adds a Listener that attempts to match incoming messages directed
+    at the robot based on a Regex. All regexes treat patterns like they begin
+    with a '^'
+  */
   //
   // regex    - A Regex that determines if the callback should be called.
-  // options  - An Object of additional parameters keyed on extension name
-  //            (optional).
+  // options  - An Object of additional parameters keyed on extension name (optional).
   // callback - A Function that is called with a Response object.
   //
   // Returns nothing.
@@ -115,8 +109,7 @@ class Robot {
     this.hear(this.respondPattern(regex), options, callback)
   }
 
-  // Public: Build a regular expression that matches messages addressed
-  // directly to the robot
+  // Public: Build a regular expression that matches messages addressed directly to the robot
   //
   // regex - A RegExp for the message part that follows the robot's name/alias
   //
@@ -151,8 +144,7 @@ class Robot {
 
   // Public: Adds a Listener that triggers when anyone enters the room.
   //
-  // options  - An Object of additional parameters keyed on extension name
-  //            (optional).
+  // options  - An Object of additional parameters keyed on extension name (optional).
   // callback - A Function that is called with a Response object.
   //
   // Returns nothing.
@@ -162,8 +154,7 @@ class Robot {
 
   // Public: Adds a Listener that triggers when anyone leaves the room.
   //
-  // options  - An Object of additional parameters keyed on extension name
-  //            (optional).
+  // options  - An Object of additional parameters keyed on extension name (optional).
   // callback - A Function that is called with a Response object.
   //
   // Returns nothing.
@@ -173,8 +164,7 @@ class Robot {
 
   // Public: Adds a Listener that triggers when anyone changes the topic.
   //
-  // options  - An Object of additional parameters keyed on extension name
-  //            (optional).
+  // options  - An Object of additional parameters keyed on extension name (optional).
   // callback - A Function that is called with a Response object.
   //
   // Returns nothing.
@@ -182,8 +172,7 @@ class Robot {
     this.listen(msg => msg instanceof Message.TopicMessage, options, callback)
   }
 
-  // Public: Adds an error handler when an uncaught exception or user emitted
-  // error event occurs.
+  // Public: Adds an error handler when an uncaught exception or user emitted error event occurs.
   //
   // callback - A Function that is called with the error object.
   //
@@ -192,8 +181,7 @@ class Robot {
     this.errorHandlers.push(callback)
   }
 
-  // Calls and passes any registered error handlers for unhandled exceptions or
-  // user emitted error events.
+  // Calls and passes any registered error handlers for unhandled exceptions or user emitted error events.
   //
   // err - An Error object.
   // res - An optional Response object that generated the error
@@ -232,24 +220,24 @@ class Robot {
     })
   }
 
-  // Public: Registers new middleware for execution after matching but before
-  // Listener callbacks
+  // Public: Registers new middleware for execution after matching but before listener callbacks
   //
-  // middleware - A function that determines whether or not a given matching
-  //              Listener should be executed. The function is called with
-  //              (context, next, done). If execution should
-  //              continue (next middleware, Listener callback), the middleware
-  //              should call the 'next' function with 'done' as an argument.
-  //              If not, the middleware should call the 'done' function with
-  //              no arguments.
-  //
+  // middleware:
+    /*            
+                  A function that determines whether or not a given matching
+                  Listener should be executed. The function is called with
+                  (context, next, done). If execution should
+                  continue (next middleware, Listener callback), the middleware
+                  should call the 'next' function with 'done' as an argument.
+                  If not, the middleware should call the 'done' function with
+                  no arguments.
+    */
   // Returns nothing.
   listenerMiddleware (middleware) {
     this.middleware.listener.register(middleware)
   }
 
-  // Public: Registers new middleware for execution as a response to any
-  // message is being sent.
+  // Public: Registers new middleware for execution as a response to any message is being sent.
   //
   // middleware - A function that examines an outgoing message and can modify
   //              it or prevent its sending. The function is called with
