@@ -1,6 +1,9 @@
 {
   "name": "hubot",
   "version": "0.0.0-development",
+  "standard": {
+     "env": [ "mocha" ]
+  },
   "publishConfig": {
     "tag": "next"
   },
