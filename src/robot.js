@@ -285,12 +285,12 @@ class Robot {
   //
   // cb - Optional callback that is called when message processing is complete
   //
-  // Returns nothing.
+  // Returns promise - resolves with context when middleware completes
   // Returns before executing callback
   receive (message, cb) {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
-    this.middleware.receive.execute({ response: new Response(this, message) }, this.processListeners.bind(this), cb)
+    return this.middleware.receive.execute({ response: new Response(this, message) }, this.processListeners.bind(this), cb)
   }
 
   // Private: Passes the given message to any interested Listeners.
