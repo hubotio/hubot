@@ -476,12 +476,17 @@ describe('Robot', function () {
 
           this.script = sinon.spy(function (robot) {})
           this.sandbox.stub(module, '_load').returns(this.script)
-          this.sandbox.stub(this.robot, 'parseHelp')
+          this.sandbox.stub(this.robot.logger, 'warning')
         })
 
         it('should not be loaded by the Robot', function () {
           this.robot.loadFile('./scripts', 'unsupported.yml')
           expect(this.script).to.not.have.been.calledWith(this.robot)
+        })
+
+        it('logs a warning', function () {
+          this.robot.loadFile('./scripts', 'unsupported.yml')
+          expect(this.robot.logger.warning).to.have.been.called
         })
       })
     })

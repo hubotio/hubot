@@ -349,9 +349,11 @@ class Robot {
   loadFile (filepath, filename) {
     const ext = path.extname(filename)
     const full = path.join(filepath, path.basename(filename, ext))
+    const accepted = ['.js', '.coffee']
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (!require.extensions[ext]) { // eslint-disable-line
+    if (accepted.indexOf(ext) === -1) {
+      this.logger.warning(`${filename} uses unsupported extension, only ${accepted.join(', ')} are accepted`)
       return
     }
 
