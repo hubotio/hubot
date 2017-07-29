@@ -20,6 +20,7 @@ const TopicMessage = require('../src/message').TopicMessage
 
 // mock `hubot-mock-adapter` module from fixture
 const mockery = require('mockery')
+const path = require('path')
 
 describe('Robot', function () {
   beforeEach(function () {
@@ -384,22 +385,37 @@ describe('Robot', function () {
       })
 
       describe('proper script', function () {
-        beforeEach(function () {
-          const module = require('module')
+        let script
 
-          this.script = sinon.spy(function (robot) {})
-          this.sandbox.stub(module, '_load').returns(this.script)
-          this.sandbox.stub(this.robot, 'parseHelp')
+        beforeEach(function () {
+          script = {
+            path: path.resolve('./test/scripts'),
+            file: 'test-script.js',
+            full: path.resolve('./test/scripts/test-script.js')
+          }
+          script.required = require(script.full)
+          this.sandbox.stub(require('module'), '_load').returns(script.required)
+          sinon.spy(this.robot, 'parseHelp')
+        })
+        afterEach(function () {
+          this.robot.parseHelp.restore()
         })
 
         it('should call the script with the Robot', function () {
-          this.robot.loadFile('./scripts', 'test-script.js')
-          expect(this.script).to.have.been.calledWith(this.robot)
+          this.robot.loadFile(script.path, script.file)
+          expect(script.required).to.have.been.calledWith(this.robot)
         })
 
         it('should parse the script documentation', function () {
-          this.robot.loadFile('./scripts', 'test-script.js')
-          expect(this.robot.parseHelp).to.have.been.calledWith('scripts/test-script.js')
+          this.robot.loadFile(script.path, script.file)
+          expect(this.robot.parseHelp).to.have.been.calledWith(script.full)
+        })
+
+        it('passes the commands in script comment documentation', function () {
+          this.robot.loadFile(script.path, script.file)
+          expect(this.robot.commands).to.eql([
+            'hubot <ping> - replies @user pong'
+          ])
         })
       })
 
