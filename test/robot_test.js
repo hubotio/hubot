@@ -384,7 +384,7 @@ describe('Robot', function () {
         expect(module._load).to.have.been.calledWith('scripts/test-script')
       })
 
-      describe('proper script', function () {
+      describe('proper script (js)', function () {
         let script
 
         beforeEach(function () {
@@ -392,6 +392,41 @@ describe('Robot', function () {
             path: path.resolve('./test/scripts'),
             file: 'test-script.js',
             full: path.resolve('./test/scripts/test-script.js')
+          }
+          script.required = require(script.full)
+          this.sandbox.stub(require('module'), '_load').returns(script.required)
+          sinon.spy(this.robot, 'parseHelp')
+        })
+        afterEach(function () {
+          this.robot.parseHelp.restore()
+        })
+
+        it('should call the script with the Robot', function () {
+          this.robot.loadFile(script.path, script.file)
+          expect(script.required).to.have.been.calledWith(this.robot)
+        })
+
+        it('should parse the script documentation', function () {
+          this.robot.loadFile(script.path, script.file)
+          expect(this.robot.parseHelp).to.have.been.calledWith(script.full)
+        })
+
+        it('passes the commands in script comment documentation', function () {
+          this.robot.loadFile(script.path, script.file)
+          expect(this.robot.commands).to.eql([
+            'hubot <ping> - replies @user pong'
+          ])
+        })
+      })
+
+      describe('proper script (coffee)', function () {
+        let script
+
+        beforeEach(function () {
+          script = {
+            path: path.resolve('./test/scripts'),
+            file: 'test-script.coffee',
+            full: path.resolve('./test/scripts/test-script.coffee')
           }
           script.required = require(script.full)
           this.sandbox.stub(require('module'), '_load').returns(script.required)
