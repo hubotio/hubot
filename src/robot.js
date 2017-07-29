@@ -731,11 +731,11 @@ function toHeaderCommentBlock (block, currentLine) {
 }
 
 function isCommentLine (line) {
-  return /^(#|\/\/)/.test(line)
+  return /^\s*(#|\/\/|\/?\*)/.test(line)
 }
 
 function removeCommentPrefix (line) {
-  return line.replace(/^[#/]+\s*/, '')
+  return line.replace(/^\s*[#/*]+\s*/, '')
 }
 
 function extend (obj/* , ...sources */) {
