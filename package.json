@@ -20,7 +20,7 @@
     "cline": "^0.8.2",
     "coffee-script": "1.6.3",
     "connect-multiparty": "^1.2.5",
-    "express": "^3.21.2",
+    "express": "^4.0.0",
     "log": "1.4.0",
     "optparse": "1.0.4",
     "scoped-http-client": "0.11.0"
