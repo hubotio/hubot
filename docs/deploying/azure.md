@@ -55,19 +55,18 @@ Commit your changes in git and push to GitHub and Azure will automatically pick 
     % git commit -m "Add Azure settings for hubot"
     % git push
 
-Azure offers a marketplace where you can use the default heroku-redis-brain using Redis Cloud provided by Redis Labs. Alternatively, to add an Azure storage brain, you will need to create an Azure storage account and account key. Then you can do the following in your base hubot directory.
+Azure offers a marketplace where you can use the default heroku-redis-brain using Redis Cloud provided by Redis Labs. Alternatively, to add an [Azure blob storage brain](https://github.com/coryallegory/hubot-azure-brain), you will need to create an Azure storage account. Then you can do the following in your base hubot directory.
 
-    % npm install hubot-azure-scripts --save
+    % npm install hubot-azure-brain --save
 
 Then add the following line in `external-scripts.json` in the list with the other external scripts
 
-    "hubot-azure-scripts/brain/storage-blob-brain"
+    "hubot-azure-brain"
 
-Finally, add two more environment variables to your website. You can do this either via the GUI or the following PowerShell commands.
+Finally, add one more environment variables to your website. You can do this either via the GUI or the following PowerShell commands.
 
     % $settings = New-Object Hashtable
-    % $settings["HUBOT_BRAIN_AZURE_STORAGE_ACCOUNT"] = "your Azure storage account"
-    % $settings["HUBOT_BRAIN_AZURE_STORAGE_ACCESS_KEY"] = "your Azure storage account key"
+    % $settings["HUBOT_BRAIN_AZURE_CONNSTRING"] = "your Azure blob storage connection string"
     % Set-AzureWebsite -AppSettings $settings mynewhubot
 
 Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](../scripting.md). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
@@ -75,6 +74,8 @@ Now any scripts that require a brain will function. You should look up other scr
 ### Troubleshooting tips and tricks
 
 Due to Azure being Windows-based, you may run into path length problems. To overcome this issue you can set the environment variable `IN_PLACE_DEPLOYMENT` to `1` and use [custom deployment scripts to take advantage of NPM3](https://github.com/felixrieseberg/azure-npm3) and flat module installation.
+
+If you have your instance of hubot deploying directly from source control to Azure, it will perform various bootstrapping tasks along with calling `npm install` via kudu. Now that Azure supports npm5, this process generates a package-lock.json file which may result in some of your packages failing to install remotely. You can edit `deploy.cmd` to include `--no-package-lock` as part of the "Step 3" install command.
 
 If using the free tier of Azure, you can also add a post-deployment step to ping the server on startup by setting the environment variable `POST_DEPLOYMENT_ACTION` with a script (relative to the src dir) such as `startup.sh`
 
