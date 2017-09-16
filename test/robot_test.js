@@ -434,6 +434,61 @@ describe('Robot', function () {
         })
       })
     })
+
+    describe('#send', function () {
+      beforeEach(function () {
+        sinon.spy(this.robot.adapter, 'send')
+      })
+
+      it('delegates to adapter "send" with proper context', function () {
+        this.robot.send({}, 'test message')
+        expect(this.robot.adapter.send).to.have.been.calledOn(this.robot.adapter)
+      })
+    })
+
+    describe('#reply', function () {
+      beforeEach(function () {
+        sinon.spy(this.robot.adapter, 'reply')
+      })
+
+      it('delegates to adapter "reply" with proper context', function () {
+        this.robot.reply({}, 'test message')
+        expect(this.robot.adapter.reply).to.have.been.calledOn(this.robot.adapter)
+      })
+    })
+
+    describe('#messageRoom', function () {
+      beforeEach(function () {
+        sinon.spy(this.robot.adapter, 'send')
+      })
+
+      it('delegates to adapter "send" with proper context', function () {
+        this.robot.messageRoom('testRoom', 'messageRoom test')
+        expect(this.robot.adapter.send).to.have.been.calledOn(this.robot.adapter)
+      })
+    })
+
+    describe('#on', function () {
+      beforeEach(function () {
+        sinon.spy(this.robot.events, 'on')
+      })
+
+      it('delegates to events "on" with proper context', function () {
+        this.robot.on('event', function () {})
+        expect(this.robot.events.on).to.have.been.calledOn(this.robot.events)
+      })
+    })
+
+    describe('#emit', function () {
+      beforeEach(function () {
+        sinon.spy(this.robot.events, 'emit')
+      })
+
+      it('delegates to events "emit" with proper context', function () {
+        this.robot.emit('event', function () {})
+        expect(this.robot.events.emit).to.have.been.calledOn(this.robot.events)
+      })
+    })
   })
 
   describe('Listener Registration', function () {
