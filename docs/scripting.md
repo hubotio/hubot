@@ -918,7 +918,7 @@ describe 'example script', ->
 
 **sample output**
 ```bash
-% mocha --compilers "coffee:coffee-script/register" test/*.coffee
+% mocha --require coffee-script/register test/*.coffee
 
 
   example script
