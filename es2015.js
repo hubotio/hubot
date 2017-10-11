@@ -1,5 +1,7 @@
 'use strict'
 
+const deprecate = require('depd')('hubot')
+
 const User = require('./src/user')
 const Brain = require('./src/brain')
 const Robot = require('./src/robot')
@@ -24,6 +26,8 @@ module.exports = {
   CatchAllMessage: Message.CatchAllMessage,
 
   loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
-    return new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+    deprecate('use Hubot.Robot constructor directly instead of Hubot.loadBot')
+
+    return new module.exports.Robot({adapter: adapterName, httpd: enableHttpd, name: botName, alias: botAlias})
   }
 }

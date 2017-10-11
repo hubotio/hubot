@@ -7,6 +7,7 @@ const path = require('path')
 const async = require('async')
 const Log = require('log')
 const HttpClient = require('scoped-http-client')
+const deprecate = require('depd')('hubot')
 
 const Brain = require('./brain')
 const Response = require('./response')
@@ -21,23 +22,36 @@ class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
   // dispatch them to matching listeners.
   //
-  // adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
-  // adapter     - A String of the adapter name.
-  // httpd       - A Boolean whether to enable the HTTP daemon.
-  // name        - A String of the robot name, defaults to Hubot.
-  constructor (adapterPath, adapter, httpd, name, alias) {
-    if (name == null) {
-      name = 'Hubot'
-    }
-    if (alias == null) {
-      alias = false
-    }
-    this.adapterPath = path.join(__dirname, 'adapters')
+  // @param {Object} options - parameters for building Robot
+  // @param {String} options.adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
+  // @param {String} options.adapter     - A String of the adapter name.
+  // @param {String} options.httpd       - A Boolean whether to enable the HTTP daemon.
+  // @param {String} options.name        - A String of the robot name, defaults to Hubot.
+  constructor (options) {
+    if (arguments.length > 1) {
+      options = {
+        adapterPath: arguments[0],
+        adapter: arguments[1],
+        httpd: arguments[2],
+        name: arguments[3],
+        alias: arguments[4]
+      }
 
-    this.name = name
+      deprecate('Robot constructed with multiple arguments, construct with one object argument instead')
+    }
+
+    if (options.name == null) {
+      options.name = 'Hubot'
+    }
+    if (options.alias == null) {
+      options.alias = false
+    }
+    this.adapterPath = options.adapterPath || path.join(__dirname, 'adapters')
+
+    this.name = options.name
     this.events = new EventEmitter()
     this.brain = new Brain(this)
-    this.alias = alias
+    this.alias = options.alias
     this.adapter = null
     this.Response = Response
     this.commands = []
@@ -52,15 +66,15 @@ class Robot {
     this.globalHttpOptions = {}
 
     this.parseVersion()
-    if (httpd) {
+    if (options.httpd) {
       this.setupExpress()
     } else {
       this.setupNullRouter()
     }
 
-    this.loadAdapter(adapter)
+    this.loadAdapter(options.adapter)
 
-    this.adapterName = adapter
+    this.adapterName = options.adapter
     this.errorHandlers = []
 
     this.on('error', (err, res) => {

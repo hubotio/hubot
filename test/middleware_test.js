@@ -351,7 +351,7 @@ describe('Middleware', function () {
         warnOnUnregistered: false
       })
       mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
-      this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
+      this.robot = new Robot({adapter: 'mock-adapter', httpd: false, name: 'TestHubot'})
       this.robot.run
 
       // Re-throw AssertionErrors for clearer test failures

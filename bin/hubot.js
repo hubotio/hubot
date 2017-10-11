@@ -23,7 +23,7 @@ const options = {
   adapter: process.env.HUBOT_ADAPTER || 'shell',
   alias: process.env.HUBOT_ALIAS || false,
   create: process.env.HUBOT_CREATE || false,
-  enableHttpd: process.env.HUBOT_HTTPD || true,
+  httpd: process.env.HUBOT_HTTPD || true,
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
   path: process.env.HUBOT_PATH || '.',
@@ -43,7 +43,7 @@ Parser.on('create', function (opt, value) {
 })
 
 Parser.on('disable-httpd', opt => {
-  options.enableHttpd = false
+  options.httpd = false
 })
 
 Parser.on('help', function (opt, value) {
@@ -94,7 +94,7 @@ if (options.create) {
   process.exit(1)
 }
 
-const robot = Hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias)
+const robot = Hubot.Robot(options)
 
 if (options.version) {
   console.log(robot.version)
