@@ -1,0 +1,14 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Match and apply these rules for all file
+# types you open in your code editor
+[*]
+# Unix-style newlines
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
