@@ -3,6 +3,7 @@
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const path = require('path')
+require('coffee-script') // registers extension for legacy script loading
 
 const async = require('async')
 const Log = require('log')
@@ -348,9 +349,11 @@ class Robot {
   loadFile (filepath, filename) {
     const ext = path.extname(filename)
     const full = path.join(filepath, path.basename(filename, ext))
+    const accepted = ['.js', '.coffee']
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (!require.extensions[ext]) { // eslint-disable-line
+    if (accepted.indexOf(ext) === -1) {
+      this.logger.warning(`${filename} uses unsupported extension, only ${accepted.join(', ')} are accepted`)
       return
     }
 
@@ -554,7 +557,7 @@ class Robot {
     }
 
     if (currentSection === null) {
-      this.logger.info(`${path} is using deprecated documentation syntax`)
+      this.logger.info(`${path} is missing documentation or using an unrecognised documentation syntax`)
       scriptDocumentation.commands = []
       for (let i = 0, line, cleanedLine; i < lines.length; i++) {
         line = lines[i]
@@ -730,11 +733,11 @@ function toHeaderCommentBlock (block, currentLine) {
 }
 
 function isCommentLine (line) {
-  return /^(#|\/\/)/.test(line)
+  return /^\s*(#|\/\/|\/?\*)/.test(line)
 }
 
 function removeCommentPrefix (line) {
-  return line.replace(/^[#/]+\s*/, '')
+  return line.replace(/^\s*[#/*]+\s*/, '')
 }
 
 function extend (obj/* , ...sources */) {
