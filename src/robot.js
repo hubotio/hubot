@@ -441,7 +441,7 @@ class Robot {
     }
     app.use(express.query())
 
-    app.use(express.json())
+    app.use(express.json({ limit }))
     app.use(express.urlencoded({ limit, parameterLimit: paramLimit }))
     // replacement for deprecated express.multipart/connect.multipart
     // limit to 100mb, as per the old behavior
