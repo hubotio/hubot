@@ -15,7 +15,11 @@ we wanted to make a bot called myhubot:
 
     % mkdir myhubot
     % cd myhubot
-    % yo hubot
+    % yo --no-insight hubot
+
+(--no-insight runs the `yo` CLI with the [insight](https://github.com/yeoman/insight)
+analytics tools disabled.  As of Match 2018 these tools were broken in some fashion
+and made it impossible to run `yo` at all)
 
 At this point, you'll be asked a few questions about who is creating the bot,
 and which [adapter](adapters.md) you'll be using. Adapters are hubot's
