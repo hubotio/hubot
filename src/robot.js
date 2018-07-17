@@ -540,7 +540,8 @@ class Robot {
       }
 
       nextSection = line.toLowerCase().replace(':', '')
-      if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
+      // in js files there is a hidden char at the end of the nextSection string, so check both nextSection and nextSection minus last char
+      if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1 || Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection.substring(0, nextSection.length - 1)) !== -1) {
         currentSection = nextSection
         scriptDocumentation[currentSection] = []
       } else {
