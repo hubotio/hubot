@@ -22,4 +22,5 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
+    - npm install -g npx
     - npx travis-deploy-once "npx semantic-release"
