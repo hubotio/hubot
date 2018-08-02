@@ -15,7 +15,11 @@ before_script:
   - bin/e2e-test.sh
 after_success:
   - npm run coverage
-  - npm run semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - npx travis-deploy-once "npx semantic-release"
