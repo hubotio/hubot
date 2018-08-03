@@ -10,6 +10,8 @@ addons:
   apt:
     packages:
     - expect
+before_install:
+  - npm install -g npm@latest
 before_script:
   - npm prune
   - bin/e2e-test.sh
@@ -22,5 +24,4 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-    - npm install -g npx
     - npx travis-deploy-once "npx semantic-release"
