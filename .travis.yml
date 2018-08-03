@@ -10,6 +10,8 @@ addons:
   apt:
     packages:
     - expect
+before_install:
+  - npm install -g npm@latest
 before_script:
   - npm prune
   - bin/e2e-test.sh
