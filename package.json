@@ -21,6 +21,7 @@
     "coffee-script": "1.6.3",
     "connect-multiparty": "^2.1.1",
     "express": "^4.16.3",
+    "express-basic-auth": "1.1.5",
     "log": "1.4.0",
     "optparse": "1.0.4",
     "scoped-http-client": "0.11.0"
