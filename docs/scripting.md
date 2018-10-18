@@ -94,7 +94,7 @@ the response object a private message can be sent to the original sender.
 ```coffeescript
   robot.respond /I don't like Sam-I-am/i, (res) ->
     room =  'joemanager'
-    robot.messageRoom room, "Someone does not like Dr. Seus"
+    robot.messageRoom room, "Someone does not like Dr. Seuss"
     res.reply  "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
 
   robot.hear /Sam-I-am/i, (res) ->
