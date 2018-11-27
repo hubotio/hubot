@@ -28,7 +28,7 @@
   "devDependencies": {
     "chai": "~2.1.0",
     "coveralls": "^2.13.1",
-    "mocha": "^2.1.0",
+    "mocha": "^5.2.0",
     "mockery": "^1.4.0",
     "nyc": "^11.0.2",
     "semantic-release": "^15.9.3",
