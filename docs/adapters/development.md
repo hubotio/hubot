@@ -6,7 +6,19 @@ permalink: /docs/adapters/development/
 
 ## Adapter Basics
 
-All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
+All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  If you're writing your adapter in CoffeeScript, require the primary version of the adapter:
+
+```coffee
+Adapter = require('hubot').Adapter
+```
+
+If you're writing your adapter in ES2015, you must require the ES2015 entrypoint instead:
+
+```js
+const Adapter = require('hubot/es2015').Adapter;
+```
+
+There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
 
 ```coffee
 class Sample extends Adapter
