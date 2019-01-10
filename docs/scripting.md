@@ -623,6 +623,21 @@ robot.respond /sleep it off/i, (res) ->
     res.reply 'zzzzz'
 ```
 
+The datastore also allows setting and getting values which are scoped to individual users:
+
+```coffeescript
+module.exports = (robot) ->
+
+  robot.respond /who is @?([\w .\-]+)\?*$/i, (res) ->
+    name = res.match[1].trim()
+
+    users = robot.brain.usersForFuzzyName(name)
+    if users.length is 1
+      user = users[0]
+      user.get('roles').then (roles) ->
+        res.send "#{name} is #{roles.join(', ')}"
+```
+
 ## Script Loading
 
 There are three main sources to load scripts from:

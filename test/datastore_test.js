@@ -113,4 +113,38 @@ describe('Datastore', function () {
       })
     })
   })
+
+  describe('User scope', function () {
+    it('has access to the robot object', function () {
+      let user = this.robot.brain.userForId('1')
+      expect(user._getRobot()).to.equal(this.robot)
+    })
+
+    it('can store user data which is separate from global data', function () {
+      let user = this.robot.brain.userForId('1')
+      return user.set('blah', 'blah').then(() => {
+        return user.get('blah').then((userBlah) => {
+          return this.robot.datastore.get('blah').then((datastoreBlah) => {
+            expect(userBlah).to.not.equal(datastoreBlah)
+            expect(userBlah).to.equal('blah')
+            expect(datastoreBlah).to.be.an('undefined')
+          })
+        })
+      })
+    })
+
+    it('stores user data separate per-user', function () {
+      let userOne = this.robot.brain.userForId('1')
+      let userTwo = this.robot.brain.userForId('2')
+      return userOne.set('blah', 'blah').then(() => {
+        return userOne.get('blah').then((valueOne) => {
+          return userTwo.get('blah').then((valueTwo) => {
+            expect(valueOne).to.not.equal(valueTwo)
+            expect(valueOne).to.equal('blah')
+            expect(valueTwo).to.be.an('undefined')
+          })
+        })
+      })
+    })
+  })
 })
