@@ -4,6 +4,28 @@ const EventEmitter = require('events').EventEmitter
 
 const User = require('./user')
 
+// If necessary, reconstructs a User object. Returns either:
+//
+// 1. If the original object was falsy, null
+// 2. If the original object was a User object, the original object
+// 3. If the original object was a plain JavaScript object, return
+//    a User object with all of the original object's properties.
+let reconstructUserIfNecessary = function (user) {
+  if (!user) {
+    return null
+  }
+
+  if (!user.constructor || (user.constructor && user.constructor.name !== 'User')) {
+    let id = user.id
+    delete user.id
+    // Use the old user as the "options" object,
+    // populating the new user with its values.
+    return new User(id, user)
+  } else {
+    return user
+  }
+}
+
 class Brain extends EventEmitter {
   // Represents somewhat persistent storage for the robot. Extend this.
   //
@@ -114,6 +136,14 @@ class Brain extends EventEmitter {
   mergeData (data) {
     for (let k in data || {}) {
       this.data[k] = data[k]
+    }
+
+    // Ensure users in the brain are still User objects.
+    if (data && data.users) {
+      for (let k in data.users) {
+        let user = this.data.users[k]
+        this.data.users[k] = reconstructUserIfNecessary(user)
+      }
     }
 
     this.emit('loaded', this.data)
