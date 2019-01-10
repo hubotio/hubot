@@ -64,7 +64,7 @@ exports.use = (robot) ->
     "hubot": ">=2.0"
   },
   "devDependencies": {
-    "coffee-script": ">=1.2.0"
+    "coffeescript": ">=1.2.0"
   }
   ```
 

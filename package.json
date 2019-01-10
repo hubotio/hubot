@@ -18,7 +18,7 @@
     "async": ">=0.1.0 <1.0.0",
     "chalk": "^1.0.0",
     "cline": "^0.8.2",
-    "coffee-script": "1.6.3",
+    "coffeescript": "1.6.3",
     "connect-multiparty": "^2.1.1",
     "express": "^4.16.3",
     "log": "1.4.0",
