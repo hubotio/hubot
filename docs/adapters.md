@@ -11,7 +11,7 @@ Hubot includes two official adapters:
 * [Shell](./adapters/shell.md), i.e. for use with development
 * [Campfire](./adapters/campfire.md)
 
-There are Third-party adapaters are available for most chat services. Here are the most popular ones:
+There are Third-party adapters available for most chat services. Here are the most popular ones:
 
 * [Gitter](https://github.com/huafu/hubot-gitter2)
 * [HipChat](https://github.com/hipchat/hubot-hipchat)

@@ -40,7 +40,7 @@ Then, edit this file and look for the sections that give you steps 1, 2 and 3. Y
 
 Now, create a new file in the base directory of hubot called `server.js` and put these two lines into it:
 
-    require('coffee-script/register');
+    require('coffeescript/register');
     module.exports = require('hubot/bin/hubot.coffee');
 
 Finally you will need to add the environment variables to the website to make sure it runs properly. You can either do it through the GUI (under configuration) or you can use the Azure PowerShell command line, as follows (example is showing slack as an adapter and mynewhubot as the website name).
