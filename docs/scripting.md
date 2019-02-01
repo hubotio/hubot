@@ -871,12 +871,12 @@ You'll also need to install:
 
 You may also want to install:
 
- * *coffee-script* (if you're writing your tests in CoffeeScript rather than JavaScript)
+ * *coffeescript* (if you're writing your tests in CoffeeScript rather than JavaScript)
  * a mocking library such as *Sinon.js* (if your script performs webservice calls or
    other asynchronous actions)
 
 Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
+[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
 ```coffeescript
@@ -918,7 +918,7 @@ describe 'example script', ->
 
 **sample output**
 ```bash
-% mocha --require coffee-script/register test/*.coffee
+% mocha --require coffeescript/register test/*.coffee
 
 
   example script
