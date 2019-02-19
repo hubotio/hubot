@@ -40,6 +40,7 @@ class Robot {
     this.brain = new Brain(this)
     this.alias = alias
     this.adapter = null
+    this.datastore = null
     this.Response = Response
     this.commands = []
     this.listeners = []
