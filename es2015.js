@@ -7,6 +7,7 @@ const Adapter = require('./src/adapter')
 const Response = require('./src/response')
 const Listener = require('./src/listener')
 const Message = require('./src/message')
+const DataStore = require('./src/datastore')
 
 module.exports = {
   User,
@@ -22,6 +23,8 @@ module.exports = {
   LeaveMessage: Message.LeaveMessage,
   TopicMessage: Message.TopicMessage,
   CatchAllMessage: Message.CatchAllMessage,
+  DataStore: DataStore.DataStore,
+  DataStoreUnavailable: DataStore.DataStoreUnavailable,
 
   loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
     return new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
