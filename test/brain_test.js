@@ -10,6 +10,8 @@ chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 
+const isCircular = require('is-circular')
+
 // Hubot classes
 const Brain = require('../src/brain')
 const User = require('../src/user')
@@ -65,6 +67,7 @@ describe('Brain', function () {
         expect(user.constructor.name).to.equal('User')
         expect(user.id).to.equal('4')
         expect(user.name).to.equal('new')
+        expect(isCircular(this.brain)).to.be.false
       })
     })
 
@@ -326,6 +329,8 @@ describe('Brain', function () {
       for (let user of this.brain.usersForRawFuzzyName('Guy One')) {
         expect(user.constructor.name).to.equal('User')
       }
+
+      expect(isCircular(this.brain)).to.be.false
     })
   })
 })
