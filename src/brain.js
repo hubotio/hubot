@@ -22,8 +22,10 @@ let reconstructUserIfNecessary = function (user, robot) {
     // populating the new user with its values.
     // Also add the `robot` field so it gets a reference.
     user.robot = robot
+    let newUser = new User(id, user)
+    delete user.robot
 
-    return new User(id, user)
+    return newUser
   } else {
     return user
   }
@@ -39,7 +41,9 @@ class Brain extends EventEmitter {
       users: {},
       _private: {}
     }
-    this.robot = robot
+    this.getRobot = function () {
+      return robot
+    }
 
     this.autoSave = true
 
@@ -146,7 +150,7 @@ class Brain extends EventEmitter {
     if (data && data.users) {
       for (let k in data.users) {
         let user = this.data.users[k]
-        this.data.users[k] = reconstructUserIfNecessary(user, this.robot)
+        this.data.users[k] = reconstructUserIfNecessary(user, this.getRobot())
       }
     }
 
@@ -168,7 +172,7 @@ class Brain extends EventEmitter {
     if (!options) {
       options = {}
     }
-    options.robot = this.robot
+    options.robot = this.getRobot()
 
     if (!user) {
       user = new User(id, options)
@@ -179,6 +183,7 @@ class Brain extends EventEmitter {
       user = new User(id, options)
       this.data.users[id] = user
     }
+    delete options.robot
 
     return user
   }
