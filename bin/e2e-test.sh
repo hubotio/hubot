@@ -28,6 +28,7 @@ export NODE_PATH=$NODE_PATH/$HUBOT_FOLDER/node_modules:$TEMP_ROOT/node_modules
 
 ## start
 expect <<EOL
+set timeout 10
   set timeout 30
 
   spawn bin/hubot --name e2etest
