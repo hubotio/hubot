@@ -24,7 +24,8 @@ let reconstructUserIfNecessary = function (user, robot) {
     user.robot = robot
     let newUser = new User(id, user)
     delete user.robot
-
+    
+    return new User(id, user)
     return newUser
   } else {
     return user
@@ -41,6 +42,7 @@ class Brain extends EventEmitter {
       users: {},
       _private: {}
     }
+        this.robot = robot
     this.getRobot = function () {
       return robot
     }
@@ -150,6 +152,7 @@ class Brain extends EventEmitter {
     if (data && data.users) {
       for (let k in data.users) {
         let user = this.data.users[k]
+                this.data.users[k] = reconstructUserIfNecessary(user, this.robot)
         this.data.users[k] = reconstructUserIfNecessary(user, this.getRobot())
       }
     }
@@ -172,6 +175,7 @@ class Brain extends EventEmitter {
     if (!options) {
       options = {}
     }
+        options.robot = this.robot
     options.robot = this.getRobot()
 
     if (!user) {
