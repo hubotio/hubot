@@ -1,6 +1,8 @@
 ---
 permalink: /docs/scripting/
 ---
+Hubot has an in-memory key-value store exposed as `robot.brain` that can be
+used to store and retrieve data by scripts.
 
 # Scripting
 
