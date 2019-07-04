@@ -1,6 +1,6 @@
-const http = require("http")
-const https = require("https")
-const Url = require("url")
+const http = require('http')
+const https = require('https')
+const Url = require('url')
 const transport = {
   http, https
 }
@@ -24,20 +24,19 @@ class Client {
   get () {
     const cb = callback => {
       let body = ''
-      const httpOrHttps = transport[this.parsedUrl.protocol.replace(":", "")]
+      const httpOrHttps = transport[this.parsedUrl.protocol.replace(':', '')]
       let req = httpOrHttps.get(this.url, this.options, res => {
-        const {statusCode} = res
-        res.on("data", chunk => {
+        res.on('data', chunk => {
           body += chunk
         })
-        res.on("end", ()=>{
+        res.on('end', () => {
           callback(null, res, body)
         })
-        res.on("error", err => {
+        res.on('error', err => {
           callback(err, res, body)
         })
       })
-      req.on("error", err => {
+      req.on('error', err => {
         console.error(err)
         callback(err, {}, body)
       })
@@ -48,21 +47,20 @@ class Client {
   post (data) {
     const cb = callback => {
       let body = ''
-      const httpOrHttps = transport[this.parsedUrl.protocol.replace(":", "")]
-      this.options.method = "POST"
+      const httpOrHttps = transport[this.parsedUrl.protocol.replace(':', '')]
+      this.options.method = 'POST'
       const req = httpOrHttps.request(this.options, res => {
-        const {statusCode} = res
-        res.on("data", chunk => {
+        res.on('data', chunk => {
           body += chunk
         })
-        res.on("end", ()=>{
+        res.on('end', () => {
           callback(null, res, body)
         })
-        res.on("error", err => {
+        res.on('error', err => {
           callback(err, res, body)
         })
       })
-      req.on("error", err => {
+      req.on('error', err => {
         callback(err, {}, body)
       })
       req.write(data)

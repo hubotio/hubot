@@ -66,7 +66,7 @@ describe('Robot', function () {
         expect(this.httpClient).to.have.property('get')
         expect(this.httpClient).to.have.property('post')
       })
-      
+
       it('persists the url passed in', function () {
         const url = 'http://localhost'
         const httpClient = this.robot.http(url)
@@ -79,24 +79,28 @@ describe('Robot', function () {
         this.robot.router.get('/', (req, res) => {
           res.end()
         })
-        httpClient.get()((err, res, body)=>{
+        httpClient.get()((err, res, body) => {
+          expect(err).to.be.null
+          expect(body).to.not.be.null
           expect(res.headers['x-powered-by']).to.be.equal(`hubot/${this.robot.name}`)
           done()
         })
       })
-      
+
       it('actually does a post', function (done) {
         const url = `http://localhost:${process.env.PORT}/1`
         const httpClient = this.robot.http(url, {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         })
         this.robot.router.post('/:id', (req, res) => {
-          expect(req.params.id).to.be.equal("1")
-          expect(req.body.name).to.be.equal("jg")
+          expect(req.params.id).to.be.equal('1')
+          expect(req.body.name).to.be.equal('jg')
           res.json(req.body)
         })
-        httpClient.post("name=jg")((err, res, body)=>{
-          expect(JSON.parse(body).name).to.be.equal("jg")
+        httpClient.post('name=jg')((err, res, body) => {
+          expect(err).to.be.null
+          expect(res.statusCode).to.be.equal(200)
+          expect(JSON.parse(body).name).to.be.equal('jg')
           done()
         })
       })

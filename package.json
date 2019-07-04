@@ -47,7 +47,7 @@
   },
   "scripts": {
     "start": "bin/hubot",
-    "pretest": "echo 'nah'",
+    "pretest": "standard --fix",
     "test": "nyc --reporter=html --reporter=text mocha",
     "test:one": "mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
