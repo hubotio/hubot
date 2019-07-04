@@ -6,7 +6,7 @@ const path = require('path')
 
 const async = require('async')
 const Log = require('log')
-const HttpClient = require('../lib/http-client.js')
+const HttpClient = require('./http-client.js')
 
 const Brain = require('./brain')
 const Response = require('./response')

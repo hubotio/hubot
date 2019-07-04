@@ -47,8 +47,9 @@
   },
   "scripts": {
     "start": "bin/hubot",
-    "pretest": "standard",
+    "pretest": "echo 'nah'",
     "test": "nyc --reporter=html --reporter=text mocha",
+    "test:one": "mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "test:smoke": "node src/**/*.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"

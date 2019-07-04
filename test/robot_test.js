@@ -21,6 +21,8 @@ const TopicMessage = require('../src/message').TopicMessage
 // mock `hubot-mock-adapter` module from fixture
 const mockery = require('mockery')
 
+process.env.PORT = process.env.PORT || 8080
+
 describe('Robot', function () {
   beforeEach(function () {
     mockery.enable({
@@ -34,14 +36,12 @@ describe('Robot', function () {
 
     // Re-throw AssertionErrors for clearer test failures
     this.robot.on('error', function (name, err, response) {
-      if ((err != null ? err.constructor : undefined) == null) { }
-      if (err.constructor.name === 'AssertionError') {
+      if (err && err.constructor.name === 'AssertionError') {
         process.nextTick(function () {
           throw err
         })
       }
     })
-
     this.user = this.robot.brain.userForId('1', {
       name: 'hubottester',
       room: '#mocha'
@@ -65,6 +65,34 @@ describe('Robot', function () {
         // ScopedHttpClient
         expect(this.httpClient).to.have.property('get')
         expect(this.httpClient).to.have.property('post')
+      })
+      it('persists the url passed in', function () {
+        const url = 'http://localhost'
+        const httpClient = this.robot.http(url)
+        expect(httpClient.url).to.equal(url)
+      })
+      it('actually responds to an http get request', function(done){
+        const url = `http://localhost:${process.env.PORT}`
+        const httpClient = this.robot.http(url)
+        httpClient.get()((err, res, body)=>{
+          expect(res.headers['x-powered-by']).to.be.equal(`hubot/${this.robot.name}`)
+          done()
+        })
+      })
+      it('actually does a post', function(done){
+        const url = `http://localhost:${process.env.PORT}/1`
+        const httpClient = this.robot.http(url, {
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        this.robot.router.post('/:id', (req, res) => {
+          expect(req.params.id).to.be.equal("1")
+          expect(req.body.name).to.be.equal("jg")
+          res.json(req.body)
+        })
+        httpClient.post("name=jg")((err, res, body)=>{
+          expect(JSON.parse(body).name).to.be.equal("jg")
+          done()
+        })
       })
 
       it('passes options through to the ScopedHttpClient', function () {
