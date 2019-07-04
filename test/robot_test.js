@@ -66,20 +66,26 @@ describe('Robot', function () {
         expect(this.httpClient).to.have.property('get')
         expect(this.httpClient).to.have.property('post')
       })
+      
       it('persists the url passed in', function () {
         const url = 'http://localhost'
         const httpClient = this.robot.http(url)
         expect(httpClient.url).to.equal(url)
       })
-      it('actually responds to an http get request', function(done){
+
+      it('actually responds to an http get request', function (done) {
         const url = `http://localhost:${process.env.PORT}`
         const httpClient = this.robot.http(url)
+        this.robot.router.get('/', (req, res) => {
+          res.end()
+        })
         httpClient.get()((err, res, body)=>{
           expect(res.headers['x-powered-by']).to.be.equal(`hubot/${this.robot.name}`)
           done()
         })
       })
-      it('actually does a post', function(done){
+      
+      it('actually does a post', function (done) {
         const url = `http://localhost:${process.env.PORT}/1`
         const httpClient = this.robot.http(url, {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}

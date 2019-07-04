@@ -38,6 +38,7 @@ class Client {
         })
       })
       req.on("error", err => {
+        console.error(err)
         callback(err, {}, body)
       })
     }
