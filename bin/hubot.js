@@ -93,8 +93,9 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
   process.exit(1)
 }
-
-const robot = Hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias)
+const path = require('path')
+const dirName = __dirname
+const robot = Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options.enableHttpd, options.name, options.alias)
 
 if (options.version) {
   console.log(robot.version)

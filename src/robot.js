@@ -14,8 +14,10 @@ const Listener = require('./listener')
 const Message = require('./message')
 const Middleware = require('./middleware')
 
-const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell']
+const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
+
+const dirName = __dirname
 
 class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -33,7 +35,7 @@ class Robot {
     if (alias == null) {
       alias = false
     }
-    this.adapterPath = path.join(__dirname, 'adapters')
+    this.adapterPath = adapterPath
 
     this.name = name
     this.events = new EventEmitter()
@@ -501,7 +503,6 @@ class Robot {
 
     try {
       const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
-
       this.adapter = require(path).use(this)
     } catch (err) {
       this.logger.error(`Cannot load adapter ${adapter} - ${err}`)
@@ -666,7 +667,7 @@ class Robot {
   //
   // Returns a String of the version number.
   parseVersion () {
-    const pkg = require(path.join(__dirname, '..', 'package.json'))
+    const pkg = require(path.join(dirName, '..', 'package.json'))
     this.version = pkg.version
 
     return this.version
