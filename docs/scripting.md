@@ -88,7 +88,7 @@ module.exports = (robot) ->
     robot.messageRoom room, "I do not like green eggs and ham.  I do not like them sam-I-am."
 ```
 
-User name can be explicitely specified if desired ( for a cc to an admin/manager), or using
+User name can be explicitly specified if desired ( for a cc to an admin/manager), or using
 the response object a private message can be sent to the original sender.
 
 ```coffeescript
@@ -300,7 +300,7 @@ module.exports = (robot) ->
       # only match messages with text (ie ignore enter and other events)
       return unless message.text
 
-      # Occassionally respond to things that Steve says
+      # Occasionally respond to things that Steve says
       message.user.name is "Steve" and Math.random() > 0.8
     (response) -> # Standard listener callback
       # Let Steve know how happy you are that he exists
