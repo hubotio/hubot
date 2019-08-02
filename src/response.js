@@ -24,10 +24,10 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing.
+  // Returns promise - resolves with context when middleware completes
   send (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    this.runWithMiddleware.apply(this, ['send', { plaintext: true }].concat(strings))
+    return this.runWithMiddleware.apply(this, ['send', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts an emote back to the chat source
@@ -35,10 +35,10 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing.
+  // Returns promise - resolves with context when middleware completes
   emote (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    this.runWithMiddleware.apply(this, ['emote', { plaintext: true }].concat(strings))
+    return this.runWithMiddleware.apply(this, ['emote', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts a message mentioning the current user.
@@ -46,10 +46,10 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing.
+  // Returns promise - resolves with context when middleware completes
   reply (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    this.runWithMiddleware.apply(this, ['reply', { plaintext: true }].concat(strings))
+    return this.runWithMiddleware.apply(this, ['reply', { plaintext: true }].concat(strings))
   }
 
   // Public: Posts a topic changing message
@@ -57,10 +57,10 @@ class Response {
   // strings - One or more strings to set as the topic of the
   //           room the bot is in.
   //
-  // Returns nothing.
+  // Returns promise - resolves with context when middleware completes
   topic (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    this.runWithMiddleware.apply(this, ['topic', { plaintext: true }].concat(strings))
+    return this.runWithMiddleware.apply(this, ['topic', { plaintext: true }].concat(strings))
   }
 
   // Public: Play a sound in the chat source
@@ -68,10 +68,10 @@ class Response {
   // strings - One or more strings to be posted as sounds to play. The order of
   //           these strings should be kept intact.
   //
-  // Returns nothing
+  // Returns promise - resolves with context when middleware completes
   play (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    this.runWithMiddleware.apply(this, ['play'].concat(strings))
+    return this.runWithMiddleware.apply(this, ['play'].concat(strings))
   }
 
   // Public: Posts a message in an unlogged room
@@ -79,10 +79,10 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing
+  // Returns promise - resolves with context when middleware completes
   locked (/* ...strings */) {
     const strings = [].slice.call(arguments)
-    this.runWithMiddleware.apply(this, ['locked', { plaintext: true }].concat(strings))
+    return this.runWithMiddleware.apply(this, ['locked', { plaintext: true }].concat(strings))
   }
 
   // Private: Call with a method for the given strings using response

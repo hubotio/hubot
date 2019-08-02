@@ -22,43 +22,54 @@ class Middleware {
   // done() - Initial (final) completion callback. May be wrapped by
   //     executed middleware.
   //
-  // Returns nothing
+  // Returns promise - resolves with context when middleware completes
   // Returns before executing any middleware
   execute (context, next, done) {
-    const self = this
+    return new Promise((resolve, reject) => {
+      const self = this
 
-    if (done == null) {
-      done = function () {}
-    }
-
-    // Execute a single piece of middleware and update the completion callback
-    // (each piece of middleware can wrap the 'done' callback with additional
-    // logic).
-    function executeSingleMiddleware (doneFunc, middlewareFunc, cb) {
-      // Match the async.reduce interface
-      function nextFunc (newDoneFunc) {
-        cb(null, newDoneFunc || doneFunc)
+      if (done == null) {
+        done = function () {}
       }
 
-      // Catch errors in synchronous middleware
-      try {
-        middlewareFunc(context, nextFunc, doneFunc)
-      } catch (err) {
-        // Maintaining the existing error interface (Response object)
-        self.robot.emit('error', err, context.response)
-        // Forcibly fail the middleware and stop executing deeper
-        doneFunc()
+      // Allow each middleware to resolve the promise early if it calls done()
+      const pieceDone = () => {
+        done()
+        resolve(context)
       }
-    }
 
-    // Executed when the middleware stack is finished
-    function allDone (_, finalDoneFunc) {
-      next(context, finalDoneFunc)
-    }
+      // Execute a single piece of middleware and update the completion callback
+      // (each piece of middleware can wrap the 'done' callback with additional
+      // logic).
+      function executeSingleMiddleware (doneFunc, middlewareFunc, cb) {
+        // Match the async.reduce interface
+        function nextFunc (newDoneFunc) {
+          cb(null, newDoneFunc || doneFunc)
+        }
 
-    // Execute each piece of middleware, collecting the latest 'done' callback
-    // at each step.
-    process.nextTick(async.reduce.bind(null, this.stack, done, executeSingleMiddleware, allDone))
+        // Catch errors in synchronous middleware
+        try {
+          middlewareFunc(context, nextFunc, doneFunc)
+        } catch (err) {
+          // Maintaining the existing error interface (Response object)
+          self.robot.emit('error', err, context.response)
+          // Forcibly fail the middleware and stop executing deeper
+          doneFunc()
+          err.context = context
+          reject(err)
+        }
+      }
+
+      // Executed when the middleware stack is finished
+      function allDone (_, finalDoneFunc) {
+        next(context, finalDoneFunc)
+        resolve(context)
+      }
+
+      // Execute each piece of middleware, collecting the latest 'done' callback
+      // at each step.
+      process.nextTick(async.reduce.bind(null, this.stack, pieceDone, executeSingleMiddleware, allDone))
+    })
   }
 
   // Public: Registers new middleware

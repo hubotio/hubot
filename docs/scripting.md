@@ -743,6 +743,10 @@ Every middleware receives the same API signature of `context`, `next`, and
 `done`. Different kinds of middleware may receive different information in the
 `context` object. For more details, see the API for each type of middleware.
 
+Middleware execution returns a promise that resolves with the final `context`
+when the middleware stack completes. If the middleware stack throws an error,
+the promise will be rejected with the error and `context` at that point.
+
 ### Error Handling
 
 For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.

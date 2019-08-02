@@ -224,6 +224,70 @@ describe('Middleware', function () {
         )
       })
 
+      it('returns a promise that resolves when async middleware stack is complete', function (testDone) {
+        const testMiddlewareA = (context, next, done) => {
+          setTimeout(() => {
+            context.A = 'done'
+            next(done)
+          }, 50)
+        }
+
+        const testMiddlewareB = (context, next, done) => {
+          setTimeout(() => {
+            context.B = 'done'
+            next(done)
+          }, 50)
+        }
+
+        this.middleware.register(testMiddlewareA)
+        this.middleware.register(testMiddlewareB)
+
+        const middlewareFinished = () => {}
+
+        const middlewarePromise = this.middleware.execute(
+          {},
+          (_, done) => done(),
+          middlewareFinished
+        )
+
+        middlewarePromise.then((finalContext) => {
+          expect(finalContext).to.deep.equal({ A: 'done', B: 'done' })
+          testDone()
+        })
+      })
+
+      it('promise resolves when middleware completes early, with context at that point', function (testDone) {
+        const testMiddlewareA = (context, next, done) => {
+          setTimeout(() => {
+            context.A = 'done'
+            done()
+          }, 50)
+        }
+
+        const testMiddlewareB = (context, next, done) => {
+          setTimeout(() => {
+            context.B = 'done'
+            next(done)
+          }, 50)
+        }
+
+        this.middleware.register(testMiddlewareA)
+        this.middleware.register(testMiddlewareB)
+
+        const middlewareFinished = () => {}
+
+        const middlewarePromise = this.middleware.execute(
+          {},
+          (_, done) => done(),
+          middlewareFinished
+        )
+
+        middlewarePromise.then((finalContext) => {
+          expect(finalContext).to.deep.equal({ A: 'done' })
+          testDone()
+        })
+      })
+
       describe('error handling', function () {
         it('does not execute subsequent middleware after the error is thrown', function (testDone) {
           const middlewareExecution = []
@@ -258,7 +322,7 @@ describe('Middleware', function () {
             {},
             middlewareFinished,
             middlewareFailed
-          )
+          ).catch((reason) => {}) // supress unhandled promise rejection warning
         })
 
         it('emits an error event', function (testDone) {
@@ -287,7 +351,7 @@ describe('Middleware', function () {
             {response: testResponse},
             middlewareFinished,
             middlewareFailed
-          )
+          ).catch((reason) => {}) // supress unhandled promise rejection warning
         })
 
         it('unwinds the middleware stack (calling all done functions)', function (testDone) {
@@ -319,7 +383,7 @@ describe('Middleware', function () {
             {},
             middlewareFinished,
             middlewareFailed
-          )
+          ).catch((reason) => {}) // supress unhandled promise rejection warning
         })
       })
     })
