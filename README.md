@@ -13,8 +13,6 @@ for details on getting up and running with your very own robot friend.
 In most cases, you'll probably never have to hack on this repo directly if you
 are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTING.md)
 
-If you'd like to chat with Hubot users and developers, [join us on Slack](https://hubot-slackin.herokuapp.com/).
-
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
