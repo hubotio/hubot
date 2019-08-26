@@ -8,8 +8,8 @@ trap "{ CODE=$?; popd; rm -rf $TEMP_ROOT; exit $CODE; }" EXIT
 
 ## https://hubot.github.com/docs/
 
-echo "$ npm install -g yo generator-hubot"
-npm install -g yo generator-hubot
+echo "$ npm install -g yo@2.0.6 generator-hubot"
+npm install -g yo@2.0.6 generator-hubot
 
 ## simulate pressing enter for each generator question to accept defaults
 ## https://stackoverflow.com/a/6264618/206879
