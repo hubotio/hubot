@@ -33,7 +33,7 @@
     "mocha": "^5.2.0",
     "mockery": "^1.4.0",
     "nyc": "^14.1.1",
-    "semantic-release": "^15.9.3",
+    "semantic-release": "^15.13.25",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0",
     "standard": "^10.0.2"

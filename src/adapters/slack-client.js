@@ -1,12 +1,12 @@
-const {RTMClient, WebClient} = require("@slack/client")
-const SlackFormatter = require("./slack-formatter.js")
+const {RTMClient, WebClient} = require('@slack/client')
+const SlackFormatter = require('./slack-formatter.js')
 
 const CONVERSATION_CACHE_TTL_MS = process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS
   ? parseInt(process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS, 10) : (5 * 60 * 1000)
 const PAGE_SIZE = 100
 
 class SlackClient {
-  constructor(options, robot) {
+  constructor (options, robot) {
     this.robot = robot
     this.rtm = new RTMClient(options.token, options.rtm)
     this.web = new WebClient(options.token, { maxRequestConcurrency: 1 })
@@ -14,31 +14,31 @@ class SlackClient {
     this.rtmStartOpts = options.rtmStart || {}
     this.format = new SlackFormatter(this.rtm.dataStore, this.robot)
     this.botUserIdMap = {
-      "B01": { id: "B01", user_id: "USLACKBOT" }
+      'B01': { id: 'B01', user_id: 'USLACKBOT' }
     }
     this.channelData = {}
-    this.rtm.on("message", this.eventWrapper, this)
-    this.rtm.on("reaction_added", this.eventWrapper, this)
-    this.rtm.on("reaction_removed", this.eventWrapper, this)
-    this.rtm.on("presence_change", this.eventWrapper, this)
-    this.rtm.on("member_joined_channel", this.eventWrapper, this)
-    this.rtm.on("member_left_channel", this.eventWrapper, this)
-    this.rtm.on("file_shared", this.eventWrapper, this)
-    this.rtm.on("user_change", this.updateUserInBrain, this)
+    this.rtm.on('message', this.eventWrapper, this)
+    this.rtm.on('reaction_added', this.eventWrapper, this)
+    this.rtm.on('reaction_removed', this.eventWrapper, this)
+    this.rtm.on('presence_change', this.eventWrapper, this)
+    this.rtm.on('member_joined_channel', this.eventWrapper, this)
+    this.rtm.on('member_left_channel', this.eventWrapper, this)
+    this.rtm.on('file_shared', this.eventWrapper, this)
+    this.rtm.on('user_change', this.updateUserInBrain, this)
     this.eventHandler = undefined
   }
-  connect() {
+  connect () {
     this.robot.logger.debug(`RTMClient#start() with options: ${JSON.stringify(this.rtmStartOpts)}`)
     return this.rtm.start(this.rtmStartOpts)
   }
-  onEvent(callback) {
+  onEvent (callback) {
     this.eventHandler = callback
   }
-  disconnect() {
+  disconnect () {
     this.rtm.disconnect()
     return this.rtm.removeAllListeners()
   }
-  setTopic(conversationId, topic) {
+  setTopic (conversationId, topic) {
     this.robot.logger.debug(`SlackClient#setTopic() with topic ${topic}`)
     return this.web.conversations.info({channel: conversationId})
       .then(res => {
@@ -49,14 +49,14 @@ class SlackClient {
           return this.robot.logger.debug(`Conversation ${conversationId} is a DM or MPDM. These conversation types do not have topics.`
           )
         }
-    }).catch(error => {
+      }).catch(error => {
         return this.robot.logger.error(`Error setting topic in conversation ${conversationId}: ${error.message}`)
-    })
+      })
   }
-  async send(envelope, message) {
+  async send (envelope, message) {
     const room = envelope.room || envelope.id
     if ((room == null)) {
-      this.robot.logger.error("Cannot send message without a valid room. Envelopes should contain a room property set to a Slack conversation ID.")
+      this.robot.logger.error('Cannot send message without a valid room. Envelopes should contain a room property set to a Slack conversation ID.')
       return
     }
 
@@ -68,7 +68,7 @@ class SlackClient {
       thread_ts: (envelope.message != null ? envelope.message.thread_ts : undefined)
     }
 
-    if (typeof(message) !== "string") {
+    if (typeof (message) !== 'string') {
       message.channel = message.channel || room
     } else {
       options.text = message
@@ -76,24 +76,24 @@ class SlackClient {
     }
 
     let result = null
-    try{
+    try {
       result = await this.web.chat.postMessage(Object.assign(message, options))
-    } catch(error){
+    } catch (error) {
       this.robot.logger.error(`SlackClient#send() error: ${error.message}`)
     }
     return result
   }
 
-  loadUsers(callback) {
+  loadUsers (callback) {
     const combinedResults = { members: [] }
     const pageLoaded = (error, results) => {
       if (error) {
         return callback(error)
       }
-      results.members.forEach( member => {
+      results.members.forEach(member => {
         combinedResults.members.push(member)
       })
-      if(results && results.response_metadata && results.response_metadata.next_cursor){
+      if (results && results.response_metadata && results.response_metadata.next_cursor) {
         return this.web.users.list({
           limit: PAGE_SIZE,
           cursor: results.response_metadata.next_cursor
@@ -101,20 +101,20 @@ class SlackClient {
       } else {
         return callback(null, combinedResults)
       }
-    };
+    }
     return this.web.users.list({ limit: PAGE_SIZE }, pageLoaded)
   }
-  fetchUser(userId) {
+  fetchUser (userId) {
     if (this.robot.brain.data.users[userId] != null) {
       return Promise.resolve(this.robot.brain.data.users[userId])
     }
     return this.web.users.info({user: userId}).then(r => this.updateUserInBrain(r.user))
   }
-  fetchBotUser(botId) {
+  fetchBotUser (botId) {
     if (this.botUserIdMap[botId] != null) { return Promise.resolve(this.botUserIdMap[botId]) }
     return this.web.bots.info({bot: botId}).then(r => r.bot)
   }
-  fetchConversation(conversationId) {
+  fetchConversation (conversationId) {
     const expiration = Date.now() - CONVERSATION_CACHE_TTL_MS
 
     if (((this.channelData[conversationId] != null ? this.channelData[conversationId].channel : undefined) != null) &&
@@ -129,12 +129,12 @@ class SlackClient {
           updated: Date.now()
         }
       }
-      return r.channel;
+      return r.channel
     })
   }
-  updateUserInBrain(event_or_user) {
+  updateUserInBrain (eventOrUser) {
     let key, value
-    const user = event_or_user.type === 'user_change' ? event_or_user.user : event_or_user
+    const user = eventOrUser.type === 'user_change' ? eventOrUser.user : eventOrUser
     const newUser = {
       id: user.id,
       name: user.name,
@@ -144,8 +144,8 @@ class SlackClient {
 
     if ((user.profile != null ? user.profile.email : undefined) != null) { newUser.email_address = user.profile.email }
     for (key in user) {
-      value = user[key];
-      newUser.slack[key] = value;
+      value = user[key]
+      newUser.slack[key] = value
     }
 
     if (user.id in this.robot.brain.data.users) {
@@ -160,7 +160,7 @@ class SlackClient {
     delete this.robot.brain.data.users[user.id]
     return this.robot.brain.userForId(user.id, newUser)
   }
-  async eventWrapper(event) {
+  async eventWrapper (event) {
     if (this.eventHandler) {
       const fetches = {}
       if (event.user) {
@@ -178,14 +178,14 @@ class SlackClient {
       if (fetches.item_user) {
         event.item_user = fetches.item_user
       }
-      
+
       if (fetches.user) {
         event.user = fetches.user
       } else if (fetches.bot) {
         if (this.botUserIdMap[event.bot_id]) {
           event.user = fetches.bot
         } else if (fetches.bot.user_id != null) {
-          let res = await this.web.users.info({user: fetched.bot.user_id})
+          let res = await this.web.users.info({user: fetches.bot.user_id})
           event.user = res.user
           this.botUserIdMap[event.bot_id] = res.user
         } else {
@@ -207,8 +207,8 @@ class SlackClient {
   }
 }
 
-if (CONVERSATION_CACHE_TTL_MS === NaN) {
-  throw new Error('HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS must be a number. It could not be parsed.');
+if (isNaN(CONVERSATION_CACHE_TTL_MS)) {
+  throw new Error('HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS must be a number. It could not be parsed.')
 }
 
 module.exports = SlackClient
