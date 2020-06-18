@@ -95,7 +95,7 @@ if (options.create) {
 }
 
 const robot = Hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias)
-
+exports.robot = robot;
 if (options.version) {
   console.log(robot.version)
   process.exit(0)
