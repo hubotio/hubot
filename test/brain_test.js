@@ -10,6 +10,8 @@ chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 
+const isCircular = require('is-circular')
+
 // Hubot classes
 const Brain = require('../src/brain')
 const User = require('../src/user')
@@ -57,6 +59,15 @@ describe('Brain', function () {
         sinon.spy(this.brain, 'emit')
         this.brain.mergeData({})
         expect(this.brain.emit).to.have.been.calledWith('loaded', this.brain.data)
+      })
+
+      it('coerces loaded data into User objects', function () {
+        this.brain.mergeData({users: {'4': {'name': 'new', 'id': '4'}}})
+        let user = this.brain.userForId('4')
+        expect(user.constructor.name).to.equal('User')
+        expect(user.id).to.equal('4')
+        expect(user.name).to.equal('new')
+        expect(isCircular(this.brain)).to.be.false
       })
     })
 
@@ -307,6 +318,19 @@ describe('Brain', function () {
       const result = this.brain.usersForFuzzyName('Guy')
       expect(result).to.have.members([this.user1, this.user2])
       expect(result).to.not.have.members([this.user3])
+    })
+
+    it('returns User objects, not POJOs', function () {
+      expect(this.brain.userForId('1').constructor.name).to.equal('User')
+      for (let user of this.brain.usersForFuzzyName('Guy')) {
+        expect(user.constructor.name).to.equal('User')
+      }
+
+      for (let user of this.brain.usersForRawFuzzyName('Guy One')) {
+        expect(user.constructor.name).to.equal('User')
+      }
+
+      expect(isCircular(this.brain)).to.be.false
     })
   })
 })

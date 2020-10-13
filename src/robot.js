@@ -25,6 +25,7 @@ class Robot {
   // adapter     - A String of the adapter name.
   // httpd       - A Boolean whether to enable the HTTP daemon.
   // name        - A String of the robot name, defaults to Hubot.
+  // alias       - A String of the alias of the robot name
   constructor (adapterPath, adapter, httpd, name, alias) {
     if (name == null) {
       name = 'Hubot'
@@ -39,6 +40,7 @@ class Robot {
     this.brain = new Brain(this)
     this.alias = alias
     this.adapter = null
+    this.datastore = null
     this.Response = Response
     this.commands = []
     this.listeners = []
@@ -442,7 +444,7 @@ class Robot {
     app.use(express.query())
 
     app.use(express.json({ limit }))
-    app.use(express.urlencoded({ limit, parameterLimit: paramLimit }))
+    app.use(express.urlencoded({ limit, parameterLimit: paramLimit, extended: true }))
     // replacement for deprecated express.multipart/connect.multipart
     // limit to 100mb, as per the old behavior
     app.use(multipart({ maxFilesSize: 100 * 1024 * 1024 }))
@@ -524,7 +526,7 @@ class Robot {
     const body = fs.readFileSync(require.resolve(path), 'utf-8')
 
     const useStrictHeaderRegex = /^["']use strict['"];?\s+/
-    const lines = body.replace(useStrictHeaderRegex, '').split('\n')
+    const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)
       .reduce(toHeaderCommentBlock, {lines: [], isHeader: true}).lines
       .filter(Boolean) // remove empty lines
     let currentSection = null

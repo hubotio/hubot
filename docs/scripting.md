@@ -565,8 +565,10 @@ The other sections are more relevant to developers of the bot, particularly depe
 
 ## Persistence
 
-Hubot has an in-memory key-value store exposed as `robot.brain` that can be
-used to store and retrieve data by scripts.
+Hubot has two persistence methods available that can be
+used to store and retrieve data by scripts: an in-memory key-value store exposed as `robot.brain`, and an optional persistent database-backed key-value store expsoed as `robot.datastore`
+
+### Brain
 
 ```coffeescript
 robot.respond /have a soda/i, (res) ->
@@ -598,6 +600,42 @@ module.exports = (robot) ->
       # Do something interesting here..
 
       res.send "#{name} is user - #{user}"
+```
+
+### Datastore
+
+Unlike the brain, the datastore's getter and setter methods are asynchronous and don't resolve until the call to the underlying database has resolved. This requires a slightly different approach to accessing data:
+
+```coffeescript
+robot.respond /have a soda/i, (res) ->
+  # Get number of sodas had (coerced to a number).
+  robot.datastore.get('totalSodas').then (value) ->
+    sodasHad = value * 1 or 0
+
+    if sodasHad > 4
+      res.reply "I'm too fizzy.."
+    else
+      res.reply 'Sure!'
+      robot.brain.set 'totalSodas', sodasHad + 1
+
+robot.respond /sleep it off/i, (res) ->
+  robot.datastore.set('totalSodas', 0).then () ->
+    res.reply 'zzzzz'
+```
+
+The datastore also allows setting and getting values which are scoped to individual users:
+
+```coffeescript
+module.exports = (robot) ->
+
+  robot.respond /who is @?([\w .\-]+)\?*$/i, (res) ->
+    name = res.match[1].trim()
+
+    users = robot.brain.usersForFuzzyName(name)
+    if users.length is 1
+      user = users[0]
+      user.get('roles').then (roles) ->
+        res.send "#{name} is #{roles.join(', ')}"
 ```
 
 ## Script Loading
@@ -871,12 +909,12 @@ You'll also need to install:
 
 You may also want to install:
 
- * *coffee-script* (if you're writing your tests in CoffeeScript rather than JavaScript)
+ * *coffeescript* (if you're writing your tests in CoffeeScript rather than JavaScript)
  * a mocking library such as *Sinon.js* (if your script performs webservice calls or
    other asynchronous actions)
 
 Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffee-script*, and of course *hubot-test-helper*:
+[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
 ```coffeescript
@@ -918,7 +956,7 @@ describe 'example script', ->
 
 **sample output**
 ```bash
-% mocha --require coffee-script/register test/*.coffee
+% mocha --require coffeescript/register test/*.coffee
 
 
   example script

@@ -36,6 +36,8 @@ There are two primary entry points for middleware:
 
 ## Persistence
 
+### Brain
+
 Hubot has a memory exposed as the `robot.brain` object that can be used to store and retrieve data.
 Furthermore, Hubot scripts exist to enable persistence across Hubot restarts.
 `hubot-redis-brain` is such a script and uses a backend Redis server.
@@ -44,3 +46,12 @@ By default, the brain contains a list of all users seen by Hubot.
 Therefore, without persistence across restarts, the brain will contain the list of users encountered so far, during the current run of Hubot.
 On the other hand, with persistence across restarts, the brain will contain all users encountered by Hubot during all of its runs.
 This list of users can be accessed through `hubot.brain.users()` and other utility methods.
+
+### Datastore
+
+Hubot's optional datastore, exposed as the `robot.datastore` object, provides a more robust persistence model. Compared to the brain, the datastore:
+
+1. Is always (instead of optionally) backed by a database
+2. Fetches data from the database and stores data in the database on every request, instead of periodically persisting the entire in-memory brain.
+
+The datastore is useful in cases where there's a need for greater reassurances of data integrity or in cases where multiple Hubot instances need to access the same database.

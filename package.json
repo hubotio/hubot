@@ -1,9 +1,6 @@
 {
   "name": "hubot",
   "version": "0.0.0-development",
-  "publishConfig": {
-    "tag": "next"
-  },
   "author": "hubot",
   "keywords": [
     "github",
@@ -21,23 +18,24 @@
     "async": ">=0.1.0 <1.0.0",
     "chalk": "^1.0.0",
     "cline": "^0.8.2",
-    "coffee-script": "1.6.3",
-    "connect-multiparty": "^1.2.5",
-    "express": "^3.21.2",
+    "coffeescript": "1.6.3",
+    "connect-multiparty": "^2.1.1",
+    "express": "^4.16.3",
     "log": "1.4.0",
     "optparse": "1.0.4",
     "scoped-http-client": "0.11.0"
   },
   "devDependencies": {
     "chai": "~2.1.0",
-    "coveralls": "^2.13.1",
-    "mocha": "^2.1.0",
+    "coveralls": "^3.0.2",
+    "is-circular": "^1.0.2",
+    "mocha": "^5.2.0",
     "mockery": "^1.4.0",
-    "nyc": "^11.0.2",
+    "nyc": "^13.0.0",
+    "semantic-release": "^15.9.3",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0",
-    "standard": "^10.0.2",
-    "semantic-release": "^6.3.6"
+    "standard": "^10.0.2"
   },
   "engines": {
     "node": "> 4.0.0",
