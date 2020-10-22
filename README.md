@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/hubotio/hubot.svg?branch=master)](https://travis-ci.org/hubotio/hubot) [![Coverage Status](https://coveralls.io/repos/github/hubotio/hubot/badge.svg?branch=master)](https://coveralls.io/github/hubotio/hubot?branch=master)
 
-# Hubot
+# HUBOTT
 
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
 He's pretty cool. He's [extendable with scripts](http://hubot.github.com/docs/#scripts) and can work
