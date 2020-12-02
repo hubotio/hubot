@@ -23,7 +23,7 @@ const options = {
   adapter: process.env.HUBOT_ADAPTER || 'shell',
   alias: process.env.HUBOT_ALIAS || false,
   create: process.env.HUBOT_CREATE || false,
-  enableHttpd: process.env.HUBOT_HTTPD || true,
+  enableHttpd: process.env.HUBOT_HTTPD !== 'false',
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
   path: process.env.HUBOT_PATH || '.',
