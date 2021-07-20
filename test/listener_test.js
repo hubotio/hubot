@@ -174,6 +174,90 @@ describe('Listener', function () {
           testListener.call(testMessage, sinon.spy())
         })
 
+        describe('test threaded replies', function () {
+          beforeEach(function () {
+            this.threadingTest = function (defaultThreadStyle, requestedThreadStyle, threadtsShouldBeSet, replybroadcastShouldBeSet, testDone) {
+              const testMessage = { requestedThreadStyle: requestedThreadStyle }
+
+              const testMiddleware = {
+                execute (context, next, done) {
+                  context.response.message.rawMessage = {ts: 'myThreadId'}
+                  next(context, done)
+                }
+              }
+
+              const listenerCallback = function (response) {
+                if (threadtsShouldBeSet) {
+                  expect(response.message.thread_ts).to.equal('myThreadId')
+                } else {
+                  expect(response.message.thread_ts).to.not.exist
+                }
+
+                if (replybroadcastShouldBeSet) {
+                  expect(response.message.reply_broadcast).to.equal(true)
+                } else {
+                  expect(response.message.reply_broadcast).to.not.exist
+                }
+
+                expect(response.requestedThreadStyle).to.equal(requestedThreadStyle)
+                testDone()
+              }
+
+              const testListener = new Listener(this.robot, sinon.stub().returns(true), { threadStyle: defaultThreadStyle }, listenerCallback)
+
+              testListener.call(testMessage, testMiddleware, sinon.spy())
+            }
+          })
+
+          it('defaultThreadStyle == undefined, requestedThreadStyle == undefined', function (done) {
+            this.threadingTest(undefined, undefined, false, false, done)
+          })
+
+          it('defaultThreadStyle == undefined, requestedThreadStyle == 1', function (done) {
+            this.threadingTest(undefined, 1, true, false, done)
+          })
+
+          it('defaultThreadStyle == undefined, requestedThreadStyle == 2', function (done) {
+            this.threadingTest(undefined, 2, true, true, done)
+          })
+
+          it('defaultThreadStyle == undefined, requestedThreadStyle == 0', function (done) {
+            this.threadingTest(undefined, 0, false, false, done)
+          })
+
+          it('defaultThreadStyle == 1, requestedThreadStyle == undefined', function (done) {
+            this.threadingTest(1, undefined, true, false, done)
+          })
+
+          it('defaultThreadStyle == 1, requestedThreadStyle == 1', function (done) {
+            this.threadingTest(1, 1, true, false, done)
+          })
+
+          it('defaultThreadStyle == 1, requestedThreadStyle == 2', function (done) {
+            this.threadingTest(1, 2, true, true, done)
+          })
+
+          it('defaultThreadStyle == 1, requestedThreadStyle == 0', function (done) {
+            this.threadingTest(1, 0, false, false, done)
+          })
+
+          it('defaultThreadStyle == 2, requestedThreadStyle == undefined', function (done) {
+            this.threadingTest(2, undefined, true, true, done)
+          })
+
+          it('defaultThreadStyle == 2, requestedThreadStyle == 1', function (done) {
+            this.threadingTest(2, 1, true, false, done)
+          })
+
+          it('defaultThreadStyle == 2, requestedThreadStyle == 2', function (done) {
+            this.threadingTest(2, 2, true, true, done)
+          })
+
+          it('defaultThreadStyle == 2, requestedThreadStyle == 0', function (done) {
+            this.threadingTest(2, 0, false, false, done)
+          })
+        })
+
         it('passes through the provided middleware stack', function (testDone) {
           const testMessage = {}
 

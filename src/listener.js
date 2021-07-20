@@ -75,6 +75,27 @@ class Listener {
       // callback and calls done (never calls 'next')
       const executeListener = (context, done) => {
         this.robot.logger.debug(`Executing listener callback for Message '${message}'`)
+
+        // Thread style can be specified by the chatops script, and can be overridden by the user via requestedThreadStyle.
+        let threadStyle = 0
+        if (message.requestedThreadStyle !== undefined) {
+          threadStyle = message.requestedThreadStyle
+        } else if (this.options.threadStyle !== undefined) {
+          threadStyle = this.options.threadStyle
+        }
+
+        if (threadStyle > 0) {
+          if (context.response.message.rawMessage !== undefined) {
+            context.response.message.thread_ts = context.response.message.rawMessage.ts
+          }
+          if (threadStyle > 1) {
+            context.response.message.reply_broadcast = true
+          }
+        }
+
+        // If the callback is into the RPC chatops script, it should have a chance to appropriately set the thread style itself
+        context.response.requestedThreadStyle = message.requestedThreadStyle
+
         try {
           this.callback(context.response)
         } catch (err) {
