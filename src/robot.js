@@ -134,7 +134,7 @@ class Robot {
     const name = this.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 
     if (regexStartsWithAnchor) {
-      this.logger.warning(`Anchors don’t work well with respond, perhaps you want to use 'hear'`)
+      this.logger.warning('Anchors don’t work well with respond, perhaps you want to use \'hear\'')
       this.logger.warning(`The regex in question was ${regex.toString()}`)
     }
 
@@ -206,7 +206,7 @@ class Robot {
   invokeErrorHandlers (error, res) {
     this.logger.error(error.stack)
 
-    this.errorHandlers.map((errorHandler) => {
+    this.errorHandlers.forEach((errorHandler) => {
       try {
         errorHandler(error, res)
       } catch (errorHandlerError) {
@@ -528,7 +528,7 @@ class Robot {
 
     const useStrictHeaderRegex = /^["']use strict['"];?\s+/
     const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)
-      .reduce(toHeaderCommentBlock, {lines: [], isHeader: true}).lines
+      .reduce(toHeaderCommentBlock, { lines: [], isHeader: true }).lines
       .filter(Boolean) // remove empty lines
     let currentSection = null
     let nextSection
@@ -708,7 +708,7 @@ class Robot {
   http (url, options) {
     const httpOptions = extend({}, this.globalHttpOptions, options)
 
-    let c = HttpClient.create(url, httpOptions).header('User-Agent', `Hubot/${this.version}`)
+    const c = HttpClient.create(url, httpOptions).header('User-Agent', `Hubot/${this.version}`)
     return c
   }
 }

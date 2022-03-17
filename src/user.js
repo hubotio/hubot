@@ -18,7 +18,7 @@ class User {
     // robot itself on the user object, preventing it from
     // being serialized into the brain.
     if (options.robot) {
-      let robot = options.robot
+      const robot = options.robot
       delete options.robot
       this._getRobot = function () { return robot }
     } else {
@@ -55,7 +55,7 @@ class User {
   }
 
   _getDatastore () {
-    let robot = this._getRobot()
+    const robot = this._getRobot()
     if (robot) {
       return robot.datastore
     }

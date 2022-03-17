@@ -20,6 +20,7 @@ class Option {
     this.description = description
     this.link = link
   }
+
   toString () {
     return `How 'bout ${this.title}. ${this.description} @ ${this.link}`
   }

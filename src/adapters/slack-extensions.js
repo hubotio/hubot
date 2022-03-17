@@ -1,6 +1,6 @@
 const Path = require('path')
-const {Robot} = require.main.require(Path.resolve(__dirname, '../../index.js'))
-const {ReactionMessage, PresenceMessage, FileSharedMessage} = require('./slack-message.js')
+const { Robot } = require.main.require(Path.resolve(__dirname, '../../index.js'))
+const { ReactionMessage, PresenceMessage, FileSharedMessage } = require('./slack-message.js')
 
 Robot.prototype.hearReaction = function (matcher, options, callback) {
   let matchReaction = msg => msg instanceof ReactionMessage

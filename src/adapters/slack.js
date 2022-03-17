@@ -1,6 +1,6 @@
 const Path = require('path')
-const {Adapter, EnterMessage, LeaveMessage, TopicMessage} = require.main.require(Path.resolve(__dirname, '../../index.js'))
-const {SlackTextMessage, ReactionMessage, PresenceMessage, FileSharedMessage} = require('./slack-message.js')
+const { Adapter, EnterMessage, LeaveMessage, TopicMessage } = require.main.require(Path.resolve(__dirname, '../../index.js'))
+const { SlackTextMessage, ReactionMessage, PresenceMessage, FileSharedMessage } = require('./slack-message.js')
 const SlackClient = require('./slack-client.js')
 const pkg = require('../../package.json')
 
@@ -62,11 +62,13 @@ class SlackBot extends Adapter {
     })
     return this.client.connect()
   }
+
   async send (envelope, ...messages) {
     for (let i = 0; i < messages.length; i++) {
       if (messages[i] !== '') await this.client.send(envelope, messages[i])
     }
   }
+
   async reply (envelope, ...messages) {
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i]
@@ -83,13 +85,15 @@ class SlackBot extends Adapter {
     // TODO: this will fail if sending an object as a value in strings
     return this.client.setTopic(envelope.room, strings.join('\n'))
   }
+
   open () {
     this.robot.logger.info('Connected to Slack RTM')
     return this.emit('connected')
   }
+
   authenticated (identity) {
     if (identity.users) {
-      for (let user of Array.from(identity.users)) {
+      for (const user of Array.from(identity.users)) {
         if (user.id === identity.self.id) {
           this.robot.logger.debug('SlackBot#authenticated() Found self in RTM start data')
           this.bot_id = user.profile.bot_id
@@ -102,10 +106,11 @@ class SlackBot extends Adapter {
     this.emit('connected')
     return this.robot.logger.info(`Logged in as @${this.robot.name} in workspace ${identity.team.name}`)
   }
+
   presenceSub () {
     const ids = (() => {
       const result = []
-      for (let id of Object.keys(this.robot.brain.data.users || {})) {
+      for (const id of Object.keys(this.robot.brain.data.users || {})) {
         const user = this.robot.brain.data.users[id]
         if (!user.is_bot && !user.deleted) {
           result.push(id)
@@ -130,6 +135,7 @@ class SlackBot extends Adapter {
       return process.exit(1)
     }
   }
+
   error (error) {
     this.robot.logger.error(`Slack RTM error: ${JSON.stringify(error)}`)
     // Assume that scripts can handle slowing themselves down, all other errors are bubbled up through Hubot
@@ -138,8 +144,9 @@ class SlackBot extends Adapter {
       return this.robot.emit('error', error)
     }
   }
+
   eventHandler (event) {
-    const {user, channel} = event
+    const { user, channel } = event
     const isFromThisBot = (user != null ? user.id : undefined) === this.id
     if (isFromThisBot) {
       return
@@ -193,7 +200,7 @@ class SlackBot extends Adapter {
       // was made. In the `presenceSub()` method, subscriptions are only made for users in the brain.
       const users = (() => {
         const result = []
-        for (let userId of Array.from((event.users || [event.user.id]))) {
+        for (const userId of Array.from((event.users || [event.user.id]))) {
           if (this.robot.brain.data.users[userId] != null) {
             result.push(this.robot.brain.data.users[userId])
           }
@@ -214,6 +221,7 @@ class SlackBot extends Adapter {
       return this.receive(new FileSharedMessage(user, event.file_id, event.event_ts))
     }
   }
+
   usersLoaded (err, res) {
     if (err || !res.members.length) {
       this.robot.logger.error("Can't fetch users")

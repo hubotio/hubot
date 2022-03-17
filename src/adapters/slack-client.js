@@ -1,8 +1,9 @@
-const {RTMClient, WebClient} = require('@slack/client')
+const { RTMClient, WebClient } = require('@slack/client')
 const SlackFormatter = require('./slack-formatter.js')
 
 const CONVERSATION_CACHE_TTL_MS = process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS
-  ? parseInt(process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS, 10) : (5 * 60 * 1000)
+  ? parseInt(process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS, 10)
+  : (5 * 60 * 1000)
 const PAGE_SIZE = 100
 
 class SlackClient {
@@ -14,7 +15,7 @@ class SlackClient {
     this.rtmStartOpts = options.rtmStart || {}
     this.format = new SlackFormatter(this.rtm.dataStore, this.robot)
     this.botUserIdMap = {
-      'B01': { id: 'B01', user_id: 'USLACKBOT' }
+      B01: { id: 'B01', user_id: 'USLACKBOT' }
     }
     this.channelData = {}
     this.rtm.on('message', this.eventWrapper, this)
@@ -27,24 +28,28 @@ class SlackClient {
     this.rtm.on('user_change', this.updateUserInBrain, this)
     this.eventHandler = undefined
   }
+
   connect () {
     this.robot.logger.debug(`RTMClient#start() with options: ${JSON.stringify(this.rtmStartOpts)}`)
     return this.rtm.start(this.rtmStartOpts)
   }
+
   onEvent (callback) {
     this.eventHandler = callback
   }
+
   disconnect () {
     this.rtm.disconnect()
     return this.rtm.removeAllListeners()
   }
+
   setTopic (conversationId, topic) {
     this.robot.logger.debug(`SlackClient#setTopic() with topic ${topic}`)
-    return this.web.conversations.info({channel: conversationId})
+    return this.web.conversations.info({ channel: conversationId })
       .then(res => {
         const conversation = res.channel
         if (!conversation.is_im && !conversation.is_mpim) {
-          return this.web.conversations.setTopic({channel: conversationId, topic})
+          return this.web.conversations.setTopic({ channel: conversationId, topic })
         } else {
           return this.robot.logger.debug(`Conversation ${conversationId} is a DM or MPDM. These conversation types do not have topics.`
           )
@@ -53,6 +58,7 @@ class SlackClient {
         return this.robot.logger.error(`Error setting topic in conversation ${conversationId}: ${error.message}`)
       })
   }
+
   async send (envelope, message) {
     const room = envelope.room || envelope.id
     if ((room == null)) {
@@ -104,16 +110,19 @@ class SlackClient {
     }
     return this.web.users.list({ limit: PAGE_SIZE }, pageLoaded)
   }
+
   fetchUser (userId) {
     if (this.robot.brain.data.users[userId] != null) {
       return Promise.resolve(this.robot.brain.data.users[userId])
     }
-    return this.web.users.info({user: userId}).then(r => this.updateUserInBrain(r.user))
+    return this.web.users.info({ user: userId }).then(r => this.updateUserInBrain(r.user))
   }
+
   fetchBotUser (botId) {
     if (this.botUserIdMap[botId] != null) { return Promise.resolve(this.botUserIdMap[botId]) }
-    return this.web.bots.info({bot: botId}).then(r => r.bot)
+    return this.web.bots.info({ bot: botId }).then(r => r.bot)
   }
+
   fetchConversation (conversationId) {
     const expiration = Date.now() - CONVERSATION_CACHE_TTL_MS
 
@@ -122,7 +131,7 @@ class SlackClient {
 
     if (this.channelData[conversationId] != null) { delete this.channelData[conversationId] }
 
-    return this.web.conversations.info({channel: conversationId}).then(r => {
+    return this.web.conversations.info({ channel: conversationId }).then(r => {
       if (r.channel != null) {
         this.channelData[conversationId] = {
           channel: r.channel,
@@ -132,6 +141,7 @@ class SlackClient {
       return r.channel
     })
   }
+
   updateUserInBrain (eventOrUser) {
     let key, value
     const user = eventOrUser.type === 'user_change' ? eventOrUser.user : eventOrUser
@@ -160,6 +170,7 @@ class SlackClient {
     delete this.robot.brain.data.users[user.id]
     return this.robot.brain.userForId(user.id, newUser)
   }
+
   async eventWrapper (event) {
     if (this.eventHandler) {
       const fetches = {}
@@ -185,7 +196,7 @@ class SlackClient {
         if (this.botUserIdMap[event.bot_id]) {
           event.user = fetches.bot
         } else if (fetches.bot.user_id != null) {
-          let res = await this.web.users.info({user: fetches.bot.user_id})
+          const res = await this.web.users.info({ user: fetches.bot.user_id })
           event.user = res.user
           this.botUserIdMap[event.bot_id] = res.user
         } else {

@@ -90,7 +90,7 @@ describe('Robot', function () {
       it('actually does a post', function (done) {
         const url = `http://localhost:${process.env.PORT}/1`
         const httpClient = this.robot.http(url, {
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
         this.robot.router.post('/:id', (req, res) => {
           expect(req.params.id).to.be.equal('1')
@@ -107,7 +107,7 @@ describe('Robot', function () {
 
       it('passes options through to the ScopedHttpClient', function () {
         const agent = {}
-        const httpClient = this.robot.http('http://localhost', {agent})
+        const httpClient = this.robot.http('http://localhost', { agent })
         expect(httpClient.options.agent).to.equal(agent)
       })
 
@@ -117,7 +117,7 @@ describe('Robot', function () {
 
       it('merges in any global http options', function () {
         const agent = {}
-        this.robot.globalHttpOptions = {agent}
+        this.robot.globalHttpOptions = { agent }
         const httpClient = this.robot.http('http://localhost')
         expect(httpClient.options.agent).to.equal(agent)
       })
@@ -125,8 +125,8 @@ describe('Robot', function () {
       it('local options override global http options', function () {
         const agentA = {}
         const agentB = {}
-        this.robot.globalHttpOptions = {agent: agentA}
-        const httpClient = this.robot.http('http://localhost', {agent: agentB})
+        this.robot.globalHttpOptions = { agent: agentA }
+        const httpClient = this.robot.http('http://localhost', { agent: agentB })
         expect(httpClient.options.agent).to.equal(agentB)
       })
     })
@@ -340,7 +340,7 @@ describe('Robot', function () {
         }
 
         const listenerSpy =
-          {call: sinon.spy()}
+          { call: sinon.spy() }
 
         this.robot.listeners = [
           matchingListener,
@@ -1051,7 +1051,7 @@ describe('Robot', function () {
       })
 
       it('marks plaintext as plaintext', function (testDone) {
-        let sendSpy = sinon.spy()
+        const sendSpy = sinon.spy()
         this.robot.adapter.send = sendSpy
         this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.'))
         this.robot.hear(/^message456$/, response => response.play('good luck with that'))

@@ -1,13 +1,12 @@
 const http = require('http')
 const https = require('https')
-const Url = require('url')
 const transport = {
   http, https
 }
 class Client {
   constructor (url, options) {
     this.url = url
-    this.parsedUrl = Url.parse(url)
+    this.parsedUrl = new URL(url)
     this.options = Object.assign({
       headers: {},
       hostname: this.parsedUrl.hostname,
@@ -17,15 +16,17 @@ class Client {
       path: this.parsedUrl.path
     }, options)
   }
+
   header (key, value) {
     this.options.headers[key] = value
     return this
   }
+
   get () {
     const cb = callback => {
       let body = ''
       const httpOrHttps = transport[this.parsedUrl.protocol.replace(':', '')]
-      let req = httpOrHttps.get(this.url, this.options, res => {
+      const req = httpOrHttps.get(this.url, this.options, res => {
         res.on('data', chunk => {
           body += chunk
         })
@@ -44,6 +45,7 @@ class Client {
 
     return cb
   }
+
   post (data) {
     const cb = callback => {
       let body = ''

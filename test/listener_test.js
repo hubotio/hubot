@@ -303,7 +303,7 @@ describe('Listener', function () {
           const testMessage = {}
 
           const testListener = this.createListener(function () {})
-          const testMiddleware = {execute: sinon.spy()}
+          const testMiddleware = { execute: sinon.spy() }
 
           testListener.call(testMessage, result => {
             expect(testMiddleware.execute).to.not.have.been.called
@@ -334,7 +334,7 @@ describe('Listener', function () {
         const listenerCallback = sinon.spy()
         const testListener = new Listener(this.robot, testMatcher, listenerCallback)
         // slightly brittle because we are testing for the default options Object
-        expect(testListener.options).to.deep.equal({id: null})
+        expect(testListener.options).to.deep.equal({ id: null })
         expect(testListener.callback).to.be.equal(listenerCallback)
       })
 

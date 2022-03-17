@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -30,13 +30,13 @@
     "chai": "~2.1.0",
     "coveralls": "^3.0.2",
     "is-circular": "^1.0.2",
-    "mocha": "^5.2.0",
+    "mocha": "^9.2.2",
     "mockery": "^1.4.0",
-    "nyc": "^14.1.1",
-    "semantic-release": "^15.13.25",
+    "nyc": "^15.1.0",
+    "semantic-release": "^19.0.2",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0",
-    "standard": "^10.0.2"
+    "standard": "^16.0.4"
   },
   "engines": {
     "node": "> 4.0.0",

@@ -22,7 +22,7 @@ class DataStore {
   // present, it's instantiated as an empty object.
   setObject (key, objectKey, value) {
     return this.get(key).then((object) => {
-      let target = object || {}
+      const target = object || {}
       target[objectKey] = value
       return this.set(key, target)
     })
@@ -33,7 +33,7 @@ class DataStore {
   // present, it's instantiated as an empty array.
   setArray (key, value) {
     return this.get(key).then((object) => {
-      let target = object || []
+      const target = object || []
       // Extend the array if the value is also an array, otherwise
       // push the single value on the end.
       if (Array.isArray(value)) {
@@ -56,7 +56,7 @@ class DataStore {
   // contain an `objectKey`, returns `undefined`.
   getObject (key, objectKey) {
     return this.get(key).then((object) => {
-      let target = object || {}
+      const target = object || {}
       return target[objectKey]
     })
   }

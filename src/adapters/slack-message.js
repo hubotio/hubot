@@ -1,5 +1,5 @@
 const Path = require('path')
-const {Message, TextMessage} = require(Path.resolve(__dirname, '../../index.js'))
+const { Message, TextMessage } = require(Path.resolve(__dirname, '../../index.js'))
 const SlackMention = require('./slack-mention.js')
 
 class ReactionMessage extends Message {
@@ -43,6 +43,7 @@ class SlackTextMessage extends TextMessage {
     }
     this.mentions = []
   }
+
   buildText (client, cb) {
     let text = (this.rawMessage.text != null) ? this.rawMessage.text : ''
     if (this.rawMessage.attachments) {
@@ -53,7 +54,7 @@ class SlackTextMessage extends TextMessage {
     const fetchingConversationInfo = client.fetchConversation(this._channel_id)
     return Promise.all([mentionFormatting, fetchingConversationInfo])
       .then(results => {
-        const [ replacedText, conversationInfo ] = Array.from(results)
+        const [replacedText, conversationInfo] = Array.from(results)
         text = replacedText
         text = text.replace(/&lt;/g, '<')
         text = text.replace(/&gt;/g, '>')
@@ -74,6 +75,7 @@ class SlackTextMessage extends TextMessage {
         return cb(error)
       })
   }
+
   replaceLinks (client, text) {
     const regex = SlackTextMessage.MESSAGE_REGEX
     let result = regex.exec(text)
@@ -134,6 +136,7 @@ class SlackTextMessage extends TextMessage {
     return Promise.all(parts)
       .then(substrings => substrings.join(''))
   }
+
   replaceUser (client, id, mentions) {
     return client.fetchUser(id)
       .then(res => {
@@ -157,6 +160,7 @@ class SlackTextMessage extends TextMessage {
         return `<#${id}>`
       })
   }
+
   static makeSlackTextMessage (user, text, rawText, rawMessage, channelId, robotName, robotAlias, client, cb) {
     const message = new SlackTextMessage(user, text, rawText, rawMessage, channelId, robotName, robotAlias)
     const done = message => setImmediate(() => cb(null, message))
@@ -173,15 +177,7 @@ class SlackTextMessage extends TextMessage {
   }
 }
 
-SlackTextMessage.MESSAGE_REGEX = new RegExp(`\
-<\
-([@#!])?\
-([^>|]+)\
-(?:\\|\
-([^>]+)\
-)?\
->\
-`, 'g')
+SlackTextMessage.MESSAGE_REGEX = /<([@#!])?([^>|]+)(?:\\|([^>]+))?>/g
 
 SlackTextMessage.MESSAGE_RESERVED_KEYWORDS = ['channel', 'group', 'everyone', 'here']
 
