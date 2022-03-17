@@ -13,7 +13,7 @@ class Client {
       port: this.parsedUrl.port,
       protocol: this.parsedUrl.protocol,
       pathname: this.parsedUrl.pathname,
-      path: this.parsedUrl.path
+      path: this.parsedUrl.pathname
     }, options)
   }
 
