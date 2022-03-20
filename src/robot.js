@@ -4,7 +4,6 @@ const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const path = require('path')
 
-const async = require('async')
 const Log = require('log')
 const HttpClient = require('./http-client.js')
 
@@ -297,6 +296,37 @@ class Robot {
     this.middleware.receive.execute({ response: new Response(this, message) }, this.processListeners.bind(this), cb)
   }
 
+  compose (middleware) {
+    const robot = this.robot
+    if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+    for (const fn of middleware) {
+      if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
+    }
+    return function (context, next) {
+      let index = -1
+      let previousCallback = null
+      return dispatch(0)
+      function dispatch (i, cb) {
+        if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+        if (i > middleware.length) return Promise.resolve()
+        if (cb) {
+          previousCallback = cb
+        } else {
+          cb = previousCallback
+        }
+        index = i
+        if (i === middleware.length) return Promise.resolve(next(context, cb))
+        const fn = middleware[i]
+        try {
+          return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
+        } catch (err) {
+          robot.emit('error', err, context.response)
+          return Promise.reject(cb(err))
+        }
+      }
+    }
+  }
+
   // Private: Passes the given message to any interested Listeners.
   //
   // message - A Message instance. Listeners can flag this message as 'done' to
@@ -306,41 +336,64 @@ class Robot {
   //
   // Returns nothing.
   // Returns before executing callback
-  processListeners (context, done) {
+  async processListeners (context, done) {
     // Try executing all registered Listeners in order of registration
     // and return after message is done being processed
     let anyListenersExecuted = false
-
-    async.detectSeries(this.listeners, (listener, done) => {
-      try {
-        listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
-          anyListenersExecuted = anyListenersExecuted || listenerExecuted
-          // Defer to the event loop at least after every listener so the
-          // stack doesn't get too big
-          process.nextTick(() =>
-            // Stop processing when message.done == true
-            done(context.response.message.done)
-          )
-        })
-      } catch (err) {
-        this.emit('error', err, new this.Response(this, context.response.message, []))
-        // Continue to next listener when there is an error
-        done(false)
-      }
-    },
-    // Ignore the result ( == the listener that set message.done = true)
-    _ => {
-      // If no registered Listener matched the message
-
-      if (!(context.response.message instanceof Message.CatchAllMessage) && !anyListenersExecuted) {
-        this.logger.debug('No listeners executed; falling back to catch-all')
-        this.receive(new Message.CatchAllMessage(context.response.message), done)
-      } else {
-        if (done != null) {
-          process.nextTick(done)
+    const self = this
+    const middlewareListener = this.middleware.listener
+    this.compose(this.listeners.map(l => {
+      return (ctx, next) => {
+        try {
+          l.call(ctx.response.message, middlewareListener, listenerExecuted => {
+            anyListenersExecuted = anyListenersExecuted || listenerExecuted
+            if (anyListenersExecuted && ctx.response.message.done) return done()
+            next()
+          })
+        } catch (err) {
+          self.emit('error', err, new self.Response(self, ctx.response.message, []))
+          next()
         }
       }
+    }))(context, () => {
+      if (!(context.response.message instanceof Message.CatchAllMessage) && !anyListenersExecuted) {
+        self.logger.debug('No listeners executed; falling back to catch-all')
+        self.receive(new Message.CatchAllMessage(context.response.message), done)
+      } else {
+        if (done) done()
+      }
     })
+
+    // async.detectSeries(this.listeners, (listener, done) => {
+    //   try {
+    //     listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
+    //       anyListenersExecuted = anyListenersExecuted || listenerExecuted
+    //       // Defer to the event loop at least after every listener so the
+    //       // stack doesn't get too big
+    //       process.nextTick(() =>
+    //         // Stop processing when message.done == true
+    //         done(context.response.message.done)
+    //       )
+    //     })
+    //   } catch (err) {
+    //     this.emit('error', err, new this.Response(this, context.response.message, []))
+    //     // Continue to next listener when there is an error
+    //     done(false)
+    //   }
+    // },
+    // // Ignore the result ( == the listener that set message.done = true)
+    // _ => {
+    //   // If no registered Listener matched the message
+
+    //   if (!(context.response.message instanceof Message.CatchAllMessage) && !anyListenersExecuted) {
+    //     this.logger.debug('No listeners executed; falling back to catch-all')
+    //     this.receive(new Message.CatchAllMessage(context.response.message), done)
+    //   } else {
+    //     if (done != null) {
+    //       process.nextTick(done)
+    //     }
+    //   }
+    // })
   }
 
   // Public: Loads a file in path.
