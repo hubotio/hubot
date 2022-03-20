@@ -1,7 +1,5 @@
 'use strict'
 
-const async = require('async')
-
 class Middleware {
   constructor (robot) {
     this.robot = robot
@@ -24,41 +22,52 @@ class Middleware {
   //
   // Returns nothing
   // Returns before executing any middleware
-  execute (context, next, done) {
+  execute (context, next, lastDone) {
     const self = this
 
-    if (done == null) {
-      done = function () {}
-    }
-
-    // Execute a single piece of middleware and update the completion callback
-    // (each piece of middleware can wrap the 'done' callback with additional
-    // logic).
-    function executeSingleMiddleware (doneFunc, middlewareFunc, cb) {
-      // Match the async.reduce interface
-      function nextFunc (newDoneFunc) {
-        cb(null, newDoneFunc || doneFunc)
-      }
-
-      // Catch errors in synchronous middleware
-      try {
-        middlewareFunc(context, nextFunc, doneFunc)
-      } catch (err) {
-        // Maintaining the existing error interface (Response object)
-        self.robot.emit('error', err, context.response)
-        // Forcibly fail the middleware and stop executing deeper
-        doneFunc()
-      }
-    }
-
-    // Executed when the middleware stack is finished
-    function allDone (_, finalDoneFunc) {
-      next(context, finalDoneFunc)
+    if (lastDone == null) {
+      lastDone = function () {}
     }
 
     // Execute each piece of middleware, collecting the latest 'done' callback
     // at each step.
-    process.nextTick(async.reduce.bind(null, this.stack, done, executeSingleMiddleware, allDone))
+    const m = this.compose(self.stack)
+    process.nextTick(() => {
+      m(context, next, lastDone)
+    })
+  }
+
+  // modified from koa-compose - https://github.com/koajs/compose/blob/master/index.js
+  compose (middleware) {
+    const robot = this.robot
+    if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+    for (const fn of middleware) {
+      if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
+    }
+    return function (context, next, finallyDone) {
+      let index = -1
+      let previousDone = null
+      return dispatch(0)
+      function dispatch (i, done) {
+        if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+        if (i > middleware.length) return Promise.resolve()
+        if (i === 0) done = finallyDone
+        if (done) {
+          previousDone = done
+        } else {
+          done = previousDone
+        }
+        index = i
+        if (i === middleware.length) return Promise.resolve(next(context, done))
+        const fn = middleware[i]
+        try {
+          return Promise.resolve(fn(context, dispatch.bind(null, i + 1), done))
+        } catch (err) {
+          robot.emit('error', err, context.response)
+          return Promise.reject(done(err))
+        }
+      }
+    }
   }
 
   // Public: Registers new middleware
