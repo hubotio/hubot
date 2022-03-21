@@ -4,7 +4,6 @@ const fs = require('fs')
 const readline = require('readline')
 const Stream = require('stream')
 const cline = require('cline')
-const chalk = require('chalk')
 
 const Adapter = require('../adapter')
 
@@ -20,7 +19,7 @@ class Shell extends Adapter {
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    Array.from(strings).forEach(str => console.log(chalk.bold(`${str}`)))
+    Array.from(strings).forEach(str => console.log(`\u001B[1m${str}\u001B[22m`))
   }
 
   emote (envelope/* , ...strings */) {

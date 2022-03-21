@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@slack/client": "^5.0.1",
-    "chalk": "^1.0.0",
     "cline": "^0.8.2",
     "connect-multiparty": "^2.1.1",
     "express": "^4.16.3",
