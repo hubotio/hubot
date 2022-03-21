@@ -33,6 +33,9 @@ First, run the follow command to add `deploy.cmd` to your hubot directory. This 
 
     % azure site deploymentscript --node
 
+NOTE: no longer supporting coffeescript.
+TODO: Rewrite this for javascript.
+
 Then, edit this file and look for the sections that give you steps 1, 2 and 3. You're going to add a 4th step:
 
     :: 4. Create Hubot file with a coffee extension

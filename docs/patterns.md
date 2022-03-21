@@ -15,23 +15,22 @@ When you rename Hubot, he will no longer respond to his former name. In order to
 
 Setting this up is very easy:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.coffee`
+1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.mjs`
 2. Add the following code, modified for your needs:
 
-```coffeescript
-# Description:
-#   Tell people hubot's new name if they use the old one
-#
-# Commands:
-#   None
-#
-module.exports = (robot) ->
-  robot.hear /^hubot:? (.+)/i, (res) ->
-    response = "Sorry, I'm a diva and only respond to #{robot.name}"
-    response += " or #{robot.alias}" if robot.alias
-    res.reply response
-    return
+```javascript
+//  Description:
+//    Tell people hubot's new name if they use the old one
 
+//  Commands:
+//    None
+
+module.exports = (robot) =>
+  robot.hear(/^hubot:? (.+)/i, (res) => {
+    response = "Sorry, I'm a diva and only respond to #{robot.name}"
+    if (robot.alias) response += " or #{robot.alias}"
+    return res.reply(response)
+  }
 ```
 
 In the above pattern, modify both the hubot listener and the response message to suit your needs.
@@ -49,21 +48,20 @@ This pattern is similar to the Renaming the Hubot Instance pattern above:
 
 Here is the setup:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `deprecations.coffee`
+1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `deprecations.mjs`
 2. Copy any old command listeners and add them to that file. For example, if you were to rename the help command for some silly reason:
 
-```coffeescript
-# Description:
-#   Tell users when they have used commands that are deprecated or renamed
-#
-# Commands:
-#   None
-#
-module.exports = (robot) ->
-  robot.respond /help\s*(.*)?$/i, (res) ->
-    res.reply "That means nothing to me anymore. Perhaps you meant `docs` instead?"
-    return
+```javascript
+//  Description:
+//    Tell users when they have used commands that are deprecated or renamed
 
+//  Commands:
+//    None
+
+module.exports = (robot) =>
+  robot.respond(/help\s*(.*)?$/i, (res) => {
+    return res.reply("That means nothing to me anymore. Perhaps you meant `docs` instead?")
+  })
 ```
 
 ## Preventing Hubot from Running Scripts Concurrently
@@ -71,31 +69,34 @@ module.exports = (robot) ->
 Sometimes you have scripts that take several minutes to execute.  If these scripts are doing something that could be interfered
 with by running subsequent commands, you may wish to code your scripts to prevent concurrent access.
 
-To do this, you can set up a lock in the Hubot [brain](scripting.md#persistence) object.  The lock is set up here so that different scripts
+To do this, you can set up a lock in the Hubot [brain](scripting.md#persistence) object. The lock is set up here so that different scripts
 can share the same lock if necessary.
 
 Setting up the lock looks something like this:
 
-```coffeescript
-module.exports = (robot) ->
-  robot.brain.on 'loaded', ->
-    # Clear the lock on startup in case Hubot has restarted and Hubot's brain has persistence (e.g. redis).
-    # We don't want any orphaned locks preventing us from running commands.
+```javascript
+module.exports = (robot) => {
+  robot.brain.on('loaded', ()=> {
+    // Clear the lock on startup in case Hubot has restarted and Hubot's brain has persistence (e.g. redis).
+    // We don't want any orphaned locks preventing us from running commands.
     robot.brain.remove('yourLockName')
+  })
 
-  robot.respond /longrunningthing/i, (msg) ->
+  robot.respond(/longrunningthing/i, (msg) => {
     lock = robot.brain.get('yourLockName')
+    if (lock) {
+      return msg.send("I'm sorry, #{msg.message.user.name}, I'm afraid I can't do that. I'm busy doing something for #{lock.user.name}.")
+    }
 
-    if lock?
-      msg.send "I'm sorry, #{msg.message.user.name}, I'm afraid I can't do that. I'm busy doing something for #{lock.user.name}."
-      return
+    robot.brain.set('yourLockName', msg.message)  // includes user, room, etc about who locked
 
-    robot.brain.set('yourLockName', msg.message)  # includes user, room, etc about who locked
-
-    yourLongClobberingAsyncThing (err, response) ->
-      # Clear the lock
+    const yourLongClobberingAsyncThing = (err, response) => {
+      // Clear the lock
       robot.brain.remove('yourLockName')
-      msg.reply "Finally Done"
+      msg.reply("Finally Done")
+    }
+  }
+}
 ```
 
 ## Forwarding all HTTP requests through a proxy
@@ -105,14 +106,15 @@ In many corporate environments, a web proxy is required to access the Internet a
 Due to the way node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
 
 1. Install ProxyAgent. `npm install proxy-agent`
-2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.coffee`
+2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.mjs`
 3. Add the following code, modified for your needs:
 
-```coffeescript
-proxy = require 'proxy-agent'
-module.exports = (robot) ->
+```javascript
+import proxy from 'proxy-agent'
+export default (robot) => {
   robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
+}
 ```
 
 ## Dynamic matching of messages
@@ -123,27 +125,24 @@ In a simple robot, this isn't much different from just putting the conditions in
 
 For example, the [factoid lookup command](https://github.com/github/hubot-scripts/blob/bd810f99f9394818a9dcc2ea3729427e4101b96d/src/scripts/factoid.coffee#L95-L99) could be reimplemented as:
 
-```coffeescript
-module.exports = (robot) ->
-  # Dynamically populated list of factoids
-  facts =
-    fact1: 'stuff'
+```javascript
+export default (robot) => {
+  // Dynamically populated list of factoids
+  const facts = {
+    fact1: 'stuff',
     fact2: 'other stuff'
+  }
 
-  robot.listen(
-    # Matcher
-    (message) ->
+  robot.listen((message) => {
       match = message.match(/^~(.*)$/)
-      # Only match if there is a matching factoid
-      if match and match[1] in facts
-        match[1]
-      else
-        false
-    # Callback
-    (response) ->
+      // Only match if there is a matching factoid
+      if (match && match[1] in facts) return match[1]
+      else return false
+  }, (response) => {
       fact = response.match
-      res.reply "#{fact} is #{facts[fact]}"
-  )
+      res.reply("#{fact} is #{facts[fact]}")
+  })
+}
 ```
 
 ## Restricting access to commands
@@ -175,28 +174,33 @@ As an additional consideration, most scripts do not currently have listener IDs,
 Once you have decided which of the four possible models to follow, you need to build the appropriate lists of users and listeners to plug into your authorization middleware.
 
 Example: whitelist of users given access to selectively restricted power commands
-```coffeescript
-POWER_COMMANDS = [
-  'deploy.web' # String that matches the listener ID
+
+```javascript
+const POWER_COMMANDS = [
+  'deploy.web' // String that matches the listener ID
 ]
 
-POWER_USERS = [
-  'jdoe' # String that matches the user ID set by the adapter
+const POWER_USERS = [
+  'jdoe' // String that matches the user ID set by the adapter
 ]
 
-module.exports = (robot) ->
-  robot.listenerMiddleware (context, next, done) ->
-    if context.listener.options.id in POWER_COMMANDS
-      if context.response.message.user.id in POWER_USERS
-        # User is allowed access to this command
+export default (robot) => {
+  robot.listenerMiddleware(context, next, done) => {
+    if (context.listener.options.id in POWER_COMMANDS) {
+      if (context.response.message.user.id in POWER_USERS) {
+        // User is allowed access to this command
         next()
-      else
-        # Restricted command, but user isn't in whitelist
-        context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
+      } else {
+        // Restricted command, but user isn't in whitelist
+        context.response.reply("I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that.")
         done()
-    else
-      # This is not a restricted command; allow everyone
+      }
+    } else {
+      // This is not a restricted command; allow everyone
       next()
+    }
+  }
+}
 ```
 
 Remember that middleware executes for ALL listeners that match a given message (including `robot.hear /.+/`), so make sure you include them when categorizing your listeners.

@@ -2,7 +2,7 @@
 
 Hubot v3 aims to be a bot framework optimized for developers and developer workflows, with great integration with the most popular chat clients and developer tools, and an active community that is sharing scripts and best practices.
 
-This roadmap represents some of priorities for us over the next couple months. Issues or pull requests will be opened to discuss each of these items as they progress.
+This roadmap represents some priorities for us over the next couple months. Issues or pull requests will be opened to discuss each of these items as they progress.
 
 ## 1. Return to a “maintained” status
 
@@ -27,7 +27,6 @@ This roadmap represents some of priorities for us over the next couple months. I
 
 Each of these proposals will go through the [Hubot Evolution](https://github.com/hubotio/evolution) process.
 
-- Translate from CoffeeScript to JavaScript and update to modern versions of Node.js and NPM (or Yarn)
 - Revisit new bot generator (yeoman has a ton of dependencies, some of which can be error prone on windows)
 - Support for running multiple adapters and archetypes (chat, deployment, CI, github, etc)
 - Merge with [@probot](https://github.com/probot) and build out first class GitHub integration.
