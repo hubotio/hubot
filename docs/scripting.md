@@ -130,7 +130,7 @@ If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod
 
 ## Making HTTP calls
 
-Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [node-scoped-http-client](https://github.com/technoweenie/node-scoped-http-client) available at `robot.http`. The simplest case looks like:
+Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through `robot.http`. The simplest case looks like:
 
 
 ```javascript
@@ -163,7 +163,7 @@ A post looks like:
     }
 ```
 
-`res` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using node-scoped-http-client, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
+`res` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
 
 ```javascript
   robot.http("https://midnight-train")
@@ -239,18 +239,19 @@ For those times that there isn't an API, there's always the possibility of scree
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned, hubot uses [node-scoped-http-client](https://github.com/technoweenie/node-scoped-http-client) to provide a simple interface for making HTTP and HTTPS requests. Under its hood, it's using node's builtin [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) libraries, but providing an easy DSL for the most common kinds of interaction.
+As mentioned, hubot uses node's builtin [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) libraries under the hood, wrapped in a class.
 
-If you need to control options on http and https more directly, you pass a second argument to `robot.http` that will be passed on to node-scoped-http-client which will be passed on to http and https:
+If you need to control options on http and https more directly, you pass a second argument to `robot.http` that will be passed on to Node's http library:
 
-```
-  options =
-    # don't verify server certificate against a CA, SCARY!
+```javascript
+  let options = {
+    // don't verify server certificate against a CA, SCARY!
     rejectUnauthorized: false
+  }
   robot.http("https://midnight-train", options)
 ```
 
-In addition, if node-scoped-http-client doesn't suit you, you can use [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) yourself directly, or any other node library like [request](https://github.com/request/request).
+In addition, if `robot.http` doesn't suit you, you can use [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) yourself directly, or any other node library like [request](https://github.com/request/request).
 
 ## Random
 
