@@ -9,6 +9,7 @@ const sinon = require('sinon')
 chai.use(require('sinon-chai'))
 
 const expect = chai.expect
+const domain = '127.0.0.1'
 
 // Hubot classes
 const Robot = require('../src/robot')
@@ -56,7 +57,7 @@ describe('Robot', function () {
   describe('Unit Tests', function () {
     describe('#http', function () {
       beforeEach(function () {
-        const url = 'http://localhost'
+        const url = `http://${domain}`
         this.httpClient = this.robot.http(url)
       })
 
@@ -68,13 +69,13 @@ describe('Robot', function () {
       })
 
       it('persists the url passed in', function () {
-        const url = 'http://localhost'
+        const url = `http://${domain}`
         const httpClient = this.robot.http(url)
         expect(httpClient.url).to.equal(url)
       })
 
       it('actually responds to an http get request', function (done) {
-        const url = `http://localhost:${process.env.PORT}`
+        const url = `http://${domain}:${process.env.PORT}`
         const httpClient = this.robot.http(url)
         this.robot.router.get('/', (req, res) => {
           res.end()
@@ -88,7 +89,7 @@ describe('Robot', function () {
       })
 
       it('actually does a post', function (done) {
-        const url = `http://localhost:${process.env.PORT}/1`
+        const url = `http://${domain}:${process.env.PORT}/1`
         const httpClient = this.robot.http(url, {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
@@ -107,7 +108,7 @@ describe('Robot', function () {
 
       it('passes options through to the ScopedHttpClient', function () {
         const agent = {}
-        const httpClient = this.robot.http('http://localhost', { agent })
+        const httpClient = this.robot.http(`http://${domain}`, { agent })
         expect(httpClient.options.agent).to.equal(agent)
       })
 
@@ -118,7 +119,7 @@ describe('Robot', function () {
       it('merges in any global http options', function () {
         const agent = {}
         this.robot.globalHttpOptions = { agent }
-        const httpClient = this.robot.http('http://localhost')
+        const httpClient = this.robot.http(`http://${domain}`)
         expect(httpClient.options.agent).to.equal(agent)
       })
 
@@ -126,7 +127,7 @@ describe('Robot', function () {
         const agentA = {}
         const agentB = {}
         this.robot.globalHttpOptions = { agent: agentA }
-        const httpClient = this.robot.http('http://localhost', { agent: agentB })
+        const httpClient = this.robot.http(`http://${domain}`, { agent: agentB })
         expect(httpClient.options.agent).to.equal(agentB)
       })
     })
