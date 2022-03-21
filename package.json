@@ -45,6 +45,7 @@
     "hubot": "./bin/hubot"
   },
   "scripts": {
+    "ci": "node version",
     "start": "bin/hubot",
     "local": "env $(cat .env | xargs) bin/hubot",
     "pretest": "standard --fix",
