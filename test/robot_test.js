@@ -419,7 +419,12 @@ describe('Robot', function () {
         this.sandbox.stub(this.robot, 'parseHelp')
 
         this.robot.loadFile('./scripts', 'test-script.js')
-        expect(module._load).to.have.been.calledWith('scripts/test-script')
+        expect(module._load).to.have.been.calledWith('scripts/test-script.js')
+      })
+
+      it('should load .mjs files in the scripts folder', async function () {
+        const module = await this.robot.loadMjsFile('../test/test-script.mjs')
+        expect(module.default).to.be.a('function')
       })
 
       describe('proper script', function () {

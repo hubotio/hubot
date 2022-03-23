@@ -404,25 +404,47 @@ class Robot {
   // Returns nothing.
   loadFile (filepath, filename) {
     const ext = path.extname(filename)
-    const full = path.join(filepath, path.basename(filename, ext))
+    const full = path.join(filepath, filename)
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (!require.extensions[ext]) { // eslint-disable-line
+    if (!(['.js', '.mjs'].includes(ext))) { // eslint-disable-line
       return
     }
-
     try {
-      const script = require(full)
-
-      if (typeof script === 'function') {
-        script(this)
-        this.parseHelp(path.join(filepath, filename))
-      } else {
-        this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
+      if (ext === '.js') this.loadJsFile(full)
+      if (ext === '.mjs') {
+        this.loadMjsFile(full).then(() => {
+          // this.adapter.send(null, `Loaded ${full}`)
+        }).catch(e => {
+          this.logger.error(`Loading ES6 .mjs file: ${e}`)
+          process.exit(1)
+        })
       }
     } catch (error) {
       this.logger.error(`Unable to load ${full}: ${error.stack}`)
       process.exit(1)
+    }
+  }
+
+  async loadMjsFile (full) {
+    const module = await import(full)
+    if (typeof module.default === 'function') {
+      module.default(this)
+      this.parseHelp(full)
+    } else {
+      this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof module}`)
+    }
+    return module
+  }
+
+  loadJsFile (full) {
+    const script = require(full)
+
+    if (typeof script === 'function') {
+      script(this)
+      this.parseHelp(full)
+    } else {
+      this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
     }
   }
 
@@ -630,10 +652,8 @@ class Robot {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  send (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-
-    this.adapter.send.apply(this.adapter, [envelope].concat(strings))
+  send (envelope, ...strings) {
+    this.adapter.send(envelope, ...strings)
   }
 
   // Public: A helper reply function which delegates to the adapter's reply
@@ -643,10 +663,8 @@ class Robot {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  reply (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-
-    this.adapter.reply.apply(this.adapter, [envelope].concat(strings))
+  reply (envelope, ...strings) {
+    this.adapter.reply(envelope, ...strings)
   }
 
   // Public: A helper send function to message a room that the robot is in.
@@ -655,11 +673,10 @@ class Robot {
   // strings - One or more Strings for each message to send.
   //
   // Returns nothing.
-  messageRoom (room/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
+  messageRoom (room, ...strings) {
     const envelope = { room }
 
-    this.adapter.send.apply(this.adapter, [envelope].concat(strings))
+    this.adapter.send(envelope, ...strings)
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
