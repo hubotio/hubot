@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@slack/client": "^5.0.1",
-    "cline": "^0.8.2",
+    "cline": "github:joeyguerra/cline",
     "connect-multiparty": "^2.1.1",
     "express": "^4.16.3",
     "log": "1.4.0",
