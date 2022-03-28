@@ -4,7 +4,7 @@ const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const path = require('path')
 
-const Log = require('log')
+const Log = require('./log.js')
 const HttpClient = require('./http-client.js')
 
 const Brain = require('./brain')
@@ -60,19 +60,7 @@ class Robot {
     } else {
       this.setupNullRouter()
     }
-
-    this.loadAdapter(adapter)
-
     this.adapterName = adapter
-    this.errorHandlers = []
-
-    this.on('error', (err, res) => {
-      return this.invokeErrorHandlers(err, res)
-    })
-    this.onUncaughtException = err => {
-      return this.emit('error', err)
-    }
-    process.on('uncaughtException', this.onUncaughtException)
   }
 
   // Public: Adds a custom Listener with the provided matcher, options, and
@@ -455,7 +443,6 @@ class Robot {
   // Returns nothing.
   load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
-
     if (fs.existsSync(path)) {
       fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
     }
@@ -572,15 +559,29 @@ class Robot {
   //
   // Returns nothing.
   loadAdapter (adapter) {
-    this.logger.debug(`Loading adapter ${adapter}`)
-
-    try {
-      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
-      this.adapter = require(path).use(this)
-    } catch (err) {
-      this.logger.error(`Cannot load adapter ${adapter} - ${err}`)
-      process.exit(1)
-    }
+    const p = new Promise((resolve, reject) => {
+      this.logger.debug(`Loading adapter ${adapter}`)
+      try {
+        const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+        if (/\.mjs$/.test(path)) {
+          this.logger.debug(path)
+          import(path).then(module => {
+            this.logger.debug('hi')
+            this.adapter = module.default(this)
+            resolve(this.adapter)
+          }).catch(e => {
+            this.logger.error(e)
+            process.exit(1)
+          })
+        } else {
+          this.adapter = require(path).use(this)
+          resolve(this.adapter)
+        }
+      } catch (err) {
+        reject(err)
+      }
+    })
+    return p
   }
 
   // Public: Help Commands for Running Scripts.
@@ -722,7 +723,7 @@ class Robot {
     if (this.pingIntervalId != null) {
       clearInterval(this.pingIntervalId)
     }
-    process.removeListener('uncaughtException', this.onUncaughtException)
+    if(this.onUncaughtException) process.removeListener('uncaughtException', this.onUncaughtException)
     this.adapter.close()
     if (this.server) {
       this.server.close()

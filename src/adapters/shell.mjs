@@ -1,13 +1,10 @@
 'use strict'
-
-const fs = require('fs')
-const readline = require('readline')
-const Stream = require('stream')
-const cline = require('cline')
-
-const Adapter = require('../adapter')
-
-const _require = require('../message')
+import fs from 'fs'
+import readline from 'readline'
+import Stream from 'stream'
+import cline from 'cline'
+import Adapter from '../adapter.js'
+import _require from '../message.js'
 
 const TextMessage = _require.TextMessage
 
@@ -106,7 +103,9 @@ class Shell extends Adapter {
   }
 }
 
-exports.use = robot => new Shell(robot)
+export default (robot)=>new Shell(robot)
+
+process.stdout._handle.setBlocking(false)
 
 // load history from .hubot_history.
 //

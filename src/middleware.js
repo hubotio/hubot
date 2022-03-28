@@ -24,7 +24,6 @@ class Middleware {
   // Returns before executing any middleware
   execute (context, next, lastDone) {
     const self = this
-
     if (lastDone == null) {
       lastDone = function () {}
     }

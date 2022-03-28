@@ -16,10 +16,9 @@
   },
   "dependencies": {
     "@slack/client": "^5.0.1",
-    "cline": "github:joeyguerra/cline",
+    "cline": "^0.8.2",
     "connect-multiparty": "^2.1.1",
     "express": "^4.16.3",
-    "log": "1.4.0",
     "optparse": "1.0.4"
   },
   "devDependencies": {
@@ -31,8 +30,7 @@
     "nyc": "^15.1.0",
     "semantic-release": "^19.0.2",
     "sinon": "~1.17.0",
-    "sinon-chai": "^2.8.0",
-    "standard": "^16.0.4"
+    "sinon-chai": "^2.8.0"
   },
   "engines": {
     "node": "> 16.0.0",
@@ -46,7 +44,6 @@
     "ci": "node version",
     "start": "bin/hubot",
     "local": "env $(cat .env | xargs) bin/hubot",
-    "pretest": "standard --fix",
     "test": "nyc --reporter=html --reporter=text mocha",
     "test:one": "mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",

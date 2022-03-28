@@ -21,15 +21,14 @@ const switches = [
 
 const options = {
   adapter: process.env.HUBOT_ADAPTER || 'shell',
-  alias: process.env.HUBOT_ALIAS || false,
-  create: process.env.HUBOT_CREATE || false,
-  enableHttpd: process.env.HUBOT_HTTPD || true,
+  alias: process.env.HUBOT_ALIAS ? process.env.HUBOT_ALIAS !== 'false' : false,
+  create: process.env.HUBOT_CREATE ? process.env.HUBOT_CREATE !== 'false' : false,
+  enableHttpd: process.env.HUBOT_HTTPD ? process.env.HUBOT_HTTPD !== 'false' : true,
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
   path: process.env.HUBOT_PATH || '.',
   configCheck: false
 }
-
 const Parser = new OptParse.OptionParser(switches)
 Parser.banner = 'Usage hubot [options]'
 
@@ -95,22 +94,22 @@ if (options.create) {
 }
 const path = require('path')
 const dirName = __dirname
-const robot = Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options.enableHttpd, options.name, options.alias)
+let robot = null
+Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options.enableHttpd, options.name, options.alias).then(bot => {
+  robot = bot
+  if (options.version) {
+    console.log(robot.version)
+    process.exit(0)
+  }
 
-if (options.version) {
-  console.log(robot.version)
-  process.exit(0)
-}
-
-if (options.configCheck) {
-  loadScripts()
-  console.log('OK')
-  process.exit(0)
-}
-
-robot.adapter.once('connected', loadScripts)
-
-robot.run()
+  if (options.configCheck) {
+    loadScripts()
+    console.log('OK')
+    process.exit(0)
+  }
+  robot.adapter.once('connected', loadScripts)
+  robot.run()
+})
 
 function loadScripts () {
   robot.load(pathResolve('.', 'scripts'))

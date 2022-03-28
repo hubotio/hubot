@@ -25,16 +25,16 @@ const mockery = require('mockery')
 process.env.PORT = process.env.PORT || 8080
 
 describe('Robot', function () {
-  beforeEach(function () {
+  beforeEach(async function() {
     mockery.enable({
       warnOnReplace: false,
       warnOnUnregistered: false
     })
     mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
     this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
+    const a = await this.robot.loadAdapter('mock-adapter')
     this.robot.alias = 'Hubot'
     this.robot.run()
-
     // Re-throw AssertionErrors for clearer test failures
     this.robot.on('error', function (name, err, response) {
       if (err && err.constructor.name === 'AssertionError') {
@@ -47,7 +47,7 @@ describe('Robot', function () {
       name: 'hubottester',
       room: '#mocha'
     })
-  })
+})
 
   afterEach(function () {
     mockery.disable()

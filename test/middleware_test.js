@@ -345,14 +345,18 @@ describe('Middleware', function () {
   // Any new fields that are exposed to middleware should be explicitly
   // tested for.
   describe('Public Middleware APIs', function () {
-    beforeEach(function () {
+    beforeEach(async function() {
       mockery.enable({
         warnOnReplace: false,
         warnOnUnregistered: false
       })
       mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
       this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
-      this.robot.run
+      await this.robot.loadAdapter('mock-adapter')  
+      this.robot.onUncaughtException = err => {
+        return this.robot.emit('error', err)
+      }
+      process.on('uncaughtException', this.robot.onUncaughtException)
 
       // Re-throw AssertionErrors for clearer test failures
       this.robot.on('error', function (name, err, response) {
@@ -363,6 +367,7 @@ describe('Middleware', function () {
         }
       })
 
+      this.robot.run()
       this.user = this.robot.brain.userForId('1', {
         name: 'hubottester',
         room: '#mocha'
@@ -376,7 +381,7 @@ describe('Middleware', function () {
       this.testListener = this.robot.listeners[0]
     })
 
-    afterEach(function () {
+    afterEach(function () {      
       mockery.disable()
       this.robot.shutdown()
     })

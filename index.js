@@ -24,7 +24,22 @@ module.exports = {
   DataStore: DataStore.DataStore,
   DataStoreUnavailable: DataStore.DataStoreUnavailable,
 
-  loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
-    return new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+  async loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
+    const bot = new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+    try {
+      await bot.loadAdapter(`${adapterName}.mjs`)
+      bot.errorHandlers = []
+      bot.on('error', (err, res) => {
+        return bot.invokeErrorHandlers(err, res)
+      })
+      bot.onUncaughtException = err => {
+        return bot.emit('error', err)
+      }
+      process.on('uncaughtException', bot.onUncaughtException)
+    } catch (err) {
+      bot.logger.error(`Cannot load adapter ${adapterName} - ${err}`)
+      process.exit(1)
+    }
+    return bot
   }
 }
