@@ -20,12 +20,157 @@
   * @api public
   */
  
- var Log = exports = module.exports = function Log(level, stream){
-   if ('string' == typeof level) level = exports[level.toUpperCase()];
-   this.level = level || exports.DEBUG;
-   this.stream = stream || process.stdout;
-   //if (this.stream.readable) this.read();
- };
+ class Log extends EventEmitter {
+   constructor(level, stream) {
+     super();
+     if ('string' == typeof level) level = exports[level.toUpperCase()];
+     this.level = level || exports.DEBUG;
+     this.stream = stream || process.stdout;
+     if (this.stream.readable && !this.stream.isTTY) this.read();
+   }
+   /**
+    * Start emitting "line" events.
+    *
+    * @api public
+    */
+ 
+    read(){
+      let buf = '';
+      this.stream.setEncoding('utf8');
+      this.stream.on('data', (chunk) => {
+        buf += chunk;
+        if ('\n' != buf[buf.length - 1]) return;
+        buf.split('\n').map((line) => {
+          if (!line.length) return;
+          try {
+            let captures = line.match(/^\[([^\]]+)\] (\w+) (.*)/);
+            let obj = {
+                date: new Date(captures[1])
+              , level: exports[captures[2]]
+              , levelString: captures[2]
+              , msg: captures[3]
+            };
+            this.emit('line', obj);
+          } catch (err) {
+            // Ignore
+          }
+        });
+        buf = '';
+      });
+
+      this.stream.on('end', function(){
+        this.emit('end');
+      });
+    }
+  
+    /**
+     * Log output message.
+     *
+     * @param  {String} levelStr
+     * @param  {Array} args
+     * @api private
+     */
+  
+    log(levelStr, args) {
+      if (exports[levelStr] <= this.level) {
+        var msg = fmt.apply(null, args);
+        this.stream.write(
+            '[' + new Date + ']'
+          + ' ' + levelStr
+          + ' ' + msg
+          + '\n'
+        );
+      }
+    }
+  
+    /**
+     * Log emergency `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    emergency(msg){
+      this.log('EMERGENCY', arguments);
+    }
+  
+    /**
+     * Log alert `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    alert(msg){
+      this.log('ALERT', arguments);
+    }
+  
+    /**
+     * Log critical `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    critical(msg){
+      this.log('CRITICAL', arguments);
+    }
+  
+    /**
+     * Log error `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    error(msg){
+      this.log('ERROR', arguments);
+    }
+  
+    /**
+     * Log warning `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    warning(msg){
+      this.log('WARNING', arguments);
+    }
+  
+    /**
+     * Log notice `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    notice(msg){
+      this.log('NOTICE', arguments);
+    }
+  
+    /**
+     * Log info `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    info(msg){
+      this.log('INFO', arguments);
+    }
+  
+    /**
+     * Log debug `msg`.
+     *
+     * @param  {String} msg
+     * @api public
+     */
+  
+    debug(msg){
+      this.log('DEBUG', arguments);
+    }
+ }
  
  /**
   * System is unusable.
@@ -91,162 +236,4 @@
  
  exports.DEBUG = 7;
  
- /**
-  * prototype.
-  */
- 
- Log.prototype = {
- 
-   /**
-    * Start emitting "line" events.
-    *
-    * @api public
-    */
- 
-   read: function(){
-     var buf = ''
-       , self = this
-       , stream = this.stream;
- 
-     stream.setEncoding('utf8');
-     stream.on('data', function(chunk){
-       buf += chunk;
-       if ('\n' != buf[buf.length - 1]) return;
-       buf.split('\n').map(function(line){
-         if (!line.length) return;
-         try {
-           var captures = line.match(/^\[([^\]]+)\] (\w+) (.*)/);
-           var obj = {
-               date: new Date(captures[1])
-             , level: exports[captures[2]]
-             , levelString: captures[2]
-             , msg: captures[3]
-           };
-           self.emit('line', obj);
-         } catch (err) {
-           // Ignore
-         }
-       });
-       buf = '';
-     });
- 
-     stream.on('end', function(){
-       self.emit('end');
-     });
-   },
- 
-   /**
-    * Log output message.
-    *
-    * @param  {String} levelStr
-    * @param  {Array} args
-    * @api private
-    */
- 
-   log: function(levelStr, args) {
-     if (exports[levelStr] <= this.level) {
-       var msg = fmt.apply(null, args);
-       this.stream.write(
-           '[' + new Date + ']'
-         + ' ' + levelStr
-         + ' ' + msg
-         + '\n'
-       );
-     }
-   },
- 
-   /**
-    * Log emergency `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   emergency: function(msg){
-     this.log('EMERGENCY', arguments);
-   },
- 
-   /**
-    * Log alert `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   alert: function(msg){
-     this.log('ALERT', arguments);
-   },
- 
-   /**
-    * Log critical `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   critical: function(msg){
-     this.log('CRITICAL', arguments);
-   },
- 
-   /**
-    * Log error `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   error: function(msg){
-     this.log('ERROR', arguments);
-   },
- 
-   /**
-    * Log warning `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   warning: function(msg){
-     this.log('WARNING', arguments);
-   },
- 
-   /**
-    * Log notice `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   notice: function(msg){
-     this.log('NOTICE', arguments);
-   },
- 
-   /**
-    * Log info `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   info: function(msg){
-     this.log('INFO', arguments);
-   },
- 
-   /**
-    * Log debug `msg`.
-    *
-    * @param  {String} msg
-    * @api public
-    */
- 
-   debug: function(msg){
-     this.log('DEBUG', arguments);
-   }
- };
- 
- /**
-  * Inherit from `EventEmitter`.
-  */
- 
- Log.prototype.__proto__ = EventEmitter.prototype;
- 
+ module.exports = Log;

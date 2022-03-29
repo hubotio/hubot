@@ -42,8 +42,6 @@ const randomFrom = options => options[Math.floor(Math.random() * options.length)
 module.exports = robot => {
   robot.respond(/lunch js/i, resp => {
     const selectedLunch = randomFrom(dallasLunchOptions)
-    const otherLunchOptions = dallasLunchOptions.filter(option => option !== selectedLunch)
-    robot.logger.log(otherLunchOptions)
     resp.reply(`${selectedLunch}`)
   })
 }
