@@ -278,11 +278,31 @@ class Robot {
   //
   // Returns nothing.
   // Returns before executing callback
-  receive (message, cb) {
+  async receive (message) {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
-    this.middleware.receive.execute({ response: new Response(this, message) }, this.processListeners.bind(this), cb)
-  }
+    await this.middleware.receive.execute({ response: new Response(this, message) })
+    
+    let anyListenersExecuted = false
+    for await(const listener of this.listeners) {
+      try{
+        await listener.call(message, this.middleware.listener, wasHandled => {
+          anyListenersExecuted = anyListenersExecuted || wasHandled
+        })
+      }catch(err){
+        this.emit('error', err, message)
+      }
+      if(anyListenersExecuted && message.done) {
+        break
+      } 
+    }
+    if(anyListenersExecuted) return
+
+    if (!(message instanceof Message.CatchAllMessage)) {
+      this.logger.debug('No listeners executed; falling back to catch-all')
+      await this.receive(new Message.CatchAllMessage(message))
+    }
+}
 
   compose (middleware) {
     const robot = this.robot
@@ -351,37 +371,6 @@ class Robot {
         if (done) done()
       }
     })
-
-    // async.detectSeries(this.listeners, (listener, done) => {
-    //   try {
-    //     listener.call(context.response.message, this.middleware.listener, function (listenerExecuted) {
-    //       anyListenersExecuted = anyListenersExecuted || listenerExecuted
-    //       // Defer to the event loop at least after every listener so the
-    //       // stack doesn't get too big
-    //       process.nextTick(() =>
-    //         // Stop processing when message.done == true
-    //         done(context.response.message.done)
-    //       )
-    //     })
-    //   } catch (err) {
-    //     this.emit('error', err, new this.Response(this, context.response.message, []))
-    //     // Continue to next listener when there is an error
-    //     done(false)
-    //   }
-    // },
-    // // Ignore the result ( == the listener that set message.done = true)
-    // _ => {
-    //   // If no registered Listener matched the message
-
-    //   if (!(context.response.message instanceof Message.CatchAllMessage) && !anyListenersExecuted) {
-    //     this.logger.debug('No listeners executed; falling back to catch-all')
-    //     this.receive(new Message.CatchAllMessage(context.response.message), done)
-    //   } else {
-    //     if (done != null) {
-    //       process.nextTick(done)
-    //     }
-    //   }
-    // })
   }
 
   // Public: Loads a file in path.

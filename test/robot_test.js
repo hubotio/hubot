@@ -255,12 +255,12 @@ describe('Robot', function () {
     )
 
     describe('#receive', function () {
-      it('calls all registered listeners', function (done) {
+      it('calls all registered listeners', async function () {
         // Need to use a real Message so that the CatchAllMessage constructor works
         const testMessage = new TextMessage(this.user, 'message123')
 
         const listener = {
-          call (response, middleware, cb) {
+          async call (response, cb) {
             cb()
           }
         }
@@ -273,15 +273,13 @@ describe('Robot', function () {
           listener
         ]
 
-        this.robot.receive(testMessage, function () {
-          // When no listeners match, each listener is called twice: once with
-          // the original message and once with a CatchAll message
-          expect(listener.call).to.have.callCount(8)
-          done()
-        })
+        await this.robot.receive(testMessage)
+        // When no listeners match, each listener is called twice: once with
+        // the original message and once with a CatchAll message
+        expect(listener.call).to.have.callCount(8)
       })
 
-      it('sends a CatchAllMessage if no listener matches', function (done) {
+      it('sends a CatchAllMessage if no listener matches', async function () {
         // Testing for recursion with a new CatchAllMessage that wraps the
         // original message
 
@@ -290,21 +288,18 @@ describe('Robot', function () {
 
         // Replace @robot.receive so we can catch when the functions recurses
         const oldReceive = this.robot.receive
-        this.robot.receive = function (message, cb) {
+        this.robot.receive = async function (message) {
           expect(message).to.be.instanceof(CatchAllMessage)
           expect(message.message).to.be.equal(testMessage)
-          cb()
         }
         sinon.spy(this.robot, 'receive')
 
         // Call the original receive method that we want to test
-        oldReceive.call(this.robot, testMessage, () => {
-          expect(this.robot.receive).to.have.been.called
-          done()
-        })
+        await oldReceive.call(this.robot, testMessage)
+        expect(this.robot.receive).to.have.been.called
       })
 
-      it('does not trigger a CatchAllMessage if a listener matches', function (done) {
+      it('does not trigger a CatchAllMessage if a listener matches', async function () {
         const testMessage = new TextMessage(this.user, 'message123')
 
         const matchingListener = {
@@ -323,17 +318,17 @@ describe('Robot', function () {
         ]
 
         // Call the original receive method that we want to test
-        oldReceive.call(this.robot, testMessage, done)
+        await oldReceive.call(this.robot, testMessage)
 
         // Ensure the function did not recurse
         expect(this.robot.receive).to.not.have.been.called
       })
 
-      it('stops processing if a listener marks the message as done', function (done) {
+      it('stops processing if a listener marks the message as done', async function () {
         const testMessage = new TextMessage(this.user, 'message123')
 
         const matchingListener = {
-          call (message, middleware, doesMatch) {
+          call (message, middlewareListener, doesMatch) {
             message.done = true
             // Listener must have matched
             doesMatch(true)
@@ -348,25 +343,23 @@ describe('Robot', function () {
           listenerSpy
         ]
 
-        this.robot.receive(testMessage, function () {
-          expect(listenerSpy.call).to.not.have.been.called
-          done()
-        })
+        await this.robot.receive(testMessage)
+        expect(listenerSpy.call).to.not.have.been.called
       })
 
-      it('gracefully handles listener uncaughtExceptions (move on to next listener)', function (done) {
+      it('gracefully handles listener uncaughtExceptions (move on to next listener)', async function () {
         const testMessage = {}
         const theError = new Error()
 
         const badListener = {
-          call () {
+          async call () {
             throw theError
           }
         }
 
         let goodListenerCalled = false
         const goodListener = {
-          call (_, middleware, doesMatch) {
+          async call (_, middelwareListener, doesMatch) {
             goodListenerCalled = true
             doesMatch(true)
           }
@@ -377,28 +370,16 @@ describe('Robot', function () {
           goodListener
         ]
 
-        this.robot.emit = function (name, err, response) {
+        this.robot.emit = function (name, err, message) {
           expect(name).to.equal('error')
           expect(err).to.equal(theError)
-          expect(response.message).to.equal(testMessage)
+          expect(message).to.equal(testMessage)
         }
         sinon.spy(this.robot, 'emit')
 
-        this.robot.receive(testMessage, () => {
-          expect(this.robot.emit).to.have.been.called
-          expect(goodListenerCalled).to.be.ok
-          done()
-        })
-      })
-
-      it('executes the callback after the function returns when there are no listeners', function (done) {
-        const testMessage = new TextMessage(this.user, 'message123')
-        let finished = false
-        this.robot.receive(testMessage, function () {
-          expect(finished).to.be.ok
-          done()
-        })
-        finished = true
+        await this.robot.receive(testMessage)
+        expect(this.robot.emit).to.have.been.called
+        expect(goodListenerCalled).to.be.ok
       })
     })
 
@@ -701,16 +682,15 @@ describe('Robot', function () {
   })
 
   describe('Message Processing', function () {
-    it('calls a matching listener', function (done) {
+    it('calls a matching listener', async function () {
       const testMessage = new TextMessage(this.user, 'message123')
       this.robot.hear(/^message123$/, function (response) {
         expect(response.message).to.equal(testMessage)
-        done()
       })
-      this.robot.receive(testMessage)
+      await this.robot.receive(testMessage)
     })
 
-    it('calls multiple matching listeners', function (done) {
+    it('calls multiple matching listeners', async function () {
       const testMessage = new TextMessage(this.user, 'message123')
 
       let listenersCalled = 0
@@ -722,13 +702,11 @@ describe('Robot', function () {
       this.robot.hear(/^message123$/, listenerCallback)
       this.robot.hear(/^message123$/, listenerCallback)
 
-      this.robot.receive(testMessage, function () {
-        expect(listenersCalled).to.equal(2)
-        done()
-      })
+      await this.robot.receive(testMessage)
+      expect(listenersCalled).to.equal(2)
     })
 
-    it('calls the catch-all listener if no listeners match', function (done) {
+    it('calls the catch-all listener if no listeners match', async function () {
       const testMessage = new TextMessage(this.user, 'message123')
 
       const listenerCallback = sinon.spy()
@@ -737,13 +715,12 @@ describe('Robot', function () {
       this.robot.catchAll(function (response) {
         expect(listenerCallback).to.not.have.been.called
         expect(response.message).to.equal(testMessage)
-        done()
       })
 
-      this.robot.receive(testMessage)
+      await this.robot.receive(testMessage)
     })
 
-    it('does not call the catch-all listener if any listener matched', function (done) {
+    it('does not call the catch-all listener if any listener matched', async function () {
       const testMessage = new TextMessage(this.user, 'message123')
 
       const listenerCallback = sinon.spy()
@@ -752,14 +729,12 @@ describe('Robot', function () {
       const catchAllCallback = sinon.spy()
       this.robot.catchAll(catchAllCallback)
 
-      this.robot.receive(testMessage, function () {
-        expect(listenerCallback).to.have.been.called.once
-        expect(catchAllCallback).to.not.have.been.called
-        done()
-      })
+      await this.robot.receive(testMessage)
+      expect(listenerCallback).to.have.been.called.once
+      expect(catchAllCallback).to.not.have.been.called
     })
 
-    it('stops processing if message.finish() is called synchronously', function (done) {
+    it('stops processing if message.finish() is called synchronously', async function () {
       const testMessage = new TextMessage(this.user, 'message123')
 
       this.robot.hear(/^message123$/, response => response.message.finish())
@@ -767,24 +742,21 @@ describe('Robot', function () {
       const listenerCallback = sinon.spy()
       this.robot.hear(/^message123$/, listenerCallback)
 
-      this.robot.receive(testMessage, function () {
-        expect(listenerCallback).to.not.have.been.called
-        done()
-      })
+      await this.robot.receive(testMessage)
+      expect(listenerCallback).to.not.have.been.called
     })
 
-    it('calls non-TextListener objects', function (done) {
+    it('calls non-TextListener objects', async function () {
       const testMessage = new EnterMessage(this.user)
 
       this.robot.enter(function (response) {
         expect(response.message).to.equal(testMessage)
-        done()
       })
 
-      this.robot.receive(testMessage)
+      await this.robot.receive(testMessage)
     })
 
-    it('gracefully handles listener uncaughtExceptions (move on to next listener)', function (done) {
+    it('gracefully handles listener uncaughtExceptions (move on to next listener)', async function () {
       const testMessage = new TextMessage(this.user, 'message123')
       const theError = new Error()
 
@@ -804,201 +776,103 @@ describe('Robot', function () {
       }
       sinon.spy(this.robot, 'emit')
 
-      this.robot.receive(testMessage, () => {
-        expect(this.robot.emit).to.have.been.called
-        expect(goodListenerCalled).to.be.ok
-        done()
-      })
+      await this.robot.receive(testMessage)
+      expect(this.robot.emit).to.have.been.called
+      expect(goodListenerCalled).to.be.ok
     })
 
     describe('Listener Middleware', function () {
-      it('allows listener callback execution', function (testDone) {
+      it('allows listener callback execution', async function () {
         const listenerCallback = sinon.spy()
         this.robot.hear(/^message123$/, listenerCallback)
-        this.robot.listenerMiddleware((context, next, done) =>
-          // Allow Listener callback execution
-          next(done)
-        )
+        this.robot.listenerMiddleware((context) =>{
+          expect(context).to.be.ok
+        })
 
         const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(listenerCallback).to.have.been.called
-          testDone()
-        })
+        await this.robot.receive(testMessage)
+        expect(listenerCallback).to.have.been.called
       })
 
-      it('can block listener callback execution', function (testDone) {
+      it('can block listener callback execution', async function () {
         const listenerCallback = sinon.spy()
         this.robot.hear(/^message123$/, listenerCallback)
-        this.robot.listenerMiddleware((context, next, done) =>
+        this.robot.listenerMiddleware((context) => {
           // Block Listener callback execution
-          done()
-        )
+          context.response.message.done = true
+          expect(context.response).to.be.ok
+        })
 
         const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(listenerCallback).to.not.have.been.called
-          testDone()
-        })
+        await this.robot.receive(testMessage)
+        expect(listenerCallback).to.not.have.been.called
       })
 
-      it('receives the correct arguments', function (testDone) {
+      it('receives the correct arguments', async function () {
         this.robot.hear(/^message123$/, function () {})
         const testListener = this.robot.listeners[0]
         const testMessage = new TextMessage(this.user, 'message123')
 
-        this.robot.listenerMiddleware((context, next, done) => {
-          // Escape middleware error handling for clearer test failures
-          process.nextTick(() => {
-            expect(context.listener).to.equal(testListener)
-            expect(context.response.message).to.equal(testMessage)
-            expect(next).to.be.a('function')
-            expect(done).to.be.a('function')
-            testDone()
-          })
+        this.robot.listenerMiddleware((context) => {
+          expect(context.listener).to.equal(testListener)
+          expect(context.response.message).to.equal(testMessage)
         })
 
-        this.robot.receive(testMessage)
-      })
-
-      it('executes middleware in order of definition', function (testDone) {
-        const execution = []
-
-        const testMiddlewareA = function (context, next, done) {
-          execution.push('middlewareA')
-          next(function () {
-            execution.push('doneA')
-            done()
-          })
-        }
-
-        const testMiddlewareB = function (context, next, done) {
-          execution.push('middlewareB')
-          next(function () {
-            execution.push('doneB')
-            done()
-          })
-        }
-
-        this.robot.listenerMiddleware(testMiddlewareA)
-        this.robot.listenerMiddleware(testMiddlewareB)
-
-        this.robot.hear(/^message123$/, () => execution.push('listener'))
-
-        const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(execution).to.deep.equal([
-            'middlewareA',
-            'middlewareB',
-            'listener',
-            'doneB',
-            'doneA'
-          ])
-          testDone()
-        })
+        await this.robot.receive(testMessage)
       })
     })
 
     describe('Receive Middleware', function () {
-      it('fires for all messages, including non-matching ones', function (testDone) {
+      it('fires for all messages, including non-matching ones', async function () {
         const middlewareSpy = sinon.spy()
         const listenerCallback = sinon.spy()
         this.robot.hear(/^message123$/, listenerCallback)
-        this.robot.receiveMiddleware(function (context, next, done) {
+        this.robot.receiveMiddleware(function (context) {
           middlewareSpy()
-          next(done)
         })
 
         const testMessage = new TextMessage(this.user, 'not message 123')
 
-        this.robot.receive(testMessage, function () {
-          expect(listenerCallback).to.not.have.been.called
-          expect(middlewareSpy).to.have.been.called
-          testDone()
-        })
+        await this.robot.receive(testMessage)
+        expect(listenerCallback).to.not.have.been.called
+        expect(middlewareSpy).to.have.been.called
       })
 
-      it('can block listener execution', function (testDone) {
+      it('can block listener execution', async function () {
         const middlewareSpy = sinon.spy()
         const listenerCallback = sinon.spy()
         this.robot.hear(/^message123$/, listenerCallback)
-        this.robot.receiveMiddleware(function (context, next, done) {
+        this.robot.receiveMiddleware(function (r, context) {
           // Block Listener callback execution
           middlewareSpy()
-          done()
+          context.response.message.done = true
         })
 
         const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(listenerCallback).to.not.have.been.called
-          expect(middlewareSpy).to.have.been.called
-          testDone()
-        })
+        await this.robot.receive(testMessage)
+        expect(listenerCallback).to.not.have.been.called
+        expect(middlewareSpy).to.have.been.called
       })
 
-      it('receives the correct arguments', function (testDone) {
+      it('receives the correct arguments', async function () {
         this.robot.hear(/^message123$/, function () {})
         const testMessage = new TextMessage(this.user, 'message123')
 
-        this.robot.receiveMiddleware(function (context, next, done) {
-          // Escape middleware error handling for clearer test failures
+        this.robot.receiveMiddleware(function (_, context) {
           expect(context.response.message).to.equal(testMessage)
-          expect(next).to.be.a('function')
-          expect(done).to.be.a('function')
-          testDone()
-          next(done)
         })
 
-        this.robot.receive(testMessage)
+        await this.robot.receive(testMessage)
       })
 
-      it('executes receive middleware in order of definition', function (testDone) {
-        const execution = []
-
-        const testMiddlewareA = function (context, next, done) {
-          execution.push('middlewareA')
-          next(function () {
-            execution.push('doneA')
-            done()
-          })
-        }
-
-        const testMiddlewareB = function (context, next, done) {
-          execution.push('middlewareB')
-          next(function () {
-            execution.push('doneB')
-            done()
-          })
-        }
-
-        this.robot.receiveMiddleware(testMiddlewareA)
-        this.robot.receiveMiddleware(testMiddlewareB)
-
-        this.robot.hear(/^message123$/, () => execution.push('listener'))
-
-        const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(execution).to.deep.equal([
-            'middlewareA',
-            'middlewareB',
-            'listener',
-            'doneB',
-            'doneA'
-          ])
-          testDone()
-        })
-      })
-
-      it('allows editing the message portion of the given response', function (testDone) {
-        const testMiddlewareA = function (context, next, done) {
+      it('allows editing the message portion of the given response', async function () {
+        const testMiddlewareA = function (_, context) {
           context.response.message.text = 'foobar'
-          next()
         }
 
-        const testMiddlewareB = function (context, next, done) {
+        const testMiddlewareB = function (_, context) {
           // Subsequent middleware should see the modified message
           expect(context.response.message.text).to.equal('foobar')
-          next()
         }
 
         this.robot.receiveMiddleware(testMiddlewareA)
@@ -1009,54 +883,44 @@ describe('Robot', function () {
         this.robot.hear(/^foobar$/, testCallback)
 
         const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(testCallback).to.have.been.called
-          testDone()
-        })
+        await this.robot.receive(testMessage)
+        expect(testCallback).to.have.been.called
       })
     })
 
     describe('Response Middleware', function () {
-      it('executes response middleware in order', function (testDone) {
-        let sendSpy
-        this.robot.adapter.send = (sendSpy = sinon.spy())
+      it('executes response middleware in order', async function () {
         this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.'))
-
-        this.robot.responseMiddleware(function (context, next, done) {
+        this.robot.responseMiddleware(function (r, context) {
           context.strings[0] = context.strings[0].replace(/foobar/g, 'barfoo')
-          next()
         })
 
-        this.robot.responseMiddleware(function (context, next, done) {
+        this.robot.responseMiddleware(function (r, context) {
           context.strings[0] = context.strings[0].replace(/barfoo/g, 'replaced bar-foo')
-          next()
         })
 
+        this.robot.adapter.send = async function(envelope, ...strings){
+          expect(strings[0]).to.equal('replaced bar-foo, sir, replaced bar-foo.')
+        }
         const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(sendSpy.getCall(0).args[1]).to.equal('replaced bar-foo, sir, replaced bar-foo.')
-          testDone()
-        })
+        await this.robot.receive(testMessage)
       })
 
-      it('allows replacing outgoing strings', function (testDone) {
-        let sendSpy
-        this.robot.adapter.send = (sendSpy = sinon.spy())
+      it('allows replacing outgoing strings', async function () {
         this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.'))
 
-        this.robot.responseMiddleware(function (context, next, done) {
+        this.robot.responseMiddleware(function (context) {
           context.strings = ['whatever I want.']
-          next()
         })
 
         const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(sendSpy.getCall(0).args[1]).to.deep.equal('whatever I want.')
-          testDone()
-        })
+        this.robot.adapter.send = async function(envelope, ...strings){
+          expect(strings[0]).to.equal('whatever I want.')
+        }
+        await this.robot.receive(testMessage)
       })
 
-      it('marks plaintext as plaintext', function (testDone) {
+      it('marks plaintext as plaintext', async function () {
         const sendSpy = sinon.spy()
         this.robot.adapter.send = sendSpy
         this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.'))
@@ -1064,48 +928,20 @@ describe('Robot', function () {
 
         let method
         let plaintext
-        this.robot.responseMiddleware(function (context, next, done) {
+        this.robot.responseMiddleware(function (r, context) {
           method = context.method
           plaintext = context.plaintext
-          next(done)
         })
 
         const testMessage = new TextMessage(this.user, 'message123')
 
-        this.robot.receive(testMessage, () => {
-          expect(plaintext).to.equal(true)
-          expect(method).to.equal('send')
-          const testMessage2 = new TextMessage(this.user, 'message456')
-          this.robot.receive(testMessage2, function () {
-            expect(plaintext).to.equal(undefined)
-            expect(method).to.equal('play')
-            testDone()
-          })
-        })
-      })
-
-      it('does not send trailing functions to middleware', function (testDone) {
-        let sendSpy
-        this.robot.adapter.send = (sendSpy = sinon.spy())
-        let asserted = false
-        const postSendCallback = function () {}
-        this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.', postSendCallback))
-
-        this.robot.responseMiddleware(function (context, next, done) {
-          // We don't send the callback function to middleware, so it's not here.
-          expect(context.strings).to.deep.equal(['foobar, sir, foobar.'])
-          expect(context.method).to.equal('send')
-          asserted = true
-          next()
-        })
-
-        const testMessage = new TextMessage(this.user, 'message123')
-        this.robot.receive(testMessage, function () {
-          expect(asserted).to.equal(true)
-          expect(sendSpy.getCall(0).args[1]).to.equal('foobar, sir, foobar.')
-          expect(sendSpy.getCall(0).args[2]).to.equal(postSendCallback)
-          testDone()
-        })
+        await this.robot.receive(testMessage)
+        expect(plaintext).to.equal(true)
+        expect(method).to.equal('send')
+        const testMessage2 = new TextMessage(this.user, 'message456')
+        await this.robot.receive(testMessage2)
+        expect(plaintext).to.equal(undefined)
+        expect(method).to.equal('play')
       })
     })
   })

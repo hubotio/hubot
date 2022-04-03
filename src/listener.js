@@ -53,7 +53,7 @@ class Listener {
   //
   // Returns a boolean of whether the matcher matched.
   // Returns before executing callback
-  call (message, middleware, didMatchCallback) {
+  async call (message, middleware, didMatchCallback) {
     // middleware argument is optional
     if (didMatchCallback == null && typeof middleware === 'function') {
       didMatchCallback = middleware
@@ -66,43 +66,37 @@ class Listener {
     }
 
     const match = this.matcher(message)
-    if (match) {
-      if (this.regex) {
-        this.robot.logger.debug(`Message '${message}' matched regex /${inspect(this.regex)}/; listener.options = ${inspect(this.options)}`)
-      }
-
-      // special middleware-like function that always executes the Listener's
-      // callback and calls done (never calls 'next')
-      const executeListener = (context, done) => {
-        this.robot.logger.debug(`Executing listener callback for Message '${message}'`)
-        try {
-          this.callback(context.response)
-        } catch (err) {
-          this.robot.emit('error', err, context.response)
-        }
-        done()
-      }
-
-      // When everything is finished (down the middleware stack and back up),
-      // pass control back to the robot
-      const allDone = function allDone () {
-        // Yes, we tried to execute the listener callback (middleware may
-        // have intercepted before actually executing though)
-        if (didMatchCallback != null) {
-          process.nextTick(() => didMatchCallback(true))
-        }
-      }
-
-      const response = new this.robot.Response(this.robot, message, match)
-      middleware.execute({ listener: this, response }, executeListener, allDone)
-      return true
-    } else {
+    if(!match){
       if (didMatchCallback != null) {
-        // No, we didn't try to execute the listener callback
-        process.nextTick(() => didMatchCallback(false))
+        didMatchCallback(false)
       }
-      return false
+      return null
     }
+
+    if (this.regex) {
+      this.robot.logger.debug(`Message '${message}' matched regex /${inspect(this.regex)}/; listener.options = ${inspect(this.options)}`)
+    }
+
+    const response = new this.robot.Response(this.robot, message, match)
+    let shouldExecuteCallback = true
+    try{
+      await middleware.execute({ listener: this, response })
+    }catch(err){
+      this.robot.emit('error', err, response)
+      shouldExecuteCallback = false
+    }
+    shouldExecuteCallback = shouldExecuteCallback && !response.message.done
+    this.robot.logger.debug(`Executing listener callback for Message '${message}'`)
+    try {
+      if(shouldExecuteCallback) this.callback(response)
+    } catch (err) {
+      this.robot.emit('error', err, response)
+    } finally {
+      if (didMatchCallback != null) {
+        didMatchCallback(true)
+      }
+    }
+    return response
   }
 }
 
