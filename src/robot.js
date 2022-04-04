@@ -335,44 +335,6 @@ class Robot {
     }
   }
 
-  // Private: Passes the given message to any interested Listeners.
-  //
-  // message - A Message instance. Listeners can flag this message as 'done' to
-  //           prevent further execution.
-  //
-  // done - Optional callback that is called when message processing is complete
-  //
-  // Returns nothing.
-  // Returns before executing callback
-  async processListeners (context, done) {
-    // Try executing all registered Listeners in order of registration
-    // and return after message is done being processed
-    let anyListenersExecuted = false
-    const self = this
-    const middlewareListener = this.middleware.listener
-    this.compose(this.listeners.map(l => {
-      return (ctx, next) => {
-        try {
-          l.call(ctx.response.message, middlewareListener, listenerExecuted => {
-            anyListenersExecuted = anyListenersExecuted || listenerExecuted
-            if (anyListenersExecuted && ctx.response.message.done) return done()
-            next()
-          })
-        } catch (err) {
-          self.emit('error', err, new self.Response(self, ctx.response.message, []))
-          next()
-        }
-      }
-    }))(context, () => {
-      if (!(context.response.message instanceof Message.CatchAllMessage) && !anyListenersExecuted) {
-        self.logger.debug('No listeners executed; falling back to catch-all')
-        self.receive(new Message.CatchAllMessage(context.response.message), done)
-      } else {
-        if (done) done()
-      }
-    })
-  }
-
   // Public: Loads a file in path.
   //
   // filepath - A String path on the filesystem.
