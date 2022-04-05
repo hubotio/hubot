@@ -1,9 +1,8 @@
 'use strict'
 
 /* global describe, it */
-
-const expect = require('chai').expect
-const User = require('../src/user')
+import {expect } from 'chai'
+import User from '../src/user.mjs'
 
 describe('User', () =>
   describe('new', function () {

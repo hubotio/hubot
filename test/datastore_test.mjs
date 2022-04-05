@@ -1,15 +1,15 @@
 'use strict'
 
 /* global describe, beforeEach, it */
+import chai from 'chai'
+import sinon from 'sinon'
+import cs from 'sinon-chai'
+import Brain from '../src/brain.mjs'
+import InMemoryDataStore from '../src/datastores/memory.mjs'
 
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+chai.use(cs)
 
 const expect = chai.expect
-
-const Brain = require('../src/brain')
-const InMemoryDataStore = require('../src/datastores/memory')
 
 describe('Datastore', function () {
   beforeEach(function () {

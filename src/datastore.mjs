@@ -1,6 +1,6 @@
 'use strict'
 
-class DataStore {
+export class DataStore {
   // Represents a persistent, database-backed storage for the robot. Extend this.
   //
   // Returns a new Datastore with no storage.
@@ -86,9 +86,8 @@ class DataStore {
   }
 }
 
-class DataStoreUnavailable extends Error {}
-
-module.exports = {
-  DataStore,
-  DataStoreUnavailable
+export class DataStoreUnavailable extends Error {
+  constructor(message){
+    super(message)
+  }
 }

@@ -1,6 +1,5 @@
 'use strict'
-
-const Adapter = require('../..').Adapter
+import {Adapter} from '../../index.mjs'
 
 class MockAdapter extends Adapter {
   async send (envelope, ...strings) {
@@ -28,4 +27,8 @@ class MockAdapter extends Adapter {
   }
 }
 
-module.exports.use = robot => new MockAdapter(robot)
+export default {
+  use(robot) {
+    return new MockAdapter(robot)
+  }
+}

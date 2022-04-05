@@ -4,19 +4,16 @@
 /* eslint-disable no-unused-expressions */
 
 // Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+import chai from 'chai'
+import sinon from 'sinon'
+import cs from 'sinon-chai'
+import { EnterMessage, TextMessage } from '../src/message.mjs'
+import { Listener, TextListener } from '../src/listener.mjs'
+import Response from '../src/response.mjs'
+import User from '../src/user.mjs'
+chai.use(cs)
 
 const expect = chai.expect
-
-// Hubot classes
-const EnterMessage = require('../src/message').EnterMessage
-const TextMessage = require('../src/message').TextMessage
-const Listener = require('../src/listener').Listener
-const TextListener = require('../src/listener').TextListener
-const Response = require('../src/response')
-const User = require('../src/user')
 
 describe('Listener', function () {
   beforeEach(function () {
@@ -70,7 +67,7 @@ describe('Listener', function () {
         const testListener = new Listener(this.robot, testMatcher, listenerCallback)
 
         const result = await testListener.call(testMessage)
-        
+
         expect(result).to.be.ok
         expect(testMatcher).to.have.been.called
       })

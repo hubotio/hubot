@@ -1,6 +1,5 @@
-const Path = require('path')
-const { Robot } = require.main.require(Path.resolve(__dirname, '../../index.js'))
-const { ReactionMessage, PresenceMessage, FileSharedMessage } = require('./slack-message.js')
+import Robot from '../../index.mjs'
+import { ReactionMessage, PresenceMessage, FileSharedMessage } from './slack-message.mjs'
 
 Robot.prototype.hearReaction = function (matcher, options, callback) {
   let matchReaction = msg => msg instanceof ReactionMessage
@@ -42,3 +41,5 @@ Robot.prototype.fileShared = function (matcher, options, callback) {
 
   return this.listen(matchFileShare, options, callback)
 }
+
+export default Robot

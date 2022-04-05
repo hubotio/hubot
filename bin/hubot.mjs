@@ -1,11 +1,8 @@
 'use strict'
-
-const fs = require('fs')
-const pathResolve = require('path').resolve
-
-const OptParse = require('optparse')
-
-const Hubot = require('..')
+import fs from 'fs'
+import {resolve as pathResolve} from 'path'
+import OptParse from 'optparse'
+import Hubot from '../index.mjs'
 
 const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use'],

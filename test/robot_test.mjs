@@ -4,23 +4,18 @@
 /* eslint-disable no-unused-expressions */
 
 // Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+import chai from 'chai'
+import sinon from 'sinon'
+import cs from 'sinon-chai'
+import Robot from '../src/robot.mjs'
+import { CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage } from '../src/message.mjs'
+import mockery from 'mockery'
+import mockAdapter from './fixtures/mock-adapter.mjs'
+
+chai.use(cs)
 
 const expect = chai.expect
 const domain = '127.0.0.1'
-
-// Hubot classes
-const Robot = require('../src/robot')
-const CatchAllMessage = require('../src/message').CatchAllMessage
-const EnterMessage = require('../src/message').EnterMessage
-const LeaveMessage = require('../src/message').LeaveMessage
-const TextMessage = require('../src/message').TextMessage
-const TopicMessage = require('../src/message').TopicMessage
-
-// mock `hubot-mock-adapter` module from fixture
-const mockery = require('mockery')
 
 process.env.PORT = process.env.PORT || 8080
 
@@ -30,7 +25,7 @@ describe('Robot', function () {
       warnOnReplace: false,
       warnOnUnregistered: false
     })
-    mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+    mockery.registerMock('hubot-mock-adapter', mockAdapter)
     this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
     const a = await this.robot.loadAdapter('mock-adapter')
     this.robot.alias = 'Hubot'

@@ -4,20 +4,19 @@
 /* eslint-disable no-unused-expressions */
 
 // Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+import chai from 'chai'
+import sinon from 'sinon'
+import cs from 'sinon-chai'
+import Robot from '../src/robot.mjs'
+import { TextMessage } from '../src/message.mjs'
+import Response from '../src/response.mjs'
+import Middleware from '../src/middleware.mjs'
+import mockery from 'mockery'
+import mockAdapter from './fixtures/mock-adapter.mjs'
+
+chai.use(cs)
 
 const expect = chai.expect
-
-// Hubot classes
-const Robot = require('../src/robot')
-const TextMessage = require('../src/message').TextMessage
-const Response = require('../src/response')
-const Middleware = require('../src/middleware')
-
-// mock `hubot-mock-adapter` module from fixture
-const mockery = require('mockery')
 
 describe('Middleware', function () {
   describe('Unit Tests', function () {
@@ -159,9 +158,9 @@ describe('Middleware', function () {
         warnOnReplace: false,
         warnOnUnregistered: false
       })
-      mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+      mockery.registerMock('hubot-mock-adapter', mockAdapter)
       this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
-      await this.robot.loadAdapter('mock-adapter')  
+      await this.robot.loadAdapter('mock-adapter')
       this.robot.onUncaughtException = err => {
         return this.robot.emit('error', err)
       }
@@ -192,7 +191,7 @@ describe('Middleware', function () {
       this.testListener = this.robot.listeners[0]
     })
 
-    afterEach(function () {      
+    afterEach(function () {
       mockery.disable()
       this.robot.shutdown()
     })

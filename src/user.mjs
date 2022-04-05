@@ -1,6 +1,5 @@
 'use strict'
-
-const DataStoreUnavailable = require('./datastore').DataStoreUnavailable
+import {DataStoreUnavailable} from './datastore.mjs'
 
 class User {
   // Represents a participating user in the chat.
@@ -62,4 +61,4 @@ class User {
   }
 }
 
-module.exports = User
+export default User

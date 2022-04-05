@@ -1,7 +1,5 @@
-'use strict'
-
-const DataStore = require('../datastore').DataStore
-
+import {DataStore} from '../datastore.mjs'
+console.log(DataStore)
 class InMemoryDataStore extends DataStore {
   constructor (robot) {
     super(robot)
@@ -20,4 +18,4 @@ class InMemoryDataStore extends DataStore {
   }
 }
 
-module.exports = InMemoryDataStore
+export default InMemoryDataStore

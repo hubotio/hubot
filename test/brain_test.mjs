@@ -4,17 +4,16 @@
 /* eslint-disable no-unused-expressions */
 
 // Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+import chai from 'chai'
+import sinon from 'sinon'
+import cs from 'sinon-chai'
+import isCircular from 'is-circular'
+import Brain from '../src/brain.mjs'
+import User from '../src/user.mjs'
+
+chai.use(cs)
 
 const expect = chai.expect
-
-const isCircular = require('is-circular')
-
-// Hubot classes
-const Brain = require('../src/brain')
-const User = require('../src/user')
 
 describe('Brain', function () {
   beforeEach(function () {

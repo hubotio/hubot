@@ -5,4 +5,4 @@ class SlackMention {
     this.info = (info != null) ? info : undefined
   }
 }
-module.exports = SlackMention
+export default SlackMention

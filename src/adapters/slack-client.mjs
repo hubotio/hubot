@@ -1,5 +1,5 @@
-const { RTMClient, WebClient } = require('@slack/client')
-const SlackFormatter = require('./slack-formatter.js')
+import { RTMClient, WebClient } from '@slack/client'
+import SlackFormatter from './slack-formatter.mjs'
 
 const CONVERSATION_CACHE_TTL_MS = process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS
   ? parseInt(process.env.HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS, 10)
@@ -222,4 +222,4 @@ if (isNaN(CONVERSATION_CACHE_TTL_MS)) {
   throw new Error('HUBOT_SLACK_CONVERSATION_CACHE_TTL_MS must be a number. It could not be parsed.')
 }
 
-module.exports = SlackClient
+export default SlackClient

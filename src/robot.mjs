@@ -1,22 +1,24 @@
 'use strict'
 
-const EventEmitter = require('events').EventEmitter
-const fs = require('fs')
-const path = require('path')
-
-const Log = require('./log.js')
-const HttpClient = require('./http-client.js')
-
-const Brain = require('./brain')
-const Response = require('./response')
-const Listener = require('./listener')
-const Message = require('./message')
-const Middleware = require('./middleware')
+import {EventEmitter} from 'events'
+import fs from 'fs'
+import path from 'path'
+import {Log} from './log.mjs'
+import HttpClient from './http-client.mjs'
+import Brain from './brain.mjs'
+import Response from './response.mjs'
+import { Listener } from './listener.mjs'
+import {Message} from './message.mjs'
+import Middleware from './middleware.mjs'
+import {URL} from 'url'
+import pkg from '../package.json' assert {type: 'json'}
+import express from 'express'
+import multipart from 'connect-multiparty'
 
 const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
-const dirName = __dirname
+const dirName = new URL('.', import.meta.url).pathname
 
 class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -282,7 +284,7 @@ class Robot {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
     await this.middleware.receive.execute({ response: new Response(this, message) })
-    
+
     let anyListenersExecuted = false
     for await(const listener of this.listeners) {
       try{
@@ -294,44 +296,13 @@ class Robot {
       }
       if(anyListenersExecuted && message.done) {
         break
-      } 
+      }
     }
     if(anyListenersExecuted) return
 
     if (!(message instanceof Message.CatchAllMessage)) {
       this.logger.debug('No listeners executed; falling back to catch-all')
       await this.receive(new Message.CatchAllMessage(message))
-    }
-}
-
-  compose (middleware) {
-    const robot = this.robot
-    if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
-    for (const fn of middleware) {
-      if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
-    }
-    return function (context, next) {
-      let index = -1
-      let previousCallback = null
-      return dispatch(0)
-      function dispatch (i, cb) {
-        if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-        if (i > middleware.length) return Promise.resolve()
-        if (cb) {
-          previousCallback = cb
-        } else {
-          cb = previousCallback
-        }
-        index = i
-        if (i === middleware.length) return Promise.resolve(next(context, cb))
-        const fn = middleware[i]
-        try {
-          return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
-        } catch (err) {
-          robot.emit('error', err, context.response)
-          return Promise.reject(cb(err))
-        }
-      }
     }
   }
 
@@ -442,9 +413,6 @@ class Robot {
     const address = process.env.EXPRESS_BIND_ADDRESS || process.env.BIND_ADDRESS || '0.0.0.0'
     const limit = process.env.EXPRESS_LIMIT || '100kb'
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
-
-    const express = require('express')
-    const multipart = require('connect-multiparty')
 
     const app = express()
 
@@ -687,7 +655,6 @@ class Robot {
   //
   // Returns a String of the version number.
   parseVersion () {
-    const pkg = require(path.join(dirName, '..', 'package.json'))
     this.version = pkg.version
 
     return this.version
@@ -733,8 +700,6 @@ class Robot {
   }
 }
 
-module.exports = Robot
-
 function isCatchAllMessage (message) {
   return message instanceof Message.CatchAllMessage
 }
@@ -776,3 +741,5 @@ function extend (obj/* , ...sources */) {
 
   return obj
 }
+
+export default Robot

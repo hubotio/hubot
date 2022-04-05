@@ -76,4 +76,4 @@ class SlackFormatter {
     }
   }
 }
-module.exports = SlackFormatter
+export default SlackFormatter

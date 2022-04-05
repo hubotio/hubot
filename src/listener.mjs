@@ -1,11 +1,9 @@
 'use strict'
+import {inspect} from 'util'
+import {TextMessage} from './message.mjs'
+import Middleware from './middleware.mjs'
 
-const inspect = require('util').inspect
-
-const TextMessage = require('./message').TextMessage
-const Middleware = require('./middleware')
-
-class Listener {
+export class Listener {
   // Listeners receive every message from the chat source and decide if they
   // want to act on it.
   // An identifier should be provided in the options parameter to uniquely
@@ -100,7 +98,7 @@ class Listener {
   }
 }
 
-class TextListener extends Listener {
+export class TextListener extends Listener {
   // TextListeners receive every message from the chat source and decide if they
   // want to act on it.
   //
@@ -120,9 +118,4 @@ class TextListener extends Listener {
     super(robot, matcher, options, callback)
     this.regex = regex
   }
-}
-
-module.exports = {
-  Listener,
-  TextListener
 }

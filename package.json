@@ -33,10 +33,10 @@
     "sinon-chai": "^2.8.0"
   },
   "engines": {
-    "node": "> 16.0.0",
-    "npm": "> 7.0.0"
+    "node": "> 17.0.0",
+    "npm": "> 8.0.0"
   },
-  "main": "./index",
+  "main": "./index.mjs",
   "bin": {
     "hubot": "./bin/hubot"
   },
@@ -44,10 +44,10 @@
     "ci": "node version",
     "start": "bin/hubot",
     "local": "env $(cat .env | xargs) bin/hubot",
-    "test": "nyc --reporter=html --reporter=text mocha",
+    "test": "mocha --parallel",
     "test:one": "mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test:smoke": "node src/**/*.js",
+    "test:smoke": "node src/**/*.mjs",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   }
 }

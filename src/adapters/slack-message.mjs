@@ -1,6 +1,5 @@
-const Path = require('path')
-const { Message, TextMessage } = require(Path.resolve(__dirname, '../../index.js'))
-const SlackMention = require('./slack-mention.js')
+import { Message, TextMessage } from '../../index.mjs'
+import SlackMention from './slack-mention.mjs'
 
 class ReactionMessage extends Message {
   constructor (type, user, reaction, itemUser, item, eventTs) {
@@ -181,7 +180,7 @@ SlackTextMessage.MESSAGE_REGEX = /<([@#!])?([^>|]+)(?:\\|([^>]+))?>/g
 
 SlackTextMessage.MESSAGE_RESERVED_KEYWORDS = ['channel', 'group', 'everyone', 'here']
 
-module.exports = {
+export default {
   SlackTextMessage,
   ReactionMessage,
   PresenceMessage,

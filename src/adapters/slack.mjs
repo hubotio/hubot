@@ -1,8 +1,7 @@
-const Path = require('path')
-const { Adapter, EnterMessage, LeaveMessage, TopicMessage } = require.main.require(Path.resolve(__dirname, '../../index.js'))
-const { SlackTextMessage, ReactionMessage, PresenceMessage, FileSharedMessage } = require('./slack-message.js')
-const SlackClient = require('./slack-client.js')
-const pkg = require('../../package.json')
+import { SlackTextMessage, ReactionMessage, PresenceMessage, FileSharedMessage } from './slack-message.mjs'
+import SlackClient from './slack-client.mjs'
+import pkg from '../../package.json'
+import { Adapter, EnterMessage, LeaveMessage, TopicMessage } from '../../index.mjs'
 
 class SlackBot extends Adapter {
   constructor (robot, options) {
@@ -231,4 +230,4 @@ class SlackBot extends Adapter {
   }
 }
 
-module.exports = SlackBot
+export default SlackBot

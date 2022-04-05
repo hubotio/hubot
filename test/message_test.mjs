@@ -4,15 +4,13 @@
 /* eslint-disable no-unused-expressions */
 
 // Assertions and Stubbing
-const chai = require('chai')
-chai.use(require('sinon-chai'))
+import chai from 'chai'
+import cs from 'sinon-chai'
+import User from '../src/user.mjs'
+import { Message, TextMessage } from '../src/message.mjs'
+chai.use(cs)
 
 const expect = chai.expect
-
-// Hubot classes
-const User = require('../src/user')
-const Message = require('../src/message').Message
-const TextMessage = require('../src/message').TextMessage
 
 describe('Message', function () {
   beforeEach(function () {

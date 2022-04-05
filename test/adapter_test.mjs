@@ -1,14 +1,13 @@
 'use strict'
 
 /* global describe, beforeEach, it */
+import chai from 'chai'
+import sinon from 'sinon'
+import cs from 'sinon-chai'
+import Adapter from '../src/adapter.mjs'
 
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
-
+chai.use(cs)
 const expect = chai.expect
-
-const Adapter = require('../src/adapter')
 
 describe('Adapter', function () {
   beforeEach(function () {

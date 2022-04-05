@@ -1,6 +1,6 @@
 'use strict'
 
-const EventEmitter = require('events').EventEmitter
+import {EventEmitter} from 'events'
 
 class Adapter extends EventEmitter {
   // An adapter is a specific interface to a chat source for robots.
@@ -128,4 +128,4 @@ class Adapter extends EventEmitter {
   }
 }
 
-module.exports = Adapter
+export default Adapter
