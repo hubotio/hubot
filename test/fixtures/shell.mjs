@@ -1,5 +1,5 @@
 'use strict'
-import {Adapter} from '../../index.mjs'
+import Adapter from '../../src/adapter.mjs'
 
 class MockAdapter extends Adapter {
   async send (envelope, ...strings) {

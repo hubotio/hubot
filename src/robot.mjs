@@ -1,7 +1,7 @@
 'use strict'
 
 import {EventEmitter} from 'events'
-import fs from 'fs'
+import File from 'fs/promises'
 import path from 'path'
 import {Log} from './log.mjs'
 import HttpClient from './http-client.mjs'
@@ -11,9 +11,9 @@ import { Listener, TextListener } from './listener.mjs'
 import { EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './message.mjs'
 import Middleware from './middleware.mjs'
 import {URL} from 'url'
-import pkg from '../package.json' assert {type: 'json'}
 import express from 'express'
 import multipart from 'connect-multiparty'
+import pkg from '../package.json' assert {type: 'json'}
 
 const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
@@ -311,7 +311,6 @@ class Robot {
   async loadFile (filepath, filename) {
     const ext = path.extname(filename)
     const full = path.join(filepath, filename)
-
     // see https://github.com/hubotio/hubot/issues/1355
     if (!(['.mjs'].includes(ext))) { // eslint-disable-line
       return
@@ -328,7 +327,7 @@ class Robot {
     const module = await import(full)
     if (typeof module.default === 'function') {
       module.default(this)
-      this.parseHelp(full)
+      await this.parseHelp(full)
     } else {
       this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof module}`)
     }
@@ -342,13 +341,16 @@ class Robot {
   // Returns nothing.
   async load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
-    const File = fs.promises
-    if (await File.exists(path)) {
-      const files = await File.readdir(path)
+    try{
+      const stats = await File.stat(path)
+      if(!stats) return
+      let files = await File.readdir(path)
       files = files.sort()
       for await(const file of files){
         await this.loadFile(path, file)
       }
+    }catch(err){
+      this.logger.debug(err)
     }
   }
 
@@ -456,7 +458,7 @@ class Robot {
       const module = await import(path)
       this.adapter = module.default(this)
     } catch (err) {
-      this.logger.error(e)
+      this.logger.error(err)
       process.exit(1)
     }
   }
@@ -473,9 +475,9 @@ class Robot {
   // path - A String path to the file on disk.
   //
   // Returns nothing.
-  parseHelp (path) {
+  async parseHelp (path) {
     const scriptDocumentation = {}
-    const body = fs.readFileSync(path, 'utf-8')
+    const body = await File.readFile(path, 'utf-8')
 
     const useStrictHeaderRegex = /^["']use strict['"];?\s+/
     const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)

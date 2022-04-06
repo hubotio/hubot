@@ -3,10 +3,8 @@ import fs from 'fs'
 import readline from 'readline'
 import Stream from 'stream'
 import cline from 'cline'
-import Adapter from '../adapter.js'
-import _require from '../message.js'
-
-const TextMessage = _require.TextMessage
+import Adapter from '../adapter.mjs'
+import {TextMessage} from '../message.mjs'
 
 const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.env.HUBOT_SHELL_HISTSIZE) : 1024
 

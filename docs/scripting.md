@@ -11,7 +11,7 @@ Hubot out of the box doesn't do too much but it is an extensible, scriptable rob
 When you created your hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples of scripts. For a script to be a script, it needs to:
 
 * live in a directory on the hubot script load path (`src/scripts` and `scripts` by default)
-* be a `.js` or `.mjs` file
+* be a `.mjs` file
 * export a function
 
 By export a function, we just mean:

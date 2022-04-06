@@ -14,6 +14,7 @@
     "type": "git",
     "url": "https://github.com/hubotio/hubot.git"
   },
+  "type": "module",
   "dependencies": {
     "@slack/client": "^5.0.1",
     "cline": "^0.8.2",
@@ -38,12 +39,12 @@
   },
   "main": "./index.mjs",
   "bin": {
-    "hubot": "./bin/hubot"
+    "hubot": "./bin/hubot.mjs"
   },
   "scripts": {
     "ci": "node version",
-    "start": "bin/hubot",
-    "local": "env $(cat .env | xargs) bin/hubot",
+    "start": "node bin/hubot.mjs",
+    "local": "env $(cat .env | xargs) hubot",
     "test": "mocha --parallel",
     "test:one": "mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",

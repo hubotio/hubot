@@ -8,8 +8,8 @@ import { Listener, TextListener } from './src/listener.mjs'
 import { Message, TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './src/message.mjs'
 import { DataStore, DataStoreUnavailable } from './src/datastore.mjs'
 
-const loadBot = async (adapterPath, adapterName, enableHttpd, botName, botAlias) => {
-  const bot = new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+const loadBot = async (adapterPath, adapterName, botName, botAlias, port) => {
+  const bot = new Robot(adapterPath, adapterName, botName, botAlias, port)
   try {
     await bot.loadAdapter(`${adapterName}.mjs`)
     bot.errorHandlers = []
@@ -21,17 +21,17 @@ const loadBot = async (adapterPath, adapterName, enableHttpd, botName, botAlias)
     }
     process.on('uncaughtException', bot.onUncaughtException)
   } catch (err) {
-    bot.logger.error(`Cannot load adapter ${adapterName} - ${err}`)
+    bot.logger.error(`Cannot load adapter ${adapterPath}/${adapterName} - ${err}`)
     process.exit(1)
   }
   return bot
 }
 
-export {
+export default {
   User,
   Brain,
   Robot,
-  Adapter,
+  Adapter: Adapter,
   Response,
   Listener,
   TextListener,

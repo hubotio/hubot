@@ -1,13 +1,14 @@
 'use strict'
-import fs from 'fs'
+import File from 'fs/promises'
 import {resolve as pathResolve} from 'path'
 import OptParse from 'optparse'
 import Hubot from '../index.mjs'
+import path from 'path'
 
 const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use'],
   ['-c', '--create PATH', 'Create a deployable hubot'],
-  ['-d', '--disable-httpd', 'Disable the HTTP server'],
+  ['-p', '--port', 'HTTP server port (0 for random)'],
   ['-h', '--help', 'Display the help information'],
   ['-l', '--alias ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name NAME', 'The name of the robot in chat'],
@@ -38,8 +39,8 @@ Parser.on('create', function (opt, value) {
   options.create = true
 })
 
-Parser.on('disable-httpd', opt => {
-  options.enableHttpd = false
+Parser.on('port', function (opt, value) {
+  options.port = value
 })
 
 Parser.on('help', function (opt, value) {
@@ -89,10 +90,9 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
   process.exit(1)
 }
-const path = require('path')
-const dirName = __dirname
+const dirName = new URL('.', import.meta.url).pathname
 let robot = null
-Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options.enableHttpd, options.name, options.alias).then(bot => {
+Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options.name, options.alias, options.port).then(bot => {
   robot = bot
   if (options.version) {
     console.log(robot.version)
@@ -126,8 +126,13 @@ async function loadHubotScripts () {
   const hubotScripts = pathResolve('.', 'hubot-scripts.json')
   let scripts
   let scriptsPath
-  const File = fs.promises
-  if (await File.exists(hubotScripts)) {
+  try{
+    const stats = await File.stat(hubotScripts)
+  }catch(err){
+    // hubot-scripts.json doesn't exist
+    return
+  }
+  try{
     let hubotScriptsWarning
     const data = await File.readFile(hubotScripts)
 
@@ -183,21 +188,23 @@ async function loadHubotScripts () {
     }
 
     robot.logger.warning(hubotScriptsWarning)
+  }catch(err){
+    robot.logger.error(err)
   }
 }
 
 async function loadExternalScripts () {
-  const File = fs.promises
   const externalScripts = pathResolve('.', 'external-scripts.json')
-
-  if (!File.exists(externalScripts)) {
+  try{
+    const stats = await File.stat(externalScripts)
+  }catch(err){
     return
   }
   try{
     const data = await File.readFile(externalScripts)
     await robot.loadExternalScripts(JSON.parse(data))
   }catch(error){
-    console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
+    robot.logger.error(`Error either parsing JSON data from external-scripts.json or file doesn't exist: ${error}`)
     process.exit(1)
   }
 }
