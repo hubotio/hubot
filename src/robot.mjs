@@ -7,8 +7,8 @@ import {Log} from './log.mjs'
 import HttpClient from './http-client.mjs'
 import Brain from './brain.mjs'
 import Response from './response.mjs'
-import { Listener } from './listener.mjs'
-import {Message} from './message.mjs'
+import { Listener, TextListener } from './listener.mjs'
+import { EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './message.mjs'
 import Middleware from './middleware.mjs'
 import {URL} from 'url'
 import pkg from '../package.json' assert {type: 'json'}
@@ -26,10 +26,10 @@ class Robot {
   //
   // adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
   // adapter     - A String of the adapter name.
-  // httpd       - A Boolean whether to enable the HTTP daemon.
   // name        - A String of the robot name, defaults to Hubot.
   // alias       - A String of the alias of the robot name
-  constructor (adapterPath, adapter, httpd, name, alias) {
+  // port       - Port to listen on. Can also be set by environment variables.
+  constructor (adapterPath, adapter, name, alias, port) {
     if (name == null) {
       name = 'Hubot'
     }
@@ -37,6 +37,7 @@ class Robot {
       alias = false
     }
     this.adapterPath = adapterPath
+    this.port = port
 
     this.name = name
     this.events = new EventEmitter()
@@ -57,11 +58,6 @@ class Robot {
     this.globalHttpOptions = {}
 
     this.parseVersion()
-    if (httpd) {
-      this.setupExpress()
-    } else {
-      this.setupNullRouter()
-    }
     this.adapterName = adapter
   }
 
@@ -78,7 +74,7 @@ class Robot {
   //
   // Returns nothing.
   listen (matcher, options, callback) {
-    this.listeners.push(new Listener.Listener(this, matcher, options, callback))
+    this.listeners.push(new Listener(this, matcher, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages based on
@@ -91,7 +87,7 @@ class Robot {
   //
   // Returns nothing.
   hear (regex, options, callback) {
-    this.listeners.push(new Listener.TextListener(this, regex, options, callback))
+    this.listeners.push(new TextListener(this, regex, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages directed
@@ -150,7 +146,7 @@ class Robot {
   //
   // Returns nothing.
   enter (options, callback) {
-    this.listen(msg => msg instanceof Message.EnterMessage, options, callback)
+    this.listen(msg => msg instanceof EnterMessage, options, callback)
   }
 
   // Public: Adds a Listener that triggers when anyone leaves the room.
@@ -161,7 +157,7 @@ class Robot {
   //
   // Returns nothing.
   leave (options, callback) {
-    this.listen(msg => msg instanceof Message.LeaveMessage, options, callback)
+    this.listen(msg => msg instanceof LeaveMessage, options, callback)
   }
 
   // Public: Adds a Listener that triggers when anyone changes the topic.
@@ -172,7 +168,7 @@ class Robot {
   //
   // Returns nothing.
   topic (options, callback) {
-    this.listen(msg => msg instanceof Message.TopicMessage, options, callback)
+    this.listen(msg => msg instanceof TopicMessage, options, callback)
   }
 
   // Public: Adds an error handler when an uncaught exception or user emitted
@@ -300,9 +296,9 @@ class Robot {
     }
     if(anyListenersExecuted) return
 
-    if (!(message instanceof Message.CatchAllMessage)) {
+    if (!(message instanceof CatchAllMessage)) {
       this.logger.debug('No listeners executed; falling back to catch-all')
-      await this.receive(new Message.CatchAllMessage(message))
+      await this.receive(new CatchAllMessage(message))
     }
   }
 
@@ -312,24 +308,16 @@ class Robot {
   // filename - A String filename in path on the filesystem.
   //
   // Returns nothing.
-  loadFile (filepath, filename) {
+  async loadFile (filepath, filename) {
     const ext = path.extname(filename)
     const full = path.join(filepath, filename)
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (!(['.js', '.mjs'].includes(ext))) { // eslint-disable-line
+    if (!(['.mjs'].includes(ext))) { // eslint-disable-line
       return
     }
     try {
-      if (ext === '.js') this.loadJsFile(full)
-      if (ext === '.mjs') {
-        this.loadMjsFile(full).then(() => {
-          // this.adapter.send(null, `Loaded ${full}`)
-        }).catch(e => {
-          this.logger.error(`Loading ES6 .mjs file: ${e}`)
-          process.exit(1)
-        })
-      }
+      await this.loadMjsFile(full)
     } catch (error) {
       this.logger.error(`Unable to load ${full}: ${error.stack}`)
       process.exit(1)
@@ -347,26 +335,20 @@ class Robot {
     return module
   }
 
-  loadJsFile (full) {
-    const script = require(full)
-
-    if (typeof script === 'function') {
-      script(this)
-      this.parseHelp(full)
-    } else {
-      this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
-    }
-  }
-
   // Public: Loads every script in the given path.
   //
   // path - A String path on the filesystem.
   //
   // Returns nothing.
-  load (path) {
+  async load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
-    if (fs.existsSync(path)) {
-      fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
+    const File = fs.promises
+    if (await File.exists(path)) {
+      const files = await File.readdir(path)
+      files = files.sort()
+      for await(const file of files){
+        await this.loadFile(path, file)
+      }
     }
   }
 
@@ -376,9 +358,11 @@ class Robot {
   // scripts - An Array of scripts to load.
   //
   // Returns nothing.
-  loadHubotScripts (path, scripts) {
+  async loadHubotScripts (path, scripts) {
     this.logger.debug(`Loading hubot-scripts from ${path}`)
-    Array.from(scripts).map(script => this.loadFile(path, script))
+    for await (const script of Array.from(scripts)) {
+      await this.loadFile(path, script)
+    }
   }
 
   // Public: Load scripts from packages specified in the
@@ -387,15 +371,15 @@ class Robot {
   // packages - An Array of packages containing hubot scripts to load.
   //
   // Returns nothing.
-  loadExternalScripts (packages) {
+  async loadExternalScripts (packages) {
     this.logger.debug('Loading external-scripts from npm packages')
-
     try {
       if (Array.isArray(packages)) {
         return packages.forEach(pkg => require(pkg)(this))
       }
-
-      Object.keys(packages).forEach(key => require(key)(this, packages[key]))
+      for await (const key of Object.keys(packages)){
+        await import(key)(this, packages[key])
+      }
     } catch (error) {
       this.logger.error(`Error loading scripts from npm package - ${error.stack}`)
       process.exit(1)
@@ -409,11 +393,10 @@ class Robot {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
     const stat = process.env.EXPRESS_STATIC
-    const port = process.env.EXPRESS_PORT || process.env.PORT || 8080
+    this.port = this.port ?? process.env.EXPRESS_PORT ?? process.env.PORT ?? 8080
     const address = process.env.EXPRESS_BIND_ADDRESS || process.env.BIND_ADDRESS || '0.0.0.0'
     const limit = process.env.EXPRESS_LIMIT || '100kb'
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
-
     const app = express()
 
     app.use((req, res, next) => {
@@ -435,7 +418,10 @@ class Robot {
       app.use(express.static(stat))
     }
     try {
-      this.server = app.listen(port, address)
+      this.server = app.listen(this.port, address, ()=>{
+        this.logger.debug(`${this.name} listening on ${address}:${this.server.address().port}`)
+        this.port = this.server.address().port
+      })
       this.router = app
     } catch (error) {
       const err = error
@@ -457,50 +443,22 @@ class Robot {
     }
   }
 
-  // Setup an empty router object
-  //
-  // returns nothing
-  setupNullRouter () {
-    const msg = 'A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd.'
-
-    this.router = {
-      get: () => this.logger.warning(msg),
-      post: () => this.logger.warning(msg),
-      put: () => this.logger.warning(msg),
-      delete: () => this.logger.warning(msg)
-    }
-  }
-
   // Load the adapter Hubot is going to use.
   //
   // path    - A String of the path to adapter if local.
   // adapter - A String of the adapter name to use.
   //
   // Returns nothing.
-  loadAdapter (adapter) {
-    const p = new Promise((resolve, reject) => {
-      this.logger.debug(`Loading adapter ${adapter}`)
-      try {
-        const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
-        if (/\.mjs$/.test(path)) {
-          this.logger.debug(path)
-          import(path).then(module => {
-            this.logger.debug('hi')
-            this.adapter = module.default(this)
-            resolve(this.adapter)
-          }).catch(e => {
-            this.logger.error(e)
-            process.exit(1)
-          })
-        } else {
-          this.adapter = require(path).use(this)
-          resolve(this.adapter)
-        }
-      } catch (err) {
-        reject(err)
-      }
-    })
-    return p
+  async loadAdapter (adapter) {
+    try {
+      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+      this.logger.debug(`Loading adapter from ${path}`)
+      const module = await import(path)
+      this.adapter = module.default(this)
+    } catch (err) {
+      this.logger.error(e)
+      process.exit(1)
+    }
   }
 
   // Public: Help Commands for Running Scripts.
@@ -517,7 +475,7 @@ class Robot {
   // Returns nothing.
   parseHelp (path) {
     const scriptDocumentation = {}
-    const body = fs.readFileSync(require.resolve(path), 'utf-8')
+    const body = fs.readFileSync(path, 'utf-8')
 
     const useStrictHeaderRegex = /^["']use strict['"];?\s+/
     const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)
@@ -595,7 +553,6 @@ class Robot {
   // Returns nothing.
   messageRoom (room, ...strings) {
     const envelope = { room }
-
     this.adapter.send(envelope, ...strings)
   }
 
@@ -609,7 +566,6 @@ class Robot {
   // Returns nothing.
   on (event/* , ...args */) {
     const args = [].slice.call(arguments, 1)
-
     this.events.on.apply(this.events, [event].concat(args))
   }
 
@@ -622,7 +578,6 @@ class Robot {
   // Returns nothing.
   emit (event/* , ...args */) {
     const args = [].slice.call(arguments, 1)
-
     this.events.emit.apply(this.events, [event].concat(args))
   }
 
@@ -631,7 +586,6 @@ class Robot {
   // Returns nothing.
   run () {
     this.emit('running')
-
     this.adapter.run()
   }
 
@@ -643,12 +597,9 @@ class Robot {
       clearInterval(this.pingIntervalId)
     }
     if(this.onUncaughtException) process.removeListener('uncaughtException', this.onUncaughtException)
-    this.adapter.close()
-    if (this.server) {
-      this.server.close()
-    }
-
-    this.brain.close()
+    if(this.adapter) this.adapter.close()
+    if(this.server) this.server.close()
+    if(this.brain) this.brain.close()
   }
 
   // Public: The version of Hubot from npm
@@ -656,7 +607,6 @@ class Robot {
   // Returns a String of the version number.
   parseVersion () {
     this.version = pkg.version
-
     return this.version
   }
 
@@ -694,14 +644,13 @@ class Robot {
   // Returns a ScopedClient instance.
   http (url, options) {
     const httpOptions = extend({}, this.globalHttpOptions, options)
-
     const c = HttpClient.create(url, httpOptions).header('User-Agent', `Hubot/${this.version}`)
     return c
   }
 }
 
 function isCatchAllMessage (message) {
-  return message instanceof Message.CatchAllMessage
+  return message instanceof CatchAllMessage
 }
 
 function toHeaderCommentBlock (block, currentLine) {

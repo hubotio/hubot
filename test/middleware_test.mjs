@@ -11,8 +11,6 @@ import Robot from '../src/robot.mjs'
 import { TextMessage } from '../src/message.mjs'
 import Response from '../src/response.mjs'
 import Middleware from '../src/middleware.mjs'
-import mockery from 'mockery'
-import mockAdapter from './fixtures/mock-adapter.mjs'
 
 chai.use(cs)
 
@@ -27,7 +25,7 @@ describe('Middleware', function () {
     })
 
     describe('#execute', function () {
-      it('executes synchronous middleware', async function () {
+      it('executes synchronous middleware', function (done) {
         const testMiddleware = sinon.spy((context) => {
           expect(context).to.be.ok
         })
@@ -36,10 +34,13 @@ describe('Middleware', function () {
         }
         this.middleware.register(testMiddleware)
         this.middleware.register(middlewareFinished)
-        await this.middleware.execute({})
+        this.middleware.execute({}).then(_ => {})
+        .catch(e => console.error(e))
+        .finally(done)
+
       })
 
-      it('executes asynchronous middleware', async function () {
+      it('executes asynchronous middleware', function (done) {
         const testMiddleware = sinon.spy(async (context) =>
           expect(context).to.be.ok
         )
@@ -50,19 +51,23 @@ describe('Middleware', function () {
         this.middleware.register(testMiddleware)
         this.middleware.register(middlewareFinished)
 
-        await this.middleware.execute({})
+        this.middleware.execute({}).then(_ => {})
+        .catch(e => console.error(e))
+        .finally(done)
       })
 
-      it('passes the correct arguments to each middleware', async function () {
+      it('passes the correct arguments to each middleware', function (done) {
         const testContext = {}
         const testMiddleware = (r, context) => {
           expect(context).to.equal(testContext)
         }
         this.middleware.register(testMiddleware)
-        await this.middleware.execute(testContext)
+        this.middleware.execute(testContext).then(_ => {})
+        .catch(e => console.error(e))
+        .finally(done)
       })
 
-      it('executes all registered middleware in definition order', async function () {
+      it('executes all registered middleware in definition order', function () {
         const middlewareExecution = []
 
         const testMiddlewareA = (r, context) => {
@@ -83,7 +88,7 @@ describe('Middleware', function () {
       })
 
       describe('error handling', function () {
-        it('does not execute subsequent middleware after the error is thrown', async function () {
+        it('does not execute subsequent middleware after the error is thrown', function (done) {
           const middlewareExecution = []
 
           const testMiddlewareA = function (context) {
@@ -110,10 +115,12 @@ describe('Middleware', function () {
           }
           this.middleware.register(middlewareFailed)
 
-          this.middleware.execute({})
+          this.middleware.execute({}).then(_ => {})
+          .catch(e => console.error(e))
+          .finally(done)
         })
 
-        it('emits an error event', async function () {
+        it('emits an error event', function (done) {
           const testResponse = {}
           const theError = new Error()
 
@@ -133,7 +140,9 @@ describe('Middleware', function () {
             expect(this.robot.emit).to.have.been.called
           }
           this.middleware.register(middlewareFailed)
-          this.middleware.execute({ response: testResponse })
+          this.middleware.execute({ response: testResponse }).then(_ => {})
+          .catch(e => console.error('This is expected to error out: ', e))
+          .finally(done)
         })
       })
     })
@@ -141,9 +150,7 @@ describe('Middleware', function () {
     describe('#register', function () {
       it('adds to the list of middleware', function () {
         const testMiddleware = function (context, next, done) {}
-
         this.middleware.register(testMiddleware)
-
         expect(this.middleware.stack).to.include(testMiddleware)
       })
     })
@@ -153,14 +160,9 @@ describe('Middleware', function () {
   // Any new fields that are exposed to middleware should be explicitly
   // tested for.
   describe('Public Middleware APIs', function () {
-    beforeEach(async function() {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false
-      })
-      mockery.registerMock('hubot-mock-adapter', mockAdapter)
-      this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
-      await this.robot.loadAdapter('mock-adapter')
+    beforeEach(function(done) {
+      this.robot = new Robot('../test/fixtures', 'shell', 'TestHubot')      
+      this.robot.setupExpress()
       this.robot.onUncaughtException = err => {
         return this.robot.emit('error', err)
       }
@@ -175,60 +177,63 @@ describe('Middleware', function () {
         }
       })
 
-      this.robot.run()
-      this.user = this.robot.brain.userForId('1', {
-        name: 'hubottester',
-        room: '#mocha'
-      })
-
       // Dummy middleware
       this.middleware = sinon.spy((context) => {
         return
       })
 
-      this.testMessage = new TextMessage(this.user, 'message123')
       this.robot.hear(/^message123$/, function (response) {})
+      this.user = this.robot.brain.userForId('1', {
+        name: 'hubottester',
+        room: '#mocha'
+      })
+      this.testMessage = new TextMessage(this.user, 'message123')
       this.testListener = this.robot.listeners[0]
+      this.robot.loadAdapter('shell.mjs').then(() => { 
+        this.robot.run()
+      })
+      .catch(e => console.error(e))
+      .finally(done)
     })
 
     afterEach(function () {
-      mockery.disable()
       this.robot.shutdown()
     })
 
     describe('listener middleware context', function () {
       beforeEach(function () {
-        this.robot.listenerMiddleware((context, next, done) => {
-          this.middleware(context, next, done)
+        this.robot.listenerMiddleware((context) => {
+          this.middleware(context)
         })
       })
 
       describe('listener', function () {
-        it('is the listener object that matched', async function () {
-          await this.robot.receive(this.testMessage, () => {
-            expect(this.middleware).to.have.been.calledWithMatch(
-              sinon.match.has('listener',
-                sinon.match.same(this.testListener)))
-          })
+        it('is the listener object that matched', function (done) {
+          this.robot.receive(this.testMessage, () => {
+            expect(this.middleware).to.have.been.calledWithMatch(sinon.match.has('listener', sinon.match.same(this.testListener)))
+          }).then(_ => {})
+          .catch(e => console.error(e))
+          .finally(done)
         })
 
-        it('has options.id (metadata)', async function () {
-          await this.robot.receive(this.testMessage, () => {
-            expect(this.middleware).to.have.been.calledWithMatch(
-              sinon.match.has('listener',
-                sinon.match.has('options',
-                  sinon.match.has('id'))))
-          })
+        it('has options.id (metadata)', function (done) {
+          this.robot.receive(this.testMessage, () => {
+            expect(this.middleware).to.have.been.calledWithMatch(sinon.match.has('listener', sinon.match.has('options', sinon.match.has('id'))))
+          }).then(_ => {})
+          .catch(e => console.error(e))
+          .finally(done)
         })
       })
 
-      describe('response', () =>
-        it('is a Response that wraps the message', async function () {
-          await this.robot.receive(this.testMessage, () => {
+      describe('response', function () {
+        it('is a Response that wraps the message', function (done) {
+          this.robot.receive(this.testMessage, () => {
             expect(this.middleware).to.have.been.calledWithMatch(sinon.match.has('response', sinon.match.instanceOf(Response).and(sinon.match.has('message', sinon.match.same(this.testMessage)))))
-          })
+          }).then(_ => {})
+          .catch(e => console.error(e))
+          .finally(done)
         })
-      )
+      })
     })
 
     describe('receive middleware context', function () {
@@ -238,17 +243,15 @@ describe('Middleware', function () {
         })
       })
 
-      describe('response', () =>
-        it('is a match-less Response object', async function () {
-          await this.robot.receive(this.testMessage, () => {
-            expect(this.middleware).to.have.been.calledWithMatch(
-              sinon.match.has('response',
-                sinon.match.instanceOf(Response).and(
-                  sinon.match.has('message',
-                    sinon.match.same(this.testMessage)))))
-          })
+      describe('response', function () {
+        it('is a match-less Response object', function (done) {
+          this.robot.receive(this.testMessage, () => {
+            expect(this.middleware).to.have.been.calledWithMatch(sinon.match.has('response', sinon.match.instanceOf(Response).and(sinon.match.has('message', sinon.match.same(this.testMessage)))))
+          }).then(_ => {})
+          .catch(e => console.error(e))
+          .finally(done)
         })
-      )
+      })
     })
 
     describe('next', function () {
@@ -258,10 +261,12 @@ describe('Middleware', function () {
         })
       })
 
-      it('is a function with arity one', async function () {
-        await this.robot.receive(this.testMessage, () => {
+      it('is a function with arity one', function (done) {
+        this.robot.receive(this.testMessage, () => {
           expect(this.middleware).to.have.been.calledWithMatch(sinon.match.any)
-        })
+        }).then(_ => {})
+        .catch(e => console.error(e))
+        .finally(done)
       })
     })
 
@@ -272,10 +277,12 @@ describe('Middleware', function () {
         })
       })
 
-      it('is a function with arity zero', async function () {
-        await this.robot.receive(this.testMessage, () => {
+      it('is a function with arity zero', function (done) {
+        this.robot.receive(this.testMessage, () => {
           expect(this.middleware).to.have.been.calledWithMatch(sinon.match.any)
-        })
+        }).then(_ => {})
+        .catch(e => console.error(e))
+        .finally(done)
       })
     })
   })

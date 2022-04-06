@@ -108,30 +108,28 @@ Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options
   robot.run()
 })
 
-function loadScripts () {
+async function loadScripts () {
   robot.load(pathResolve('.', 'scripts'))
   robot.load(pathResolve('.', 'src', 'scripts'))
 
-  loadHubotScripts()
-  loadExternalScripts()
-
-  options.scripts.forEach((scriptPath) => {
+  await loadHubotScripts()
+  await loadExternalScripts()
+  for await (const scriptPath of options.scripts) {
     if (scriptPath[0] === '/') {
-      return robot.load(scriptPath)
+      return await robot.load(scriptPath)
     }
-
-    robot.load(pathResolve('.', scriptPath))
-  })
+    await robot.load(pathResolve('.', scriptPath))
+  }
 }
 
-function loadHubotScripts () {
+async function loadHubotScripts () {
   const hubotScripts = pathResolve('.', 'hubot-scripts.json')
   let scripts
   let scriptsPath
-
-  if (fs.existsSync(hubotScripts)) {
+  const File = fs.promises
+  if (await File.exists(hubotScripts)) {
     let hubotScriptsWarning
-    const data = fs.readFileSync(hubotScripts)
+    const data = await File.readFile(hubotScripts)
 
     if (data.length === 0) {
       return
@@ -140,7 +138,7 @@ function loadHubotScripts () {
     try {
       scripts = JSON.parse(data)
       scriptsPath = pathResolve('node_modules', 'hubot-scripts', 'src', 'scripts')
-      robot.loadHubotScripts(scriptsPath, scripts)
+      await robot.loadHubotScripts(scriptsPath, scripts)
     } catch (error) {
       const err = error
       robot.logger.error(`Error parsing JSON data from hubot-scripts.json: ${err}`)
@@ -155,11 +153,11 @@ function loadHubotScripts () {
     }
 
     const hubotScriptsReplacements = pathResolve('node_modules', 'hubot-scripts', 'replacements.json')
-    const replacementsData = fs.readFileSync(hubotScriptsReplacements)
+    const replacementsData = await File.readFile(hubotScriptsReplacements)
     const replacements = JSON.parse(replacementsData)
     const scriptsWithoutReplacements = []
 
-    if (!fs.existsSync(hubotScriptsReplacements)) {
+    if (!await File.exists(hubotScriptsReplacements)) {
       hubotScriptsWarning += 'To get a list of recommended replacements, update your hubot-scripts: npm install --save hubot-scripts@latest'
       return robot.logger.warning(hubotScriptsWarning)
     }
@@ -188,23 +186,18 @@ function loadHubotScripts () {
   }
 }
 
-function loadExternalScripts () {
+async function loadExternalScripts () {
+  const File = fs.promises
   const externalScripts = pathResolve('.', 'external-scripts.json')
 
-  if (!fs.existsSync(externalScripts)) {
+  if (!File.exists(externalScripts)) {
     return
   }
-
-  fs.readFile(externalScripts, function (error, data) {
-    if (error) {
-      throw error
-    }
-
-    try {
-      robot.loadExternalScripts(JSON.parse(data))
-    } catch (error) {
-      console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
-      process.exit(1)
-    }
-  })
+  try{
+    const data = await File.readFile(externalScripts)
+    await robot.loadExternalScripts(JSON.parse(data))
+  }catch(error){
+    console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
+    process.exit(1)
+  }
 }

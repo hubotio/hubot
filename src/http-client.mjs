@@ -23,8 +23,8 @@ class Client {
     return this
   }
 
-  get () {
-    const cb = callback => {
+  async get () {
+    const p = new Promise((resolve, reject)=>{
       let body = ''
       const httpOrHttps = transport[this.parsedUrl.protocol.replace(':', '')]
       const req = httpOrHttps.get(this.url, this.options, res => {
@@ -32,23 +32,22 @@ class Client {
           body += chunk
         })
         res.on('end', () => {
-          callback(null, res, body)
+          resolve({error: null, res, body})
         })
         res.on('error', err => {
-          callback(err, res, body)
+          reject({error: err, res, body})
         })
       })
       req.on('error', err => {
         console.error(err)
-        callback(err, {}, body)
+        reject({error: err, res: {}, body})
       })
-    }
-
-    return cb
+    })
+    return p
   }
 
-  post (data) {
-    const cb = callback => {
+  async post (data) {
+    const p = new Promise((resolve, reject)=>{
       let body = ''
       const httpOrHttps = transport[this.parsedUrl.protocol.replace(':', '')]
       this.options.method = 'POST'
@@ -57,19 +56,19 @@ class Client {
           body += chunk
         })
         res.on('end', () => {
-          callback(null, res, body)
+          resolve({error: null, res, body})
         })
         res.on('error', err => {
-          callback(err, res, body)
+          reject({error: err, res, body})
         })
       })
       req.on('error', err => {
-        callback(err, {}, body)
+        reject({error: err, res: {}, body})
       })
       req.write(data)
       req.end()
-    }
-    return cb
+    })
+    return p
   }
 }
 

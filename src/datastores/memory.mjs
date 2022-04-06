@@ -1,5 +1,5 @@
 import {DataStore} from '../datastore.mjs'
-console.log(DataStore)
+
 class InMemoryDataStore extends DataStore {
   constructor (robot) {
     super(robot)

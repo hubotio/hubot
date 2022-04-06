@@ -20,7 +20,6 @@ export class Listener {
     this.matcher = matcher
     this.options = options
     this.callback = callback
-
     if (this.matcher == null) {
       throw new Error('Missing a matcher for Listener')
     }

@@ -781,11 +781,10 @@ A simple example of middleware logging command executions:
 
 ```javascript
 export default (robot) => {
-  robot.listenerMiddleware((context, next, done) => {
+  robot.listenerMiddleware((context) => {
     // Log commands
     robot.logger.info(`${context.response.message.user.name} asked me to ${context.response.message.text}`)
     // Continue executing middleware
-    next()
   })
 }
 ```
@@ -799,7 +798,7 @@ export default (robot) => {
   // Map of listener ID to last time it was executed
   let lastExecutedTime = {}
 
-  robot.listenerMiddleware((context, next, done) => {
+  robot.listenerMiddleware((context) => {
     try {
       // Default to 1s unless listener provides a different minimum period
       let minPeriodMs = context.listener.options?.rateLimits?.minPeriodMs || 1000
