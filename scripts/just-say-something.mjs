@@ -6,7 +6,7 @@
 // Configuration:
 //
 // Commands:
-//   hubot <something> - will just respond.
+//   hubot lunch - Pick a random place for lunch.
 //
 // Notes:
 //   Make this good

@@ -10,15 +10,12 @@ import Response from './response.mjs'
 import { Listener, TextListener } from './listener.mjs'
 import { EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './message.mjs'
 import Middleware from './middleware.mjs'
-import {URL} from 'url'
 import express from 'express'
 import multipart from 'connect-multiparty'
 import pkg from '../package.json' assert {type: 'json'}
 
 const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
-
-const dirName = new URL('.', import.meta.url).pathname
 
 class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -431,18 +428,19 @@ class Robot {
       process.exit(1)
     }
 
-    let herokuUrl = process.env.HEROKU_URL
+    // If you're in Heroku, do this outside of this class.
+    // let herokuUrl = process.env.HEROKU_URL
 
-    if (herokuUrl) {
-      if (!/\/$/.test(herokuUrl)) {
-        herokuUrl += '/'
-      }
-      this.pingIntervalId = setInterval(() => {
-        HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
-          this.logger.info('keep alive ping!')
-        })
-      }, 5 * 60 * 1000)
-    }
+    // if (herokuUrl) {
+    //   if (!/\/$/.test(herokuUrl)) {
+    //     herokuUrl += '/'
+    //   }
+    //   this.pingIntervalId = setInterval(() => {
+    //     HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
+    //       this.logger.info('keep alive ping!')
+    //     })
+    //   }, 5 * 60 * 1000)
+    // }
   }
 
   // Load the adapter Hubot is going to use.

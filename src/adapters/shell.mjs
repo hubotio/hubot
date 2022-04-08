@@ -12,6 +12,7 @@ const historyPath = '.hubot_history'
 
 class Shell extends Adapter {
   send (envelope, ...strings) {
+    console.log('')
     Array.from(strings).forEach(str => console.log(`\u001B[1m${str}\u001B[22m`))
     this.cli.prompt(`${this.robot.name}> `)
   }
@@ -22,7 +23,6 @@ class Shell extends Adapter {
 
   reply (envelope, ...strings) {
     strings = strings.map((s) => `${envelope.user.name}: ${s}`)
-
     this.send(envelope, ...strings)
   }
 
