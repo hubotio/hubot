@@ -6,23 +6,17 @@ class User {
   //
   // id      - A unique ID for the user.
   // options - An optional Hash of key, value pairs for this user.
-  constructor (id, options) {
+  constructor (id, options = {}) {
     this.id = id
-
-    if (options == null) {
-      options = {}
-    }
 
     // Define a getter method so we don't actually store the
     // robot itself on the user object, preventing it from
     // being serialized into the brain.
-    if (options.robot) {
-      const robot = options.robot
-      delete options.robot
-      this._getRobot = function () { return robot }
-    } else {
-      this._getRobot = function () { }
-    }
+    const robot = options.robot ?? {}
+    delete options.robot
+    Reflect.defineProperty(this, 'robot', {
+      get () { return robot }
+    })
 
     Object.keys(options).forEach((key) => {
       this[key] = options[key]
@@ -54,9 +48,8 @@ class User {
   }
 
   _getDatastore () {
-    const robot = this._getRobot()
-    if (robot) {
-      return robot.datastore
+    if (this.robot) {
+      return this.robot.datastore
     }
   }
 }

@@ -117,7 +117,7 @@ describe('Datastore', function () {
   describe('User scope', function () {
     it('has access to the robot object', function () {
       const user = this.robot.brain.userForId('1')
-      expect(user._getRobot()).to.equal(this.robot)
+      expect(user.robot).to.equal(this.robot)
     })
 
     it('can store user data which is separate from global data', function () {
