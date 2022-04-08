@@ -21,10 +21,7 @@ class User {
     Object.keys(options).forEach((key) => {
       this[key] = options[key]
     })
-
-    if (!this.name) {
-      this.name = this.id.toString()
-    }
+    this.name = this.name ?? this.id.toString()
   }
 
   set (key, value) {
