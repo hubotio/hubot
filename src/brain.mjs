@@ -39,9 +39,9 @@ class Brain extends EventEmitter {
       users: {},
       _private: {}
     }
-    this.getRobot = function () {
-      return robot
-    }
+    Reflect.defineProperty(this, 'robot', {
+      get(){ return robot}
+    })
 
     this.autoSave = true
 
@@ -148,7 +148,7 @@ class Brain extends EventEmitter {
     if (data && data.users) {
       for (const k in data.users) {
         const user = this.data.users[k]
-        this.data.users[k] = reconstructUserIfNecessary(user, this.getRobot())
+        this.data.users[k] = reconstructUserIfNecessary(user, this.robot)
       }
     }
 
@@ -170,7 +170,7 @@ class Brain extends EventEmitter {
     if (!options) {
       options = {}
     }
-    options.robot = this.getRobot()
+    options.robot = this.robot
 
     if (!user) {
       user = new User(id, options)
