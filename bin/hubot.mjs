@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 'use strict'
 import File from 'fs/promises'
 import {resolve as pathResolve} from 'path'
