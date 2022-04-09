@@ -93,7 +93,7 @@ if (options.create) {
 }
 const dirName = new URL('.', import.meta.url).pathname
 let robot = null
-Hubot.loadBot(path.resolve(dirName, '../src/adapters'), options.adapter, options.name, options.alias, options.port).then(bot => {
+Hubot.loadBot(path.resolve(dirName, '../../../src/adapters'), options.adapter, options.name, options.alias, options.port).then(bot => {
   robot = bot
   if (options.version) {
     console.log(robot.version)

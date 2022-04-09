@@ -13,7 +13,8 @@ import Middleware from './middleware.mjs'
 import express from 'express'
 import multipart from 'connect-multiparty'
 import pkg from '../package.json' assert {type: 'json'}
-
+import {URL} from 'url'
+const __dirname = new URL('.', import.meta.url).pathname
 const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
@@ -450,17 +451,18 @@ class Robot {
   //
   // Returns nothing.
   async loadAdapter (adapter) {
-    const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+    let fileName = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+    const localAdapterPath = `${this.adapterPath}/${adapter}`
     let stats = null
     try{
-      stats = await File.stat(`${this.adapterPath}/${adapter}`)
-      path = `${this.adapterPath}/${adapter}`
+      stats = await File.stat(localAdapterPath)
+      fileName = localAdapterPath
     }catch(e){
-      this.logger.debug(`${this.adapterPath}/${adapter} not found, trying installed modules`)
+      this.logger.debug(`${localAdapterPath} not found, trying installed modules`)
     }
     try {
-      this.logger.debug(`Loading adapter from ${path}`)
-      const module = await import(path)
+      this.logger.debug(`Loading adapter from ${fileName}`)
+      const module = await import(fileName)
       this.adapter = module.default(this)
     } catch (err) {
       this.logger.error(err)
