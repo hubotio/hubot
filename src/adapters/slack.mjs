@@ -1,6 +1,7 @@
 import { SlackTextMessage, ReactionMessage, PresenceMessage, FileSharedMessage } from './slack-message.mjs'
 import SlackClient from './slack-client.mjs'
-import pkg from '../../package.json'
+import pkg from '../../package.json' assert {type: 'json'}
+
 import { Adapter, EnterMessage, LeaveMessage, TopicMessage } from '../../index.mjs'
 
 class SlackBot extends Adapter {

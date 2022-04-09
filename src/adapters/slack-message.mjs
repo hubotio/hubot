@@ -1,4 +1,4 @@
-import { Message, TextMessage } from '../../index.mjs'
+import { Message, TextMessage } from '../message.mjs'
 import SlackMention from './slack-mention.mjs'
 
 class ReactionMessage extends Message {
@@ -180,7 +180,7 @@ SlackTextMessage.MESSAGE_REGEX = /<([@#!])?([^>|]+)(?:\\|([^>]+))?>/g
 
 SlackTextMessage.MESSAGE_RESERVED_KEYWORDS = ['channel', 'group', 'everyone', 'here']
 
-export default {
+export {
   SlackTextMessage,
   ReactionMessage,
   PresenceMessage,

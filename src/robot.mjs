@@ -450,8 +450,15 @@ class Robot {
   //
   // Returns nothing.
   async loadAdapter (adapter) {
+    const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+    let stats = null
+    try{
+      stats = await File.stat(`${this.adapterPath}/${adapter}`)
+      path = `${this.adapterPath}/${adapter}`
+    }catch(e){
+      this.logger.debug(`${this.adapterPath}/${adapter} not found, trying installed modules`)
+    }
     try {
-      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
       this.logger.debug(`Loading adapter from ${path}`)
       const module = await import(path)
       this.adapter = module.default(this)

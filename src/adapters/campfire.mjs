@@ -383,8 +383,4 @@ class CampfireStreaming extends EventEmitter {
   }
 }
 
-export default {
-  use(robot){
-    return new Campfire(robot)
-  }
-}
+export default robot => new Campfire(robot)

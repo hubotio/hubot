@@ -27,11 +27,11 @@ const loadBot = async (adapterPath, adapterName, botName, botAlias, port) => {
   return bot
 }
 
-export default {
+export {
   User,
   Brain,
   Robot,
-  Adapter: Adapter,
+  Adapter,
   Response,
   Listener,
   TextListener,
@@ -43,5 +43,8 @@ export default {
   CatchAllMessage,
   DataStore,
   DataStoreUnavailable,
+  loadBot
+}
+export default {
   loadBot
 }

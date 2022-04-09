@@ -1,4 +1,4 @@
-import Robot from '../../index.mjs'
+import { Robot } from '../../index.mjs'
 import { ReactionMessage, PresenceMessage, FileSharedMessage } from './slack-message.mjs'
 
 Robot.prototype.hearReaction = function (matcher, options, callback) {

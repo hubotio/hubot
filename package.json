@@ -46,7 +46,6 @@
     "start": "node bin/hubot.mjs",
     "local": "env $(cat .env | xargs) hubot",
     "test": "mocha --parallel",
-    "test:one": "mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "test:smoke": "node src/**/*.mjs",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
