@@ -31,9 +31,6 @@ class Robot {
     if (name == null) {
       name = 'Hubot'
     }
-    if (alias == null) {
-      alias = false
-    }
     this.adapterPath = adapterPath
     this.port = port
 
@@ -463,7 +460,7 @@ class Robot {
     try {
       this.logger.debug(`Loading adapter from ${fileName}`)
       const module = await import(fileName)
-      this.adapter = module.default(this)
+      this.adapter = await module.default(this)
     } catch (err) {
       this.logger.error(err)
       process.exit(1)
