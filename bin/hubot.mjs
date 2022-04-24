@@ -15,7 +15,9 @@ const switches = [
   ['-n', '--name NAME', 'The name of the robot in chat'],
   ['-r', '--require PATH', 'Alternative scripts path'],
   ['-t', '--config-check', "Test hubot's config to make sure it won't fail at startup"],
-  ['-v', '--version', 'Displays the version of hubot installed']
+  ['-v', '--version', 'Displays the version of hubot installed'],
+  ['-c', '--cert CERT', 'Path to SSL certificate'],
+  ['-k', '--key KEY', 'Path to SSL key']
 ]
 
 const options = {
@@ -26,7 +28,11 @@ const options = {
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
   path: process.env.HUBOT_PATH || '.',
-  configCheck: false
+  configCheck: false,
+  port: process.env.HUBOT_PORT,
+  cert: process.env.HUBOT_CERT,
+  key: process.env.HUBOT_KEY
+
 }
 const Parser = new OptParse.OptionParser(switches)
 Parser.banner = 'Usage hubot [options]'
@@ -42,6 +48,14 @@ Parser.on('create', function (opt, value) {
 
 Parser.on('port', function (opt, value) {
   options.port = value
+})
+
+Parser.on('cert', function (opt, value) {
+  options.cert = value
+})
+
+Parser.on('key', function (opt, value) {
+  options.key = value
 })
 
 Parser.on('help', function (opt, value) {
@@ -93,7 +107,7 @@ if (options.create) {
 }
 const dirName = new URL('.', import.meta.url).pathname
 let robot = null
-Hubot.loadBot(path.resolve(dirName, '../../../src/adapters'), options.adapter, options.name, options.alias, options.port).then(bot => {
+Hubot.loadBot(path.resolve(dirName, '../../../src/adapters'), options.adapter, options.name, options.alias, options.port, options).then(bot => {
   robot = bot
   if (options.version) {
     console.log(robot.version)

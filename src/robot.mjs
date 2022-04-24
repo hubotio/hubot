@@ -5,6 +5,8 @@ import File from 'fs/promises'
 import path from 'path'
 import {Log} from './log.mjs'
 import HttpClient from './http-client.mjs'
+import Http from 'http'
+import Https from 'https'
 import Brain from './brain.mjs'
 import Response from './response.mjs'
 import { Listener, TextListener } from './listener.mjs'
@@ -27,13 +29,15 @@ class Robot {
   // name        - A String of the robot name, defaults to Hubot.
   // alias       - A String of the alias of the robot name
   // port       - Port to listen on. Can also be set by environment variables.
-  constructor (adapterPath, adapter, name, alias, port) {
+  constructor (adapterPath, adapter, name, alias, port, options) {
     if (name == null) {
       name = 'Hubot'
     }
     this.adapterPath = adapterPath
     this.port = port
-
+    this.options = options
+    this.cert = options?.cert
+    this.key = options?.key
     this.name = name
     this.events = new EventEmitter()
     this.brain = new Brain(this)
@@ -414,10 +418,21 @@ class Robot {
     if (stat) {
       app.use(express.static(stat))
     }
+    let h = Http
+    let httpOptions = {}
+    if(this.cert && this.key ) {
+      h = Https
+      this.port = 443
+      httpOptions = {
+        key: await File.readFile(this.key),
+        cert: await File.readFile(this.cert)
+      }
+    }
+
     try {
-      this.server = app.listen(this.port, address, ()=>{
-        this.logger.debug(`${this.name} listening on ${address}:${this.server.address().port}`)
-        this.port = this.server.address().port
+      this.server = h.createServer(httpOptions, app).listen(this.port, ()=>{
+        this.port = this.server.address().port ?? this.port
+        this.logger.debug(`${this.name} listening on ${address}:${this.port}`)
       })
       this.router = app
     } catch (error) {

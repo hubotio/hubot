@@ -8,8 +8,8 @@ import { Listener, TextListener } from './src/listener.mjs'
 import { Message, TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './src/message.mjs'
 import { DataStore, DataStoreUnavailable } from './src/datastore.mjs'
 
-const loadBot = async (adapterPath, adapterName, botName, botAlias, port) => {
-  const bot = new Robot(adapterPath, adapterName, botName, botAlias, port)
+const loadBot = async (adapterPath, adapterName, botName, botAlias, port, options) => {
+  const bot = new Robot(adapterPath, adapterName, botName, botAlias, port, options)
   try {
     await bot.loadAdapter(`${adapterName}.mjs`)
     bot.errorHandlers = []
