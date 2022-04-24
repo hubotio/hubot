@@ -17,10 +17,11 @@ const expect = chai.expect
 const domain = '127.0.0.1'
 
 describe('Robot', function () {
-  beforeEach(function(done) {
+  beforeEach(async function() {
     this.robot = new Robot('../test/fixtures', 'shell', 'TestHubot', 'Hubot', 0)
-    this.robot.setupExpress()
-    this.robot.loadAdapter('shell.mjs').then(a => {
+    await this.robot.setupExpress()
+    try{
+      await this.robot.loadAdapter('shell.mjs')
       this.robot.run()
       // Re-throw AssertionErrors for clearer test failures
       this.robot.on('error', function (name, err, response) {
@@ -32,8 +33,9 @@ describe('Robot', function () {
         name: 'hubottester',
         room: '#mocha'
       })
-      }).catch(e => console.error(e))
-      .finally(done)
+    }catch(e){
+      console.error(e)
+    }
   })
 
   afterEach(function (done) {

@@ -390,7 +390,7 @@ class Robot {
   // Setup the Express server's defaults.
   //
   // Returns nothing.
-  setupExpress () {
+  async setupExpress () {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
     const stat = process.env.EXPRESS_STATIC

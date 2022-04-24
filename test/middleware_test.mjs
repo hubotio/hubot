@@ -160,9 +160,9 @@ describe('Middleware', function () {
   // Any new fields that are exposed to middleware should be explicitly
   // tested for.
   describe('Public Middleware APIs', function () {
-    beforeEach(function(done) {
+    beforeEach(async function() {
       this.robot = new Robot('../test/fixtures', 'shell', 'TestHubot')      
-      this.robot.setupExpress()
+      await this.robot.setupExpress()
       this.robot.onUncaughtException = err => {
         return this.robot.emit('error', err)
       }
@@ -189,11 +189,11 @@ describe('Middleware', function () {
       })
       this.testMessage = new TextMessage(this.user, 'message123')
       this.testListener = this.robot.listeners[0]
-      this.robot.loadAdapter('shell.mjs').then(() => { 
+      try{
+        await this.robot.loadAdapter('shell.mjs')
         this.robot.run()
-      })
-      .catch(e => console.error(e))
-      .finally(done)
+      } catch(e){ console.error(e) }
+      
     })
 
     afterEach(function () {
