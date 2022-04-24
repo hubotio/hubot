@@ -97,7 +97,7 @@ describe('Middleware', function () {
 
           const testMiddlewareB = function (context) {
             middlewareExecution.push('B')
-            throw new Error()
+            throw new Error('Expected to error and stop execution')
           }
 
           const testMiddlewareC = function (context) {
@@ -193,7 +193,7 @@ describe('Middleware', function () {
         await this.robot.loadAdapter('shell.mjs')
         this.robot.run()
       } catch(e){ console.error(e) }
-      
+
     })
 
     afterEach(function () {
