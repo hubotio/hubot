@@ -563,8 +563,8 @@ class Robot {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  reply (envelope, ...strings) {
-    this.adapter.reply(envelope, ...strings)
+  async reply (envelope, ...strings) {
+    await this.adapter.reply(envelope, ...strings)
   }
 
   // Public: A helper send function to message a room that the robot is in.

@@ -10,6 +10,9 @@ import cs from 'sinon-chai'
 import Robot from '../src/robot.mjs'
 import { CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage } from '../src/message.mjs'
 import {URL} from 'url'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
 const __dirname = new URL('.', import.meta.url).pathname
 chai.use(cs)
 
@@ -18,7 +21,9 @@ const domain = '127.0.0.1'
 
 describe('Robot', function () {
   beforeEach(async function() {
-    this.robot = new Robot('../test/fixtures', 'shell', 'TestHubot', 'Hubot', 0)
+    let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/test/robot_test.mjs', '')
+    pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'test/fixtures')
+    this.robot = new Robot(pathToLookForAdapters, 'shell', 'TestHubot', 'Hubot', 0)
     await this.robot.setupExpress()
     try{
       await this.robot.loadAdapter('shell.mjs')

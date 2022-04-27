@@ -11,6 +11,8 @@ import Robot from '../src/robot.mjs'
 import { TextMessage } from '../src/message.mjs'
 import Response from '../src/response.mjs'
 import Middleware from '../src/middleware.mjs'
+import { fileURLToPath } from 'url'
+import path from 'path'
 
 chai.use(cs)
 
@@ -161,7 +163,9 @@ describe('Middleware', function () {
   // tested for.
   describe('Public Middleware APIs', function () {
     beforeEach(async function() {
-      this.robot = new Robot('../test/fixtures', 'shell', 'TestHubot')      
+      let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/test/middleware_test.mjs', '')
+      pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'test/fixtures')
+      this.robot = new Robot(pathToLookForAdapters, 'shell', 'TestHubot')      
       await this.robot.setupExpress()
       this.robot.onUncaughtException = err => {
         return this.robot.emit('error', err)
