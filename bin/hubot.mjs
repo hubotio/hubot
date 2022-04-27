@@ -4,8 +4,8 @@ import File from 'fs/promises'
 import { resolve as pathResolve } from 'path'
 import OptParse from 'optparse'
 import Hubot from '../index.mjs'
-import path from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use'],
@@ -106,9 +106,15 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
   process.exit(1)
 }
-const dirName = fileURLToPath(import.meta.url).replace('/bin/hubot.mjs', '')
+let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/bin/hubot.mjs', '/src/adapters')
+if(pathToLookForAdapters.indexOf('node_modules') !== -1){
+  try{
+    fs.statSync(path.resolve(pathToLookForAdapters, '../src/adapaters', options.adapter))
+    pathToLookForAdapters = path.resolve(pathToLookForAdapters, '../src/adapaters', options.adapter)
+  }catch(err){}
+}
 let robot = null
-Hubot.loadBot(`${dirName}/src/adapters`, options.adapter, options.name, options.alias, options.port, options).then(bot => {
+Hubot.loadBot(pathToLookForAdapters, options.adapter, options.name, options.alias, options.port, options).then(bot => {
   robot = bot
   if (options.version) {
     console.log(robot.version)

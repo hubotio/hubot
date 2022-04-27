@@ -463,7 +463,7 @@ class Robot {
   //
   // Returns nothing.
   async loadAdapter (adapter) {
-    let fileName = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter.replace(/\.m?js/, '')) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+    let fileName = `${this.adapterPath}/${adapter}`
     const localAdapterPath = `${this.adapterPath}/${adapter}`
     let stats = null
     try{
@@ -471,6 +471,7 @@ class Robot {
       fileName = localAdapterPath
     }catch(e){
       this.logger.debug(`${localAdapterPath} not found, trying installed modules`)
+      fileName = `hubot-${adapter}`
     }
     try {
       this.logger.debug(`Loading adapter from ${fileName}`)
