@@ -101,7 +101,11 @@ class Shell extends Adapter {
   }
 }
 
-export default (robot)=>new Shell(robot)
+export default async (robot)=>{
+  const shell = new Shell(robot)
+  await robot.setupExpress()
+  return shell
+}
 
 process.stdout._handle.setBlocking(false)
 
