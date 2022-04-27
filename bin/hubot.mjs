@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 import File from 'fs/promises'
-import { resolve as pathResolve } from 'path'
+import path from 'path'
 import OptParse from 'optparse'
 import Hubot from '../index.mjs'
 import { fileURLToPath } from 'url'
@@ -106,12 +106,13 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
   process.exit(1)
 }
-let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/bin/hubot.mjs', '/src/adapters')
-if(pathToLookForAdapters.indexOf('node_modules') !== -1){
-  try{
-    fs.statSync(path.resolve(pathToLookForAdapters, '../src/adapaters', options.adapter))
-    pathToLookForAdapters = path.resolve(pathToLookForAdapters, '../src/adapaters', options.adapter)
-  }catch(err){}
+let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/bin/hubot.mjs', '').replace('/node_modules/hubot', '')
+try{
+  fs.statSync(path.resolve(pathToLookForAdapters, 'src/adapters', `${options.adapter}.mjs`))
+  pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'src/adapters')
+}catch(err){
+  console.log(err)
+  pathToLookForAdapters += '/node_modules/hubot/src/adapters'
 }
 let robot = null
 Hubot.loadBot(pathToLookForAdapters, options.adapter, options.name, options.alias, options.port, options).then(bot => {
@@ -131,8 +132,8 @@ Hubot.loadBot(pathToLookForAdapters, options.adapter, options.name, options.alia
 })
 
 async function loadScripts () {
-  robot.load(pathResolve('.', 'scripts'))
-  robot.load(pathResolve('.', 'src', 'scripts'))
+  robot.load(path.resolve('.', 'scripts'))
+  robot.load(path.resolve('.', 'src', 'scripts'))
 
   await loadHubotScripts()
   await loadExternalScripts()
@@ -140,12 +141,12 @@ async function loadScripts () {
     if (scriptPath[0] === '/') {
       return await robot.load(scriptPath)
     }
-    await robot.load(pathResolve('.', scriptPath))
+    await robot.load(path.resolve('.', scriptPath))
   }
 }
 
 async function loadHubotScripts () {
-  const hubotScripts = pathResolve('.', 'hubot-scripts.json')
+  const hubotScripts = path.resolve('.', 'hubot-scripts.json')
   let scripts
   let scriptsPath
   try{
@@ -164,7 +165,7 @@ async function loadHubotScripts () {
 
     try {
       scripts = JSON.parse(data)
-      scriptsPath = pathResolve('node_modules', 'hubot-scripts', 'src', 'scripts')
+      scriptsPath = path.resolve('node_modules', 'hubot-scripts', 'src', 'scripts')
       await robot.loadHubotScripts(scriptsPath, scripts)
     } catch (error) {
       const err = error
@@ -179,7 +180,7 @@ async function loadHubotScripts () {
       return robot.logger.warning(hubotScriptsWarning)
     }
 
-    const hubotScriptsReplacements = pathResolve('node_modules', 'hubot-scripts', 'replacements.json')
+    const hubotScriptsReplacements = path.resolve('node_modules', 'hubot-scripts', 'replacements.json')
     const replacementsData = await File.readFile(hubotScriptsReplacements)
     const replacements = JSON.parse(replacementsData)
     const scriptsWithoutReplacements = []
@@ -216,7 +217,7 @@ async function loadHubotScripts () {
 }
 
 async function loadExternalScripts () {
-  const externalScripts = pathResolve('.', 'external-scripts.json')
+  const externalScripts = path.resolve('.', 'external-scripts.json')
   try{
     const stats = await File.stat(externalScripts)
   }catch(err){
