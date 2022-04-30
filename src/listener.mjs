@@ -85,7 +85,7 @@ export class Listener {
     shouldExecuteCallback = shouldExecuteCallback && !response.message.done
     this.robot.logger.debug(`Executing listener callback for Message '${message}'`)
     try {
-      if(shouldExecuteCallback) this.callback(response)
+      if(shouldExecuteCallback) await this.callback(response)
     } catch (err) {
       this.robot.emit('error', err, response)
     } finally {
