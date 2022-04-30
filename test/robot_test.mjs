@@ -12,6 +12,7 @@ import { CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage 
 import {URL} from 'url'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import User from '../src/user.mjs'
 
 const __dirname = new URL('.', import.meta.url).pathname
 chai.use(cs)
@@ -424,6 +425,25 @@ describe('Robot', function () {
         this.robot.reply({}, 'test message')
         expect(this.robot.adapter.reply).to.have.been.calledOn(this.robot.adapter)
       })
+
+      it('passes an adapater context through so that custom adapaters have access to their stuff', async function () {
+        const errHandler = sinon.spy()
+        this.robot.on('error', errHandler)
+        const testMessage = new TextMessage(new User(1, {
+          room: '#adaptertest'
+        }), 'TestHubot test adapater context', 1, {
+          async adapterSendMethod(arg){
+            console.log(arg)
+            expect(arg).to.be.equal('test adapater context')
+          }
+        })
+        this.robot.respond(/test/, async resp => {
+          await resp.message.adapterContext.adapterSendMethod('test adapater context')
+        })
+        await this.robot.receive(testMessage)
+        expect(errHandler).to.not.be.called
+      })
+    
     })
 
     describe('#messageRoom', function () {
@@ -934,6 +954,7 @@ describe('Robot', function () {
         })
         .catch(e => console.error(e))
       })
+
     })
   })
 })

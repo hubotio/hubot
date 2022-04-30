@@ -4,8 +4,9 @@ export class Message {
   // Represents an incoming message from the chat.
   //
   // user - A User instance that sent the message.
-  constructor (user, done) {
+  constructor (user, adapterContext, done) {
     this.user = user
+    this.adapterContext = adapterContext
     this.done = done || false
     this.room = this.user.room
   }
@@ -24,8 +25,8 @@ export class TextMessage extends Message {
   // user - A User instance that sent the message.
   // text - A String message.
   // id   - A String of the message ID.
-  constructor (user, text, id) {
-    super(user)
+  constructor (user, text, id, adapterContext) {
+    super(user, adapterContext)
     this.text = text
     this.id = id
   }
@@ -72,8 +73,8 @@ export class CatchAllMessage extends Message {
   // Represents a message that no matchers matched.
   //
   // message - The original message.
-  constructor (message) {
-    super(message.user)
+  constructor (message, adapterContext) {
+    super(message.user, adapterContext)
     this.message = message
   }
 }
