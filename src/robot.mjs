@@ -676,10 +676,6 @@ function isCatchAllMessage (message) {
 }
 
 function toHeaderCommentBlock (block, currentLine) {
-  if (!block.isHeader) {
-    return block
-  }
-
   if (isCommentLine(currentLine)) {
     block.lines.push(removeCommentPrefix(currentLine))
   } else {
