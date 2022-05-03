@@ -10,7 +10,7 @@ import fs from 'fs'
 const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use'],
   ['-c', '--create PATH', 'Create a deployable hubot'],
-  ['-p', '--port', 'HTTP server port (0 for random)'],
+  ['-p', '--port PORT', 'HTTP server port (0 for random)'],
   ['-h', '--help', 'Display the help information'],
   ['-l', '--alias ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name NAME', 'The name of the robot in chat'],
