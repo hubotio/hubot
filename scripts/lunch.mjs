@@ -1,0 +1,54 @@
+// Description:
+//   a bot that tells you something.
+//
+// Dependencies:
+//
+// Configuration:
+//
+// Commands:
+//   hubot lunch - Pick a random place for lunch.
+//
+// Notes:
+//   Make this good
+//
+// Author:
+//   J0ey Guerra
+
+class Option {
+  constructor (title, description, link) {
+    this.title = title
+    this.description = description
+    this.link = link
+  }
+
+  toString () {
+    return `How 'bout ${this.title}. ${this.description} @ ${this.link}`
+  }
+}
+
+const dallasLunchOptions = [
+  new Option('Village Burger Bar', 'Serves burgers and fries', 'https://www.yelp.com/biz/village-burger-bar-dallas?osq=Village+Burger+Bar'),
+  new Option('Taqueria La Ventana', 'Serves tacos', 'https://www.yelp.com/biz/taqueria-la-ventana-dallas-4'),
+  new Option('Roti', 'Serves Mediterranean', 'https://www.yelp.com/biz/roti-modern-mediterranean-dallas'),
+  new Option('Shake Shack', 'Serves burgers and shakes', 'https://www.yelp.com/biz/shake-shack-dallas'),
+  new Option('Pei Wei', 'Serves Asian fusion', 'https://www.yelp.com/biz/pei-wei-dallas-7'),
+  new Option('Mixt', 'Serves salads', 'https://www.yelp.com/biz/mixt-dallas-2'),
+  new Option('The Henry', 'Serves various American', 'https://www.yelp.com/biz/the-henry-dallas-2'),
+  new Option('Sammy\'s Bar-B-Q', 'Serves barbeque', 'https://www.yelp.com/biz/sammys-bar-b-q-dallas'),
+  new Option('Sayyads Blackout BBQ', 'Serves barbeque', 'https://www.facebook.com/Sayyads-Blackout-BBQ-104933424890228/'),
+]
+
+const randomFrom = options => options[Math.floor(Math.random() * options.length)]
+export default robot => {
+  robot.router.get(/lunch/, (req, res) => {
+    const selectedLunch = randomFrom(dallasLunchOptions)
+    res.send(`${selectedLunch}`)
+  })
+  robot.router.get(/helo(.*)/, (req, res) => {
+    res.send('Hi!') 
+  })
+  robot.respond(/lunch$/i, resp => {
+    const selectedLunch = randomFrom(dallasLunchOptions)
+    resp.reply(`${selectedLunch}`)
+  })
+}
