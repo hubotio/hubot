@@ -123,18 +123,18 @@ class Robot {
     }
 
     if (!this.alias) {
-      return new RegExp('^\\s*[@]?' + name + '[:,]?\\s*(?:' + pattern + ')', modifiers)
+      return new RegExp('^\\s*(?:@|<at>)?' + name + '(?::|,|<\/at>)?\\s*(?:' + pattern + ')', modifiers)
     }
 
     const alias = this.alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 
     // matches properly when alias is substring of name
     if (name.length > alias.length) {
-      return new RegExp('^\\s*[@]?(?:' + name + '[:,]?|' + alias + '[:,]?)\\s*(?:' + pattern + ')', modifiers)
+      return new RegExp('^\\s*(?:@|<at>)?(?:' + name + '(?::|,|<\/at>)?|' + alias + '(?::|,|<\/at>)?)\\s*(?:' + pattern + ')', modifiers)
     }
 
     // matches properly when name is substring of alias
-    return new RegExp('^\\s*[@]?(?:' + alias + '[:,]?|' + name + '[:,]?)\\s*(?:' + pattern + ')', modifiers)
+    return new RegExp('^\\s*(?:@|<at>)?(?:' + alias + '(?::|,|<\/at>)?|' + name + '(?::|,|<\/at>)?)\\s*(?:' + pattern + ')', modifiers)
   }
 
   // Public: Adds a Listener that triggers when anyone enters the room.
