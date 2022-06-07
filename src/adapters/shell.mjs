@@ -11,17 +11,17 @@ const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.
 const historyPath = '.hubot_history'
 
 class Shell extends Adapter {
-  send (envelope, ...strings) {
+  async send (envelope, ...strings) {
     console.log('')
     Array.from(strings).forEach(str => console.log(`\u001B[1m${str}\u001B[22m`))
     this.cli.prompt(`${this.robot.name}> `)
   }
 
-  emote (envelope, ...strings) {
+  async emote (envelope, ...strings) {
     strings.map(str => this.send(envelope, `* ${str}`))
   }
 
-  reply (envelope, ...strings) {
+  async reply (envelope, ...strings) {
     strings = strings.map((s) => `${envelope.user.name}: ${s}`)
     this.send(envelope, ...strings)
   }
