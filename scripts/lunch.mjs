@@ -36,6 +36,7 @@ const dallasLunchOptions = [
   new Option('The Henry', 'Serves various American', 'https://www.yelp.com/biz/the-henry-dallas-2'),
   new Option('Sammy\'s Bar-B-Q', 'Serves barbeque', 'https://www.yelp.com/biz/sammys-bar-b-q-dallas'),
   new Option('Sayyads Blackout BBQ', 'Serves barbeque', 'https://www.facebook.com/Sayyads-Blackout-BBQ-104933424890228/'),
+  new Option('Town House Brunch', 'Delicious brunch', 'https://www.townhousebrunch.com'),
 ]
 
 const randomFrom = options => options[Math.floor(Math.random() * options.length)]
@@ -43,9 +44,6 @@ export default robot => {
   robot.router.get(/lunch/, (req, res) => {
     const selectedLunch = randomFrom(dallasLunchOptions)
     res.send(`${selectedLunch}`)
-  })
-  robot.router.get(/helo(.*)/, (req, res) => {
-    res.send('Hi!') 
   })
   robot.respond(/lunch$/i, resp => {
     const selectedLunch = randomFrom(dallasLunchOptions)
