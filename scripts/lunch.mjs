@@ -37,6 +37,7 @@ const dallasLunchOptions = [
   new Option('Sammy\'s Bar-B-Q', 'Serves barbeque', 'https://www.yelp.com/biz/sammys-bar-b-q-dallas'),
   new Option('Sayyads Blackout BBQ', 'Serves barbeque', 'https://www.facebook.com/Sayyads-Blackout-BBQ-104933424890228/'),
   new Option('Town House Brunch', 'Delicious brunch', 'https://www.townhousebrunch.com'),
+  new Option('Haywire', 'Delicious camp theme, Texas hot summer nights', 'https://www.haywirerestaurant.com'),
 ]
 
 const randomFrom = options => options[Math.floor(Math.random() * options.length)]
