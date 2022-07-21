@@ -254,7 +254,7 @@ In addition, if node-scoped-http-client doesn't suit you, you can use [http](htt
 
 ## Random
 
-A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. It's annoying to do this in JavaScript and CoffeeScript out of the box, so Hubot includes a convenience method:
+A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. It's annoying to do this in [JavaScript](https://www.scaler.com/topics/javascript/) and [CoffeeScript](https://coffeescript.org/) out of the box, so Hubot includes a convenience method:
 
 ```coffeescript
 lulz = ['lol', 'rofl', 'lmao']
