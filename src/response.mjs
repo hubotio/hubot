@@ -26,7 +26,7 @@ class Response {
   //
   // Returns nothing.
   async send (...strings) {
-    await this.runWithMiddleware('send', { plaintext: true }, ...strings)
+    return await this.runWithMiddleware('send', { plaintext: true }, ...strings)
   }
 
   // Public: Posts an emote back to the chat source
@@ -36,7 +36,7 @@ class Response {
   //
   // Returns nothing.
   async emote (...strings) {
-    this.runWithMiddleware('emote', { plaintext: true }, ...strings)
+    return await this.runWithMiddleware('emote', { plaintext: true }, ...strings)
   }
 
   // Public: Posts a message mentioning the current user.
@@ -46,7 +46,7 @@ class Response {
   //
   // Returns nothing.
   async reply (...strings) {
-    await this.runWithMiddleware('reply', { plaintext: true }, ...strings)
+    return await this.runWithMiddleware('reply', { plaintext: true }, ...strings)
   }
 
   // Public: Posts a topic changing message
@@ -56,7 +56,7 @@ class Response {
   //
   // Returns nothing.
   async topic (...strings) {
-    await this.runWithMiddleware('topic', { plaintext: true }, ...strings)
+    return await this.runWithMiddleware('topic', { plaintext: true }, ...strings)
   }
 
   // Public: Play a sound in the chat source
@@ -66,7 +66,7 @@ class Response {
   //
   // Returns nothing
   async play (...strings) {
-    await this.runWithMiddleware('play', {}, ...strings)
+    return await this.runWithMiddleware('play', {}, ...strings)
   }
 
   // Public: Posts a message in an unlogged room
@@ -76,7 +76,7 @@ class Response {
   //
   // Returns nothing
   async locked (...strings) {
-    await this.runWithMiddleware('locked', { plaintext: true }, ...strings)
+    return await this.runWithMiddleware('locked', { plaintext: true }, ...strings)
   }
 
   // Private: Call with a method for the given strings using response
@@ -92,7 +92,7 @@ class Response {
       context.plaintext = true
     }
     await this.robot.middleware.response.execute(context)
-    await this.robot.adapter[methodName](this.envelope, ...context.strings)
+    return await this.robot.adapter[methodName](this.envelope, ...context.strings)
   }
 
   // Public: Picks a random item from the given items.

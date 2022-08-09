@@ -551,9 +551,9 @@ class Robot {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
-  send (envelope, ...strings) {
-    this.adapter.send(envelope, ...strings)
+  // Returns depends on the adapter.
+  async send (envelope, ...strings) {
+    return this.adapter.send(envelope, ...strings)
   }
 
   // Public: A helper reply function which delegates to the adapter's reply
@@ -572,10 +572,10 @@ class Robot {
   // room    - String designating the room to message.
   // strings - One or more Strings for each message to send.
   //
-  // Returns nothing.
-  messageRoom (room, ...strings) {
+  // Returns.
+  async messageRoom (room, ...strings) {
     const envelope = { room }
-    this.adapter.send(envelope, ...strings)
+    return this.adapter.send(envelope, ...strings)
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
