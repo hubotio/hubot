@@ -59,7 +59,6 @@ Parser.on('key', function (opt, value) {
 })
 
 Parser.on('help', function (opt, value) {
-  console.log(Parser.toString())
   return process.exit(0)
 })
 
