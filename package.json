@@ -43,7 +43,7 @@
   "scripts": {
     "ci": "node version",
     "start": "node bin/hubot.mjs",
-    "local": "env $(cat .env | xargs) hubot",
+    "local": "node bin/hubot.mjs",
     "test": "mocha --parallel",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "test:smoke": "node src/**/*.mjs",

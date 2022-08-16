@@ -432,7 +432,7 @@ class Robot {
     try {
       this.server = h.createServer(httpOptions, app).listen(this.port, ()=>{
         this.port = this.server.address().port ?? this.port
-        this.logger.debug(`${this.name} listening on ${address}:${this.port}`)
+        console.log(`${this.name} listening on http://localhost:${this.port}`)
       })
       this.router = app
     } catch (error) {
