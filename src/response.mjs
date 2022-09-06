@@ -18,7 +18,7 @@ class Response {
       message: this.message
     }
   }
-
+  
   // Public: Posts a message back to the chat source
   //
   // strings - One or more strings to be posted. The order of these strings
@@ -26,7 +26,10 @@ class Response {
   //
   // Returns nothing.
   async send (...strings) {
-    return await this.runWithMiddleware('send', { plaintext: true }, ...strings)
+    let options = {
+      plaintext: strings.some(s => !(typeof s != 'string'))
+    }
+    return await this.runWithMiddleware('send', options, ...strings)
   }
 
   // Public: Posts an emote back to the chat source
@@ -36,7 +39,10 @@ class Response {
   //
   // Returns nothing.
   async emote (...strings) {
-    return await this.runWithMiddleware('emote', { plaintext: true }, ...strings)
+    let options = {
+      plaintext: strings.some(s => !(typeof s != 'string'))
+    }
+    return await this.runWithMiddleware('emote', options, ...strings)
   }
 
   // Public: Posts a message mentioning the current user.
@@ -46,7 +52,10 @@ class Response {
   //
   // Returns nothing.
   async reply (...strings) {
-    return await this.runWithMiddleware('reply', { plaintext: true }, ...strings)
+    let options = {
+      plaintext: strings.some(s => !(typeof s != 'string'))
+    }
+    return await this.runWithMiddleware('reply', options, ...strings)
   }
 
   // Public: Posts a topic changing message
@@ -56,7 +65,10 @@ class Response {
   //
   // Returns nothing.
   async topic (...strings) {
-    return await this.runWithMiddleware('topic', { plaintext: true }, ...strings)
+    let options = {
+      plaintext: strings.some(s => !(typeof s != 'string'))
+    }
+    return await this.runWithMiddleware('topic', options, ...strings)
   }
 
   // Public: Play a sound in the chat source
@@ -76,7 +88,10 @@ class Response {
   //
   // Returns nothing
   async locked (...strings) {
-    return await this.runWithMiddleware('locked', { plaintext: true }, ...strings)
+    let options = {
+      plaintext: strings.some(s => !(typeof s != 'string'))
+    }
+    return await this.runWithMiddleware('locked', options, ...strings)
   }
 
   // Private: Call with a method for the given strings using response
@@ -88,8 +103,8 @@ class Response {
       strings: copy,
       method: methodName
     }
-    if (opts.plaintext != null) {
-      context.plaintext = true
+    if (opts?.plaintext != null) {
+      context.plaintext = opts.plaintext
     }
     await this.robot.middleware.response.execute(context)
     return await this.robot.adapter[methodName](this.envelope, ...context.strings)

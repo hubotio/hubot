@@ -433,7 +433,6 @@ describe('Robot', function () {
           room: '#adaptertest'
         }), 'TestHubot test adapater context', 1, {
           async adapterSendMethod(arg){
-            console.log(arg)
             expect(arg).to.be.equal('test adapater context')
           }
         })
