@@ -41,7 +41,6 @@
     "hubot": "./bin/hubot.mjs"
   },
   "scripts": {
-    "ci": "node version",
     "start": "node bin/hubot.mjs",
     "local": "node bin/hubot.mjs",
     "test": "mocha --parallel",
