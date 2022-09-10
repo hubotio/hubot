@@ -15,7 +15,8 @@ class Middleware {
   // Returns before executing any middleware
   async execute (context) {
     for await (let middleware of this.stack) {
-      await middleware(this.robot, context)
+      const shouldContinue = await middleware(this.robot, context)
+      if(!shouldContinue) break
     }
     return context
   }

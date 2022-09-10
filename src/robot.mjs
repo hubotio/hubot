@@ -297,7 +297,7 @@ class Robot {
 
     if (!(message instanceof CatchAllMessage)) {
       this.logger.debug('No listeners executed; falling back to catch-all')
-      await this.receive(new CatchAllMessage(message))
+      await this.receive(new CatchAllMessage(message, message.adapterContext))
     }
   }
 
