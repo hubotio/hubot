@@ -279,6 +279,7 @@ class Robot {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
     await this.middleware.receive.execute({ response: new Response(this, message) })
+    if(message.done) return
 
     let anyListenersExecuted = false
     for await(const listener of this.listeners) {
@@ -295,10 +296,11 @@ class Robot {
     }
     if(anyListenersExecuted) return
 
-    if (!(message instanceof CatchAllMessage)) {
-      this.logger.debug('No listeners executed; falling back to catch-all')
-      await this.receive(new CatchAllMessage(message, message.adapterContext))
-    }
+    // TODO: I don't think this is necessary anymore. 2022-09-11
+    // if (!(message instanceof CatchAllMessage)) {
+    //   this.logger.debug('No listeners executed; falling back to catch-all')
+    //   await this.receive(new CatchAllMessage(message, message.adapterContext))
+    // }
   }
 
   // Public: Loads a file in path.
