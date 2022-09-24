@@ -370,12 +370,10 @@ describe('Robot', function () {
           goodListener
         ]
 
-        this.robot.emit = function (name, err, message) {
-          expect(name).to.equal('error')
+        this.robot.on(Robot.EVENTS.ERROR, (err, message)=>{
           expect(err).to.equal(theError)
           expect(message).to.equal(testMessage)
-        }
-        sinon.spy(this.robot, 'emit')
+        })
 
         this.robot.receive(testMessage).then(_ => {
           expect(this.robot.emit).to.have.been.called
@@ -680,7 +678,7 @@ describe('Robot', function () {
 
       const listenerCallback = sinon.spy()
       this.robot.hear(/^no-matches$/, listenerCallback)
-
+      
       this.robot.catchAll(function (response) {
         expect(listenerCallback).to.not.have.been.called
         expect(response.message).to.equal(testMessage)
@@ -748,13 +746,10 @@ describe('Robot', function () {
       this.robot.hear(/^message123$/, () => {
         goodListenerCalled = true
       })
-
-      this.robot.emit = function (name, err, response) {
-        expect(name).to.equal('error')
+      this.robot.on(Robot.EVENTS.ERROR, (err, response)=>{
         expect(err).to.equal(theError)
         expect(response.message).to.equal(testMessage)
-      }
-      sinon.spy(this.robot, 'emit')
+      })
 
       this.robot.receive(testMessage).then(_ => {
         expect(this.robot.emit).to.have.been.called

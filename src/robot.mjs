@@ -59,7 +59,11 @@ class Robot {
     this.parseVersion()
     this.adapterName = adapter
   }
-
+  static EVENTS = {
+    RUNNING: 'running',
+    SHUTDOWN: 'shutdown',
+    ERROR: 'error'
+  }
   // Public: Adds a custom Listener with the provided matcher, options, and
   // callback
   //
@@ -288,7 +292,7 @@ class Robot {
           anyListenersExecuted = anyListenersExecuted || wasHandled
         })
       }catch(err){
-        this.emit('error', err, message)
+        this.emit(Robot.EVENTS.ERROR, err, message)
       }
       if(anyListenersExecuted && message.done) {
         break
@@ -296,11 +300,10 @@ class Robot {
     }
     if(anyListenersExecuted) return
 
-    // TODO: I don't think this is necessary anymore. 2022-09-11
-    // if (!(message instanceof CatchAllMessage)) {
-    //   this.logger.debug('No listeners executed; falling back to catch-all')
-    //   await this.receive(new CatchAllMessage(message, message.adapterContext))
-    // }
+    if (!(message instanceof CatchAllMessage)) {
+      this.logger.debug('No listeners executed; falling back to catch-all')
+      await this.receive(new CatchAllMessage(message, message.adapterContext))
+    }
   }
 
   // Public: Loads a file in path.
@@ -609,7 +612,7 @@ class Robot {
   //
   // Returns nothing.
   run () {
-    this.emit('running')
+    this.emit(Robot.EVENTS.RUNNING)
     this.adapter.run()
   }
 
@@ -624,6 +627,7 @@ class Robot {
     if(this.adapter) this.adapter.close()
     if(this.server) this.server.close()
     if(this.brain) this.brain.close()
+    this.emit(Robot.EVENTS.SHUTDOWN)
   }
 
   // Public: The version of Hubot from npm
