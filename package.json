@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "1.0.0",
+  "version": "4.0.1",
   "author": "hubot",
   "keywords": [
     "github",
@@ -23,17 +23,12 @@
   },
   "devDependencies": {
     "chai": "~2.1.0",
-    "coveralls": "^3.0.2",
-    "is-circular": "^1.0.2",
     "mocha": "^9.2.2",
-    "mockery": "^1.4.0",
-    "nyc": "^15.1.0",
-    "semantic-release": "^19.0.2",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0"
   },
   "engines": {
-    "node": "> 17.0.0",
+    "node": "> 18.0.0",
     "npm": "> 8.0.0"
   },
   "main": "./index.mjs",
@@ -43,9 +38,6 @@
   "scripts": {
     "start": "node bin/hubot.mjs",
     "local": "node bin/hubot.mjs",
-    "test": "mocha --parallel",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test:smoke": "node src/**/*.mjs",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "test": "mocha --parallel"
   }
 }

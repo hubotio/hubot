@@ -7,7 +7,6 @@
 import chai from 'chai'
 import sinon from 'sinon'
 import cs from 'sinon-chai'
-import isCircular from 'is-circular'
 import Brain from '../src/brain.mjs'
 import User from '../src/user.mjs'
 
@@ -66,7 +65,6 @@ describe('Brain', function () {
         expect(user.constructor.name).to.equal('User')
         expect(user.id).to.equal('4')
         expect(user.name).to.equal('new')
-        expect(isCircular(this.brain)).to.be.false
       })
     })
 
@@ -328,8 +326,6 @@ describe('Brain', function () {
       for (const user of this.brain.usersForRawFuzzyName('Guy One')) {
         expect(user.constructor.name).to.equal('User')
       }
-
-      expect(isCircular(this.brain)).to.be.false
     })
   })
 })
