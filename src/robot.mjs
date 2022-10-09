@@ -445,20 +445,7 @@ class Robot {
       this.logger.error(`Error trying to start HTTP server: ${err}\n${err.stack}`)
       process.exit(1)
     }
-
-    // If you're in Heroku, do this outside of this class.
-    // let herokuUrl = process.env.HEROKU_URL
-
-    // if (herokuUrl) {
-    //   if (!/\/$/.test(herokuUrl)) {
-    //     herokuUrl += '/'
-    //   }
-    //   this.pingIntervalId = setInterval(() => {
-    //     HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
-    //       this.logger.info('keep alive ping!')
-    //     })
-    //   }, 5 * 60 * 1000)
-    // }
+    return app
   }
 
   // Load the adapter Hubot is going to use.
