@@ -1,6 +1,5 @@
-[![Build & test](https://github.com/joeyguerra/hubot/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/joeyguerra/hubot/actions/workflows/build.yml)
 
-# Hubot
+# Hubot [![Build & test](https://github.com/joeyguerra/hubot/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/joeyguerra/hubot/actions/workflows/build.yml)
 
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
 He's pretty cool. He's [extendable with scripts](http://hubot.github.com/docs/#scripts) and can work
