@@ -1,4 +1,4 @@
-[![Build & test](https://github.com/joeyguerra/hubot/actions/workflows/build.yml/badge.svg)](https://github.com/joeyguerra/hubot/actions/workflows/build.yml)
+[![Build & test](https://github.com/joeyguerra/hubot/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/joeyguerra/hubot/actions/workflows/build.yml)
 
 # Hubot
 
