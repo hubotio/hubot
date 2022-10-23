@@ -7,6 +7,7 @@ import Response from './src/response.mjs'
 import { Listener, TextListener } from './src/listener.mjs'
 import { Message, TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './src/message.mjs'
 import { DataStore, DataStoreUnavailable } from './src/datastore.mjs'
+import Middleware from './src/middleware.mjs'
 
 const loadBot = async (adapterPath, adapterName, botName, botAlias, port, options) => {
   const bot = new Robot(adapterPath, adapterName, botName, botAlias, port, options)
@@ -43,6 +44,7 @@ export {
   CatchAllMessage,
   DataStore,
   DataStoreUnavailable,
+  Middleware,
   loadBot
 }
 export default {

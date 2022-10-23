@@ -2,6 +2,7 @@
 import {inspect} from 'util'
 import {TextMessage} from './message.mjs'
 import Middleware from './middleware.mjs'
+import Response from './response.mjs'
 
 export class Listener {
   // Listeners receive every message from the chat source and decide if they
@@ -28,7 +29,7 @@ export class Listener {
       this.callback = this.options
       this.options = {}
     }
-
+    // TODO: What?
     if (this.options.id == null) {
       this.options.id = null
     }
@@ -52,16 +53,15 @@ export class Listener {
   // Returns before executing callback
   async call (message, middleware, didMatchCallback) {
     // middleware argument is optional
-    if (didMatchCallback == null && typeof middleware === 'function') {
+    if (!didMatchCallback && typeof middleware === 'function') {
       didMatchCallback = middleware
       middleware = undefined
     }
 
     // ensure we have a Middleware object
-    if (middleware == null) {
+    if (!middleware) {
       middleware = new Middleware(this.robot)
     }
-
     const match = this.matcher(message)
     if(!match){
       if (didMatchCallback != null) {
@@ -74,7 +74,7 @@ export class Listener {
       this.robot.logger.debug(`Message '${message}' matched regex /${inspect(this.regex)}/; listener.options = ${inspect(this.options)}`)
     }
 
-    const response = new this.robot.Response(this.robot, message, match)
+    const response = new Response(this.robot, message, match)
     let shouldExecuteCallback = true
     try{
       await middleware.execute({ listener: this, response })
@@ -87,9 +87,9 @@ export class Listener {
     try {
       if(shouldExecuteCallback) await this.callback(response)
     } catch (err) {
-      this.robot.emit('error', err, response)
-    } finally {
-      if (didMatchCallback != null) {
+      throw err
+    }finally{
+      if (didMatchCallback) {
         didMatchCallback(true)
       }
     }

@@ -20,7 +20,7 @@ const __dirname = new URL('.', import.meta.url).pathname
 const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
-class Robot {
+class Robot extends EventEmitter {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
   // dispatch them to matching listeners.
   //
@@ -30,6 +30,7 @@ class Robot {
   // alias       - A String of the alias of the robot name
   // port       - Port to listen on. Can also be set by environment variables.
   constructor (adapterPath, adapter, name, alias, port, options) {
+    super()
     if (name == null) {
       name = 'Hubot'
     }
@@ -218,9 +219,9 @@ class Robot {
       options = {}
     }
 
-    this.listen(isCatchAllMessage, options, function listenCallback (msg) {
-      msg.message = msg.message.message
-      callback(msg)
+    this.listen(isCatchAllMessage, options, response => {
+      response.message = response.message.message
+      callback(response)
     })
   }
 
@@ -284,7 +285,7 @@ class Robot {
     // pass control back to the robot
     await this.middleware.receive.execute({ response: new Response(this, message) })
     if(message.done) return
-
+    
     let anyListenersExecuted = false
     for await(const listener of this.listeners) {
       try{
@@ -299,8 +300,7 @@ class Robot {
       }
     }
     if(anyListenersExecuted) return
-
-    if (!(message instanceof CatchAllMessage)) {
+    if (!isCatchAllMessage(message)) {
       this.logger.debug('No listeners executed; falling back to catch-all')
       await this.receive(new CatchAllMessage(message, message.adapterContext))
     }
@@ -568,31 +568,6 @@ class Robot {
   async messageRoom (room, ...strings) {
     const envelope = { room }
     return this.adapter.send(envelope, ...strings)
-  }
-
-  // Public: A wrapper around the EventEmitter API to make usage
-  // semantically better.
-  //
-  // event    - The event name.
-  // listener - A Function that is called with the event parameter
-  //            when event happens.
-  //
-  // Returns nothing.
-  on (event/* , ...args */) {
-    const args = [].slice.call(arguments, 1)
-    this.events.on.apply(this.events, [event].concat(args))
-  }
-
-  // Public: A wrapper around the EventEmitter API to make usage
-  // semantically better.
-  //
-  // event   - The event name.
-  // args...  - Arguments emitted by the event
-  //
-  // Returns nothing.
-  emit (event/* , ...args */) {
-    const args = [].slice.call(arguments, 1)
-    this.events.emit.apply(this.events, [event].concat(args))
   }
 
   // Public: Kick off the event loop for the adapter

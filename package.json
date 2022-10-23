@@ -5,7 +5,7 @@
   "keywords": [
     "github",
     "hubot",
-    "campfire",
+    "chatops",
     "bot"
   ],
   "description": "A simple helpful robot for your Company",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "chai": "~2.1.0",
     "mocha": "^9.2.2",
+    "nodemon": "github:joeyguerra/nodemon",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0"
   },
@@ -37,7 +38,8 @@
   },
   "scripts": {
     "start": "node bin/hubot.mjs",
-    "local": "node bin/hubot.mjs",
-    "test": "mocha --parallel"
+    "start:local": "node bin/hubot.mjs",
+    "test": "node --test",
+    "test:local": "nodemon --test"
   }
 }
