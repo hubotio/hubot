@@ -1,186 +1,114 @@
 'use strict'
 
-import { TextMessage, Robot, Response, Middleware} from '../index.mjs'
+import { TextMessage, Robot, Response, Middleware, User} from '../index.mjs'
 import assert from 'node:assert/strict'
-import {describe, it, beforeEach, afterEach} from 'node:test'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import {describe, it} from 'node:test'
 
-const makeRobot = ()=>{
-  const robot = new Robot()
-  return robot
+function makeDummyResponse(){
+  return new Response(new Robot(), new TextMessage(new User(1), 'testing middleware', 0, null))
 }
 
 describe('Middleware', () => {
   describe('Unit Tests', () => {
     describe('#execute', () => {
       it('executes synchronous middleware', async ()=>{
-        const testMiddleware = context => {
-          assert.ok(context)
+        const testMiddleware = (robot, response) => {
+          assert.ok(response)
+          return true
         }
-        const middlewareFinished = (r, c) => {
-          assert.ok(r)
+        const middlewareFinished = (robot, response) => {
+          assert.ok(response)
+          return true
         }
-        const middleware = new Middleware(makeRobot())
+        const middleware = new Middleware(new Robot())
         middleware.register(testMiddleware)
         middleware.register(middlewareFinished)
         await middleware.execute({})
       })
 
       it('executes asynchronous middleware', async ()=> {
-        const testMiddleware = async context => assert.ok(context)
-        const middlewareFinished = async context => assert.ok(context)
-        const middleware = new Middleware(makeRobot())
+        const testMiddleware = async (robot, response) => {
+          assert.ok(response)
+          return true
+        }
+        const middlewareFinished = async (robot, response) => {
+          assert.ok(response)
+          return true
+        }
+        const middleware = new Middleware(new Robot())
         middleware.register(testMiddleware)
         middleware.register(middlewareFinished)
-        await middleware.execute({})
+        await middleware.execute(makeDummyResponse())
       })
-
-      it('passes the correct arguments to each middleware', async () => {
-        const testContext = {}
-        const testMiddleware = (r, context) => {
-          assert.deepEqual(context, testContext)
-        }
-        const middleware = new Middleware(makeRobot())
-        middleware.register(testMiddleware)
-        await middleware.execute(testContext)
-      })
-
       it('executes all registered middleware in definition order', async () => {
-        const middlewareExecution = []
-        const testMiddlewareA = (r, context) => {
-          middlewareExecution.push('A')
+        const middleware = new Middleware(new Robot())
+        const middlewareExecution = new Set()
+        const testMiddlewareA = async (robot, response) => {
+          middlewareExecution.add('A')
+          return true
         }
-        const testMiddlewareB = (r, context) => {
-          middlewareExecution.push('B')
+        const testMiddlewareB = async (robot, response) => {
+          middlewareExecution.add('B')
+          return true
         }
-        const middleware = new Middleware(makeRobot())
+        const testMiddlewareC = async (robot, response) => {
+          return true
+        }
         middleware.register(testMiddlewareA)
         middleware.register(testMiddlewareB)
-        const middlewareFinished = () => {
-          assert.deepEqual(middlewareExecution, ['A', 'B'])
-        }
-        middleware.register(middlewareFinished)
-        await middleware.execute({})
+        middleware.register(testMiddlewareC)
+        await middleware.execute(makeDummyResponse())
+        assert.deepEqual(middlewareExecution, new Set(['A', 'B']))
       })
 
       describe('error handling', () => {
         it('does not execute subsequent middleware after the error is thrown', async () => {
-          const middlewareExecution = []
-          const testMiddlewareA = context => {
-            middlewareExecution.push('A')
+          const middlewareExecution = new Set()
+          const testMiddlewareA = async (robot, response) => {
+            middlewareExecution.add('A')
+            return true
           }
-          const testMiddlewareB = context => {
-            middlewareExecution.push('B')
+          const testMiddlewareB = async (robot, response) => {
+            middlewareExecution.add('B')
             throw new Error('Expected to error and stop execution')
           }
 
-          const testMiddlewareC = context => {
-            middlewareExecution.push('C')
+          const testMiddlewareC = async (robot, response) => {
+            middlewareExecution.add('C')
+            return true
           }
-          const middleware = new Middleware(makeRobot())
-          middleware.register(testMiddlewareA)
-          middleware.register(testMiddlewareB)
-          middleware.register(testMiddlewareC)
-
+          const middleware = new Middleware(new Robot())
+          
           const middlewareFinished = ()=>{
             assert.fail('Should not be called')
           }
-          const middlewareFailed = () => {
-            assert.deepEqual(middlewareExecution, ['A', 'B'])
-          }
-          middleware.register(middlewareFailed)
-          await middleware.execute({})
+
+          middleware.register(testMiddlewareA)
+          middleware.register(testMiddlewareB)
+          middleware.register(testMiddlewareC)
+          middleware.register(middlewareFinished)
+          await middleware.execute(makeDummyResponse())
+          assert.deepEqual(middlewareExecution, new Set(['A', 'B']))
         })
 
         it('emits an error event', async () => {
-          const testResponse = {}
           const theError = new Error()
-          const testMiddleware = context => {
+          const testMiddleware = async (robot, response) => {
             throw theError
           }
-          const robot = makeRobot()
+          const robot = new Robot()
           const middleware = new Middleware(robot)
           middleware.register(testMiddleware)
           let wasCalled = false
-          robot.emit = (name, err, response) => {
-            assert.deepEqual(name, 'error')
+          robot.on(Robot.EVENTS.ERROR, (err, response) => {
             assert.deepEqual(err, theError)
-            assert.deepEqual(response, testResponse)
+            assert.ok(response instanceof Response)
             wasCalled = true
-          }
-
-          const middlewareFailed = () => {
-            assert.ok(wasCalled)
-          }
-          middleware.register(middlewareFailed)
-          try{
-            await middleware.execute({ response: testResponse })
-          }catch(e){
-            console.error('This is expected to error out: ', e)
-          }
+          })
+          await middleware.execute(makeDummyResponse())
+          assert.ok(wasCalled)
         })
       })
     })
-
-    describe('#register', () => {
-      it('adds to the list of middleware', async () => {
-        const testMiddleware = (context, next, done) => {}
-        const middleware = new Middleware(makeRobot())
-        middleware.register(testMiddleware)
-        console.log(middleware.stack)
-        assert.ok(middleware.stack.some(s => s == testMiddleware))
-      })
-    })
-  })
-
-  // Per the documentation in docs/scripting.md
-  // Any new fields that are exposed to middleware should be explicitly
-  // tested for.
-  describe('Public Middleware APIs', () => {
-    let robot = null
-    let user = null
-    let testMessage = null
-    let testListener = null
-    beforeEach(async () => {
-      let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/test/middleware_test.mjs', '')
-      pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'test/fixtures')
-      robot = new Robot(pathToLookForAdapters, 'shell', 'TestHubot')      
-      await robot.setupExpress()
-      robot.onUncaughtException = err => {
-        return robot.emit('error', err)
-      }
-      process.on('uncaughtException', robot.onUncaughtException)
-
-      // Re-throw AssertionErrors for clearer test failures
-      robot.on('error', function (name, err, response) {
-        if (__guard__(err != null ? err.constructor : undefined, x => x.name) === 'AssertionError') {
-          process.nextTick(function () {
-            throw err
-          })
-        }
-      })
-
-      robot.hear(/^message123$/, function (response) {})
-      user = robot.brain.userForId('1', {
-        name: 'hubottester',
-        room: '#mocha'
-      })
-      testMessage = new TextMessage(user, 'message123')
-      testListener = robot.listeners[0]
-      try{
-        await robot.loadAdapter('shell.mjs')
-        robot.run()
-      } catch(e){ console.error(e) }
-      middleware = new Middleware(robot)
-    })
-
-    afterEach(() => {
-      robot.shutdown()
-    })
   })
 })
-
-function __guard__ (value, transform) {
-  (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
-}

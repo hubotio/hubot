@@ -120,11 +120,11 @@ await test('Listener', async (t)=> {
             return /testing (?<result>.*)/.exec(message.text)
           }
           const testListener = new Listener(robot, testMatcher, listenerCallback)
+          
           const testMiddleware = {
-            async execute(context) {
-              assert.deepEqual(context.listener, testListener)
-              assert.ok(context.response instanceof Response)
-              assert.deepEqual(context.response.message, testMessage)
+            async execute(response) {
+              assert.ok(response instanceof Response)
+              assert.deepEqual(response.message, testMessage)
             }
           }
           await testListener.call(testMessage, testMiddleware, ()=>{})
@@ -144,7 +144,7 @@ await test('Listener', async (t)=> {
           }
           const testListener = new Listener(robot, testMatcher, listenerCallback)
           const testMiddleware = {
-            execute (context) {
+            execute (response) {
               throw new Error('Middleware failed')
             }
           }

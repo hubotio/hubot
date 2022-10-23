@@ -1,9 +1,11 @@
 'use strict'
+
+import crypto from 'node:crypto'
 import {inspect} from 'util'
+import Robot from './robot.mjs'
 import {TextMessage} from './message.mjs'
 import Middleware from './middleware.mjs'
 import Response from './response.mjs'
-
 export class Listener {
   // Listeners receive every message from the chat source and decide if they
   // want to act on it.
@@ -29,9 +31,9 @@ export class Listener {
       this.callback = this.options
       this.options = {}
     }
-    // TODO: What?
-    if (this.options.id == null) {
-      this.options.id = null
+
+    if (!this.options?.id) {
+      this.options.id = crypto.webcrypto.randomUUID()
     }
 
     if (this.callback == null || typeof this.callback !== 'function') {
@@ -49,8 +51,7 @@ export class Listener {
   // middleware - Optional Middleware object to execute before the Listener callback
   // callback - Optional Function called with a boolean of whether the matcher matched
   //
-  // Returns a boolean of whether the matcher matched.
-  // Returns before executing callback
+  // Returns an instance of a Response.
   async call (message, middleware, didMatchCallback) {
     // middleware argument is optional
     if (!didMatchCallback && typeof middleware === 'function') {
@@ -77,9 +78,9 @@ export class Listener {
     const response = new Response(this.robot, message, match)
     let shouldExecuteCallback = true
     try{
-      await middleware.execute({ listener: this, response })
+      await middleware.execute(response)
     }catch(err){
-      this.robot.emit('error', err, response)
+      this.robot.emit(Robot.EVENTS.ERROR, err, response)
       shouldExecuteCallback = false
     }
     shouldExecuteCallback = shouldExecuteCallback && !response.message.done

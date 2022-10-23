@@ -168,25 +168,25 @@ test('Robot', async (t) => {
 
   await t.test('#listen', async (t) => {
     await t.test('registers a new listener directly', async (t) => {
-      assert.deepEqual(robot.listeners.length, 0)
+      assert.deepEqual(robot.listeners.size, 0)
       robot.listen(() => {}, () => {})
-      assert.deepEqual(robot.listeners.length, 1)
+      assert.deepEqual(robot.listeners.size, 1)
     })
   })
 
   await t.test('#hear', async (t) => {
     await t.test('registers a new listener directly', async (t) =>  {
-      assert.deepEqual(robot.listeners.length, 0)
+      assert.deepEqual(robot.listeners.size, 0)
       robot.hear(/.*/, () => {})
-      assert.deepEqual(robot.listeners.length, 1)
+      assert.deepEqual(robot.listeners.size, 1)
     })
   })
 
   await t.test('#respond', async (t) => {
     await t.test('registers a new listener using hear', async (t) => {
       robot.respond(/.*/, ()=>{})
-      assert.deepEqual(robot.listeners.length, 1)
-      assert.ok(robot.listeners[0] instanceof TextListener)
+      assert.deepEqual(robot.listeners.size, 1)
+      assert.ok(Array.from(robot.listeners)[0] instanceof TextListener)
     })
   })
 
@@ -212,28 +212,28 @@ test('Robot', async (t) => {
     await t.test('matches EnterMessages', async (t) => {
       const testMessage = new EnterMessage(new User(1))
       robot.enter(()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.ok(result)
     })
 
     await t.test('does not match TextMessages', async (t) => {
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.enter(()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.deepEqual(result, false)
     })
 
     await t.test('does not match TextMessages', async (t) => {
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.leave(()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.deepEqual(result, false)
     })
 
     await t.test('does not match TextMessages', async (t) => {
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.topic(()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.deepEqual(result, false)
     })
   })
@@ -349,14 +349,14 @@ test('Robot', async (t) => {
     await t.test('matches TextMessages', async (t) => {
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.hear(/^message123$/, ()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.ok(result)
     })
 
     await t.test('does not match EnterMessages', async (t) =>  {
       const testMessage = new EnterMessage(new User(1))
       robot.hear(/.*/, ()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.deepEqual(result, undefined)
     })
   })
@@ -365,14 +365,14 @@ test('Robot', async (t) => {
     await t.test('matches TextMessages addressed to the robot', (t) => {
       const testMessage = new TextMessage(new User(1), 'TestHubot message123')
       robot.respond(/message123$/, ()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.ok(result)
     })
 
     await t.test('does not match EnterMessages', (t) => {
       const testMessage = new EnterMessage(new User(1))
       robot.respond(/.*/, ()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.deepEqual(result, undefined)
     })
   })
@@ -381,14 +381,14 @@ test('Robot', async (t) => {
     await t.test('matches CatchAllMessages', async (t) => {
       const testMessage = new CatchAllMessage(new TextMessage(new User(1), 'message123'))
       robot.catchAll(()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.ok(result)
     })
 
     await t.test('does not match TextMessages', async (t) => {
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.catchAll(()=>{})
-      const result = robot.listeners[0].matcher(testMessage)
+      const result = Array.from(robot.listeners)[0].matcher(testMessage)
       assert.deepEqual(result, false)
     })
   })
@@ -503,7 +503,7 @@ test('Robot', async (t) => {
 
     await t.test('receives the correct arguments', async (t) => {
       robot.hear(/^message123$/, () => {})
-      const testListener = robot.listeners[0]
+      const testListener = Array.from(robot.listeners)[0]
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.listenerMiddleware(context => {
         assert.deepEqual(context.listener, testListener)
@@ -517,7 +517,7 @@ test('Robot', async (t) => {
     await t.test('fires for all messages, including non-matching ones', async (t) => {
       const listenerCallback = ()=>assert.fail('Should not be called')
       robot.hear(/^message123$/, listenerCallback)
-      robot.receiveMiddleware(context => {
+      robot.receiveMiddleware(async (robot, context) => {
         assert.ok(context)
       })
       const testMessage = new TextMessage(new User(1), 'not message 123')
@@ -527,7 +527,7 @@ test('Robot', async (t) => {
     await t.test('can block listener execution', async (t) => {
       const listenerCallback = ()=>assert.fail('Should not be called')
       robot.hear(/^message123$/, listenerCallback)
-      robot.receiveMiddleware((r, context) => {
+      robot.receiveMiddleware(async (robot, context) => {
         assert.ok(context)
         // Block Listener callback execution
         context.response.message.done = true
@@ -539,17 +539,17 @@ test('Robot', async (t) => {
     await t.test('receives the correct arguments', async (t) => {
       robot.hear(/^message123$/, () => {})
       const testMessage = new TextMessage(new User(1), 'message123')
-      robot.receiveMiddleware((_, context) => {
+      robot.receiveMiddleware(async (robot, context) => {
         assert.deepEqual(context.response.message, testMessage)
       })
       await robot.receive(testMessage)
     })
 
     await t.test('allows editing the message portion of the given response', async (t) => {
-      const testMiddlewareA = (_, context) => {
+      const testMiddlewareA = async (robot, context) => {
         context.response.message.text = 'foobar'
       }
-      const testMiddlewareB = (_, context) => {
+      const testMiddlewareB = async (robot, context) => {
         // Subsequent middleware should see the modified message
         assert.deepEqual(context.response.message.text, 'foobar')
       }

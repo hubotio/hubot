@@ -1,24 +1,27 @@
 'use strict'
-
+import Robot from './robot.mjs'
 class Middleware {
   constructor (robot) {
     this.robot = robot
-    this.stack = []
+    this.stack = new Set()
   }
 
   // Public: Execute all middleware with await/async
-  //
-  // context - context object that is passed through the middleware stack.
-  //     When handling errors, this is assumed to have a `response` property.
-  //
-  // Returns nothing
-  // Returns before executing any middleware
-  async execute (context) {
+  // response - Response object that is passed through the middleware stack.
+  // Returns response
+  async execute (response) {
     for await (let middleware of this.stack) {
-      const shouldContinue = await middleware(this.robot, context)
-      if(!shouldContinue) break
+      let shouldContinue = true
+      try{
+        shouldContinue = await middleware(this.robot, response)
+      }catch(e){
+        shouldContinue = false
+        this.robot.emit(Robot.EVENTS.ERROR, e, response)
+      }finally{
+        if(!shouldContinue) break
+      }
     }
-    return context
+    return response
   }
 
   // Public: Registers new middleware
@@ -27,7 +30,7 @@ class Middleware {
   //
   // Returns nothing.
   register (middleware) {
-    this.stack.push(middleware)
+    this.stack.add(middleware)
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "4.0.3",
+  "version": "5.0.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -25,8 +25,8 @@
     "nodemon": "github:joeyguerra/nodemon"
   },
   "engines": {
-    "node": "> 18.0.0",
-    "npm": "> 8.0.0"
+    "node": "> 19.0.0",
+    "npm": "> 8.19.0"
   },
   "main": "./index.mjs",
   "bin": {
@@ -36,6 +36,6 @@
     "start": "node bin/hubot.mjs",
     "start:local": "node bin/hubot.mjs",
     "test": "node --test",
-    "test:local": "nodemon --test"
+    "test:local": "nodemon"
   }
 }

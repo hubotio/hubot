@@ -47,7 +47,7 @@ class Robot extends EventEmitter {
     this.datastore = null
     this.Response = Response
     this.commands = []
-    this.listeners = []
+    this.listeners = new Set()
     this.middleware = {
       listener: new Middleware(this),
       response: new Middleware(this),
@@ -78,7 +78,7 @@ class Robot extends EventEmitter {
   //
   // Returns nothing.
   listen (matcher, options, callback) {
-    this.listeners.push(new Listener(this, matcher, options, callback))
+    this.listeners.add(new Listener(this, matcher, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages based on
@@ -91,7 +91,7 @@ class Robot extends EventEmitter {
   //
   // Returns nothing.
   hear (regex, options, callback) {
-    this.listeners.push(new TextListener(this, regex, options, callback))
+    this.listeners.add(new TextListener(this, regex, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages directed
@@ -283,7 +283,7 @@ class Robot extends EventEmitter {
   async receive (message) {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
-    await this.middleware.receive.execute({ response: new Response(this, message) })
+    await this.middleware.receive.execute(new Response(this, message))
     if(message.done) return
     
     let anyListenersExecuted = false

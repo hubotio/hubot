@@ -16,7 +16,7 @@ class Adapter extends EventEmitter {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns responses from the chat source.
   async send (envelope, ...strings) {}
 
   // Public: Raw method for sending emote data back to the chat source.
@@ -25,7 +25,7 @@ class Adapter extends EventEmitter {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns responses from the chat source.
   async emote (envelope, ...strings) {
     return await this.send(envelope, ...strings)
   }
@@ -36,7 +36,7 @@ class Adapter extends EventEmitter {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each reply to send.
   //
-  // Returns nothing.
+  // Returns responses from the chat source.
   async reply (envelope, ...strings) {}
 
   // Public: Raw method for setting a topic on the chat source. Extend this.
@@ -44,7 +44,7 @@ class Adapter extends EventEmitter {
   // envelope - A Object with message, room and user details.
   // strings  - One more more Strings to set as the topic.
   //
-  // Returns nothing.
+  // Returns responses from the chat source.
   async topic (envelope, ...strings) {}
 
   // Public: Raw method for playing a sound in the chat source. Extend this.
@@ -52,7 +52,7 @@ class Adapter extends EventEmitter {
   // envelope - A Object with message, room and user details.
   // strings  - One or more strings for each play message to send.
   //
-  // Returns nothing
+  // Returns responses from the chat source.
   async play (envelope, ...strings) {}
 
   // Public: Raw method for invoking the bot to run. Extend this.

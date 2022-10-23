@@ -24,7 +24,7 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing.
+  // Returns the chat sources response if has one.
   async send (...strings) {
     let options = {
       plaintext: strings.some(s => !(typeof s != 'string'))
@@ -37,7 +37,7 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing.
+  // Returns the chat sources response if has one.
   async emote (...strings) {
     let options = {
       plaintext: strings.some(s => !(typeof s != 'string'))
@@ -50,7 +50,7 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing.
+  // Returns the chat sources response if has one.
   async reply (...strings) {
     let options = {
       plaintext: strings.some(s => !(typeof s != 'string'))
@@ -63,7 +63,7 @@ class Response {
   // strings - One or more strings to set as the topic of the
   //           room the bot is in.
   //
-  // Returns nothing.
+  // Returns the chat sources response if has one.
   async topic (...strings) {
     let options = {
       plaintext: strings.some(s => !(typeof s != 'string'))
@@ -76,7 +76,7 @@ class Response {
   // strings - One or more strings to be posted as sounds to play. The order of
   //           these strings should be kept intact.
   //
-  // Returns nothing
+  // Returns the chat sources response if has one.
   async play (...strings) {
     return await this.runWithMiddleware('play', {}, ...strings)
   }
@@ -86,7 +86,7 @@ class Response {
   // strings - One or more strings to be posted. The order of these strings
   //           should be kept intact.
   //
-  // Returns nothing
+  // Returns the chat sources response if has one.
   async locked (...strings) {
     let options = {
       plaintext: strings.some(s => !(typeof s != 'string'))
