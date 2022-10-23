@@ -22,11 +22,7 @@
     "optparse": "1.0.4"
   },
   "devDependencies": {
-    "chai": "~2.1.0",
-    "mocha": "^9.2.2",
-    "nodemon": "github:joeyguerra/nodemon",
-    "sinon": "~1.17.0",
-    "sinon-chai": "^2.8.0"
+    "nodemon": "github:joeyguerra/nodemon"
   },
   "engines": {
     "node": "> 18.0.0",
