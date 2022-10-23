@@ -4,7 +4,6 @@ import test from 'node:test'
 import { Robot, TextListener, CatchAllMessage, User, EnterMessage, LeaveMessage, TextMessage, TopicMessage } from '../index.mjs'
 import {URL, fileURLToPath} from 'node:url'
 import path from 'node:path'
-import { AssertionError } from 'chai'
 
 const __dirname = new URL('.', import.meta.url).pathname
 const domain = '127.0.0.1'
