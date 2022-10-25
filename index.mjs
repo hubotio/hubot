@@ -9,10 +9,10 @@ import { Message, TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAl
 import { DataStore, DataStoreUnavailable } from './src/datastore.mjs'
 import Middleware from './src/middleware.mjs'
 
-const loadBot = async (adapterPath, adapterName, botName, botAlias, port, options) => {
-  const bot = new Robot(adapterPath, adapterName, botName, botAlias, port, options)
+const loadBot = async (adapter, botName, botAlias, options) => {
+  const bot = new Robot(adapter, botName, botAlias, options)
   try {
-    await bot.loadAdapter(`${adapterName}.mjs`)
+    await bot.loadAdapter(adapter)
     bot.errorHandlers = []
     bot.on('error', (err, res) => {
       return bot.invokeErrorHandlers(err, res)
@@ -22,7 +22,7 @@ const loadBot = async (adapterPath, adapterName, botName, botAlias, port, option
     }
     process.on('uncaughtException', bot.onUncaughtException)
   } catch (err) {
-    bot.logger.error(`Cannot load adapter ${adapterPath}/${adapterName} - ${err}`)
+    bot.logger.error(`Cannot load adapter ${adapter} - ${err}`)
     process.exit(1)
   }
   return bot

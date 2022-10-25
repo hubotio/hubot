@@ -1,4 +1,4 @@
-import test from 'node:test'
+import {describe, it} from 'node:test'
 import assert from 'node:assert/strict'
 import EventEmitter from 'node:events'
 
@@ -12,16 +12,21 @@ class InMemoryCommandQueue {
         yield this.#queue.shift()
     }
 }
+class ShellAdapter {
+    constructor(){
 
+    }
+}
 class Hubot extends EventEmitter {
     #queue
     #timer
-    constructor(state = {}){
+    constructor(state = {}, options){
         super()
         this.#queue = new InMemoryCommandQueue()
         this.events = []
         this.decisionState = state
         this.listeners = new Set()
+        this.adapter = options?.adapter ?? new ShellAdapter()
     }
     iterateOverQueue(){
         for(let request of this.#queue.dequeue()){
@@ -54,6 +59,15 @@ class Hubot extends EventEmitter {
     addIncomingRequest(request){
         this.#queue.enqueue(request)
     }
+    async loadAdapter(adapter) {
+        try {
+            const module = await import(adapter)
+            this.adapter = await module.default(this)
+        } catch (err) {
+            this.emit('error', err, adapter)
+        }
+
+    }    
 }
 
 class Chat extends EventEmitter{
@@ -89,8 +103,8 @@ class IncomingRequest {
         this.message = message
     }
 }
-await test('Explore simplifying the software design of Hubot', async (t)=>{
-    await t.test('Decouple receiving a message from responding to a message', async ()=> {
+describe('Explore simplifying the software design of Hubot', async ()=>{
+    it('Decouple receiving a message from responding to a message', async ()=> {
         const hubot = new Hubot()
         hubot.listeners.add({
             receive(request){
@@ -115,5 +129,16 @@ await test('Explore simplifying the software design of Hubot', async (t)=>{
                 resolve()
             }, 100)
         })
+    })
+    it('Emits an error when trying to load an adapter module is not installed', async ()=>{
+        const hubot = new Hubot()
+        hubot.on('error', (err, adapter)=>{
+            assert.match(err.code, /ERR_MODULE_NOT_FOUND/)
+        })
+        await hubot.loadAdapter('test-adapter')
+    })
+    it('Loads an adapter module from the file system if it is not installed', async ()=>{
+        const hubot = new Hubot()
+        await hubot.loadAdapter('./adapters/DummyAdapter.mjs')
     })
 })

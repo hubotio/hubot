@@ -1,12 +1,12 @@
 'use strict'
 
-import {EventEmitter} from 'events'
-import File from 'fs/promises'
-import path from 'path'
+import {EventEmitter} from 'node:events'
+import File from 'node:fs/promises'
+import path from 'node:path'
 import {Log} from './log.mjs'
 import HttpClient from './http-client.mjs'
-import Http from 'http'
-import Https from 'https'
+import Http from 'node:http'
+import Https from 'node:https'
 import Brain from './brain.mjs'
 import Response from './response.mjs'
 import { Listener, TextListener } from './listener.mjs'
@@ -15,27 +15,22 @@ import Middleware from './middleware.mjs'
 import express from 'express'
 import multipart from 'connect-multiparty'
 import pkg from '../package.json' assert {type: 'json'}
-import {URL} from 'url'
-const __dirname = new URL('.', import.meta.url).pathname
-const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell', 'slack-adapter']
+
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
 class Robot extends EventEmitter {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
   // dispatch them to matching listeners.
   //
-  // adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
-  // adapter     - A String of the adapter name.
+  // adapter     - An object that implements the Adapter interface or a path to a file of a class that implements the adapter interface.
   // name        - A String of the robot name, defaults to Hubot.
   // alias       - A String of the alias of the robot name
-  // port       - Port to listen on. Can also be set by environment variables.
-  constructor (adapterPath, adapter, name, alias, port, options) {
+  constructor (adapter, name, alias, options) {
     super()
     if (name == null) {
       name = 'Hubot'
     }
-    this.adapterPath = adapterPath
-    this.port = port
+    this.port = 0
     this.options = options
     this.cert = options?.cert
     this.key = options?.key
@@ -316,7 +311,7 @@ class Robot extends EventEmitter {
     const ext = path.extname(filename)
     const full = path.join(filepath, filename)
     // see https://github.com/hubotio/hubot/issues/1355
-    if (!(['.mjs'].includes(ext))) { // eslint-disable-line
+    if (!['.mjs'].includes(ext)) {
       return
     }
     try {
@@ -395,12 +390,12 @@ class Robot extends EventEmitter {
   // Setup the Express server's defaults.
   //
   // Returns nothing.
-  async setupExpress () {
+  async setupExpress (port) {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
     const stat = process.env.EXPRESS_STATIC
-    this.port = this.port ?? process.env.EXPRESS_PORT ?? process.env.PORT ?? 8080
-    const address = process.env.EXPRESS_BIND_ADDRESS || process.env.BIND_ADDRESS || '0.0.0.0'
+    this.port = port ?? process.env.EXPRESS_PORT ?? process.env.PORT ?? 8080
+    // const address = process.env.EXPRESS_BIND_ADDRESS || process.env.BIND_ADDRESS || '0.0.0.0'
     const limit = process.env.EXPRESS_LIMIT || '100kb'
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
     const app = express()
@@ -436,7 +431,7 @@ class Robot extends EventEmitter {
 
     try {
       this.server = h.createServer(httpOptions, app).listen(this.port, ()=>{
-        this.port = this.server.address().port ?? this.port
+        this.port = this.server.address().port ?? port
         console.log(`${this.name} listening on http://localhost:${this.port}`)
       })
       this.router = app
@@ -450,30 +445,17 @@ class Robot extends EventEmitter {
 
   // Load the adapter Hubot is going to use.
   //
-  // path    - A String of the path to adapter if local.
-  // adapter - A String of the adapter name to use.
+  // adapter - A String of the adapter name to use or the path relative to the running process to the adapter file.
   //
   // Returns nothing.
-  async loadAdapter (adapter) {
-    let fileName = `${this.adapterPath}/${adapter}`
-    const localAdapterPath = `${this.adapterPath}/${adapter}`
-    let stats = null
-    try{
-      stats = await File.stat(localAdapterPath)
-      fileName = localAdapterPath
-    }catch(e){
-      this.logger.debug(`${localAdapterPath} not found, trying installed modules`)
-      fileName = `hubot-${adapter}`
-    }
+  async loadAdapter(adapter) {
     try {
-      this.logger.debug(`Loading adapter from ${fileName}`)
-      const module = await import(fileName)
-      this.adapter = await module.default(this)
+        const module = await import(adapter)
+        this.adapter = await module.default(this)
     } catch (err) {
-      this.logger.error(err)
-      process.exit(1)
+        this.emit('error', err, adapter)
     }
-  }
+  }    
 
   // Public: Help Commands for Running Scripts.
   //

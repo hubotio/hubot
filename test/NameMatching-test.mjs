@@ -7,9 +7,7 @@ import path from 'node:path'
 
 describe('Name Matching', () => {
   it('matches messages starting with robot\'s name but wrapped in html', async () => {
-    let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/test/NameMatching-test.mjs', '')
-    pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'test/fixtures')
-    const robot = new Robot(pathToLookForAdapters, 'shell')
+    const robot = new Robot('../test/fixtures/shell.mjs')
     try{
       await robot.loadAdapter('shell.mjs')
       robot.run()

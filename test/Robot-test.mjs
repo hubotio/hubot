@@ -2,8 +2,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { Robot, TextListener, CatchAllMessage, User, EnterMessage, LeaveMessage, TextMessage, TopicMessage } from '../index.mjs'
-import {URL, fileURLToPath} from 'node:url'
-import path from 'node:path'
+import {URL} from 'node:url'
 
 const __dirname = new URL('.', import.meta.url).pathname
 const domain = '127.0.0.1'
@@ -18,13 +17,11 @@ test('Robot', async (t) => {
   let robot = null
   let user = null
   t.beforeEach(async (t) => {
-    let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/test/Robot-test.mjs', '')
-    pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'test/fixtures')
     console.log('***** creating a Robot')
-    robot = new Robot(pathToLookForAdapters, 'shell', 'TestHubot', 'Hubot', 0)
-    await robot.setupExpress()
+    robot = new Robot('../test/fixtures/shell.mjs', 'TestHubot', 'Hubot')
+    await robot.setupExpress(0)
     try{
-      await robot.loadAdapter('shell.mjs')
+      await robot.loadAdapter('../test/fixtures/shell.mjs')
       robot.run()
       // Re-throw AssertionErrors for clearer test failures
       robot.on('error', function (name, err, response) {

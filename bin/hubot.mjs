@@ -4,13 +4,10 @@ import File from 'fs/promises'
 import path from 'path'
 import OptParse from 'optparse'
 import Hubot from '../index.mjs'
-import { fileURLToPath } from 'url'
-import fs from 'fs'
 
 const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use'],
   ['-c', '--create PATH', 'Create a deployable hubot'],
-  ['-p', '--port PORT', 'HTTP server port (0 for random)'],
   ['-h', '--help', 'Display the help information'],
   ['-l', '--alias ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name NAME', 'The name of the robot in chat'],
@@ -29,7 +26,6 @@ const options = {
   name: process.env.HUBOT_NAME || 'Hubot',
   path: process.env.HUBOT_PATH || '.',
   configCheck: false,
-  port: process.env.HUBOT_PORT,
   cert: process.env.HUBOT_CERT,
   key: process.env.HUBOT_KEY
 
@@ -44,10 +40,6 @@ Parser.on('adapter', (opt, value) => {
 Parser.on('create', function (opt, value) {
   options.path = value
   options.create = true
-})
-
-Parser.on('port', function (opt, value) {
-  options.port = value
 })
 
 Parser.on('cert', function (opt, value) {
@@ -104,16 +96,9 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
   process.exit(1)
 }
-let pathToLookForAdapters = fileURLToPath(import.meta.url).replace('/bin/hubot.mjs', '').replace('/node_modules/hubot', '')
-try{
-  fs.statSync(path.resolve(pathToLookForAdapters, 'src/adapters', `${options.adapter}.mjs`))
-  pathToLookForAdapters = path.resolve(pathToLookForAdapters, 'src/adapters')
-}catch(err){
-  console.log(err)
-  pathToLookForAdapters += '/node_modules/hubot/src/adapters'
-}
+
 let robot = null
-Hubot.loadBot(pathToLookForAdapters, options.adapter, options.name, options.alias, options.port, options).then(bot => {
+Hubot.loadBot(options.adapter, options.name, options.alias, options).then(bot => {
   robot = bot
   if (options.version) {
     console.log(robot.version)

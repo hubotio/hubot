@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -34,8 +34,8 @@
   },
   "scripts": {
     "start": "node bin/hubot.mjs",
-    "start:local": "node bin/hubot.mjs",
+    "start:local": "node bin/hubot.mjs --adapter ../src/adapters/shell.mjs",
     "test": "node --test",
-    "test:local": "nodemon"
+    "test:local": "node --watch"
   }
 }
