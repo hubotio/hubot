@@ -40,5 +40,4 @@ git fetch -t origin
 
 # Tag it and bag it.
 
-npm publish && git tag "$tag" &&
-  git push origin master --tags
+git tag "$tag" && git push origin main --tags

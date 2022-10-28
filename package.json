@@ -36,6 +36,7 @@
     "start": "node bin/hubot.mjs",
     "start:local": "node bin/hubot.mjs --adapter ../src/adapters/shell.mjs",
     "test": "node --test",
-    "test:local": "node --watch"
+    "test:local": "node --watch",
+    "test:smoke": "node src/**/*.mjs"
   }
 }
