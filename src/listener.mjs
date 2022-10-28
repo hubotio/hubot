@@ -1,7 +1,7 @@
 'use strict'
 
 import crypto from 'node:crypto'
-import {inspect} from 'util'
+import {inspect} from 'node:util'
 import Robot from './robot.mjs'
 import {TextMessage} from './message.mjs'
 import Middleware from './middleware.mjs'

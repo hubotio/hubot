@@ -8,11 +8,11 @@
  * Module dependencies.
  */
 
-import {format as fmt} from 'util'
-import {EventEmitter} from 'events'
+import {format as fmt} from 'node:util'
+import {EventEmitter} from 'node:events'
 
 /**
-* Initialize a `Loggeer` with the given log `level` defaulting
+* Initialize a `Logger` with the given log `level` defaulting
 * to __DEBUG__ and `stream` defaulting to _stdout_.
 *
 * @param {Number} level
