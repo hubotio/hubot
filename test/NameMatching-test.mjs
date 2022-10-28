@@ -2,8 +2,6 @@
 import {Robot} from '../index.mjs'
 import assert from 'node:assert/strict'
 import {describe, it} from 'node:test'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
 
 describe('Name Matching', () => {
   it('matches messages starting with robot\'s name but wrapped in html', async () => {
