@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 'use strict'
-import File from 'node:fs/promises'
 import OptParse from 'optparse'
 import Hubot from '../index.mjs'
 import { fileURLToPath } from 'node:url'
