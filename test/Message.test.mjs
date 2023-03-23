@@ -1,7 +1,7 @@
 'use strict'
 import { Message, TextMessage, User } from '../index.mjs'
 import assert from 'node:assert/strict'
-import {describe, it} from 'node:test'
+import {describe, it, expect} from 'bun:test'
 
 describe('Message', () => {
   describe('Unit Tests', () => {

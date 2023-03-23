@@ -1,7 +1,6 @@
 'use strict'
 import {Robot} from '../index.mjs'
-import assert from 'node:assert/strict'
-import {describe, it} from 'node:test'
+import {describe, it, expect} from 'bun:test'
 
 describe('Name Matching', () => {
   it('matches messages starting with robot\'s name but wrapped in html', async () => {
@@ -21,9 +20,9 @@ describe('Name Matching', () => {
     const testMessage = `<at>${robot.name}</at> message123`
     const testRegex = /(.*)/
     const pattern = robot.respondPattern(testRegex)
-    assert.ok(pattern.test(testMessage))
+    expect(pattern.test(testMessage)).to.be.true
     const match = testMessage.match(pattern)[1]
     robot.shutdown()
-    assert.deepEqual(match, 'message123')
+    expect(match).to.equal('message123')
   })
 })

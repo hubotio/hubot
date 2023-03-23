@@ -1,7 +1,7 @@
 'use strict'
 import {Adapter, Robot, TextMessage} from '../index.mjs'
 import assert from 'node:assert/strict'
-import {describe, it} from 'node:test'
+import {describe, it, expect} from 'bun:test'
 
 describe('Adapter', ()=>{
   it('dispatches received messages to the robot', async () => {

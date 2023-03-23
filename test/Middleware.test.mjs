@@ -2,7 +2,7 @@
 
 import { TextMessage, Robot, Response, Middleware, User} from '../index.mjs'
 import assert from 'node:assert/strict'
-import {describe, it} from 'node:test'
+import {describe, it, expect} from 'bun:test'
 
 function makeDummyResponse(){
   return new Response(new Robot(), new TextMessage(new User(1), 'testing middleware', 0, null))

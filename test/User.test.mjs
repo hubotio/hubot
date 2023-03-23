@@ -1,7 +1,7 @@
 'use strict'
 import {User} from '../index.mjs'
 import assert from 'node:assert/strict'
-import test from 'node:test'
+import test from 'bun:test'
 await test('User', async (t) =>{
   await t.test('uses id as the default name', async () => {
     const user = new User('hubot')

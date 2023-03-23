@@ -4,7 +4,7 @@ import InMemoryDataStore from '../src/datastores/memory.mjs'
 
 import {Robot} from '../index.mjs'
 import assert from 'node:assert/strict'
-import {describe, it} from 'node:test'
+import {describe, it, expect} from 'bun:test'
 
 const makeRobot = ()=>{
   const robot = new Robot()
@@ -16,7 +16,7 @@ describe('Datastore', function () {
     it('returns undefined for values not in the datastore', async () => {
       const robot = makeRobot()
       const value = await robot.datastore.get('blah')
-      assert.deepEqual(value, undefined)
+      expect(value).to.be.undefined
     })
 
     it('can store simple values', async ()=> {

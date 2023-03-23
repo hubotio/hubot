@@ -21,22 +21,18 @@
     "express": "^4.16.3",
     "optparse": "1.0.4"
   },
-  "devDependencies": {
-    "nodemon": "github:joeyguerra/nodemon"
-  },
   "engines": {
-    "node": ">=v19.0.0",
-    "npm": ">=v8.19.0"
+    "node": ">=v19.7.0",
+    "npm": ">=v9.5.0"
   },
   "main": "./index.mjs",
   "bin": {
     "hubot": "./bin/hubot.mjs"
   },
   "scripts": {
-    "start": "node bin/hubot.mjs",
-    "start:local": "node bin/hubot.mjs --adapter ../src/adapters/shell.mjs",
-    "test": "node --test",
-    "test:local": "node --watch",
-    "test:smoke": "node src/**/*.mjs"
+    "start": "bun bin/hubot.mjs",
+    "start:local": "bun bin/hubot.mjs --adapter ../src/adapters/shell.mjs",
+    "test:local": "bun --watch",
+    "test:smoke": "bun src/**/*.mjs"
   }
 }

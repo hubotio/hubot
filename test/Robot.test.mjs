@@ -1,6 +1,6 @@
 'use strict'
 import assert from 'node:assert/strict'
-import test from 'node:test'
+import test from 'bun:test'
 import { Robot, TextListener, CatchAllMessage, User, EnterMessage, LeaveMessage, TextMessage, TopicMessage } from '../index.mjs'
 import {URL} from 'node:url'
 
