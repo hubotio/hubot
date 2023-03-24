@@ -25,7 +25,7 @@ class Robot extends EventEmitter {
   // adapter     - An object that implements the Adapter interface or a path to a file of a class that implements the adapter interface.
   // name        - A String of the robot name, defaults to Hubot.
   // alias       - A String of the alias of the robot name
-  constructor (adapter, name, alias, options) {
+  constructor (adapterName, name, alias, options) {
     super()
     if (name == null) {
       name = 'Hubot'
@@ -53,7 +53,7 @@ class Robot extends EventEmitter {
     this.globalHttpOptions = {}
 
     this.parseVersion()
-    this.adapterName = adapter
+    this.adapterName = adapterName
   }
   static EVENTS = {
     RUNNING: 'running',
