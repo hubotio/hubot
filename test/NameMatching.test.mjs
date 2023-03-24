@@ -6,7 +6,7 @@ describe('Name Matching', () => {
   test('matches messages starting with robot\'s name but wrapped in html', async () => {
     const robot = new Robot('../test/fixtures/shell.mjs')
     try{
-      await robot.loadAdapter('shell.mjs')
+      await robot.loadAdapter('../test/fixtures/shell.mjs')
       robot.run()
       // Re-throw AssertionErrors for clearer test failures
       robot.on('error', function (name, err, response) {

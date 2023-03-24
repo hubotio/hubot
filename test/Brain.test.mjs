@@ -49,11 +49,10 @@ describe('Brain', function () {
     describe('#save', () => test('emits a save event', done => {
       const brain = new Brain(mockRobot)
       brain.on('save', data=>{
-        clearInterval(brain.saveInterval)
         expect(data).toEqual(brain.data)
         done()
       })
-      brain.save()
+      brain.close()
     }))
 
     describe('#resetSaveInterval', () => test('updates the auto-save interval', done=>{
@@ -137,7 +136,7 @@ describe('Brain', function () {
       })
     })
 
-    describe.skip('#set', () => {
+    describe('#set', () => {
       test('saves the value', async () => {
         const brain = new Brain(mockRobot)
         brain.set('test-key', 'value')
@@ -167,7 +166,7 @@ describe('Brain', function () {
       test('emits loaded', done => {
         const brain = new Brain(mockRobot)
         brain.on('loaded', data => {
-          expect(data.get('test-key')).toEqual('value')
+          expect(brain.get('test-key')).toEqual('value')
           done()
         })
         brain.set('test-key', 'value')
@@ -182,9 +181,9 @@ describe('Brain', function () {
 
     describe('#remove', () => test('removes the specified key', async ()=> {
       const brain = new Brain(mockRobot)
-      brain.data._private['test-key'] = 'value'
+      brain.set('test-key', 'value')
       brain.remove('test-key')
-      expect(Object.keys(brain.data._private).not.toContain('test-key'))
+      expect(brain.get('test-key')).toBeNull()
     }))
 
     describe('#userForId', () => {
@@ -202,10 +201,10 @@ describe('Brain', function () {
         expect(brain.userForId('four')).not.toEqual(user)
       })
 
-      describe.skip('when there is no matching user ID', ()=> {
+      describe('when there is no matching user ID', ()=> {
         test('creates a new User', async ()=> {
           const brain = new Brain(mockRobot)
-          assert.ok(!Object.keys(brain.data.users).some(key => key == 'all-new-user'))
+          expect(Object.keys(brain.data.users)).not.toContain('all-new-user')
           const newUser = brain.userForId('all-new-user')
           expect(newUser.id).toEqual('all-new-user')
           expect(Object.keys(brain.data.users)).toContain('all-new-user')

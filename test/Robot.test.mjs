@@ -258,7 +258,7 @@ describe('Robot', async () => {
         console.log('shouldnt be here')
         expect(message).toEqual(testMessage)
       })
-      robot.catchAll(expect.not.toHaveBeenCalled(response => {}))
+      robot.catchAll(response => expect(true).toEqual(false))
       await robot.receive(testMessage)
     })
 
@@ -268,7 +268,7 @@ describe('Robot', async () => {
         response.message.done = true
         expect(response.message.done).toEqual(true)
       })
-      robot.listen(message => true, expect(async response => {}).not.toHaveBeenCalled())
+      robot.listen(message => true, async response => expect(true).toEqual(false))
       await robot.receive(testMessage)
     })
   })
@@ -320,7 +320,7 @@ describe('Robot', async () => {
     })
 
     await test('passes an adapater context through so that custom adapaters have access to their stuff', async () => {
-      robot.on('error', expect((err)=>{}).not.toHaveBeenCalled())
+      robot.on('error', ()=>expect(true).toEqual(false))
       const testMessage = new TextMessage(new User(1, {
         room: '#adaptertest'
       }), 'TestHubot test adapater context', 1, {
@@ -337,7 +337,7 @@ describe('Robot', async () => {
 
   await describe('#messageRoom', async () => {
     await test('delegates to adapter "send" with proper context', async () => {
-      robot.adapter.on('send', expect(()=>{}).toHaveBeenCalled())
+      robot.adapter.on('send', (envelope, ...strings)=> expect(strings[0]).toEqual('messageRoom test'))
       robot.messageRoom('testRoom', 'messageRoom test')
     })
   })
@@ -594,7 +594,7 @@ describe('Robot', async () => {
 
     await test('marks plaintext as plaintext', async () => {
       robot.adapter.on('send', (envelope, ...strings) => {
-        assert.ok(strings[0])
+        expect(strings[0]).toBeTruthy()
       })
       robot.hear(/^message465$/, response => response.send('foobar, sir, foobar.'))
       robot.hear(/^message578$/, response => response.play('good luck with that'))

@@ -450,10 +450,10 @@ class Robot extends EventEmitter {
   // Returns nothing.
   async loadAdapter(adapter) {
     try {
-        const module = await import(adapter)
-        this.adapter = await module.default(this)
+      const module = await import(adapter)
+      this.adapter = await module.default(this)
     } catch (err) {
-        this.emit('error', err, adapter)
+      this.emit('error', err, adapter)
     }
   }    
 

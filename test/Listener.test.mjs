@@ -2,64 +2,64 @@
 
 import { EnterMessage, TextMessage, Listener, TextListener, Response, User, Robot } from '../index.mjs'
 import assert from 'node:assert/strict'
-import test from 'bun:test'
+import {test, describe, expect} from 'bun:test'
 
 const makeRobot = ()=>{
   const robot = new Robot()
   return robot
 }
 
-await test('Listener', async (t)=> {
-  await t.test('Unit Tests', async (t)=>{
-    await t.test('#call', async (t)=> {
-      await t.test('calls the matcher', async () => {
+await describe('Listener', async ()=> {
+  await describe('Unit Tests', async ()=>{
+    await describe('#call', async ()=> {
+      await test('calls the matcher', async () => {
         const robot = makeRobot()
         const testMessage = {}
         const testMatcher = message=>{
-          assert.deepEqual(message, testMessage)
+          expect(message).toEqual(testMessage)
           return false
         }
 
         const testListener = new Listener(robot, testMatcher, async response=>{})
         const response = await testListener.call(testMessage, didMatch => {
-          assert.deepEqual(didMatch, false)
+          expect(didMatch).toEqual(false)
         })
       })
 
-      await t.test('passes the matcher result on to the listener callback', async () => {
+      await test('passes the matcher result on to the listener callback', async () => {
         const robot = makeRobot()
         const testMessage = {
           text: 'testing matcher result'
         }
         const matcherResult = /testing (?<result>.*)/.exec(testMessage.text)
         const testMatcher = message=>{
-          assert.ok(true)
+          expect(true).toEqual(true)
           return /testing (?<result>.*)/.exec(message.text)
         }
-        const listenerCallback = async response => assert.deepEqual(response.match, matcherResult)
+        const listenerCallback = async response => expect(response.match).toEqual(matcherResult)
         const testListener = new Listener(robot, testMatcher, listenerCallback)
         const response = await testListener.call(testMessage)
-        assert.ok(response)
+        expect(response).toBeTruthy()
       })
 
-      await t.test('if the matcher returns true', async (t) => {
-        await t.test('executes the listener callback', async (t) => {
+      await describe('if the matcher returns true', async () => {
+        await test('executes the listener callback', async () => {
           const robot = makeRobot()
           const listenerCallback = async response => {
-            assert.deepEqual(response.match.groups.result, 'something')
+            expect(response.match.groups.result).toEqual('something')
           }
           const testMessage = {
             text: 'testing something'
           }
           const testMatcher = message=>{
-            assert.ok(true)
+            expect(true).toEqual(true)
             return /testing (?<result>.*)/.exec(message.text)
           }  
           const testListener = new Listener(robot, testMatcher, listenerCallback)
           await testListener.call(testMessage)
         })
 
-        await t.test('calls the provided callback after the function returns', async (t) => {
+        await test('calls the provided callback after the function returns', async () => {
           const robot = makeRobot()
           let finished = false
           const listenerCallback = async response => {
@@ -73,10 +73,10 @@ await test('Listener', async (t)=> {
           }
           const testListener = new Listener(robot, testMatcher, listenerCallback)
           const response = await testListener.call(testMessage)
-          assert.deepEqual(finished, true)
+          expect(finished).toEqual(true)
         })
 
-        await t.test('handles uncaught errors from the listener callback', async (t) => {
+        await test('handles uncaught errors from the listener callback', async () => {
           const robot = makeRobot()
           const theError = new Error()
           const listenerCallback = response => {
@@ -89,19 +89,19 @@ await test('Listener', async (t)=> {
             return /testing (?<result>.*)/.exec(message.text)
           }
           robot.on(Robot.EVENTS.ERROR, (err, message) => {
-            assert.deepEqual(message, testMessage)
-            assert.deepEqual(err, theError)
+            expect(message).toEqual(testMessage)
+            expect(err).toBe(theError)
           })
           robot.listen(testMatcher, listenerCallback)
           await robot.receive(testMessage)
         })
-        await t.test('calls the listener callback with a Response that wraps the Message', async (t) => {
+        await test('calls the listener callback with a Response that wraps the Message', async () => {
           const robot = makeRobot()
           const testMessage = {
             text: 'testing something'
           }
           const listenerCallback = response => {
-            assert.deepEqual(response.message, testMessage)
+            expect(response.message).toBe(testMessage)
           }
           const testMatcher = message=>{
             return /testing (?<result>.*)/.exec(message.text)
@@ -110,7 +110,7 @@ await test('Listener', async (t)=> {
           await testListener.call(testMessage, ()=>{})
         })
 
-        await t.test('passes through the provided middleware stack', async (t) => {
+        await test('passes through the provided middleware stack', async () => {
           const robot = makeRobot()
           const testMessage = {
             text: 'testing something'
@@ -123,21 +123,21 @@ await test('Listener', async (t)=> {
           
           const testMiddleware = {
             async execute(response) {
-              assert.ok(response instanceof Response)
-              assert.deepEqual(response.message, testMessage)
+              expect(response instanceof Response).toEqual(true)
+              expect(response.message).toBe(testMessage)
             }
           }
           await testListener.call(testMessage, testMiddleware, ()=>{})
         })
 
-        await t.test('does not execute the listener callback if middleware fails', async (t) => {
+        await test('does not execute the listener callback if middleware fails', async () => {
           const robot = makeRobot()
           robot.on('error', (err, response)=>{})
           const testMessage = {
             text: 'testing something'
           }
           const listenerCallback = response => {
-            assert.fail('Should not have been called')
+            expect(true).toEqual(false)
           }
           const testMatcher = message=>{
             return /testing (?<result>.*)/.exec(message.text)
@@ -149,43 +149,44 @@ await test('Listener', async (t)=> {
             }
           }
           const response = await testListener.call(testMessage, testMiddleware)
-          assert.ok(response)
+          expect(response).toBeTruthy()
         })      
       })
 
-      await t.test('if the matcher returns false', async (t) => {
-        await t.test('does not execute the listener callback', async (t) => {
+      await describe('if the matcher returns false', async () => {
+        await test('does not execute the listener callback', async () => {
           const robot = makeRobot()
           const testMessage = {
             text: 'testing something'
           }
           const listenerCallback = response => {
-            assert.fail('Should not have been called')
+            expect(true).toEqual(false)
           }
           const testMatcher = message=>{
             return false
           }
           const testListener = new Listener(robot, testMatcher, listenerCallback)
           const result = await testListener.call(testMessage)
+          expect(result).toBeNull()
         })
 
-        await t.test('returns false', async (t) => {
+        await test('returns false', async () => {
           const robot = makeRobot()
           const testMessage = {
             text: 'testing something'
           }
           const listenerCallback = response => {
-            assert.fail('Should not have been called')
+            expect(true).toEqual(false)
           }
           const testMatcher = message=>{
             return false
           }
           const testListener = new Listener(robot, testMatcher, listenerCallback)
           const result = await testListener.call(testMessage)
-          assert.ok(!result)
+          expect(result).toBeFalsy()
         })
 
-        await t.test('does not call the provided callback after the function returns', async (t) => {
+        await test('does not call the provided callback after the function returns', async () => {
           const robot = makeRobot()
           let finished = false
           const testMessage = {
@@ -199,41 +200,42 @@ await test('Listener', async (t)=> {
           }
           const testListener = new Listener(robot, testMatcher, listenerCallback)
           const result = await testListener.call(testMessage)
-          assert.deepEqual(finished, false)
+          expect(finished).toEqual(false)
         })
       })
     })
 
-    await t.test('TextListener', async (t) =>
-      await t.test('#matcher', async (t) => {
-        await t.test('matches TextMessages', async (t) => {
+    await describe('TextListener', async () =>
+      await describe('#matcher', async () => {
+        await test('matches TextMessages', async () => {
           const robot = makeRobot()
           const user = new User(1)
           const callback = ()=>{}
           const testMessage = new TextMessage(user, 'test')
           testMessage.match = regex=>{
-            assert.deepEqual(regex, testRegex)
+            expect(regex).toBe(testRegex)
             return regex.exec(testMessage.text)
           }
           const testRegex = /test/
           const testListener = new TextListener(robot, testRegex, callback)
           const result = testListener.matcher(testMessage)
-          assert.ok(result)
+          expect(result).toBeTruthy()
         })
 
-        await t.test('does not match EnterMessages', async (t) => {
+        await test('does not match EnterMessages', async () => {
           const callback = ()=>{}
           const robot = makeRobot()
           const user = new User(1)
 
           const testMessage = new EnterMessage(user)
           testMessage.match = regex => {
+            expect(true).toEqual(false)
             assert.fail('Should not be called')
           }
           const testRegex = /test/
           const testListener = new TextListener(robot, testRegex, callback)
           const result = testListener.matcher(testMessage)
-          assert.ok(!result)
+          expect(result).toBeFalsy()
         })
       })
     )
