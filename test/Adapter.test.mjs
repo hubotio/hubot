@@ -1,14 +1,13 @@
 'use strict'
 import {Adapter, Robot, TextMessage} from '../index.mjs'
-import assert from 'node:assert/strict'
-import {describe, it, expect} from 'bun:test'
+import {describe, test, expect} from 'bun:test'
 
 describe('Adapter', ()=>{
-  it('dispatches received messages to the robot', async () => {
+  test('dispatches received messages to the robot', async () => {
     const robot = new Robot()
     robot.listen(()=>true, {id: 1}, res=>{
-      assert.deepEqual('testing', res.message.text)
-      assert.deepEqual('testing', res.message.room)
+      expect(res.message.text).toEqual('testing')
+      expect(res.message.room).toEqual('testing')
       robot.shutdown()
     })
     const adapter = new Adapter(robot)

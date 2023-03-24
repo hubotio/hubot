@@ -1,10 +1,8 @@
 'use strict'
 
 import InMemoryDataStore from '../src/datastores/memory.mjs'
-
 import {Robot} from '../index.mjs'
-import assert from 'node:assert/strict'
-import {describe, it, expect} from 'bun:test'
+import {describe, test, expect} from 'bun:test'
 
 const makeRobot = ()=>{
   const robot = new Robot()
@@ -13,20 +11,20 @@ const makeRobot = ()=>{
 }
 describe('Datastore', function () {
   describe('global scope', ()=> {
-    it('returns undefined for values not in the datastore', async () => {
+    test('returns undefined for values not in the datastore', async () => {
       const robot = makeRobot()
       const value = await robot.datastore.get('blah')
-      expect(value).to.be.undefined
+      expect(value).toBeUndefined()
     })
 
-    it('can store simple values', async ()=> {
+    test('can store simple values', async ()=> {
       const robot = makeRobot()
       await robot.datastore.set('key', 'value')
       const actual = await robot.datastore.get('key')
-      assert.deepEqual(actual, 'value')
+      expect(actual).toEqual('value')
     })
 
-    it('can store arbitrary JavaScript values', async ()=>{
+    test('can store arbitrary JavaScript values', async ()=>{
       const object = {
         name: 'test',
         data: [1, 2, 3]
@@ -34,10 +32,10 @@ describe('Datastore', function () {
       const robot = makeRobot()
       await robot.datastore.set('key', object)
       const actual = await robot.datastore.get('key')
-      assert.deepEqual(actual, {name: 'test', data: [1,2,3]})
+      expect(actual).toEqual({name: 'test', data: [1,2,3]})
     })
 
-    it('can dig inside objects for values', async ()=> {
+    test('can dig inside objects for values', async ()=> {
       const object = {
         a: 'one',
         b: 'two'
@@ -45,10 +43,10 @@ describe('Datastore', function () {
       const robot = makeRobot()
       await robot.datastore.set('key', object)
       const actual = await robot.datastore.getObject('key', 'a')
-      assert.deepEqual(actual, 'one')
+      expect(actual).toEqual('one')
     })
 
-    it('can set individual keys inside objects', async ()=> {
+    test('can set individual keys inside objects', async ()=> {
       const object = {
         a: 'one',
         b: 'two'
@@ -57,61 +55,61 @@ describe('Datastore', function () {
       await robot.datastore.set('object', object)
       await robot.datastore.setObject('object', 'c', 'three')
       const actual = await robot.datastore.get('object')
-      assert.deepEqual(actual, {a: 'one', b: 'two', c: 'three'})
+      expect(actual).toEqual({a: 'one', b: 'two', c: 'three'})
     })
 
-    it('creates an object from scratch when none exists', async ()=> {
+    test('creates an object from scratch when none exists', async ()=> {
       const robot = makeRobot()
       await robot.datastore.setObject('object', 'key', 'value')
       const actual = await robot.datastore.get('object')
       const expected = { key: 'value' }
-      assert.deepEqual(actual, expected)
+      expect(actual).toEqual(expected)
     })
 
-    it('can append to an existing array', async ()=>{
+    test('can append to an existing array', async ()=>{
       const robot = makeRobot()
       await robot.datastore.set('array', [1, 2, 3])
       await robot.datastore.setArray('array', 4)
       const actual = await robot.datastore.get('array')
-      assert.deepEqual(actual, [1,2,3,4])
+      expect(actual).toEqual([1,2,3,4])
     })
 
-    it('creates an array from scratch when none exists', async ()=> {
+    test('creates an array from scratch when none exists', async ()=> {
       const robot = makeRobot()
       await robot.datastore.setArray('array', 4)
       const actual = await robot.datastore.get('array')
-      assert.deepEqual(actual, [4])
+      expect(actual).toEqual([4])
     })
   })
 
   describe('User scope', ()=> {
-    it('has access to the robot object', async ()=> {
+    test('has access to the robot object', async ()=> {
       const robot = makeRobot()
       const user = robot.brain.userForId('1')
-      assert.deepEqual(user.robot, robot)
+      expect(user.robot).toEqual(robot)
     })
 
-    it('can store user data which is separate from global data', async ()=> {
+    test('can store user data which is separate from global data', async ()=> {
       const robot = makeRobot()
       const user = robot.brain.userForId('1')
       await user.set('blah', 'blah')
       const actual = await user.get('blah')
       const actual2 = await robot.datastore.get('blah')
-      assert.notDeepEqual(actual, actual2)
-      assert.deepEqual(actual, 'blah')
-      assert.deepEqual(actual2, undefined)
+      expect(actual).not.toEqual(actual2)
+      expect(actual).toEqual('blah')
+      expect(actual2).toEqual(undefined)
     })
 
-    it('stores user data separate per-user', async ()=> {
+    test('stores user data separate per-user', async ()=> {
       const robot = makeRobot()
       const userOne = robot.brain.userForId('1')
       const userTwo = robot.brain.userForId('2')
       await userOne.set('blah', 'blah')
       const valueOne = await userOne.get('blah')
       const valueTwo = await userTwo.get('blah')
-      assert.notDeepEqual(valueOne, valueTwo)
-      assert.deepEqual(valueOne, 'blah')
-      assert.deepEqual(valueTwo, undefined)
+      expect(valueOne).not.toEqual(valueTwo)
+      expect(valueOne).toEqual('blah')
+      expect(valueTwo).toEqual(undefined)
     })
   })
 })

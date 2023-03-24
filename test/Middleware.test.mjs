@@ -2,7 +2,7 @@
 
 import { TextMessage, Robot, Response, Middleware, User} from '../index.mjs'
 import assert from 'node:assert/strict'
-import {describe, it, expect} from 'bun:test'
+import {describe, test, expect} from 'bun:test'
 
 function makeDummyResponse(){
   return new Response(new Robot(), new TextMessage(new User(1), 'testing middleware', 0, null))
@@ -11,7 +11,7 @@ function makeDummyResponse(){
 describe('Middleware', () => {
   describe('Unit Tests', () => {
     describe('#execute', () => {
-      it('executes synchronous middleware', async ()=>{
+      test('executes synchronous middleware', async ()=>{
         const testMiddleware = (robot, response) => {
           assert.ok(response)
           return true
@@ -26,7 +26,7 @@ describe('Middleware', () => {
         await middleware.execute({})
       })
 
-      it('executes asynchronous middleware', async ()=> {
+      test('executes asynchronous middleware', async ()=> {
         const testMiddleware = async (robot, response) => {
           assert.ok(response)
           return true
@@ -40,7 +40,7 @@ describe('Middleware', () => {
         middleware.register(middlewareFinished)
         await middleware.execute(makeDummyResponse())
       })
-      it('executes all registered middleware in definition order', async () => {
+      test('executes all registered middleware in definition order', async () => {
         const middleware = new Middleware(new Robot())
         const middlewareExecution = new Set()
         const testMiddlewareA = async (robot, response) => {
@@ -58,11 +58,11 @@ describe('Middleware', () => {
         middleware.register(testMiddlewareB)
         middleware.register(testMiddlewareC)
         await middleware.execute(makeDummyResponse())
-        assert.deepEqual(middlewareExecution, new Set(['A', 'B']))
+        expect(middlewareExecution).toEqual(new Set(['A', 'B']))
       })
 
       describe('error handling', () => {
-        it('does not execute subsequent middleware after the error is thrown', async () => {
+        test('does not execute subsequent middleware after the error is thrown', async () => {
           const middlewareExecution = new Set()
           const testMiddlewareA = async (robot, response) => {
             middlewareExecution.add('A')
@@ -88,10 +88,10 @@ describe('Middleware', () => {
           middleware.register(testMiddlewareC)
           middleware.register(middlewareFinished)
           await middleware.execute(makeDummyResponse())
-          assert.deepEqual(middlewareExecution, new Set(['A', 'B']))
+          expect(middlewareExecution).toEqual(new Set(['A', 'B']))
         })
 
-        it('emits an error event', async () => {
+        test('emits an error event', async () => {
           const theError = new Error()
           const testMiddleware = async (robot, response) => {
             throw theError
@@ -101,12 +101,12 @@ describe('Middleware', () => {
           middleware.register(testMiddleware)
           let wasCalled = false
           robot.on(Robot.EVENTS.ERROR, (err, response) => {
-            assert.deepEqual(err, theError)
-            assert.ok(response instanceof Response)
+            expect(err).toBe(theError)
+            expect(response instanceof Response).toEqual(true)
             wasCalled = true
           })
           await middleware.execute(makeDummyResponse())
-          assert.ok(wasCalled)
+          expect(wasCalled).toBeTruthy()
         })
       })
     })

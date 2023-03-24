@@ -1,9 +1,9 @@
 'use strict'
 import {Robot} from '../index.mjs'
-import {describe, it, expect} from 'bun:test'
+import {describe, test, expect} from 'bun:test'
 
 describe('Name Matching', () => {
-  it('matches messages starting with robot\'s name but wrapped in html', async () => {
+  test('matches messages starting with robot\'s name but wrapped in html', async () => {
     const robot = new Robot('../test/fixtures/shell.mjs')
     try{
       await robot.loadAdapter('shell.mjs')
@@ -20,9 +20,9 @@ describe('Name Matching', () => {
     const testMessage = `<at>${robot.name}</at> message123`
     const testRegex = /(.*)/
     const pattern = robot.respondPattern(testRegex)
-    expect(pattern.test(testMessage)).to.be.true
+    expect(pattern.test(testMessage)).toEqual(true)
     const match = testMessage.match(pattern)[1]
     robot.shutdown()
-    expect(match).to.equal('message123')
+    expect(match).toEqual('message123')
   })
 })

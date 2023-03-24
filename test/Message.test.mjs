@@ -1,27 +1,26 @@
 'use strict'
 import { Message, TextMessage, User } from '../index.mjs'
-import assert from 'node:assert/strict'
-import {describe, it, expect} from 'bun:test'
+import {describe, test, expect} from 'bun:test'
 
 describe('Message', () => {
   describe('Unit Tests', () => {
     describe('#finish', () =>
-      it('marks the message as done', async () => {
+    test('marks the message as done', async () => {
         const user = new User(1)
         const testMessage = new Message(user)
-        assert.ok(!testMessage.done)
+        expect(testMessage.done).toBe(false)
         testMessage.finish()
-        assert.ok(testMessage.done)
+        expect(testMessage.done).toBe(true)
       })
     )
 
     describe('TextMessage', () =>
       describe('#match', () =>
-        it('should perform standard regex matching', async () => {
+      test('should perform standard regex matching', async () => {
           const user = new User(1)
           const testMessage = new TextMessage(user, 'message123')
-          assert.ok(testMessage.match(/^message123$/))
-          assert.ok(!testMessage.match(/^does-not-match$/))
+          expect(testMessage.match(/^message123$/)).toEqual(['message123'])
+          expect(testMessage.match(/^does-not-match$/)).toEqual(null)
         })
       )
     )
