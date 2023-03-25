@@ -13,6 +13,7 @@ const loadBot = async (adapter, botName, botAlias, options) => {
   const bot = new Robot(adapter, botName, botAlias, options)
   try {
     await bot.loadAdapter(adapter)
+    console.log('adapter', adapter)
     bot.errorHandlers = []
     bot.on('error', (err, res) => {
       return bot.invokeErrorHandlers(err, res)

@@ -138,3 +138,4 @@ class Response {
 }
 
 export default Response
+export { Response }

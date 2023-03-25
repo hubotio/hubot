@@ -5,16 +5,15 @@ import File from 'node:fs/promises'
 import path from 'node:path'
 import {Log} from './log.mjs'
 import HttpClient from './http-client.mjs'
-import Http from 'node:http'
-import Https from 'node:https'
 import Brain from './brain.mjs'
-import Response from './response.mjs'
 import { Listener, TextListener } from './listener.mjs'
 import { EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage } from './message.mjs'
 import Middleware from './middleware.mjs'
-import express from 'express'
-import multipart from 'connect-multiparty'
+import { Response as HubotResponse } from './response.mjs'
 import pkg from '../package.json' assert {type: 'json'}
+import webServer from './webServer/WebServer.mjs'
+import {parse} from './webServer/BodyParser.mjs'
+import {fileServer} from './webServer/StaticFileServer.mjs'
 
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
@@ -40,7 +39,6 @@ class Robot extends EventEmitter {
     this.alias = alias
     this.adapter = null
     this.datastore = null
-    this.Response = Response
     this.commands = []
     this.listeners = new Set()
     this.middleware = {
@@ -51,6 +49,7 @@ class Robot extends EventEmitter {
     this.logger = new Log(process.env.HUBOT_LOG_LEVEL || 'info')
     this.pingIntervalId = null
     this.globalHttpOptions = {}
+    this.server = {stop(){}}
 
     this.parseVersion()
     this.adapterName = adapterName
@@ -278,7 +277,7 @@ class Robot extends EventEmitter {
   async receive (message) {
     // When everything is finished (down the middleware stack and back up),
     // pass control back to the robot
-    await this.middleware.receive.execute(new Response(this, message))
+    await this.middleware.receive.execute(new HubotResponse(this, message))
     if(message.done) return
     
     let anyListenersExecuted = false
@@ -393,54 +392,55 @@ class Robot extends EventEmitter {
   async setupExpress (port) {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
-    const stat = process.env.EXPRESS_STATIC
-    this.port = port ?? process.env.EXPRESS_PORT ?? process.env.PORT ?? 8080
-    // const address = process.env.EXPRESS_BIND_ADDRESS || process.env.BIND_ADDRESS || '0.0.0.0'
+    this.port = port ?? process.env.PORT ?? 8080
     const limit = process.env.EXPRESS_LIMIT || '100kb'
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
-    const app = express()
+    this.server = webServer
 
-    app.use((req, res, next) => {
-      res.setHeader('X-Powered-By', `hubot/${this.name}`)
-      return next()
+    this.server.port = this.port
+    if(this.cert && this.key ) {
+      this.server.keyFile = this.key
+      this.server.certFile = this.cert
+    }
+
+    this.server.use(null, async (req, server) => {
+      req.urlParsed = new URL(req.url)
+    })
+  
+    this.server.use(null, (req, response, server) => {
+      response.headers.set('X-Powered-By', `hubot/${this.name}`)
+      return response
     })
 
+    /// Todo: add support for basic auth
     if (user && pass) {
-      app.use(express.basicAuth(user, pass))
+      // app.use(express.basicAuth(user, pass))
     }
-    app.use(express.query())
+    this.server.use(null, parse)
+    this.server.use(null, fileServer('./public'))
 
-    app.use(express.json())
-    app.use(express.urlencoded({ limit, parameterLimit: paramLimit, extended: true }))
+    /// Todo: parse json and urlencoded parms
+    // app.use(express.json())
+    // app.use(express.urlencoded({ limit, parameterLimit: paramLimit, extended: true }))
     // replacement for deprecated express.multipart/connect.multipart
     // limit to 100mb, as per the old behavior
-    app.use(multipart({ maxFilesSize: 100 * 1024 * 1024 }))
-    if (stat) {
-      app.use(express.static(stat))
-    }
-    let h = Http
-    let httpOptions = {}
-    if(this.cert && this.key ) {
-      h = Https
-      this.port = 443
-      httpOptions = {
-        key: await File.readFile(this.key),
-        cert: await File.readFile(this.cert)
-      }
-    }
+
+    /// Todo: add support for multipart
+    // app.use(multipart({ maxFilesSize: 100 * 1024 * 1024 }))
 
     try {
-      this.server = h.createServer(httpOptions, app).listen(this.port, ()=>{
-        this.port = this.server.address().port ?? port
-        console.log(`${this.name} listening on http://localhost:${this.port}`)
-      })
-      this.router = app
+      if(!globalThis.server) {
+        globalThis.server = Bun.serve(this.server)
+      } else {
+        globalThis.server.reload(this.server)
+      }
+      this.router = this.server
     } catch (error) {
       const err = error
       this.logger.error(`Error trying to start HTTP server: ${err}\n${err.stack}`)
       process.exit(1)
     }
-    return app
+    return this.server
   }
 
   // Load the adapter Hubot is going to use.
@@ -453,6 +453,7 @@ class Robot extends EventEmitter {
       const module = await import(adapter)
       this.adapter = await module.default(this)
     } catch (err) {
+      console.error('error occurred while loading adapter', err)
       this.emit('error', err, adapter)
     }
   }    

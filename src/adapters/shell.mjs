@@ -103,11 +103,9 @@ class Shell extends Adapter {
 
 export default async (robot)=>{
   const shell = new Shell(robot)
-  await robot.setupExpress(0)
+  await robot.setupExpress(process.env.PORT)
   return shell
 }
-
-process.stdout._handle.setBlocking(false)
 
 // load history from .hubot_history.
 //

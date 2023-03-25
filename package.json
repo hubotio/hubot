@@ -30,7 +30,7 @@
     "hubot": "./bin/hubot.mjs"
   },
   "scripts": {
-    "start": "bun bin/hubot.mjs",
+    "start": "PORT=3000 bun --hot bin/hubot.mjs",
     "start:local": "bun bin/hubot.mjs --adapter ../src/adapters/shell.mjs",
     "test:local": "bun --watch",
     "test:smoke": "bun src/**/*.mjs"
