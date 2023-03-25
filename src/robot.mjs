@@ -386,13 +386,12 @@ class Robot extends EventEmitter {
     }
   }
 
-  // [deprecated] Setup the Express server's defaults.
+  // Setup the Express server's defaults.
   //
   // Returns nothing.
-  async setupExpress(port) {
-    return setupWebServer(port)
+  async setupExpress(port){
+    await this.setupWebServer(port)
   }
-
   async setupWebServer (port) {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
