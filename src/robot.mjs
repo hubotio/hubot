@@ -386,7 +386,7 @@ class Robot extends EventEmitter {
     }
   }
 
-  // Setup the Express server's defaults.
+  // [@deprecated] Setup the Express server's defaults.
   //
   // Returns nothing.
   async setupExpress(port){
@@ -419,8 +419,9 @@ class Robot extends EventEmitter {
     if (user && pass) {
       // app.use(express.basicAuth(user, pass))
     }
+
     this.server.use(null, parse)
-    this.server.use(null, fileServer('./public'))
+    this.server.use(null, fileServer(this.options?.public ?? './public'))
 
     /// Todo: parse json and urlencoded parms
     // app.use(express.json())

@@ -11,10 +11,11 @@ const switches = [
   ['-l', '--alias ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name NAME', 'The name of the robot in chat'],
   ['-r', '--require PATH', 'Alternative scripts path'],
+  ['-p', '--public PUBLIC', 'The path to the public directory'],
   ['-t', '--config-check', "Test hubot's config to make sure it won't fail at startup"],
   ['-v', '--version', 'Displays the version of hubot installed'],
   ['-c', '--cert CERT', 'Path to SSL certificate'],
-  ['-k', '--key KEY', 'Path to SSL key']
+  ['-k', '--key KEY', 'Path to SSL key'],
 ]
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const options = {
@@ -60,6 +61,9 @@ Parser.on('name', (opt, value) => {
 
 Parser.on('require', (opt, value) => {
   options.scripts.push(value)
+})
+Parser.on('public', (opt, value) => {
+  options.public = value
 })
 
 Parser.on('config-check', opt => {
