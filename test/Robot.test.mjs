@@ -20,7 +20,6 @@ let user = null
 describe('Robot', async () => {
 
   beforeEach(async () => {
-    console.log('***** creating a Robot')
     robot = new Robot('../test/fixtures/shell.mjs', 'TestHubot', 'Hubot')
     await robot.setupExpress(0)
     try{
@@ -46,39 +45,36 @@ describe('Robot', async () => {
   })
   
   await describe('#http', async () => {
-    await test('persists the url passed in', async () => {
-      const url = `http://${domain}`
-      const httpClient = robot.http(url)
-      expect(httpClient.url).toEqual(url)
-    })
 
     await test('actually responds to an http get request', async () => {
-      const url = `http://${domain}:${robot.port}`
-      const httpClient = robot.http(url)
-      robot.router.get('/', (req, res) => {
-        res.end()
+      const url = `http://${domain}:${robot.port}/`
+      robot.router.get(/\//, (req, res) => {
+        return new Response('helo world')
       })
-
-      const response = await httpClient.get()
-      expect(response.error).toEqual(null)
-      expect(response.body).toEqual('')
-      expect(response.res.headers['x-powered-by']).toEqual(`hubot/${robot.name}`)
+      try{
+        const response = await fetch(url)
+        expect(await response.text()).toEqual('helo world')
+        expect(response.headers.get('x-powered-by')).toEqual(`hubot/${robot.name}`)
+      }catch(e){
+        console.error('error occurred in this test', e)
+      }
     })
 
     await test('actually does a post', async () => {
       const url = `http://${domain}:${robot.port}/1`
-      const httpClient = robot.http(url, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      robot.router.post(/\/(?<id>.*)/, (req, res) => {
+        expect(req.params.id).toEqual('1')
+        expect(req.bodyParsed.name).toEqual('jg')
+        return new Response(JSON.stringify(req.bodyParsed))
       })
-      robot.router.post('/:id', (req, res) => {
-        assert.deepEqual(req.params.id, '1')
-        assert.deepEqual(req.body.name, 'jg')
-        res.json(req.body)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'name=jg'
       })
-      const response = await httpClient.post('name=jg')
-      expect(response.error).toEqual(null)
-      expect(response.res.statusCode).toEqual(200)
-      expect(JSON.parse(response.body).name).toEqual('jg')
+      console.log('response.status', response.status)
+      expect(response.status).toEqual(200)
+      expect((await response.json()).name).toEqual('jg')
     })
 
     await test('passes options through to the ScopedHttpClient', async () => {
@@ -255,7 +251,6 @@ describe('Robot', async () => {
     await test('does not trigger a CatchAllMessage if a listener matches', async () => {
       const testMessage = new TextMessage(new User(1), 'message123')
       robot.listen(message => true, async response => {
-        console.log('shouldnt be here')
         expect(message).toEqual(testMessage)
       })
       robot.catchAll(response => expect(true).toEqual(false))

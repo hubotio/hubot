@@ -49,7 +49,7 @@ class Robot extends EventEmitter {
     this.logger = new Log(process.env.HUBOT_LOG_LEVEL || 'info')
     this.pingIntervalId = null
     this.globalHttpOptions = {}
-    this.server = {stop(){}}
+    this.server = {stop(){}, close(){}}
 
     this.parseVersion()
     this.adapterName = adapterName
@@ -395,11 +395,10 @@ class Robot extends EventEmitter {
   async setupWebServer (port) {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
-    this.port = port ?? process.env.PORT ?? 8080
+    this.port = port ?? 8080
     const limit = process.env.EXPRESS_LIMIT || '100kb'
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
     this.server = webServer
-
     this.server.port = this.port
     if(this.cert && this.key ) {
       this.server.keyFile = this.key
@@ -439,6 +438,7 @@ class Robot extends EventEmitter {
         globalThis.server.reload(this.server)
       }
       this.router = this.server
+      this.port = globalThis.server.port
     } catch (error) {
       const err = error
       this.logger.error(`Error trying to start HTTP server: ${err}\n${err.stack}`)
@@ -574,8 +574,8 @@ class Robot extends EventEmitter {
     }
     if(this.onUncaughtException) process.removeListener('uncaughtException', this.onUncaughtException)
     if(this.adapter) this.adapter.close()
-    if(this.server) this.server.close()
     if(this.brain) this.brain.close()
+    if(globalThis.server) globalThis.server.stop()
     this.emit(Robot.EVENTS.SHUTDOWN)
   }
 

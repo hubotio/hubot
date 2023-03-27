@@ -39,7 +39,7 @@ class Client {
         })
       })
       req.on('error', err => {
-        console.error(err)
+        console.error('error in http client get request', err)
         reject({error: err, res: {}, body})
       })
     })

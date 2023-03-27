@@ -1,22 +1,25 @@
 const parse = async (req, response, server) => {
-    const {done, value} = await req.body.getReader().read()
     req.methodExtended = req.method
-    if(value){
-        const decoded = new TextDecoder().decode(value)
-        let previousKey = null
-        const obj = decoded.split('&').reduce((acc, current)=> {
-            let [key, value] = current.split('=')
-            value = decodeURIComponent(value)
-            if(key == previousKey){
-                acc[key] = [...acc[key], value]
-            }else{
-                acc[key] = value
+    console.log('content type', req.methodExtended, req.headers.get('content-type'))
+    if(req.bodyUsed) return null
+
+    if(req.methodExtended.toLowerCase() == 'post'){
+        const contentType = req.headers.get('content-type')?.toLowerCase()
+        if(contentType == 'application/x-www-form-urlencoded'){
+            const data = await req.formData()
+            req.bodyParsed = {}
+            for(const [key, value] of data){
+                req.bodyParsed[key] = value
+                console.log(`key: ${key}, value: ${value}`)
             }
-            previousKey = key
-            return acc
-        }, {})
-        req.bodyParsed = obj
-        req.methodExtended = req.bodyParsed?._method ?? req.method
+
+            req.methodExtended = req.bodyParsed?._method ?? req.method
+        }
+
+        if(contentType == 'application/json'){
+            req.bodyParsed = await req.json()
+            req.methodExtended = req.bodyParsed?._method ?? req.method
+        }
     }
     return null
 }

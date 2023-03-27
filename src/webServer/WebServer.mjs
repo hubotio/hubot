@@ -130,16 +130,22 @@ export default {
          }})
       }
       let response =  new Response()
-
       for await (const [key, filter] of filters.entries()){
          if(!filter.methods.includes(req.methodExtended?.toLowerCase() ?? req.method.toLowerCase())) continue
          if(filter.regex){
             const match = url.pathname.match(filter.regex)
             if(!match) continue
-            req.match = match
+            req.params = match.groups
          }
          const handledResponse = await filter.execute(req, response, server)
-         if(handledResponse) response = handledResponse
+         if(handledResponse) {
+            if(response) {
+               response.headers.forEach((value, key) => {
+                  handledResponse.headers.set(key, value)
+               })
+            }
+            response = handledResponse
+         }
       }
       return response
    },
