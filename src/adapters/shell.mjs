@@ -103,7 +103,7 @@ class Shell extends Adapter {
 
 export default async (robot)=>{
   const shell = new Shell(robot)
-  await robot.setupExpress(process.env.PORT)
+  await robot.setupWebServer(process.env.PORT)
   return shell
 }
 
