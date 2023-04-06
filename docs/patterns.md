@@ -218,3 +218,17 @@ Organizations that have a number of chat rooms that serve different purposes oft
 
 Work on generalized blacklist solution is [ongoing](https://github.com/kristenmills/hubot-command-blacklist). A whitelist soultion could take a similar approach.
 
+## Use scoped npm packages as adapter
+
+It is possible to [install](https://docs.npmjs.com/cli/v7/commands/npm-install) package under a custom alias:
+
+```bash
+npm install <alias>@npm:<name>
+```
+
+So for example to use `@foo/hubot-adapter` package as the adapter, you can:
+```bash
+npm install hubot-foo@npm:@foo/hubot-adapter
+
+bin/hubot --adapter foo
+```
