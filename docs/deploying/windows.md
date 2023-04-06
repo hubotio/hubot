@@ -8,16 +8,16 @@ Hasn't been fully tested - YMMV
 
 There are 4 primary steps to deploying and running hubot on a Windows machine:
 
-  * node and npm
-  * a way to get source code updated on the server
-  * setting up environment variables for hubot
-  * a way to start hubot, start it up if it crashes, and restart it when code updates
+* node and npm
+* a way to get source code updated on the server
+* setting up environment variables for hubot
+* a way to start hubot, start it up if it crashes, and restart it when code updates
 
 ## node and npm
 
 To start, your windows server will need node and npm.
 The best way to do this is with [chocolatey](http://chocolatey.org) using the [nodejs.install](http://chocolatey.org/packages/nodejs.install) package.
-I've found that sometimes the system path variable is not correctly set; ensure you can run node/npm from the command line. If needed set the PATH variable with "setx PATH \"%PATH%;C:\Program Files\nodejs\" "
+I've found that sometimes the system path variable is not correctly set; ensure you can run node/npm from the command line. If needed set the PATH variable with `set PATH=%PATH%;\"C:\Program Files\nodejs\"`
 
 Your other option is to install directly from [NodeJS](https://nodejs.org/) and run the current download (v0.12.4 as of this documentation). This should set your PATH variables for you.
 
