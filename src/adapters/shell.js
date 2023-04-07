@@ -109,6 +109,8 @@ class Shell extends Adapter {
   }
 }
 
+// Prevent output buffer "swallowing" every other character on OSX / Node version > 16.19.0.
+process.stdout._handle.setBlocking(false)
 exports.use = robot => new Shell(robot)
 
 // load history from .hubot_history.
