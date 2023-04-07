@@ -15,7 +15,7 @@ This roadmap represents some priorities for us over the next couple months. Issu
 ## 2. Modernize the community
 
 - [x] Create Hubot Evolution—inspired by [Swift Evolution](https://github.com/apple/swift-evolution)—for proposing user-visible enhancements. ([hubotio/evolution#1](https://github.com/hubotio/evolution/pull/1))
-- [ ] Review and update the [contributing guid](CONTRIBUTING.md)
+- [ ] Review and update the [contributing guide](CONTRIBUTING.md)
 - [ ] Review hubot scripts and discuss whether or not we should fork them into this org or not.
 - [ ] Do we want a chat community for Hubot?
 - [ ] Review the [code of conduct](CODE_OF_CONDUCT.md) based on http://contributor-covenant.org/
