@@ -20,6 +20,7 @@ const TopicMessage = require('../src/message').TopicMessage
 
 // mock `hubot-mock-adapter` module from fixture
 const mockery = require('mockery')
+const path = require('path')
 
 describe('Robot', function () {
   beforeEach(function () {
@@ -379,7 +380,7 @@ describe('Robot', function () {
         this.sandbox.stub(this.robot, 'parseHelp')
 
         this.robot.loadFile('./scripts', 'test-script.js')
-        expect(module._load).to.have.been.calledWith('scripts/test-script')
+        expect(module._load).to.have.been.calledWith(path.join('scripts', 'test-script'))
       })
 
       describe('proper script', function () {
@@ -398,7 +399,7 @@ describe('Robot', function () {
 
         it('should parse the script documentation', function () {
           this.robot.loadFile('./scripts', 'test-script.js')
-          expect(this.robot.parseHelp).to.have.been.calledWith('scripts/test-script.js')
+          expect(this.robot.parseHelp).to.have.been.calledWith(path.join('scripts', 'test-script.js'))
         })
       })
 
@@ -422,7 +423,6 @@ describe('Robot', function () {
           this.robot.loadFile('./scripts', 'test-script.mjs')
           expect(this.robot.logger.warning).to.have.been.called
         })
-
       })
 
       describe('unsupported file extension', function () {
