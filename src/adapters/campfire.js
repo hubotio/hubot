@@ -229,30 +229,30 @@ class CampfireStreaming extends EventEmitter {
       },
 
       speak (text, callback) {
-        const body = { message: { 'body': text } }
+        const body = { message: { body: text } }
         return self.post(`/room/${id}/speak`, body, callback)
       },
 
       message (text, type, callback) {
-        const body = { message: { 'body': text, 'type': type } }
+        const body = { message: { body: text, type } }
         return self.post(`/room/${id}/speak`, body, callback)
       },
 
       // listen for activity in channels
       listen () {
         const headers = {
-          'Host': 'streaming.campfirenow.com',
-          'Authorization': self.authorization,
+          Host: 'streaming.campfirenow.com',
+          Authorization: self.authorization,
           'User-Agent': `Hubot/${this.robot != null ? this.robot.version : undefined} (${this.robot != null ? this.robot.name : undefined})`
         }
 
         const options = {
-          'agent': false,
-          'host': 'streaming.campfirenow.com',
-          'port': 443,
-          'path': `/room/${id}/live.json`,
-          'method': 'GET',
-          'headers': headers
+          agent: false,
+          host: 'streaming.campfirenow.com',
+          port: 443,
+          path: `/room/${id}/live.json`,
+          method: 'GET',
+          headers
         }
 
         const request = HTTPS.request(options, function (response) {
@@ -326,19 +326,19 @@ class CampfireStreaming extends EventEmitter {
     const logger = this.robot.logger
 
     const headers = {
-      'Authorization': this.authorization,
-      'Host': this.host,
+      Authorization: this.authorization,
+      Host: this.host,
       'Content-Type': 'application/json',
       'User-Agent': `Hubot/${this.robot != null ? this.robot.version : undefined} (${this.robot != null ? this.robot.name : undefined})`
     }
 
     const options = {
-      'agent': false,
-      'host': this.host,
-      'port': 443,
-      'path': path,
-      'method': method,
-      'headers': headers
+      agent: false,
+      host: this.host,
+      port: 443,
+      path,
+      method,
+      headers
     }
 
     if (method === 'POST' || method === 'PUT') {

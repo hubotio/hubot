@@ -31,7 +31,7 @@ const loadBot = Hubot.loadBot
 describe('hubot/es2015', function () {
   it('exports User class', function () {
     class MyUser extends User {}
-    const user = new MyUser('id123', {foo: 'bar'})
+    const user = new MyUser('id123', { foo: 'bar' })
 
     expect(user).to.be.an.instanceof(User)
     expect(user.id).to.equal('id123')

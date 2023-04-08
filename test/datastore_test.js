@@ -26,8 +26,8 @@ describe('Datastore', function () {
 
     this.robot.brain = new Brain(this.robot)
     this.robot.datastore = new InMemoryDataStore(this.robot)
-    this.robot.brain.userForId('1', {name: 'User One'})
-    this.robot.brain.userForId('2', {name: 'User Two'})
+    this.robot.brain.userForId('1', { name: 'User One' })
+    this.robot.brain.userForId('2', { name: 'User Two' })
   })
 
   describe('global scope', function () {
@@ -46,9 +46,9 @@ describe('Datastore', function () {
     })
 
     it('can store arbitrary JavaScript values', function () {
-      let object = {
-        'name': 'test',
-        'data': [1, 2, 3]
+      const object = {
+        name: 'test',
+        data: [1, 2, 3]
       }
       return this.robot.datastore.set('key', object).then(() => {
         return this.robot.datastore.get('key').then((value) => {
@@ -59,9 +59,9 @@ describe('Datastore', function () {
     })
 
     it('can dig inside objects for values', function () {
-      let object = {
-        'a': 'one',
-        'b': 'two'
+      const object = {
+        a: 'one',
+        b: 'two'
       }
       return this.robot.datastore.set('key', object).then(() => {
         return this.robot.datastore.getObject('key', 'a').then((value) => {
@@ -71,9 +71,9 @@ describe('Datastore', function () {
     })
 
     it('can set individual keys inside objects', function () {
-      let object = {
-        'a': 'one',
-        'b': 'two'
+      const object = {
+        a: 'one',
+        b: 'two'
       }
       return this.robot.datastore.set('object', object).then(() => {
         return this.robot.datastore.setObject('object', 'c', 'three').then(() => {
@@ -89,7 +89,7 @@ describe('Datastore', function () {
     it('creates an object from scratch when none exists', function () {
       return this.robot.datastore.setObject('object', 'key', 'value').then(() => {
         return this.robot.datastore.get('object').then((value) => {
-          let expected = {'key': 'value'}
+          const expected = { key: 'value' }
           expect(value).to.deep.equal(expected)
         })
       })
@@ -116,12 +116,12 @@ describe('Datastore', function () {
 
   describe('User scope', function () {
     it('has access to the robot object', function () {
-      let user = this.robot.brain.userForId('1')
+      const user = this.robot.brain.userForId('1')
       expect(user._getRobot()).to.equal(this.robot)
     })
 
     it('can store user data which is separate from global data', function () {
-      let user = this.robot.brain.userForId('1')
+      const user = this.robot.brain.userForId('1')
       return user.set('blah', 'blah').then(() => {
         return user.get('blah').then((userBlah) => {
           return this.robot.datastore.get('blah').then((datastoreBlah) => {
@@ -134,8 +134,8 @@ describe('Datastore', function () {
     })
 
     it('stores user data separate per-user', function () {
-      let userOne = this.robot.brain.userForId('1')
-      let userTwo = this.robot.brain.userForId('2')
+      const userOne = this.robot.brain.userForId('1')
+      const userTwo = this.robot.brain.userForId('2')
       return userOne.set('blah', 'blah').then(() => {
         return userOne.get('blah').then((valueOne) => {
           return userTwo.get('blah').then((valueTwo) => {
