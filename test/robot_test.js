@@ -411,11 +411,18 @@ describe('Robot', function () {
           this.sandbox.stub(this.robot, 'parseHelp')
         })
 
-        it('logs a warning', function () {
+        it('logs a warning for a .js file', function () {
           sinon.stub(this.robot.logger, 'warning')
           this.robot.loadFile('./scripts', 'test-script.js')
           expect(this.robot.logger.warning).to.have.been.called
         })
+
+        it('logs a warning for a .mjs file', function () {
+          sinon.stub(this.robot.logger, 'warning')
+          this.robot.loadFile('./scripts', 'test-script.mjs')
+          expect(this.robot.logger.warning).to.have.been.called
+        })
+
       })
 
       describe('unsupported file extension', function () {
