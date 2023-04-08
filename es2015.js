@@ -13,7 +13,7 @@ module.exports = {
   User,
   Brain,
   Robot,
-  Adapter: Adapter,
+  Adapter,
   Response,
   Listener: Listener.Listener,
   TextListener: Listener.TextListener,

@@ -10,19 +10,19 @@ const User = require('./user')
 // 2. If the original object was a User object, the original object
 // 3. If the original object was a plain JavaScript object, return
 //    a User object with all of the original object's properties.
-let reconstructUserIfNecessary = function (user, robot) {
+const reconstructUserIfNecessary = function (user, robot) {
   if (!user) {
     return null
   }
 
   if (!user.constructor || (user.constructor && user.constructor.name !== 'User')) {
-    let id = user.id
+    const id = user.id
     delete user.id
     // Use the old user as the "options" object,
     // populating the new user with its values.
     // Also add the `robot` field so it gets a reference.
     user.robot = robot
-    let newUser = new User(id, user)
+    const newUser = new User(id, user)
     delete user.robot
 
     return newUser
@@ -142,14 +142,14 @@ class Brain extends EventEmitter {
   //
   // Caveats: Deeply nested structures don't merge well.
   mergeData (data) {
-    for (let k in data || {}) {
+    for (const k in data || {}) {
       this.data[k] = data[k]
     }
 
     // Ensure users in the brain are still User objects.
     if (data && data.users) {
-      for (let k in data.users) {
-        let user = this.data.users[k]
+      for (const k in data.users) {
+        const user = this.data.users[k]
         this.data.users[k] = reconstructUserIfNecessary(user, this.getRobot())
       }
     }
@@ -195,8 +195,8 @@ class Brain extends EventEmitter {
     let result = null
     const lowerName = name.toLowerCase()
 
-    for (let k in this.data.users || {}) {
-      const userName = this.data.users[k]['name']
+    for (const k in this.data.users || {}) {
+      const userName = this.data.users[k].name
       if (userName != null && userName.toString().toLowerCase() === lowerName) {
         result = this.data.users[k]
       }

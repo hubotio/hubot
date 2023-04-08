@@ -12,7 +12,7 @@ const Adapter = require('../src/adapter')
 
 describe('Adapter', function () {
   beforeEach(function () {
-    this.robot = {receive: sinon.spy()}
+    this.robot = { receive: sinon.spy() }
   })
 
   // this one is hard, as it requires files
