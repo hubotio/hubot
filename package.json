@@ -32,7 +32,7 @@
     "is-circular": "^1.0.2",
     "mocha": "^10.2.0",
     "mockery": "^1.4.0",
-    "nyc": "^13.0.0",
+    "nyc": "^15.1.0",
     "semantic-release": "^21.0.1",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0",
