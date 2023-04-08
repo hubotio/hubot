@@ -580,11 +580,11 @@ class Robot {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns whatever the extending adapter returns.
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    this.adapter.send.apply(this.adapter, [envelope].concat(strings))
+    return this.adapter.send.apply(this.adapter, [envelope].concat(strings))
   }
 
   // Public: A helper reply function which delegates to the adapter's reply
@@ -593,11 +593,11 @@ class Robot {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns whatever the extending adapter returns.
   reply (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    this.adapter.reply.apply(this.adapter, [envelope].concat(strings))
+    return this.adapter.reply.apply(this.adapter, [envelope].concat(strings))
   }
 
   // Public: A helper send function to message a room that the robot is in.
@@ -605,12 +605,12 @@ class Robot {
   // room    - String designating the room to message.
   // strings - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns whatever the extending adapter returns.
   messageRoom (room/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
     const envelope = { room }
 
-    this.adapter.send.apply(this.adapter, [envelope].concat(strings))
+    return this.adapter.send.apply(this.adapter, [envelope].concat(strings))
   }
 
   // Public: A wrapper around the EventEmitter API to make usage
