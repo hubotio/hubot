@@ -80,10 +80,6 @@ Parser.on((opt, value) => {
 
 Parser.parse(process.argv)
 
-if (process.platform !== 'win32') {
-  process.on('SIGTERM', () => process.exit(0))
-}
-
 if (options.create) {
   console.error("'hubot --create' is deprecated. Use the yeoman generator instead:")
   console.error('    npm install -g yo generator-hubot')
