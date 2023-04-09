@@ -6,7 +6,7 @@ const path = require('path')
 
 const async = require('async')
 const Log = require('log')
-const HttpClient = require('scoped-http-client')
+const HttpClient = require('./httpclient')
 
 const Brain = require('./brain')
 const Response = require('./response')
