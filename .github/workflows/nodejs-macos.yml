@@ -1,0 +1,26 @@
+name: Node.js (macOS) CI
+
+on:
+  push:
+    branches: [ "master" ]
+  schedule:
+    - cron:  '5 4 * * 0'
+
+jobs:
+  npm-test:
+
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm test
