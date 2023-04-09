@@ -24,26 +24,25 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 const path = require('path')
 const http = require('http')
 const https = require('https')
-const url = require('url')
 const qs = require('querystring')
 
 const nonPassThroughOptions = [
-    'headers', 'hostname', 'encoding', 'auth', 'port',
-    'protocol', 'agent', 'httpAgent', 'httpsAgent', 'query', 'host', 'path',
-    'pathname', 'slashes', 'hash'
+  'headers', 'hostname', 'encoding', 'auth', 'port',
+  'protocol', 'agent', 'httpAgent', 'httpsAgent', 'query', 'host', 'path',
+  'pathname', 'slashes', 'hash'
 ]
 
 class ScopedClient {
-  constructor(url, options) {
+  constructor (url, options) {
     this.options = this.buildOptions(url, options)
     this.passthroughOptions = reduce(extend({}, this.options), nonPassThroughOptions)
   }
 
-  request(method, reqBody, callback) {
+  request (method, reqBody, callback) {
     let req
-    if (typeof(reqBody) === 'function') {
+    if (typeof (reqBody) === 'function') {
       callback = reqBody
-      reqBody  = null
+      reqBody = null
     }
 
     try {
@@ -66,7 +65,7 @@ class ScopedClient {
       }
 
       if (this.options.auth) {
-        headers['Authorization'] = 'Basic ' + new Buffer(this.options.auth).toString('base64')
+        headers.Authorization = 'Basic ' + Buffer.from(this.options.auth, 'base64')
       }
 
       const port = this.options.port ||
@@ -85,9 +84,9 @@ class ScopedClient {
 
       const requestOptions = {
         port,
-        host:    this.options.hostname,
+        host: this.options.hostname,
         method,
-        path:    this.fullPath(),
+        path: this.fullPath(),
         headers,
         agent
       }
@@ -115,7 +114,9 @@ class ScopedClient {
         req.on('response', res => {
           res.setEncoding(this.options.encoding)
           let body = ''
-          res.on('data', chunk => body += chunk)
+          res.on('data', chunk => {
+            body += chunk
+          })
 
           return res.on('end', () => callback(null, res, body))
         })
@@ -128,30 +129,30 @@ class ScopedClient {
   }
 
   // Adds the query string to the path.
-  fullPath(p) {
+  fullPath (p) {
     const search = qs.stringify(this.options.query)
-    let full   = this.join(p)
-    if (search.length > 0) { full  += `?${search}` }
+    let full = this.join(p)
+    if (search.length > 0) { full += `?${search}` }
     return full
   }
 
-  scope(url, options, callback) {
+  scope (url, options, callback) {
     const override = this.buildOptions(url, options)
-    const scoped   = new ScopedClient(this.options)
+    const scoped = new ScopedClient(this.options)
       .protocol(override.protocol)
       .host(override.hostname)
       .path(override.pathname)
 
-    if (typeof(url) === 'function') {
+    if (typeof (url) === 'function') {
       callback = url
-    } else if (typeof(options) === 'function') {
+    } else if (typeof (options) === 'function') {
       callback = options
     }
     if (callback) { callback(scoped) }
     return scoped
   }
 
-  join(suffix) {
+  join (suffix) {
     const p = this.options.pathname || '/'
     if (suffix && (suffix.length > 0)) {
       if (suffix.match(/^\//)) {
@@ -164,14 +165,14 @@ class ScopedClient {
     }
   }
 
-  path(p) {
+  path (p) {
     this.options.pathname = this.join(p)
     return this
   }
 
-  query(key, value) {
+  query (key, value) {
     if (!this.options.query) { this.options.query = {} }
-    if (typeof(key) === 'string') {
+    if (typeof (key) === 'string') {
       if (value) {
         this.options.query[key] = value
       } else {
@@ -183,34 +184,35 @@ class ScopedClient {
     return this
   }
 
-  host(h) {
+  host (h) {
     if (h && (h.length > 0)) { this.options.hostname = h }
     return this
   }
 
-  port(p) {
-    if (p && ((typeof(p) === 'number') || (p.length > 0))) {
+  port (p) {
+    if (p && ((typeof (p) === 'number') || (p.length > 0))) {
       this.options.port = p
     }
     return this
   }
 
-  protocol(p) {
+  protocol (p) {
     if (p && (p.length > 0)) { this.options.protocol = p }
     return this
   }
-  encoding(e) {
+
+  encoding (e) {
     if (e == null) { e = 'utf-8' }
     this.options.encoding = e
     return this
   }
 
-  timeout(time) {
+  timeout (time) {
     this.options.timeout = time
     return this
   }
 
-  auth(user, pass) {
+  auth (user, pass) {
     if (!user) {
       this.options.auth = null
     } else if (!pass && user.match(/:/)) {
@@ -221,23 +223,24 @@ class ScopedClient {
     return this
   }
 
-  header(name, value) {
+  header (name, value) {
     this.options.headers[name] = value
     return this
   }
 
-  headers(h) {
+  headers (h) {
     extend(this.options.headers, h)
     return this
   }
 
-  buildOptions() {
+  buildOptions () {
     const options = {}
-    let i       = 0
+    let i = 0
     while (arguments[i]) {
       const ty = typeof arguments[i]
       if (ty === 'string') {
-        extend(options, url.parse(arguments[i], true))
+        const parsedUrl = new URL(arguments[i])
+        extend(options, parsedUrl)
         delete options.url
         delete options.href
         delete options.search
@@ -253,22 +256,24 @@ class ScopedClient {
   }
 }
 
-ScopedClient.methods = ["GET", "POST", "PATCH", "PUT", "DELETE", "HEAD"]
-ScopedClient.methods.forEach(method => ScopedClient.prototype[method.toLowerCase()] = function(body, callback) {
-  return this.request(method, body, callback)
+ScopedClient.methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD']
+ScopedClient.methods.forEach(method => {
+  ScopedClient.prototype[method.toLowerCase()] = function (body, callback) { return this.request(method, body, callback) }
 })
-ScopedClient.prototype.del = ScopedClient.prototype['delete']
+ScopedClient.prototype.del = ScopedClient.prototype.delete
 
-ScopedClient.defaultPort = {'http:':80, 'https:':443, http:80, https:443}
+ScopedClient.defaultPort = { 'http:': 80, 'https:': 443, http: 80, https: 443 }
 
-var extend = function(a, b) {
-  Object.keys(b).forEach(prop => a[prop] = b[prop])
+const extend = function (a, b) {
+  Object.keys(b).forEach(prop => {
+    a[prop] = b[prop]
+  })
   return a
 }
 
 // Removes keys specified in second parameter from first parameter
-var reduce = function(a, b) {
-  for (let propName of Array.from(b)) {
+const reduce = function (a, b) {
+  for (const propName of Array.from(b)) {
     delete a[propName]
   }
   return a
