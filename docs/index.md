@@ -44,15 +44,12 @@ You now have your own functional hubot! There's a `bin/hubot`
 command for convenience, to handle installing npm dependencies, loading scripts,
 and then launching your hubot.
 
-Hubot needs Redis to persist data, so before you can start hubot on your own computer, you should have Redis installed on your localhost. If just want to test Hubot without Redis, then you can remove `hubot-redis-brain` from `external-scripts.json`.
+Note: Hubot can use Redis to persist data, so before you can start hubot on your own computer, if you want to persist data, then you should have Redis running on your machine accessible via `localhost`. Then, ensure that `hubot-redis-brain` is listed in `external-scripts.json` as an `Array` of module names (e.g. `['hubot-redis-brain']`) or an `object` where the key is the name of the module (e.g. `{'hubot-redis-brain': 'some arbitrary value'}`) where the value of the property in the object is passed to the module function as the second argument. The first argument being the hubot Robot instance.
 
     % bin/hubot
     Hubot>
 
-This starts hubot using the [shell adapter](./adapters/shell.md), which
-is mostly useful for development. Make note of the name in the `hubot>` prompt;
-this is the name your hubot will respond to with commands. If the prompt
-reads `myhubot>` then your commands must start with `myhubot <command>`
+This starts hubot using the [shell adapter](./adapters/shell.md), which is mostly useful for development. Make note of the name in the `hubot>` prompt; this is the name your hubot will respond to with commands. If the prompt reads `myhubot>` then your commands must start with `myhubot <command>`.
 
 For example, to list available commands:
 
@@ -107,7 +104,7 @@ To use a script from an NPM package:
 2. Add the package to `external-scripts.json`.
 3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
 
-You can also put your own scripts under the `scripts/` directory. All scripts placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](scripting.md).
+You can also put your own scripts under the `scripts/` directory. All scripts (files ending with either `.js` or `.mjs`) placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](scripting.md).
 
 ## Adapters
 
@@ -115,9 +112,7 @@ Hubot uses the adapter pattern to support multiple chat-backends. Here is a [lis
 
 ## Deploying
 
-You can deploy hubot to Heroku, which is the officially supported method.
-Additionally you are able to deploy hubot to a UNIX-like system or Windows.
-Please note the support for deploying to Windows isn't officially supported.
+You can deploy hubot to Heroku, which is the officially supported method. Additionally you are able to deploy hubot to a UNIX-like system or Windows. Please note the support for deploying to Windows isn't officially supported.
 
 * [Deploying Hubot onto Azure](./deploying/azure.md)
 * [Deploying Hubot onto Bluemix](./deploying/bluemix.md)
