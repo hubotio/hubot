@@ -43,9 +43,7 @@ Furthermore, Hubot scripts exist to enable persistence across Hubot restarts.
 `hubot-redis-brain` is such a script and uses a backend Redis server.
 
 By default, the brain contains a list of all users seen by Hubot.
-Therefore, without persistence across restarts, the brain will contain the list of users encountered so far, during the current run of Hubot.
-On the other hand, with persistence across restarts, the brain will contain all users encountered by Hubot during all of its runs.
-This list of users can be accessed through `hubot.brain.users()` and other utility methods.
+Therefore, without persistence across restarts, the brain will contain the list of users encountered so far, during the current run of Hubot. On the other hand, with persistence across restarts, the brain will contain all users encountered by Hubot during all of its runs. This list of users can be accessed through `hubot.brain.users()` and other utility methods.
 
 ### Datastore
 
