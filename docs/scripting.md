@@ -4,45 +4,49 @@ permalink: /docs/scripting/
 
 # Scripting
 
-Hubot out of the box doesn't do too much but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](index.md#scripts) and it's easy to write your own.  You can create a custom script in hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
+Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](index.md#scripts) and it's easy to write your own. You can create a custom script in Hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
-When you created your hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples of scripts. For a script to be a script, it needs to:
+When you created your Hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples. For a script to be a script, it needs to:
 
-* live in a directory on the hubot script load path (`src/scripts` and `scripts` by default)
-* be a `.coffee` or `.js` file
-* export a function
+* live in a directory on the Hubot script load path (`src/scripts` and `scripts` by default)
+* be a `.js` file
+* export a function whos signature takes 1 argument (`robot`)
 
 By export a function, we just mean:
 
-```coffeescript
-module.exports = (robot) ->
-  # your code here
+```javascript
+module.exports = (robot) => {
+  // your code here
+}
 ```
 
-The `robot` parameter is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
+The `robot` argument is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
 
 ## Hearing and responding
 
 Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
 
-```coffeescript
-module.exports = (robot) ->
-  robot.hear /badger/i, (res) ->
-    # your code here
+```javascript
+module.exports = (robot) => {
+  robot.hear(/badger/i, (reresponses) => {
+    // your code here
+  })
 
-  robot.respond /open the pod bay doors/i, (res) ->
-    # your code here
+  robot.respond(/open the pod bay doors/i, (response) => {
+    // your code here
+  }
+}
 ```
 
-The `robot.hear /badger/` callback is called anytime a message's text matches. For example:
+The `robot.hear(/badger/)` callback is called anytime a message's text matches. For example:
 
 * Stop badgering the witness
 * badger me
 * what exactly is a badger anyways
 
-The `robot.respond /open the pod bay doors/i` callback is only called for messages that are immediately preceded by the robot's name or alias. If the robot's name is HAL and alias is /, then this callback would be triggered for:
+The `robot.respond(/open the pod bay doors/i)` callback is only called for messages that are immediately preceded by the robot's name or alias. If the robot's name is HAL and alias is /, then this callback would be triggered for:
 
 *  hal open the pod bay doors
 * HAL: open the pod bay doors
@@ -52,178 +56,187 @@ The `robot.respond /open the pod bay doors/i` callback is only called for messag
 It wouldn't be called for:
 
 * HAL: please open the pod bay doors
-   *  because its `respond` is bound to the text immediately following the robot name
+   *  because its `respond` is expecting the text to immediately follow the robot name
 *  has anyone ever mentioned how lovely you are when you open the pod bay doors?
-   * because it lacks the robot's name
+   * because it lacks the robot's name at the beginning
 
 ## Send & reply
 
-The `res` parameter is an instance of `Response` (historically, this parameter was `msg` and you may see other scripts use it this way). With it, you can `send` a message back to the room the `res` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
+The `response` parameter is an instance of `Response` (historically, this parameter was `msg` and you may see other scripts use it this way). With it, you can `send` a message back to the room the `response` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
 
-```coffeescript
-module.exports = (robot) ->
-  robot.hear /badger/i, (res) ->
-    res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
+```javascript
+module.exports = (robot) => {
+  robot.hear(/badger/i, (response) => {
+    response.send(`Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS`)
+  }
 
-  robot.respond /open the pod bay doors/i, (res) ->
-    res.reply "I'm afraid I can't let you do that."
+  robot.respond(/open the pod bay doors/i, (response) => {
+    response.reply(`I'm afraid I can't let you do that.`)
+  }
 
-  robot.hear /I like pie/i, (res) ->
-    res.emote "makes a freshly baked pie"
+  robot.hear(/I like pie/i, (response) => {
+    response.emote('makes a freshly baked pie')
+  }
+}
 ```
 
-The `robot.hear /badgers/` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
+The `robot.hear(/badgers/)` callback sends a message exactly as specified regardless of who said it, "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS".
 
-If a user Dave says "HAL: open the pod bay doors", `robot.respond /open the pod bay doors/i` callback sends a message "Dave: I'm afraid I can't let you do that."
+If a user Dave says "HAL: open the pod bay doors", `robot.respond(/open the pod bay doors/i)` callback sends a message "Dave: I'm afraid I can't let you do that."
 
 ## Messages to a room or user
 
 Messages can be sent to a specified room or user using the messageRoom function.
 
-```coffeescript
-module.exports = (robot) ->
-
-  robot.hear /green eggs/i, (res) ->
-    room = "mytestroom"
-    robot.messageRoom room, "I do not like green eggs and ham.  I do not like them sam-I-am."
+```javascript
+module.exports = (robot) => {
+  robot.hear(/green eggs/i, (response) => {    
+    const room = 'mytestroom'
+    robot.messageRoom(room, 'I do not like green eggs and ham.  I do not like them sam-I-am.')
+  }
+}
 ```
 
-User name can be explicitely specified if desired ( for a cc to an admin/manager), or using
-the response object a private message can be sent to the original sender.
+User name can be explicitely specified if desired ( for a cc to an admin/manager), or using the response object a private message can be sent to the original sender.
 
-```coffeescript
-  robot.respond /I don't like Sam-I-am/i, (res) ->
-    room =  'joemanager'
-    robot.messageRoom room, "Someone does not like Dr. Seus"
-    res.reply  "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+```javascript
+  robot.respond(/I don't like Sam-I-am/i, (response) => {
+    const room = 'joemanager'
+    robot.messageRoom(room, 'Someone does not like Dr. Seus')
+    response.reply('That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am')
+  }
 
-  robot.hear /Sam-I-am/i, (res) ->
-    room =  res.envelope.user.name
-    robot.messageRoom room, "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+  robot.hear(/Sam-I-am/i, (response) => {
+    const room = response.envelope.user.name
+    robot.messageRoom(room, 'That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am')
+  }
 ```
 
 ## Capturing data
 
-So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update a script like:
+So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated on `res.match`. For example, if we update a script like:
 
-```coffeescript
-  robot.respond /open the (.*) doors/i, (res) ->
-    # your code here
+```javascript
+  robot.respond(/open the (.*) doors/i, (response) => {
+    // your code here
+  }
 ```
 
 If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod bay doors", and `res.match[1]` is just "pod bay". Now we can start doing more dynamic things:
 
-```coffeescript
-  robot.respond /open the (.*) doors/i, (res) ->
-    doorType = res.match[1]
-    if doorType is "pod bay"
-      res.reply "I'm afraid I can't let you do that."
-    else
-      res.reply "Opening #{doorType} doors"
+```javascript
+  robot.respond(/open the (.*) doors/i, (response) => {
+    const doorType = response.match[1]
+    if (doorType == 'pod bay') {
+      response.reply(`I'm afraid I can't let you do that.`)
+    } else {
+      response.reply(`Opening ${doorType} doors`)
+    }
+  }
 ```
 
-## Making HTTP calls
+## Making HTTP calls (please use `fetch` instead)
 
-Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [node-scoped-http-client](https://github.com/technoweenie/node-scoped-http-client) available at `robot.http`. The simplest case looks like:
+Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](../src/httpclient.js) available at `robot.http`. The simplest case looks like:
 
 
-```coffeescript
-  robot.http("https://midnight-train")
-    .get() (err, response, body) ->
-      # your code here
+```javascript
+  robot.http('https://midnight-train').get()((err, response, body) => {
+      // your code here
+  })
 ```
 
 A post looks like:
 
-```coffeescript
-  data = JSON.stringify({
+```javascript
+  const data = JSON.stringify({
     foo: 'bar'
   })
-  robot.http("https://midnight-train")
+  robot.http('https://midnight-train')
     .header('Content-Type', 'application/json')
-    .post(data) (err, response, body) ->
-      # your code here
+    .post(data)((err, response, body) => {
+      // your code here
+    })
 ```
 
 
 `err` is an error encountered on the way, if one was encountered. You'll generally want to check for this and handle accordingly:
 
-```coffeescript
-  robot.http("https://midnight-train")
-    .get() (err, response, body) ->
-      if err
-        res.send "Encountered an error :( #{err}"
-        return
-      # your code here, knowing it was successful
+```javascript
+  robot.http('https://midnight-train')
+    .get()((err, response, body) => {
+      if (err){
+        return response.send `Encountered an error :( ${err}`
+      }
+      // your code here, knowing it was successful
+    })
 ```
 
-`res` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using node-scoped-http-client, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
+`response` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using `ScopedHttpClient`, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
 
-```coffeescript
-  robot.http("https://midnight-train")
-    .get() (err, response, body) ->
-      # pretend there's error checking code here
+```javascript
+  robot.http('https://midnight-train')
+    .get() ((err, response, body) => {
+      // pretend there's error checking code here
+      if (response.statusCode <> 200)
+        return res.send(`Request didn't come back HTTP 200 :(`)
 
-      if response.statusCode isnt 200
-        res.send "Request didn't come back HTTP 200 :("
-        return
+      const rateLimitRemaining = response.getHeader('X-RateLimit-Limit') ?  parseInt(response.getHeader('X-RateLimit-Limit')) : 1
+      if (rateLimitRemaining && rateLimitRemaining < 1)
+        return res.send('Rate Limit hit, stop believing for awhile')
 
-      rateLimitRemaining = parseInt response.getHeader('X-RateLimit-Limit') if response.getHeader('X-RateLimit-Limit')
-      if rateLimitRemaining and rateLimitRemaining < 1
-        res.send "Rate Limit hit, stop believing for awhile"
-
-      # rest of your code
+      // rest of your code
+    }
 ```
 
 `body` is the response's body as a string, the thing you probably care about the most:
 
-```coffeescript
-  robot.http("https://midnight-train")
-    .get() (err, response, body) ->
-      # error checking code here
-
-      res.send "Got back #{body}"
+```javascript
+  robot.http('https://midnight-train')
+    .get()((err, response, body) => {
+      // error checking code here
+      response.send(`Got back ${body}`)
+    })
 ```
 
 ### JSON
 
-If you are talking to APIs, the easiest way is going to be JSON because it doesn't require any extra dependencies. When making the `robot.http` call, you should usually set the  `Accept` header to give the API a clue that's what you are expecting back. Once you get the `body` back, you can parse it with `JSON.parse`:
+If you are talking to Web Services that respond with JSON representation, then when making the `robot.http` call, you will usually set the `Accept` header to give the Web Service a clue that's what you are expecting back. Once you get the `body` back, you can parse it with `JSON.parse`:
 
-```coffeescript
-  robot.http("https://midnight-train")
+```javascript
+  robot.http('https://midnight-train')
     .header('Accept', 'application/json')
-    .get() (err, response, body) ->
-      # error checking code here
-
-      data = JSON.parse body
-      res.send "#{data.passenger} taking midnight train going #{data.destination}"
+    .get()((err, response, body) => {
+      // error checking code here
+      const data = JSON.parse(body)
+      res.send(`${data.passenger} taking midnight train going ${data.destination}`)
+    })
 ```
 
-It's possible to get non-JSON back, like if the API hit an error and it tries to render a normal HTML error instead of JSON. To be on the safe side, you should check the `Content-Type`, and catch any errors while parsing.
+It's possible to get non-JSON back, like if the Web Service has an error and renders HTML instead of JSON. To be on the safe side, you should check the `Content-Type`, and catch any errors while parsing.
 
-```coffeescript
-  robot.http("https://midnight-train")
+```javascript
+  robot.http('https://midnight-train')
     .header('Accept', 'application/json')
-    .get() (err, response, body) ->
-      # err & response status checking code here
+    .get()((err, response, body) => {
+      // err & response status checking code here
+      if (response.getHeader('Content-Type') != 'application/json'){
+        return res.send(`Didn't get back JSON :(`)
+      }
+      let data = null
+      try {
+        data = JSON.parse(body)
+      } catch (error) {
+        res.send(`Ran into an error parsing JSON :(`)
+      }
 
-      if response.getHeader('Content-Type') isnt 'application/json'
-        res.send "Didn't get back JSON :("
-        return
-
-      data = null
-      try
-        data = JSON.parse body
-      catch error
-       res.send "Ran into an error parsing JSON :("
-       return
-
-      # your code here
+      // your code here
+    })
 ```
 
 ### XML
 
-XML APIs are harder because there's not a bundled XML parsing library. It's beyond the scope of this documentation to go into detail, but here are a few libraries to check out:
+XML Web Services require installing a XML parsing library. It's beyond the scope of this documentation to go into detail, but here are a few libraries to check out:
 
 * [xml2json](https://github.com/buglabs/node-xml2json) (simplest to use, but has some limitations)
 * [jsdom](https://github.com/tmpvar/jsdom) (JavaScript implementation of the W3C DOM)
@@ -231,7 +244,7 @@ XML APIs are harder because there's not a bundled XML parsing library. It's beyo
 
 ### Screen scraping
 
-For those times that there isn't an API, there's always the possibility of screen-scraping. It's beyond the scope of this documentation to go into detail, but here's a few libraries to check out:
+For consuming a Web Service that responds with HTML, you'll need an HTML parser. It's beyond the scope of this documentation to go into detail, but here's a few libraries to check out:
 
 * [cheerio](https://github.com/MatthewMueller/cheerio) (familiar syntax and API to jQuery)
 * [jsdom](https://github.com/tmpvar/jsdom) (JavaScript implementation of the W3C DOM)
@@ -239,37 +252,38 @@ For those times that there isn't an API, there's always the possibility of scree
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned, hubot uses [node-scoped-http-client](https://github.com/technoweenie/node-scoped-http-client) to provide a simple interface for making HTTP and HTTPS requests. Under its hood, it's using node's builtin [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) libraries, but providing an easy DSL for the most common kinds of interaction.
+As mentioned previously, Hubot uses [ScopedHttpClient](../src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
 
-If you need to control options on http and https more directly, you pass a second argument to `robot.http` that will be passed on to node-scoped-http-client which will be passed on to http and https:
+If you need to control options on `http` and `https` more directly, you pass a second argument to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
 
+```javascript
+  const options = {
+    rejectUnauthorized: false // don't verify server certificate against a CA, SCARY!
+  }
+  robot.http('https://midnight-train', options)
 ```
-  options =
-    # don't verify server certificate against a CA, SCARY!
-    rejectUnauthorized: false
-  robot.http("https://midnight-train", options)
-```
 
-In addition, if node-scoped-http-client doesn't suit you, you can use [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) yourself directly, or any other node library like [request](https://github.com/request/request).
+In addition, if `ScopedHttpClient` doesn't suit you, you can use [http](http://nodejs.org/api/http.html), [https](http://nodejs.org/api/https.html) or `fetch` directly.
 
 ## Random
 
-A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. It's annoying to do this in JavaScript and CoffeeScript out of the box, so Hubot includes a convenience method:
+A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. Hubot includes a convenience method:
 
-```coffeescript
-lulz = ['lol', 'rofl', 'lmao']
-
-res.send res.random lulz
+```javascript
+const lulz = ['lol', 'rofl', 'lmao']
+response.send(response.random(lulz))
 ```
 
 ## Topic
 
 Hubot can react to a room's topic changing, assuming that the adapter supports it.
 
-```coffeescript
-module.exports = (robot) ->
-  robot.topic (res) ->
-    res.send "#{res.message.text}? That's a Paddlin'"
+```javascript
+module.exports = (robot) => {
+  robot.topic((response) => {
+    response.send()`${response.message.text}? That's a Paddlin'`)
+  })
+}
 ```
 
 ## Entering and leaving
