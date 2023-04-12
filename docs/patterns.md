@@ -95,7 +95,7 @@ module.exports = (robot) => {
       // Clear the lock
       robot.brain.remove('yourLockName')
       msg.reply('Finally Done')
-    ))
+    )).catch(e => console.error(e))
 }
 ```
 
@@ -103,17 +103,18 @@ module.exports = (robot) => {
 
 In many corporate environments, a web proxy is required to access the Internet and/or protected resources. For one-off control, use can specify an [Agent](https://nodejs.org/api/http.html) to use with `robot.http`. However, this would require modifying every script your robot uses to point at the proxy. Instead, you can specify the agent at the global level and have all HTTP requests use the agent by default.
 
-Due to the way node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
+Due to the way Node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
 
 1. Install ProxyAgent. `npm install proxy-agent`
-2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.coffee`
+2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.js`
 3. Add the following code, modified for your needs:
 
-```coffeescript
-proxy = require 'proxy-agent'
-module.exports = (robot) ->
+```javascript
+const proxy = require('proxy-agent')
+module.exports = (robot) => {
   robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
+}
 ```
 
 ## Dynamic matching of messages
@@ -124,27 +125,40 @@ In a simple robot, this isn't much different from just putting the conditions in
 
 For example, the [factoid lookup command](https://github.com/github/hubot-scripts/blob/bd810f99f9394818a9dcc2ea3729427e4101b96d/src/scripts/factoid.coffee#L95-L99) could be reimplemented as:
 
-```coffeescript
-module.exports = (robot) ->
-  # Dynamically populated list of factoids
-  facts =
-    fact1: 'stuff'
-    fact2: 'other stuff'
+```javascript
+// use case: Hubot>fact1
+// This listener doesn't require you to type the bot's name first
 
-  robot.listen(
-    # Matcher
-    (message) ->
-      match = message.match(/^~(.*)$/)
-      # Only match if there is a matching factoid
-      if match and match[1] in facts
-        match[1]
-      else
-        false
-    # Callback
-    (response) ->
-      fact = response.match
-      res.reply "#{fact} is #{facts[fact]}"
-  )
+const {TextMessage} = require('../src/message')
+module.exports = (robot) => {
+    // Dynamically populated list of factoids
+    const facts = {
+        fact1: 'stuff',
+        fact2: 'other stuff'
+    }
+    robot.listen(
+        // Matcher
+        (message) => {
+            // Check that message is a TextMessage type because
+            // if there is no match, this matcher function will 
+            // be called again but the message type will be CatchAllMessage
+            // which doesn't have a `match` method.
+            if(!(message instanceof TextMessage)) return false
+            const match = message.match(/^(.*)$/)
+            // Only match if there is a matching factoid
+            if (match && match[1] in facts) {
+                return match[1]
+            } else {
+                return false 
+            }
+        },
+        // Callback
+        (response) => {
+            const fact = response.match
+            response.reply(`${fact} is ${facts[fact]}`)
+        }
+    )
+}
 ```
 
 ## Restricting access to commands
@@ -153,54 +167,69 @@ One of the awesome features of Hubot is its ability to make changes to a product
 
 There are a variety of different patterns for restricting access that you can follow depending on your specific needs:
 
-* Two buckets of access: full and restricted with whitelist/blacklist
+* Two buckets of access: full and restricted with include/exclude list
 * Specific access rules for every command (Role-based Access Control)
-* Blacklisting/whitelisting commands in specific rooms
+* Include/exclude listing commands in specific rooms
 
 ### Simple per-listener access
 
 In some organizations, almost all employees are given the same level of access and only a select few need to be restricted (e.g. new hires, contractors, etc.). In this model, you partition the set of all listeners to separate the "power commands" from the "normal commands".
 
-Once you have segregated the listeners, you need to make some tradeoff decisions around whitelisting/blacklisting users and listeners.
+Once you have segregated the listeners, you need to make some tradeoff decisions around include/exclude users and listeners.
 
-The key deciding factors for whitelisting vs blacklisting of users are the number of users in each category, the frequency of change in either category, and the level of security risk your organization is willing to accept.
-* Whitelisting users (users X, Y, Z have access to power commands; all other users only get access to normal commands) is a more secure method of access (new users have no default access to power commands), but has higher maintenance overhead (you need to add each new user to the "approved" list).
-* Blacklisting users (all users get access to power commands, except for users X, Y, Z, who only get access to normal commands) is a less secure method (new users have default access to power commands until they are added to the blacklist), but has a much lower maintenance overhead if the blacklist is small/rarely updated.
+The key deciding factors for inclusion vs exclusion of users are the number of users in each category, the frequency of change in either category, and the level of security risk your organization is willing to accept.
+
+* Including users (users X, Y, Z have access to power commands; all other users only get access to normal commands) is a more secure method of access (new users have no default access to power commands), but has higher maintenance overhead (you need to add each new user to the "include" list).
+* Excluding users (all users get access to power commands, except for users X, Y, Z, who only get access to normal commands) is a less secure method (new users have default access to power commands until they are added to the exclusion list), but has a much lower maintenance overhead if the exclusion list is small/rarely updated.
 
 The key deciding factors for selectively allowing vs restricting listeners are the number of listeners in each category, the ratio of internal to external scripts, and the level of security risk your organization is willing to accept.
+
 * Selectively allowing listeners (all listeners are power commands, except for listeners A, B, C, which are considered normal commands) is a more secure method (new listeners are restricted by default), but has a much higher maintenance overhead (every silly/fun listener needs to be explicity downgraded to "normal" status).
-* Selectively restricting listeners (listeners A, B, C are power commands, everything else is a normal command) is a less secure method (new listeners are put into the normal category by default, which could give unexpected access; external scripts are particularly scary here), but has a lower maintenance overhead (no need to modify/enumerate all the fun/culture scripts in your access policy).
+* Selectively restricting listeners (listeners A, B, C are power commands, everything else is a normal command) is a less secure method (new listeners are put into the normal category by default, which could give unexpected access; external scripts are particularly dangerous here), but has a lower maintenance overhead (no need to modify/enumerate all the fun/culture scripts in your access policy).
 
 As an additional consideration, most scripts do not currently have listener IDs, so you will likely need to open PRs (or fork) any external scripts you use to add listener IDs. The actual modification is easy, but coordinating with lots of maintainers can be time consuming.
 
 Once you have decided which of the four possible models to follow, you need to build the appropriate lists of users and listeners to plug into your authorization middleware.
 
-Example: whitelist of users given access to selectively restricted power commands
-```coffeescript
-POWER_COMMANDS = [
-  'deploy.web' # String that matches the listener ID
+Example: inclusion list of users given access to selectively restricted power commands
+
+```javascript
+const POWER_COMMANDS = [
+    'deploy.web' // String that matches the listener ID
 ]
 
-POWER_USERS = [
-  'jdoe' # String that matches the user ID set by the adapter
+// Change name to something else to see it reject the command.
+const POWER_USERS = [
+    'Shell' // String that matches the user ID set by the adapter
 ]
+  
+module.exports = (robot) => {
+  robot.listenerMiddleware((context, next, done) => {
+      if (POWER_COMMANDS.indexOf(context.listener.options.id) > -1) {
+          if (POWER_USERS.indexOf(context.response.message.user.name) > -1){
+              // User is allowed access to this command
+              next()
+          } else {
+              // Restricted command, but user isn't in whitelist
+              context.response.reply(`I'm sorry, @${context.response.message.user.name}, but you don't have access to do that.`)
+              done()
+          }
+      } else {
+          // This is not a restricted command; allow everyone
+          next()
+      }
+  })
 
-module.exports = (robot) ->
-  robot.listenerMiddleware (context, next, done) ->
-    if context.listener.options.id in POWER_COMMANDS
-      if context.response.message.user.id in POWER_USERS
-        # User is allowed access to this command
-        next()
-      else
-        # Restricted command, but user isn't in whitelist
-        context.response.reply "I'm sorry, @#{context.response.message.user.name}, but you don't have access to do that."
-        done()
-    else
-      # This is not a restricted command; allow everyone
-      next()
+  robot.listen(message => {
+      return true
+  }, {id: 'deploy.web'},
+  response => {
+      response.reply('Deploying web...')
+  })
+}
 ```
 
-Remember that middleware executes for ALL listeners that match a given message (including `robot.hear /.+/`), so make sure you include them when categorizing your listeners.
+Remember that middleware executes for ALL listeners that match a given message (including `robot.hear(/.+/)`), so make sure you include them when categorizing your listeners.
 
 ### Specific access rules per listener
 
@@ -211,13 +240,13 @@ Example access policy:
 * The Operations group has access to deploy all services (but not cut releases)
 * The front desk cannot cut releases nor deploy services
 
-Complex policies like this are currently best implemented in code directly, though there is [ongoing work](https://github.com/michaelansel/hubot-rbac) to build a generalized framework for access management.
+Complex policies like this are currently best implemented in code directly.
 
 ### Specific access rules per room
 
 Organizations that have a number of chat rooms that serve different purposes often want to be able to use the same instance of hubot but have a different set of commands allowed in each room.
 
-Work on generalized blacklist solution is [ongoing](https://github.com/kristenmills/hubot-command-blacklist). A whitelist soultion could take a similar approach.
+Work on generalized exlusion list solution is [ongoing](https://github.com/kristenmills/hubot-command-blacklist). An inclusive list soultion could take a similar approach.
 
 ## Use scoped npm packages as adapter
 
@@ -228,6 +257,7 @@ npm install <alias>@npm:<name>
 ```
 
 So for example to use `@foo/hubot-adapter` package as the adapter, you can:
+
 ```bash
 npm install hubot-foo@npm:@foo/hubot-adapter
 
