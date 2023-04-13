@@ -14,8 +14,7 @@
 //   Some Author
 
 module.exports = robot => {
-    robot.respond(/help$/i, resp => {
-        resp.send(robot.helpCommands().join('\n'))
-    })
-  }
-  
+  robot.respond(/help$/i, resp => {
+    resp.send(robot.helpCommands().join('\n'))
+  })
+}
