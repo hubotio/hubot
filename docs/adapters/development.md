@@ -6,43 +6,42 @@ permalink: /docs/adapters/development/
 
 ## Adapter Basics
 
-All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  If you're writing your adapter in CoffeeScript, require the primary version of the adapter:
-
-```coffee
-Adapter = require('hubot').Adapter
-```
+All adapters inherit from the Adapter class in the `src/adapter.js` file.
 
 If you're writing your adapter in ES2015, you must require the ES2015 entrypoint instead:
 
-```js
+```javascript
 const Adapter = require('hubot/es2015').Adapter;
 ```
 
 There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
 
-```coffee
-class Sample extends Adapter
+```javascript
+class Sample extends Adapter {
+  constructor(robot) {
+    super(robot)
+    this.robot.logger.info('Constructor')
+  }
+  send(envelope, strings...) {
+    this.robot.logger.info('Send')
+  }
+  reply(envelope, strings...) {
+    this.robot.logger.info('Reply')
+  }
+  run() {
+    this.robot.logger.info('Run')
+    this.emit('connected')
+    const user = new User(1001, 'Sample User')
+    const message = new TextMessage(user, 'Some Sample Message', 'MSG-001')
+    this.robot.receive(message)
+  }
 
-  constructor: ->
-    super
-    @robot.logger.info "Constructor"
-
-  send: (envelope, strings...) ->
-    @robot.logger.info "Send"
-
-  reply: (envelope, strings...) ->
-    @robot.logger.info "Reply"
-
-  run: ->
-    @robot.logger.info "Run"
-    @emit "connected"
-    user = new User 1001, name: 'Sample User'
-    message = new TextMessage user, 'Some Sample Message', 'MSG-001'
-    @robot.receive message
+}
 
 
-exports.use = (robot) ->
-  new Sample robot
+exports.use = (robot) => {
+  new Sample(robot)
+}
 ```
 
 ## Setting Up Your Development Environment
