@@ -1,7 +1,9 @@
-name: Node.js (Windows) CI
+name: Node.js CI
 
 on:
   push:
+    branches: [ "master" ]
+  pull_request:
     branches: [ "master" ]
   schedule:
     - cron:  '5 4 * * 0'
@@ -9,11 +11,10 @@ on:
 jobs:
   npm-test:
 
-    runs-on: windows-latest
-
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [14.x, 16.x, 18.x, latest]
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v3
