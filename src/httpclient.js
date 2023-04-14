@@ -240,7 +240,20 @@ class ScopedClient {
       const ty = typeof arguments[i]
       if (ty === 'string') {
         const parsedUrl = new URL(arguments[i])
-        extend(options, parsedUrl)
+        extend(options, {
+          href: parsedUrl.href,
+          origin: parsedUrl.origin,
+          protocol: parsedUrl.protocol,
+          username: parsedUrl.username,
+          password: parsedUrl.password,
+          host: parsedUrl.host,
+          hostname: parsedUrl.hostname,
+          port: parsedUrl.port,
+          pathname: parsedUrl.pathname,
+          search: parsedUrl.search,
+          searchParams: parsedUrl.searchParams,
+          hash: parsedUrl.hash
+        })
         delete options.url
         delete options.href
         delete options.search
