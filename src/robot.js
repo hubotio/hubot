@@ -352,7 +352,7 @@ class Robot {
     const full = path.join(filepath, path.basename(filename, ext))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (['.js', '.mjs'].indexOf(ext) == -1) { // eslint-disable-line
+    if (['.js', '.mjs', '.coffee'].indexOf(ext) == -1) { // eslint-disable-line
       return
     }
 
