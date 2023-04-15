@@ -29,6 +29,7 @@ describe('Robot', function () {
       warnOnUnregistered: false
     })
     mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+    process.env.EXPRESS_PORT = 0
     this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
     this.robot.alias = 'Hubot'
     this.robot.run()
