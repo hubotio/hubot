@@ -6,7 +6,7 @@ const path = require('path')
 
 const async = require('async')
 const Log = require('log')
-const HttpClient = require('scoped-http-client')
+const HttpClient = require('./httpclient')
 
 const Brain = require('./brain')
 const Response = require('./response')
@@ -132,7 +132,7 @@ class Robot {
     const name = this.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 
     if (regexStartsWithAnchor) {
-      this.logger.warning(`Anchors don’t work well with respond, perhaps you want to use 'hear'`)
+      this.logger.warning('Anchors don’t work well with respond, perhaps you want to use \'hear\'')
       this.logger.warning(`The regex in question was ${regex.toString()}`)
     }
 
@@ -204,7 +204,7 @@ class Robot {
   invokeErrorHandlers (error, res) {
     this.logger.error(error.stack)
 
-    this.errorHandlers.map((errorHandler) => {
+    this.errorHandlers.forEach((errorHandler) => {
       try {
         errorHandler(error, res)
       } catch (errorHandlerError) {
@@ -352,7 +352,7 @@ class Robot {
     const full = path.join(filepath, path.basename(filename, ext))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (!require.extensions[ext]) { // eslint-disable-line
+    if (['.js', '.mjs', '.coffee'].indexOf(ext) == -1) { // eslint-disable-line
       return
     }
 
@@ -429,21 +429,24 @@ class Robot {
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
 
     const express = require('express')
+    const basicAuth = require('express-basic-auth')
     const multipart = require('connect-multiparty')
 
     const app = express()
 
     app.use((req, res, next) => {
-      res.setHeader('X-Powered-By', `hubot/${this.name}`)
+      res.setHeader('X-Powered-By', `hubot/${encodeURI(this.name)}`)
       return next()
     })
 
     if (user && pass) {
-      app.use(express.basicAuth(user, pass))
+      const authUser = {}
+      authUser[user] = pass
+      app.use(basicAuth({ users: authUser }))
     }
     app.use(express.query())
 
-    app.use(express.json())
+    app.use(express.json({ limit }))
     app.use(express.urlencoded({ limit, parameterLimit: paramLimit, extended: true }))
     // replacement for deprecated express.multipart/connect.multipart
     // limit to 100mb, as per the old behavior
@@ -527,7 +530,7 @@ class Robot {
 
     const useStrictHeaderRegex = /^["']use strict['"];?\s+/
     const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)
-      .reduce(toHeaderCommentBlock, {lines: [], isHeader: true}).lines
+      .reduce(toHeaderCommentBlock, { lines: [], isHeader: true }).lines
       .filter(Boolean) // remove empty lines
     let currentSection = null
     let nextSection
@@ -577,11 +580,11 @@ class Robot {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns whatever the extending adapter returns.
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    this.adapter.send.apply(this.adapter, [envelope].concat(strings))
+    return this.adapter.send.apply(this.adapter, [envelope].concat(strings))
   }
 
   // Public: A helper reply function which delegates to the adapter's reply
@@ -590,11 +593,11 @@ class Robot {
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns whatever the extending adapter returns.
   reply (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    this.adapter.reply.apply(this.adapter, [envelope].concat(strings))
+    return this.adapter.reply.apply(this.adapter, [envelope].concat(strings))
   }
 
   // Public: A helper send function to message a room that the robot is in.
@@ -602,12 +605,12 @@ class Robot {
   // room    - String designating the room to message.
   // strings - One or more Strings for each message to send.
   //
-  // Returns nothing.
+  // Returns whatever the extending adapter returns.
   messageRoom (room/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
     const envelope = { room }
 
-    this.adapter.send.apply(this.adapter, [envelope].concat(strings))
+    return this.adapter.send.apply(this.adapter, [envelope].concat(strings))
   }
 
   // Public: A wrapper around the EventEmitter API to make usage

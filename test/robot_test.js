@@ -20,6 +20,7 @@ const TopicMessage = require('../src/message').TopicMessage
 
 // mock `hubot-mock-adapter` module from fixture
 const mockery = require('mockery')
+const path = require('path')
 
 describe('Robot', function () {
   beforeEach(function () {
@@ -28,14 +29,14 @@ describe('Robot', function () {
       warnOnUnregistered: false
     })
     mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+    process.env.EXPRESS_PORT = 0
     this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
     this.robot.alias = 'Hubot'
     this.robot.run()
 
     // Re-throw AssertionErrors for clearer test failures
     this.robot.on('error', function (name, err, response) {
-      if ((err != null ? err.constructor : undefined) == null) { }
-      if (err.constructor.name === 'AssertionError') {
+      if (err?.constructor.name === 'AssertionError' || name instanceof chai.AssertionError) {
         process.nextTick(function () {
           throw err
         })
@@ -69,7 +70,7 @@ describe('Robot', function () {
 
       it('passes options through to the ScopedHttpClient', function () {
         const agent = {}
-        const httpClient = this.robot.http('http://localhost', {agent})
+        const httpClient = this.robot.http('http://localhost', { agent })
         expect(httpClient.options.agent).to.equal(agent)
       })
 
@@ -79,7 +80,7 @@ describe('Robot', function () {
 
       it('merges in any global http options', function () {
         const agent = {}
-        this.robot.globalHttpOptions = {agent}
+        this.robot.globalHttpOptions = { agent }
         const httpClient = this.robot.http('http://localhost')
         expect(httpClient.options.agent).to.equal(agent)
       })
@@ -87,9 +88,17 @@ describe('Robot', function () {
       it('local options override global http options', function () {
         const agentA = {}
         const agentB = {}
-        this.robot.globalHttpOptions = {agent: agentA}
-        const httpClient = this.robot.http('http://localhost', {agent: agentB})
+        this.robot.globalHttpOptions = { agent: agentA }
+        const httpClient = this.robot.http('http://localhost', { agent: agentB })
         expect(httpClient.options.agent).to.equal(agentB)
+      })
+
+      it('builds the url correctly from a string', function () {
+        const options = this.httpClient.buildOptions('http://localhost:3001')
+        expect(options.host).to.equal('localhost:3001')
+        expect(options.pathname).to.equal('/')
+        expect(options.protocol).to.equal('http:')
+        expect(options.port).to.equal('3001')
       })
     })
 
@@ -302,7 +311,7 @@ describe('Robot', function () {
         }
 
         const listenerSpy =
-          {call: sinon.spy()}
+          { call: sinon.spy() }
 
         this.robot.listeners = [
           matchingListener,
@@ -380,7 +389,7 @@ describe('Robot', function () {
         this.sandbox.stub(this.robot, 'parseHelp')
 
         this.robot.loadFile('./scripts', 'test-script.js')
-        expect(module._load).to.have.been.calledWith('scripts/test-script')
+        expect(module._load).to.have.been.calledWith(path.join('scripts', 'test-script'))
       })
 
       describe('proper script', function () {
@@ -399,7 +408,7 @@ describe('Robot', function () {
 
         it('should parse the script documentation', function () {
           this.robot.loadFile('./scripts', 'test-script.js')
-          expect(this.robot.parseHelp).to.have.been.calledWith('scripts/test-script.js')
+          expect(this.robot.parseHelp).to.have.been.calledWith(path.join('scripts', 'test-script.js'))
         })
       })
 
@@ -412,9 +421,15 @@ describe('Robot', function () {
           this.sandbox.stub(this.robot, 'parseHelp')
         })
 
-        it('logs a warning', function () {
+        it('logs a warning for a .js file', function () {
           sinon.stub(this.robot.logger, 'warning')
           this.robot.loadFile('./scripts', 'test-script.js')
+          expect(this.robot.logger.warning).to.have.been.called
+        })
+
+        it('logs a warning for a .mjs file', function () {
+          sinon.stub(this.robot.logger, 'warning')
+          this.robot.loadFile('./scripts', 'test-script.mjs')
           expect(this.robot.logger.warning).to.have.been.called
         })
       })
@@ -1013,7 +1028,7 @@ describe('Robot', function () {
       })
 
       it('marks plaintext as plaintext', function (testDone) {
-        let sendSpy = sinon.spy()
+        const sendSpy = sinon.spy()
         this.robot.adapter.send = sendSpy
         this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.'))
         this.robot.hear(/^message456$/, response => response.play('good luck with that'))

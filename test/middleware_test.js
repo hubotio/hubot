@@ -23,7 +23,7 @@ describe('Middleware', function () {
   describe('Unit Tests', function () {
     beforeEach(function () {
       // Stub out event emitting
-      this.robot = {emit: sinon.spy()}
+      this.robot = { emit: sinon.spy() }
 
       this.middleware = new Middleware(this.robot)
     })
@@ -284,7 +284,7 @@ describe('Middleware', function () {
           }
 
           this.middleware.execute(
-            {response: testResponse},
+            { response: testResponse },
             middlewareFinished,
             middlewareFailed
           )
@@ -351,6 +351,7 @@ describe('Middleware', function () {
         warnOnUnregistered: false
       })
       mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+      process.env.EXPRESS_PORT = 0
       this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
       this.robot.run
 
@@ -394,8 +395,8 @@ describe('Middleware', function () {
             expect(this.middleware).to.have.been.calledWithMatch(
               sinon.match.has('listener',
                 sinon.match.same(this.testListener)), // context
-              sinon.match.any,                    // next
-              sinon.match.any                    // done
+              sinon.match.any, // next
+              sinon.match.any // done
             )
             testDone()
           })
@@ -406,9 +407,9 @@ describe('Middleware', function () {
             expect(this.middleware).to.have.been.calledWithMatch(
               sinon.match.has('listener',
                 sinon.match.has('options',
-                  sinon.match.has('id'))),        // context
-              sinon.match.any,                    // next
-              sinon.match.any                    // done
+                  sinon.match.has('id'))), // context
+              sinon.match.any, // next
+              sinon.match.any // done
             )
             testDone()
           })
@@ -423,8 +424,8 @@ describe('Middleware', function () {
                 sinon.match.instanceOf(Response).and(
                   sinon.match.has('message',
                     sinon.match.same(this.testMessage)))), // context
-              sinon.match.any,                         // next
-              sinon.match.any                         // done
+              sinon.match.any, // next
+              sinon.match.any // done
             )
             testDone()
           })
@@ -447,8 +448,8 @@ describe('Middleware', function () {
                 sinon.match.instanceOf(Response).and(
                   sinon.match.has('message',
                     sinon.match.same(this.testMessage)))), // context
-              sinon.match.any,                         // next
-              sinon.match.any                         // done
+              sinon.match.any, // next
+              sinon.match.any // done
             )
             testDone()
           })
@@ -466,11 +467,11 @@ describe('Middleware', function () {
       it('is a function with arity one', function (testDone) {
         this.robot.receive(this.testMessage, () => {
           expect(this.middleware).to.have.been.calledWithMatch(
-            sinon.match.any,             // context
+            sinon.match.any, // context
             sinon.match.func.and(
               sinon.match.has('length',
-                sinon.match(1))),        // next
-            sinon.match.any             // done
+                sinon.match(1))), // next
+            sinon.match.any // done
           )
           testDone()
         })
@@ -487,11 +488,11 @@ describe('Middleware', function () {
       it('is a function with arity zero', function (testDone) {
         this.robot.receive(this.testMessage, () => {
           expect(this.middleware).to.have.been.calledWithMatch(
-            sinon.match.any,             // context
-            sinon.match.any,             // next
+            sinon.match.any, // context
+            sinon.match.any, // next
             sinon.match.func.and(
               sinon.match.has('length',
-                sinon.match(0)))        // done
+                sinon.match(0))) // done
           )
           testDone()
         })

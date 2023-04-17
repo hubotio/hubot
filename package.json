@@ -21,21 +21,21 @@
     "coffeescript": "1.6.3",
     "connect-multiparty": "^2.1.1",
     "express": "^4.16.3",
+    "express-basic-auth": "1.1.7",
     "log": "1.4.0",
-    "optparse": "1.0.4",
-    "scoped-http-client": "0.11.0"
+    "optparse": "1.0.4"
   },
   "devDependencies": {
     "chai": "~2.1.0",
     "coveralls": "^3.0.2",
     "is-circular": "^1.0.2",
-    "mocha": "^5.2.0",
+    "mocha": "^10.2.0",
     "mockery": "^1.4.0",
-    "nyc": "^13.0.0",
-    "semantic-release": "^15.9.3",
+    "nyc": "^15.1.0",
+    "semantic-release": "^21.0.1",
     "sinon": "~1.17.0",
     "sinon-chai": "^2.8.0",
-    "standard": "^10.0.2"
+    "standard": "^17.0.0"
   },
   "engines": {
     "node": "> 4.0.0",
