@@ -29,13 +29,14 @@ describe('Robot', function () {
       warnOnUnregistered: false
     })
     mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+    process.env.EXPRESS_PORT = 0
     this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
     this.robot.alias = 'Hubot'
     this.robot.run()
 
     // Re-throw AssertionErrors for clearer test failures
     this.robot.on('error', function (name, err, response) {
-      if (err.constructor.name === 'AssertionError') {
+      if (err?.constructor.name === 'AssertionError' || name instanceof chai.AssertionError) {
         process.nextTick(function () {
           throw err
         })
@@ -90,6 +91,14 @@ describe('Robot', function () {
         this.robot.globalHttpOptions = { agent: agentA }
         const httpClient = this.robot.http('http://localhost', { agent: agentB })
         expect(httpClient.options.agent).to.equal(agentB)
+      })
+
+      it('builds the url correctly from a string', function () {
+        const options = this.httpClient.buildOptions('http://localhost:3001')
+        expect(options.host).to.equal('localhost:3001')
+        expect(options.pathname).to.equal('/')
+        expect(options.protocol).to.equal('http:')
+        expect(options.port).to.equal('3001')
       })
     })
 

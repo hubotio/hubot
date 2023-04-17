@@ -92,7 +92,7 @@ Messages can be sent to a specified room or user using the messageRoom function.
 module.exports = (robot) => {
   robot.hear(/green eggs/i, (response) => {    
     const room = 'mytestroom'
-    robot.messageRoom(room, 'I do not like green eggs and ham.  I do not like them sam-I-am.')
+    robot.messageRoom(room, 'I do not like green eggs and ham.  I do not like them Sam-I-Am.')
   }
 }
 ```
@@ -100,15 +100,15 @@ module.exports = (robot) => {
 User name can be explicitely specified if desired ( for a cc to an admin/manager), or using the response object a private message can be sent to the original sender.
 
 ```javascript
-  robot.respond(/I don't like Sam-I-am/i, (response) => {
+  robot.respond(/I don't like sam-i-am/i, (response) => {
     const room = 'joemanager'
     robot.messageRoom(room, 'Someone does not like Dr. Seus')
-    response.reply('That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am')
+    response.reply('That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
   }
 
-  robot.hear(/Sam-I-am/i, (response) => {
+  robot.hear(/Sam-I-Am/i, (response) => {
     const room = response.envelope.user.name
-    robot.messageRoom(room, 'That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am')
+    robot.messageRoom(room, 'That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
   }
 ```
 

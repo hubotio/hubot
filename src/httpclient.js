@@ -21,6 +21,18 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/*
+
+April 15, 2023
+Reasoning:
+ScopedHttpClient is no longer maintained.
+
+Decision:
+Implement a phased approach to deprecate `robot.http` all together in favor of `fetch`.
+1. Convert ScopedHttpClient to Javascript and include the module in this repo
+2. Add a deprecation warning to `robot.http`
+3. Remove `robot.http` in a future release
+*/
 const path = require('path')
 const http = require('http')
 const https = require('https')
@@ -240,7 +252,26 @@ class ScopedClient {
       const ty = typeof arguments[i]
       if (ty === 'string') {
         const parsedUrl = new URL(arguments[i])
-        extend(options, parsedUrl)
+        const query = {}
+        parsedUrl.searchParams.forEach((v, k) => {
+          query[k] = v
+        })
+
+        extend(options, {
+          href: parsedUrl.href,
+          origin: parsedUrl.origin,
+          protocol: parsedUrl.protocol,
+          username: parsedUrl.username,
+          password: parsedUrl.password,
+          host: parsedUrl.host,
+          hostname: parsedUrl.hostname,
+          port: parsedUrl.port,
+          pathname: parsedUrl.pathname,
+          search: parsedUrl.search,
+          searchParams: parsedUrl.searchParams,
+          query,
+          hash: parsedUrl.hash
+        })
         delete options.url
         delete options.href
         delete options.search
@@ -249,7 +280,6 @@ class ScopedClient {
       }
       i += 1
     }
-
     if (!options.headers) { options.headers = {} }
     if (options.encoding == null) { options.encoding = 'utf-8' }
     return options
