@@ -280,7 +280,6 @@ class ScopedClient {
       }
       i += 1
     }
-    
     if (!options.headers) { options.headers = {} }
     if (options.encoding == null) { options.encoding = 'utf-8' }
     return options
