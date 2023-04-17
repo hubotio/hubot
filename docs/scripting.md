@@ -92,14 +92,14 @@ User name can be explicitely specified if desired ( for a cc to an admin/manager
 the response object a private message can be sent to the original sender.
 
 ```coffeescript
-  robot.respond /I don't like Sam-I-am/i, (res) ->
+  robot.respond /I don't like sam-i-am/i, (res) ->
     room =  'joemanager'
-    robot.messageRoom room, "Someone does not like Dr. Seus"
-    res.reply  "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+    robot.messageRoom room, "Someone does not like Dr. Seuss"
+    res.reply  "That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am"
 
-  robot.hear /Sam-I-am/i, (res) ->
+  robot.hear /sam-i-am/i, (res) ->
     room =  res.envelope.user.name
-    robot.messageRoom room, "That Sam-I-am\nThat Sam-I-am\nI do not like\nthat Sam-I-am"
+    robot.messageRoom room, "That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am"
 ```
 
 ## Capturing data
