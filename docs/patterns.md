@@ -91,7 +91,7 @@ module.exports = (robot) => {
 
     robot.brain.set('yourLockName', msg.message)  // includes user, room, etc about who locked
 
-    yourLongClobberingAsyncThing(err, response).then(
+    yourLongClobberingAsyncThing(err, res).then(
       // Clear the lock
       robot.brain.remove('yourLockName')
       msg.reply('Finally Done')
@@ -153,9 +153,9 @@ module.exports = (robot) => {
             }
         },
         // Callback
-        (response) => {
-            const fact = response.match
-            response.reply(`${fact} is ${facts[fact]}`)
+        (res) => {
+            const fact = res.match
+            res.reply(`${fact} is ${facts[fact]}`)
         }
     )
 }
@@ -185,7 +185,7 @@ The key deciding factors for inclusion vs exclusion of users are the number of u
 The key deciding factors for selectively allowing vs restricting listeners are the number of listeners in each category, the ratio of internal to external scripts, and the level of security risk your organization is willing to accept.
 
 * Selectively allowing listeners (all listeners are power commands, except for listeners A, B, C, which are considered normal commands) is a more secure method (new listeners are restricted by default), but has a much higher maintenance overhead (every silly/fun listener needs to be explicity downgraded to "normal" status).
-* Selectively restricting listeners (listeners A, B, C are power commands, everything else is a normal command) is a less secure method (new listeners are put into the normal category by default, which could give unexpected access; external scripts are particularly dangerous here), but has a lower maintenance overhead (no need to modify/enumerate all the fun/culture scripts in your access policy).
+* Selectively restricting listeners (listeners A, B, C are power commands, everything else is a normal command) is a less secure method (new listeners are put into the normal category by default, which could give unexpected access; external scripts are particularly risky here), but has a lower maintenance overhead (no need to modify/enumerate all the fun/culture scripts in your access policy).
 
 As an additional consideration, most scripts do not currently have listener IDs, so you will likely need to open PRs (or fork) any external scripts you use to add listener IDs. The actual modification is easy, but coordinating with lots of maintainers can be time consuming.
 
@@ -223,8 +223,8 @@ module.exports = (robot) => {
   robot.listen(message => {
       return true
   }, {id: 'deploy.web'},
-  response => {
-      response.reply('Deploying web...')
+  res => {
+      res.reply('Deploying web...')
   })
 }
 ```

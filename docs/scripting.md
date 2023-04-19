@@ -12,7 +12,7 @@ When you created your Hubot, the generator also created a `scripts` directory. I
 
 * live in a directory on the Hubot script load path (`src/scripts` and `scripts` by default)
 * be a `.js` file
-* export a function whos signature takes 1 argument (`robot`)
+* export a function whos signature takes 1 parameter (`robot`)
 
 By export a function, we just mean:
 
@@ -22,7 +22,7 @@ module.exports = (robot) => {
 }
 ```
 
-The `robot` argument is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
+The `robot` parameter is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
 
 ## Hearing and responding
 
@@ -30,11 +30,11 @@ Since this is a chat bot, the most common interactions are based on messages. Hu
 
 ```javascript
 module.exports = (robot) => {
-  robot.hear(/badger/i, (reresponses) => {
+  robot.hear(/badger/i, (res) => {
     // your code here
   })
 
-  robot.respond(/open the pod bay doors/i, (response) => {
+  robot.respond(/open the pod bay doors/i, (res) => {
     // your code here
   }
 }
@@ -56,26 +56,26 @@ The `robot.respond(/open the pod bay doors/i)` callback is only called for messa
 It wouldn't be called for:
 
 * HAL: please open the pod bay doors
-   *  because its `respond` is expecting the text to immediately follow the robot name
+   *  because its `respond` is expecting the text to be prefixed with the robots name
 *  has anyone ever mentioned how lovely you are when you open the pod bay doors?
    * because it lacks the robot's name at the beginning
 
 ## Send & reply
 
-The `response` parameter is an instance of `Response` (historically, this parameter was `msg` and you may see other scripts use it this way). With it, you can `send` a message back to the room the `response` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
+The `res` parameter is an instance of `Response` (historically, this parameter was `msg` and you may see other scripts use it this way). With it, you can `send` a message back to the room the `res` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
 
 ```javascript
 module.exports = (robot) => {
-  robot.hear(/badger/i, (response) => {
-    response.send(`Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS`)
+  robot.hear(/badger/i, (res) => {
+    res.send(`Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS`)
   }
 
-  robot.respond(/open the pod bay doors/i, (response) => {
-    response.reply(`I'm afraid I can't let you do that.`)
+  robot.respond(/open the pod bay doors/i, (res) => {
+    res.reply(`I'm afraid I can't let you do that.`)
   }
 
-  robot.hear(/I like pie/i, (response) => {
-    response.emote('makes a freshly baked pie')
+  robot.hear(/I like pie/i, (res) => {
+    res.emote('makes a freshly baked pie')
   }
 }
 ```
@@ -90,7 +90,7 @@ Messages can be sent to a specified room or user using the messageRoom function.
 
 ```javascript
 module.exports = (robot) => {
-  robot.hear(/green eggs/i, (response) => {    
+  robot.hear(/green eggs/i, (res) => {    
     const room = 'mytestroom'
     robot.messageRoom(room, 'I do not like green eggs and ham.  I do not like them Sam-I-Am.')
   }
@@ -100,14 +100,14 @@ module.exports = (robot) => {
 User name can be explicitely specified if desired ( for a cc to an admin/manager), or using the response object a private message can be sent to the original sender.
 
 ```javascript
-  robot.respond(/I don't like sam-i-am/i, (response) => {
+  robot.respond(/I don't like sam-i-am/i, (res) => {
     const room = 'joemanager'
     robot.messageRoom(room, 'Someone does not like Dr. Seus')
-    response.reply('That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
+    res.reply('That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
   }
 
-  robot.hear(/Sam-I-Am/i, (response) => {
-    const room = response.envelope.user.name
+  robot.hear(/Sam-I-Am/i, (res) => {
+    const room = res.envelope.user.name
     robot.messageRoom(room, 'That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
   }
 ```
@@ -117,7 +117,7 @@ User name can be explicitely specified if desired ( for a cc to an admin/manager
 So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated on `res.match`. For example, if we update a script like:
 
 ```javascript
-  robot.respond(/open the (.*) doors/i, (response) => {
+  robot.respond(/open the (.*) doors/i, (res) => {
     // your code here
   }
 ```
@@ -125,12 +125,12 @@ So far, our scripts have had static responses, which while amusing, are boring f
 If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod bay doors", and `res.match[1]` is just "pod bay". Now we can start doing more dynamic things:
 
 ```javascript
-  robot.respond(/open the (.*) doors/i, (response) => {
-    const doorType = response.match[1]
+  robot.respond(/open the (.*) doors/i, (res) => {
+    const doorType = res.match[1]
     if (doorType == 'pod bay') {
-      response.reply(`I'm afraid I can't let you do that.`)
+      res.reply(`I'm afraid I can't let you do that.`)
     } else {
-      response.reply(`Opening ${doorType} doors`)
+      res.reply(`Opening ${doorType} doors`)
     }
   }
 ```
@@ -141,7 +141,7 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
 
 
 ```javascript
-  robot.http('https://midnight-train').get()((err, response, body) => {
+  robot.http('https://midnight-train').get()((err, res, body) => {
       // your code here
   })
 ```
@@ -154,7 +154,7 @@ A post looks like:
   })
   robot.http('https://midnight-train')
     .header('Content-Type', 'application/json')
-    .post(data)((err, response, body) => {
+    .post(data)((err, res, body) => {
       // your code here
     })
 ```
@@ -164,24 +164,24 @@ A post looks like:
 
 ```javascript
   robot.http('https://midnight-train')
-    .get()((err, response, body) => {
+    .get()((err, res, body) => {
       if (err){
-        return response.send `Encountered an error :( ${err}`
+        return res.send `Encountered an error :( ${err}`
       }
       // your code here, knowing it was successful
     })
 ```
 
-`response` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using `ScopedHttpClient`, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
+`res` is an instance of node's [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse). Most of the methods don't matter as much when using `ScopedHttpClient`, but of interest are `statusCode` and `getHeader`. Use `statusCode` to check for the HTTP status code, where usually non-200 means something bad happened. Use `getHeader` for peeking at the header, for example to check for rate limiting:
 
 ```javascript
   robot.http('https://midnight-train')
-    .get() ((err, response, body) => {
+    .get() ((err, res, body) => {
       // pretend there's error checking code here
-      if (response.statusCode <> 200)
+      if (res.statusCode <> 200)
         return res.send(`Request didn't come back HTTP 200 :(`)
 
-      const rateLimitRemaining = response.getHeader('X-RateLimit-Limit') ?  parseInt(response.getHeader('X-RateLimit-Limit')) : 1
+      const rateLimitRemaining = res.getHeader('X-RateLimit-Limit') ?  parseInt(res.getHeader('X-RateLimit-Limit')) : 1
       if (rateLimitRemaining && rateLimitRemaining < 1)
         return res.send('Rate Limit hit, stop believing for awhile')
 
@@ -193,9 +193,9 @@ A post looks like:
 
 ```javascript
   robot.http('https://midnight-train')
-    .get()((err, response, body) => {
+    .get()((err, res, body) => {
       // error checking code here
-      response.send(`Got back ${body}`)
+      res.send(`Got back ${body}`)
     })
 ```
 
@@ -206,7 +206,7 @@ If you are talking to Web Services that respond with JSON representation, then w
 ```javascript
   robot.http('https://midnight-train')
     .header('Accept', 'application/json')
-    .get()((err, response, body) => {
+    .get()((err, res, body) => {
       // error checking code here
       const data = JSON.parse(body)
       res.send(`${data.passenger} taking midnight train going ${data.destination}`)
@@ -218,9 +218,9 @@ It's possible to get non-JSON back, like if the Web Service has an error and ren
 ```javascript
   robot.http('https://midnight-train')
     .header('Accept', 'application/json')
-    .get()((err, response, body) => {
-      // err & response status checking code here
-      if (response.getHeader('Content-Type') != 'application/json'){
+    .get()((err, res, body) => {
+      // err & res status checking code here
+      if (res.getHeader('Content-Type') != 'application/json'){
         return res.send(`Didn't get back JSON :(`)
       }
       let data = null
@@ -254,7 +254,7 @@ For consuming a Web Service that responds with HTML, you'll need an HTML parser.
 
 As mentioned previously, Hubot uses [ScopedHttpClient](../src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
 
-If you need to control options on `http` and `https` more directly, you pass a second argument to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
+If you need to control options on `http` and `https` more directly, you pass a second parameter to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
 
 ```javascript
   const options = {
@@ -271,7 +271,7 @@ A common pattern is to hear or respond to commands, and send with a random funny
 
 ```javascript
 const lulz = ['lol', 'rofl', 'lmao']
-response.send(response.random(lulz))
+res.send(res.random(lulz))
 ```
 
 ## Topic
@@ -280,8 +280,8 @@ Hubot can react to a room's topic changing, assuming that the adapter supports i
 
 ```javascript
 module.exports = (robot) => {
-  robot.topic((response) => {
-    response.send()`${response.message.text}? That's a Paddlin'`)
+  robot.topic((res) => {
+    res.send()`${res.message.text}? That's a Paddlin'`)
   })
 }
 ```
@@ -295,11 +295,11 @@ const enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotch
 const leaveReplies = ['Are you still there?', 'Target lost', 'Searching']
 
 module.exports = (robot) => {
-  robot.enter(response) => {
-    response.send(response.random(enterReplies))
+  robot.enter(res) => {
+    res.send(res.random(enterReplies))
   }
-  robot.leave(response) => {
-    response.send(response.random(leaveReplies))
+  robot.leave(res) => {
+    res.send(res.random(leaveReplies))
   }
 }
 ```
@@ -308,7 +308,7 @@ module.exports = (robot) => {
 
 While the above helpers cover most of the functionality the average user needs (hear, respond, enter, leave, topic), sometimes you would like to have very specialized matching logic for listeners. If so, you can use `listen` to specify a custom match function instead of a regular expression.
 
-The match function must return a truthy value if the listener callback should be executed. The truthy return value of the match function is then passed to the callback as response.match.
+The match function must return a truthy value if the listener callback should be executed. The truthy return value of the match function is then passed to the callback as `res.match`.
 
 ```javascript
 module.exports = (robot) =>{
@@ -321,10 +321,10 @@ module.exports = (robot) =>{
       // Occassionally respond to things that Steve says
       return message.user.name == 'Steve' && Math.random() > 0.8
     },
-    (response) => {
+    (res) => {
       // Standard listener callback
       // Let Steve know how happy you are that he exists
-      response.reply(`HI STEVE! YOU'RE MY BEST FRIEND! (but only like ${response.match * 100}% of the time)`)
+      res.reply(`HI STEVE! YOU'RE MY BEST FRIEND! (but only like ${res.match * 100}% of the time)`)
     }
   )
 }
@@ -340,8 +340,8 @@ Hubot can access the environment he's running in, just like any other Node.js pr
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (response) => {
-    response.send(`${answer}, but what is the question?`)
+  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
+    res.send(`${answer}, but what is the question?`)
   }
 }
 ```
@@ -354,8 +354,8 @@ Here we can default to something:
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING ?? 42
 
 module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (response) => {
-    response.send(`${answer}, but what is the question?`)
+  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
+    res.send(`${answer}, but what is the question?`)
   }
 }
 ```
@@ -370,8 +370,8 @@ if(!answer) {
 }
 
 module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (response) => {
-    response.send(`${answer}, but what is the question?`)
+  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
+    res.send(`${answer}, but what is the question?`)
   }
 }
 ```
@@ -382,11 +382,11 @@ And lastly, we update the `robot.respond` to check it:
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (response) => {
+  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
     if(!answer) {
-      return response.send('Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again')
+      return res.send('Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again')
     }
-    response.send(`${answer}, but what is the question?`)
+    res.send(`${answer}, but what is the question?`)
   }
 }
 ```
@@ -410,9 +410,9 @@ Hubot can run code later using JavaScript's built-in [setTimeout](http://nodejs.
 
 ```javascript
 module.exports = (robot) => {
-  robot.respond(/you are a little slow/, (response) => {
+  robot.respond(/you are a little slow/, (res) => {
     setTimeout(() => {
-      response.send(`Who you calling 'slow'?`)
+      res.send(`Who you calling 'slow'?`)
     }, 60 * 1000)
   })
 }
@@ -422,10 +422,10 @@ Additionally, Hubot can run code on an interval using [setInterval](http://nodej
 
 ```javascript
 module.exports = (robot) => {
-  robot.respond(/annoy me/, (response) => {
-    response.send('Hey, want to hear the most annoying sound in the world?')
+  robot.respond(/annoy me/, (res) => {
+    res.send('Hey, want to hear the most annoying sound in the world?')
     setInterval(() => {
-      response.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
+      res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
     }, 1000)
   })
 }
@@ -437,24 +437,24 @@ Both `setTimeout` and `setInterval` return the ID of the timeout or interval it 
 module.exports = (robot) => {
   let annoyIntervalId = null
 
-  robot.respond(/annoy me/, (response) => {
+  robot.respond(/annoy me/, (res) => {
     if (annoyIntervalId) {
-      return response.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
+      return res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
     }
 
-    response.send('Hey, want to hear the most annoying sound in the world?')
+    res.send('Hey, want to hear the most annoying sound in the world?')
     annoyIntervalId = setInterval(() => {
-      response.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
+      res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
     }, 1000)
   }
 
-  robot.respond(/unannoy me/, (response) => {
+  robot.respond(/unannoy me/, (res) => {
     if (annoyIntervalId) {
-      response.send('GUYS, GUYS, GUYS!')
+      res.send('GUYS, GUYS, GUYS!')
       clearInterval(annoyIntervalId)
       annoyIntervalId = null
     } else {
-      response.send('Not annoying you right now, am I?')
+      res.send('Not annoying you right now, am I?')
     }
   }
 }
@@ -472,14 +472,14 @@ The most common use of this is for providing HTTP end points for services with w
 ```javascript
 module.exports = (robot) => {
   // the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
-  robot.router.post('/hubot/chatsecrets/:room', (request, response) => {
-    const room = request.params.room
-    const data = request.body?.payload ? JSON.parse(request.body.payload) : request.body
+  robot.router.post('/hubot/chatsecrets/:room', (req, res) => {
+    const room = req.params.room
+    const data = req.body?.payload ? JSON.parse(req.body.payload) : req.body
     const secret = data.secret
 
     robot.messageRoom(room, `I have a secret: ${secret}`)
 
-    response.send('OK')
+    res.send('OK')
   })
 }
 ```
@@ -505,7 +505,7 @@ One use case for this would be to have one script for handling interactions with
 ```javascript
 // src/scripts/github-commits.js
 module.exports = (robot) => {
-  robot.router.post('/hubot/gh-commits', (request, response) => {
+  robot.router.post('/hubot/gh-commits', (req, res) => {
     robot.emit('commit', {
         user: {}, //hubot user object
         repo: 'https://github.com/github/hubot',
@@ -534,11 +534,11 @@ No code is perfect, and errors and exceptions are to be expected. Previously, an
 ```javascript
 // src/scripts/does-not-compute.js
 module.exports = (robot) => {
-  robot.error((err, response) => {
+  robot.error((err, res) => {
     robot.logger.error('DOES NOT COMPUTE')
 
-    if(response) {
-      response.reply('DOES NOT COMPUTE')
+    if(res) {
+      res.reply('DOES NOT COMPUTE')
     }
   }
 }
@@ -546,16 +546,16 @@ module.exports = (robot) => {
 
 You can do anything you want here, but you will want to take extra precaution of rescuing and logging errors, particularly with asynchronous code. Otherwise, you might find yourself with recursive errors and not know what is going on.
 
-Under the hood, there is an 'error' event emitted, with the error handlers consuming that event. The uncaughtException handler [technically leaves the process in an unknown state](http://nodejs.org/api/process.html#process_event_uncaughtexception). Therefore, you should rescue your own exceptions whenever possible, and emit them yourself. The first argument is the error emitted, and the second argument is an optional message that generated the error.
+Under the hood, there is an 'error' event emitted, with the error handlers consuming that event. The uncaughtException handler [technically leaves the process in an unknown state](http://nodejs.org/api/process.html#process_event_uncaughtexception). Therefore, you should rescue your own exceptions whenever possible, and emit them yourself. The first parameter is the error emitted, and the second parameter is an optional message that generated the error.
 
 Using previous examples:
 
 ```javascript
-  robot.router.post()'/hubot/chatsecrets/:room', (request, response) => {
-    const room = request.params.room
+  robot.router.post()'/hubot/chatsecrets/:room', (req, res) => {
+    const room = req.params.room
     let data = null
     try {
-      data = JSON.parse(request.body.payload)
+      data = JSON.parse(req.body.payload)
     } catch(err) {
       robot.emit('error', err)
     }
@@ -563,12 +563,12 @@ Using previous examples:
     // rest of the code here
   }
 
-  robot.hear(/midnight train/i, (response) => {
+  robot.hear(/midnight train/i, (res) => {
     robot.http('https://midnight-train')
-      .get()((err, response, body) => {
+      .get()((err, res, body) => {
         if (err) {
           res.reply('Had problems taking the midnight train')
-          robot.emit('error', err, response)
+          robot.emit('error', err, res)
           return
         }
         // rest of code here
@@ -610,7 +610,7 @@ When documenting commands, here are some best practices:
 * Stay on one line. Help commands get sorted, so would insert the second line at an unexpected location, where it probably won't make sense.
 * Refer to the Hubot as hubot, even if your hubot is named something else. It will automatically be replaced with the correct name. This makes it easier to share scripts without having to update docs.
 * For `robot.respond` documentation, always prefix with `hubot`. Hubot will automatically replace this with your robot's name, or the robot's alias if it has one
-* Check out how man pages document themselves. In particular, brackets indicate optional parts, '...' for any number of arguments, etc.
+* Check out how man pages document themselves. In particular, brackets indicate optional parts, '...' for any number of parameters, etc.
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
@@ -621,21 +621,21 @@ Hubot has two persistence methods available that can be used to store and retrie
 ### Brain
 
 ```javascript
-robot.respond(/have a soda/i, (response) => {
+robot.respond(/have a soda/i, (res) => {
   // Get number of sodas had (coerced to a number).
   const sodasHad = robot.brain.get('totalSodas') * 1 ?? 0
 
   if (sodasHad > 4) {
-    response.reply(`I'm too fizzy..`)
+    res.reply(`I'm too fizzy..`)
   } else {
-    response.reply('Sure!')
+    res.reply('Sure!')
     robot.brain.set('totalSodas', sodasHad + 1)
   }
 })
 
-robot.respond(/sleep it off/i, (response) => {
+robot.respond(/sleep it off/i, (res) => {
   robot.brain.set('totalSodas', 0)
-  response.reply('zzzzz')
+  res.reply('zzzzz')
 }
 ```
 
@@ -643,15 +643,15 @@ If the script needs to lookup user data, there are methods on `robot.brain` for 
 
 ```javascript
 module.exports = (robot) => {
-  robot.respond(/who is @?([\w .\-]+)\?*$/i, (response) => {
-    const name = response.match[1].trim()
+  robot.respond(/who is @?([\w .\-]+)\?*$/i, (res) => {
+    const name = res.match[1].trim()
 
     const users = robot.brain.usersForFuzzyName(name)
     if (users.length == 1) {
       const user = users[0]
       // Do something interesting here..
     }
-    response.send(`${name} is user - ${user}`)
+    res.send(`${name} is user - ${user}`)
   })
 }
 ```
@@ -661,23 +661,23 @@ module.exports = (robot) => {
 Unlike the brain, the datastore's getter and setter methods are asynchronous and don't resolve until the call to the underlying database has resolved. This requires a slightly different approach to accessing data:
 
 ```javascript
-robot.respond(/have a soda/i, (response) => {
+robot.respond(/have a soda/i, (res) => {
   // Get number of sodas had (coerced to a number).
   robot.datastore.get('totalSodas').then((value) => {
     const sodasHad = value * 1 ?? 0
 
     if (sodasHad > 4) {
-      response.reply(`I'm too fizzy..`)
+      res.reply(`I'm too fizzy..`)
     } else {
-      response.reply('Sure!')
+      res.reply('Sure!')
       robot.brain.set('totalSodas', sodasHad + 1)
     }
   })
 })
 
-robot.respond(/sleep it off/i, (response) => {
+robot.respond(/sleep it off/i, (res) => {
   robot.datastore.set('totalSodas', 0).then(() => {
-    response.reply('zzzzz')
+    res.reply('zzzzz')
   })
 })
 ```
@@ -687,14 +687,14 @@ The datastore also allows setting and getting values which are scoped to individ
 ```javascript
 module.exports = (robot) ->
 
-  robot.respond(/who is @?([\w .\-]+)\?*$/i, (response) => {
-    const name = response.match[1].trim()
+  robot.respond(/who is @?([\w .\-]+)\?*$/i, (res) => {
+    const name = res.match[1].trim()
 
     const users = robot.brain.usersForFuzzyName(name)
     if (users.length == 1) {
       const user = users[0]
       user.get('roles').then((roles) => {
-        response.send "#{name} is #{roles.join(', ')}"
+        res.send "#{name} is #{roles.join(', ')}"
       })
     }
   })
@@ -767,11 +767,11 @@ Returning to an earlier example:
 
 ```javascript
 module.exports = (robot) => {
-  robot.respond(/annoy me/, id:'annoyance.start', (response) => {
+  robot.respond(/annoy me/, id:'annoyance.start', (res) => {
     // code to annoy someone
   })
 
-  robot.respond(/unannoy me/, id:'annoyance.stop', (response) => {
+  robot.respond(/unannoy me/, id:'annoyance.stop', (res) => {
     // code to stop annoying someone
   })
 }
@@ -799,10 +799,10 @@ Middleware is called with:
   - See the each middleware type's API to see what the context will expose.
 - `next`
   - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
-  - `next` should be called with a single, optional argument: either the provided `done` function or a new function that eventually calls `done`. If the argument is not given, the provided `done` will be assumed.
+  - `next` should be called with a single, optional parameter: either the provided `done` function or a new function that eventually calls `done`. If the parameter is not given, the provided `done` will be assumed.
 - `done`
  - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
- - `done` should be called with no arguments
+ - `done` should be called with no parameters
 
 Every middleware receives the same API signature of `context`, `next`, and
 `done`. Different kinds of middleware may receive different information in the
@@ -871,16 +871,16 @@ This example also shows how listener-specific metadata can be leveraged to creat
 
 ```javascript
 module.exports = (robot) => {
-  robot.hear(/hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (response) => {
+  robot.hear(/hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (res) => {
     // This will execute no faster than once every ten seconds
-    response.reply('Why, hello there!')
+    res.reply('Why, hello there!')
   })
 }
 ```
 
 ## Listener Middleware API
 
-Listener middleware callbacks receive three arguments, `context`, `next`, and
+Listener middleware callbacks receive three parameters, `context`, `next`, and
 `done`. See the [middleware API](#execution-process-and-api) for a description
 of `next` and `done`. Listener middleware context includes these fields:
   - `listener`
@@ -928,7 +928,7 @@ robot.receiveMiddleware((context, next, done) => {
 
 ## Receive Middleware API
 
-Receive middleware callbacks receive three arguments, `context`, `next`, and
+Receive middleware callbacks receive three parameters, `context`, `next`, and
 `done`. See the [middleware API](#execution-process-and-api) for a description
 of `next` and `done`. Receive middleware context includes these fields:
   - `response`
@@ -961,7 +961,7 @@ module.exports = (robot)=> {
 
 ## Response Middleware API
 
-Response middleware callbacks receive three arguments, `context`, `next`, and
+Response middleware callbacks receive three parameters, `context`, `next`, and
 `done`. See the [middleware API](#execution-process-and-api) for a description
 of `next` and `done`. Receive middleware context includes these fields:
   - `response`
