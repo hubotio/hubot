@@ -603,7 +603,7 @@ Hubot scripts can be documented with comments at the top of their file, for exam
 //   <github username of the original script author>
 ```
 
-The most important and user facing of these is `Commands`. At load time, Hubot looks at the `Commands` section of each scripts, and build a list of all commands. The included `help.js` lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
+The most important and user facing of these is `Commands`. At load time, Hubot looks at the `Commands` section of each scripts, and build a list of all commands. The [hubot-help](https://github.com/hubotio/hubot-help) script lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
 
 When documenting commands, here are some best practices:
 
