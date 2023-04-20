@@ -6,43 +6,42 @@ permalink: /docs/adapters/development/
 
 ## Adapter Basics
 
-All adapters inherit from the Adapter class in the `src/adapter.coffee` file.  If you're writing your adapter in CoffeeScript, require the primary version of the adapter:
-
-```coffee
-Adapter = require('hubot').Adapter
-```
+All adapters inherit from the Adapter class in the `src/adapter.js` file.
 
 If you're writing your adapter in ES2015, you must require the ES2015 entrypoint instead:
 
-```js
+```javascript
 const Adapter = require('hubot/es2015').Adapter;
 ```
 
 There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
 
-```coffee
-class Sample extends Adapter
+```javascript
+class Sample extends Adapter {
+  constructor(robot) {
+    super(robot)
+    this.robot.logger.info('Constructor')
+  }
+  send(envelope, strings...) {
+    this.robot.logger.info('Send')
+  }
+  reply(envelope, strings...) {
+    this.robot.logger.info('Reply')
+  }
+  run() {
+    this.robot.logger.info('Run')
+    this.emit('connected')
+    const user = new User(1001, 'Sample User')
+    const message = new TextMessage(user, 'Some Sample Message', 'MSG-001')
+    this.robot.receive(message)
+  }
 
-  constructor: ->
-    super
-    @robot.logger.info "Constructor"
-
-  send: (envelope, strings...) ->
-    @robot.logger.info "Send"
-
-  reply: (envelope, strings...) ->
-    @robot.logger.info "Reply"
-
-  run: ->
-    @robot.logger.info "Run"
-    @emit "connected"
-    user = new User 1001, name: 'Sample User'
-    message = new TextMessage user, 'Some Sample Message', 'MSG-001'
-    @robot.receive message
+}
 
 
-exports.use = (robot) ->
-  new Sample robot
+exports.use = (robot) => {
+  new Sample(robot)
+}
 ```
 
 ## Setting Up Your Development Environment
@@ -76,16 +75,18 @@ exports.use = (robot) ->
 
 ## Gotchas
 
-There is a an open issue in the node community around [npm linked peer dependencies not working](https://github.com/npm/npm/issues/5875).  To get this working for our project you will need to do some minor changes to your code.
+There is a an open issue in the node community around [npm linked peer dependencies not working](https://github.com/npm/npm/issues/5875). To get this working for our project you will need to do some minor changes to your code.
 
 1. For the import in your `hubot-sample` adapter, add the following code
 
-  ```coffee
-  try
-    {Robot,Adapter,TextMessage,User} = require 'hubot'
-  catch
-    prequire = require('parent-require')
-    {Robot,Adapter,TextMessage,User} = prequire 'hubot'
+  ```javascript
+  let  {Robot,Adapter,TextMessage,User} = {}
+  try {
+    {Robot,Adapter,TextMessage,User} = require('hubot')
+  } catch {
+    const prequire = require('parent-require')
+    {Robot,Adapter,TextMessage,User} = prequire('hubot')
+  }
   ```
 2. In your `hubot-sample` folder, modify the `package.json` to include the following dependency so this custom import mechanism will work
 
