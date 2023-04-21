@@ -17,31 +17,29 @@ const Adapter = require('hubot/es2015').Adapter;
 There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
 
 ```javascript
+const Adapter = require('../adapter')
+const User = require('../user')
+const TextMessage = require('../message').TextMessage
 class Sample extends Adapter {
-  constructor(robot) {
-    super(robot)
-    this.robot.logger.info('Constructor')
-  }
-  send(envelope, strings...) {
-    this.robot.logger.info('Send')
-  }
-  reply(envelope, strings...) {
-    this.robot.logger.info('Reply')
-  }
-  run() {
-    this.robot.logger.info('Run')
-    this.emit('connected')
-    const user = new User(1001, 'Sample User')
-    const message = new TextMessage(user, 'Some Sample Message', 'MSG-001')
-    this.robot.receive(message)
-  }
-
+    constructor(robot) {
+        super(robot)
+        this.robot.logger.info('Constructor')
+    }
+    send(envelope, ...strings) {
+        this.robot.logger.info('Send')
+    }
+    reply(envelope, ...strings) {
+        this.robot.logger.info('Reply')
+    }
+    run() {
+        this.robot.logger.info('Run')
+        this.emit('connected')
+        const user = new User(1001, 'Sample User')
+        const message = new TextMessage(user, 'Some Sample Message', 'MSG-001')
+        this.robot.receive(message)
+    }
 }
-
-
-exports.use = (robot) => {
-  new Sample(robot)
-}
+exports.use = (robot) => new Sample(robot)
 ```
 
 ## Setting Up Your Development Environment
