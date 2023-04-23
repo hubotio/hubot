@@ -4,7 +4,6 @@ const fs = require('fs')
 const readline = require('readline')
 const Stream = require('stream')
 const cline = require('cline')
-const chalk = require('chalk')
 
 const Adapter = require('../adapter')
 
@@ -20,7 +19,7 @@ class Shell extends Adapter {
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    Array.from(strings).forEach(str => console.log(chalk.bold(`${str}`)))
+    Array.from(strings).forEach(str => console.log(`${str}`))
   }
 
   emote (envelope/* , ...strings */) {
@@ -36,15 +35,13 @@ class Shell extends Adapter {
 
   run () {
     this.buildCli()
-
     loadHistory((error, history) => {
       if (error) {
         console.log(error.message)
       }
-
       this.cli.history(history)
       this.cli.interact(`${this.robot.name}> `)
-      return this.emit('connected')
+      return this.emit('connected', this)
     })
   }
 
@@ -97,14 +94,11 @@ class Shell extends Adapter {
       }
 
       const outstream = fs.createWriteStream(historyPath, fileOpts)
-      outstream.on('finish', this.shutdown.bind(this))
-
+      outstream.on('end', this.shutdown.bind(this))
       for (i = 0, len = history.length; i < len; i++) {
         item = history[i]
         outstream.write(item + '\n')
       }
-
-      outstream.end(this.shutdown.bind(this))
     })
   }
 }

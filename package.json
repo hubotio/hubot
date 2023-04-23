@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "async": ">=0.1.0 <1.0.0",
-    "chalk": "^1.0.0",
     "cline": "^0.8.2",
     "coffeescript": "1.6.3",
     "connect-multiparty": "^2.1.1",
