@@ -317,13 +317,13 @@ class Robot {
           // stack doesn't get too big
           process.nextTick(() =>
             // Stop processing when message.done == true
-            done(context.response.message.done)
+            done(null, context.response.message.done)
           )
         })
       } catch (err) {
         this.emit('error', err, new this.Response(this, context.response.message, []))
         // Continue to next listener when there is an error
-        done(false)
+        done(null, false)
       }
     },
     // Ignore the result ( == the listener that set message.done = true)

@@ -25,13 +25,13 @@
     "optparse": "^1.0.5"
   },
   "devDependencies": {
-    "chai": "~2.1.0",
+    "chai": "^4.3.7",
     "is-circular": "^1.0.2",
     "mocha": "^10.2.0",
     "mockery": "^2.1.0",
     "semantic-release": "^21.0.1",
-    "sinon": "~1.17.0",
-    "sinon-chai": "^2.8.0",
+    "sinon": "^15.0.4",
+    "sinon-chai": "^3.7.0",
     "standard": "^17.0.0"
   },
   "engines": {

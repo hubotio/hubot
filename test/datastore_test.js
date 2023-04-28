@@ -30,6 +30,10 @@ describe('Datastore', function () {
     this.robot.brain.userForId('2', { name: 'User Two' })
   })
 
+  this.afterEach(function () {
+    this.clock.restore()
+  })
+
   describe('global scope', function () {
     it('returns undefined for values not in the datastore', function () {
       return this.robot.datastore.get('blah').then(function (value) {
