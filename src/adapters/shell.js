@@ -14,12 +14,13 @@ const TextMessage = _require.TextMessage
 const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.env.HUBOT_SHELL_HISTSIZE) : 1024
 
 const historyPath = '.hubot_history'
+const bold = str => `\x1b[1m${str}\x1b[22m`
 
 class Shell extends Adapter {
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
-    Array.from(strings).forEach(str => console.log(`${str}`))
+    Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
   emote (envelope/* , ...strings */) {
