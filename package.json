@@ -52,6 +52,6 @@
     "branches": [
       "master"
     ],
-    "dryRun": true
+    "dryRun": false
   }
 }
