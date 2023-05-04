@@ -46,7 +46,12 @@
     "start": "bin/hubot",
     "pretest": "standard",
     "test": "mocha --exit",
-    "test:smoke": "node src/**/*.js",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "test:smoke": "node src/**/*.js"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "dryRun": false
   }
 }
