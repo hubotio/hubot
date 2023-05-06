@@ -345,7 +345,7 @@ describe('Middleware', function () {
   // Any new fields that are exposed to middleware should be explicitly
   // tested for.
   describe('Public Middleware APIs', function () {
-    beforeEach(function () {
+    beforeEach(async function () {
       mockery.enable({
         warnOnReplace: false,
         warnOnUnregistered: false
@@ -353,7 +353,8 @@ describe('Middleware', function () {
       mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
       process.env.EXPRESS_PORT = 0
       this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
-      this.robot.run
+      await this.robot.loadAdapter('mock-adapter')
+      this.robot.run()
 
       // Re-throw AssertionErrors for clearer test failures
       this.robot.on('error', function (name, err, response) {
