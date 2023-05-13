@@ -1,11 +1,12 @@
 'use strict'
+require('log-node')()
 
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const path = require('path')
 
 const async = require('async')
-const Log = require('log')
+const log = require('log')
 const HttpClient = require('./httpclient')
 
 const Brain = require('./brain')
@@ -49,7 +50,9 @@ class Robot {
       response: new Middleware(this),
       receive: new Middleware(this)
     }
-    this.logger = new Log(process.env.HUBOT_LOG_LEVEL || 'info')
+    process.env.LOG_LEVEL = process.env.LOG_LEVEL || process.env.HUBOT_LOG_LEVEL || 'info'
+    this.logger = log.get('robot')
+
     this.pingIntervalId = null
     this.globalHttpOptions = {}
 

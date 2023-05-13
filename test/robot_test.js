@@ -6,6 +6,7 @@
 // Assertions and Stubbing
 const chai = require('chai')
 const sinon = require('sinon')
+const emitter = require('log/lib/emitter')
 chai.use(require('sinon-chai'))
 
 const expect = chai.expect
@@ -422,15 +423,24 @@ describe('Robot', function () {
         })
 
         it('logs a warning for a .js file', function () {
-          sinon.stub(this.robot.logger, 'warning')
+          let wasCalled = false
+          const listener = e => {
+            wasCalled = e.messageTokens.some(t => t.indexOf('Expected scripts/test-script') > -1)
+          }
+          emitter.on('log', listener)
           this.robot.loadFile('./scripts', 'test-script.js')
-          expect(this.robot.logger.warning).to.have.been.called
+          expect(wasCalled).to.be.true
+          emitter.off('log', listener)
         })
 
         it('logs a warning for a .mjs file', function () {
-          sinon.stub(this.robot.logger, 'warning')
+          let wasCalled = false
+          const listener = e => {
+            wasCalled = e.messageTokens.some(t => t.indexOf('Expected scripts/test-script') > -1)
+          }
+          emitter.on('log', listener)
           this.robot.loadFile('./scripts', 'test-script.mjs')
-          expect(this.robot.logger.warning).to.have.been.called
+          expect(wasCalled).to.be.true
         })
       })
 
