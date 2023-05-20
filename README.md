@@ -18,4 +18,3 @@ are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTI
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
-`
