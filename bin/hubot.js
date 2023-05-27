@@ -122,7 +122,6 @@ if (options.create) {
     }
   }
 
-
   function loadHubotScripts () {
     const hubotScripts = pathResolve('.', 'hubot-scripts.json')
     let scripts

@@ -427,21 +427,22 @@ describe('Robot', function () {
           let wasCalled = false
           const listener = e => {
             wasCalled = e.messageTokens.some(t => t.indexOf('Expected scripts/test-script') > -1)
+            emitter.off('log', listener)
+            expect(wasCalled).to.be.true
           }
           emitter.on('log', listener)
           this.robot.loadFile('./scripts', 'test-script.js')
-          expect(wasCalled).to.be.true
-          emitter.off('log', listener)
         })
 
         it('logs a warning for a .mjs file', function () {
           let wasCalled = false
           const listener = e => {
             wasCalled = e.messageTokens.some(t => t.indexOf('Expected scripts/test-script') > -1)
+            emitter.off('log', listener)
+            expect(wasCalled).to.be.true
           }
           emitter.on('log', listener)
           this.robot.loadFile('./scripts', 'test-script.mjs')
-          expect(wasCalled).to.be.true
         })
       })
 

@@ -63,8 +63,6 @@ class Robot {
       this.setupNullRouter()
     }
 
-
-
     this.adapterName = adapter
     this.errorHandlers = []
 
@@ -370,7 +368,6 @@ class Robot {
         }
         return require(full)
       })()
-
       if (typeof script === 'function') {
         script(this)
         this.parseHelp(path.join(filepath, filename))
