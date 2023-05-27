@@ -139,7 +139,7 @@ function loadBotforgeScripts () {
     try {
       scripts = JSON.parse(data)
       scriptsPath = pathResolve('node_modules', 'botforge-scripts', 'src', 'scripts')
-      robot.loadHubotScripts(scriptsPath, scripts)
+      robot.loadBotforgeScripts(scriptsPath, scripts)
     } catch (error) {
       const err = error
       robot.logger.error(`Error parsing JSON data from botforge-scripts.json: ${err}`)
@@ -163,7 +163,7 @@ function loadBotforgeScripts () {
       return robot.logger.warning(botforgeScriptsWarning)
     }
 
-    botforgeScriptsWarning += 'The following scripts have known replacements. Follow the link for installation instructions, then remove it from hubot-scripts.json:\n'
+    botforgeScriptsWarning += 'The following scripts have known replacements. Follow the link for installation instructions, then remove it from botforge-scripts.json:\n'
 
     scripts.forEach((script) => {
       const replacement = replacements[script]
@@ -180,7 +180,7 @@ function loadBotforgeScripts () {
     if (scriptsWithoutReplacements.length > 0) {
       botforgeScriptsWarning += 'The following scripts don’t have (known) replacements. You can try searching https://www.npmjs.com/ or http://github.com/search or your favorite search engine. You can copy the script into your local scripts directory, or consider creating a new package to maintain yourself. If you find a replacement or create a package yourself, please post on https://github.com/github/hubot-scripts/issues/1641:\n'
       botforgeScriptsWarning += scriptsWithoutReplacements.map((script) => `* ${script}\n`).join('')
-      botforgeScriptsWarning += '\nYou an also try updating hubot-scripts to get the latest list of replacements: npm install --save hubot-scripts@latest'
+      botforgeScriptsWarning += '\nYou an also try updating botforge-scripts to get the latest list of replacements: npm install --save botforge-scripts@latest'
     }
 
     robot.logger.warning(botforgeScriptsWarning)

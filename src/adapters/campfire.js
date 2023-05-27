@@ -86,9 +86,9 @@ class Campfire extends Adapter {
     const self = this
 
     const options = {
-      token: process.env.HUBOT_CAMPFIRE_TOKEN,
-      rooms: process.env.HUBOT_CAMPFIRE_ROOMS,
-      account: process.env.HUBOT_CAMPFIRE_ACCOUNT
+      token: process.env.BOTFORGE_CAMPFIRE_TOKEN,
+      rooms: process.env.BOTFORGE_CAMPFIRE_ROOMS,
+      account: process.env.BOTFORGE_CAMPFIRE_ACCOUNT
     }
 
     const bot = new CampfireStreaming(options, this.robot)
@@ -243,7 +243,7 @@ class CampfireStreaming extends EventEmitter {
         const headers = {
           Host: 'streaming.campfirenow.com',
           Authorization: self.authorization,
-          'User-Agent': `Hubot/${this.robot != null ? this.robot.version : undefined} (${this.robot != null ? this.robot.name : undefined})`
+          'User-Agent': `Botforge/${this.robot != null ? this.robot.version : undefined} (${this.robot != null ? this.robot.name : undefined})`
         }
 
         const options = {
@@ -329,7 +329,7 @@ class CampfireStreaming extends EventEmitter {
       Authorization: this.authorization,
       Host: this.host,
       'Content-Type': 'application/json',
-      'User-Agent': `Hubot/${this.robot != null ? this.robot.version : undefined} (${this.robot != null ? this.robot.name : undefined})`
+      'User-Agent': `Botforge/${this.robot != null ? this.robot.version : undefined} (${this.robot != null ? this.robot.name : undefined})`
     }
 
     const options = {

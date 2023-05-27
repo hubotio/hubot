@@ -1,27 +1,27 @@
-; Hubot systemd service unit file
-; Place in e.g. `/etc/systemd/system/hubot.service`, then `systemctl daemon-reload` and `service hubot start`.
+; Botforge systemd service unit file
+; Place in e.g. `/etc/systemd/system/botforge.service`, then `systemctl daemon-reload` and `service botforge start`.
 
 [Unit]
-Description=Hubot
+Description=Botforge
 Requires=network.target
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/path/to/hubot
-User=change-to-hubot-user
+WorkingDirectory=/path/to/botforge
+User=change-to-botforge-user
 
 Restart=always
 RestartSec=10
 
-; Configure Hubot environment variables, use quotes around vars with whitespace as shown below.
-Environment="HUBOT_aaa=xxx"
-Environment="HUBOT_bbb='yyy yyy'"
+; Configure Botforge environment variables, use quotes around vars with whitespace as shown below.
+Environment="BOTFORGE_aaa=xxx"
+Environment="BOTFORGE_bbb='yyy yyy'"
 
 ; Alternatively multiple environment variables can loaded from an external file
-;EnvironmentFile=/etc/hubot-environment
+;EnvironmentFile=/etc/botforge-environment
 
-ExecStart=/path/to/hubot/bin/hubot --adapter zzz
+ExecStart=/path/to/botforge/bin/botforge --adapter zzz
 
 [Install]
 WantedBy=multi-user.target

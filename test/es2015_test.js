@@ -11,24 +11,23 @@ const mockery = require('mockery')
 
 const expect = chai.expect
 
-// Hubot classes
-const Hubot = require('../es2015')
-const User = Hubot.User
-const Brain = Hubot.Brain
-const Robot = Hubot.Robot
-const Adapter = Hubot.Adapter
-const Response = Hubot.Response
-const Listener = Hubot.Listener
-const TextListener = Hubot.TextListener
-const Message = Hubot.Message
-const TextMessage = Hubot.TextMessage
-const EnterMessage = Hubot.EnterMessage
-const LeaveMessage = Hubot.LeaveMessage
-const TopicMessage = Hubot.TopicMessage
-const CatchAllMessage = Hubot.CatchAllMessage
-const loadBot = Hubot.loadBot
+const Botforge = require('../es2015')
+const User = Botforge.User
+const Brain = Botforge.Brain
+const Robot = Botforge.Robot
+const Adapter = Botforge.Adapter
+const Response = Botforge.Response
+const Listener = Botforge.Listener
+const TextListener = Botforge.TextListener
+const Message = Botforge.Message
+const TextMessage = Botforge.TextMessage
+const EnterMessage = Botforge.EnterMessage
+const LeaveMessage = Botforge.LeaveMessage
+const TopicMessage = Botforge.TopicMessage
+const CatchAllMessage = Botforge.CatchAllMessage
+const loadBot = Botforge.loadBot
 
-describe('hubot/es2015', function () {
+describe('botforge/es2015', function () {
   it('exports User class', function () {
     class MyUser extends User {}
     const user = new MyUser('id123', { foo: 'bar' })
@@ -57,13 +56,13 @@ describe('hubot/es2015', function () {
       warnOnReplace: false,
       warnOnUnregistered: false
     })
-    mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+    mockery.registerMock('botforge-mock-adapter', require('./fixtures/mock-adapter'))
 
     class MyRobot extends Robot {}
-    const robot = new MyRobot(null, 'mock-adapter', false, 'TestHubot')
+    const robot = new MyRobot(null, 'mock-adapter', false, 'TestBotforge')
 
     expect(robot).to.be.an.instanceof(Robot)
-    expect(robot.name).to.equal('TestHubot')
+    expect(robot.name).to.equal('TestBotforge')
 
     mockery.disable()
   })
@@ -190,10 +189,10 @@ describe('hubot/es2015', function () {
   })
 
   it('exports loadBot function', function () {
-    sinon.stub(Hubot, 'Robot')
+    sinon.stub(Botforge, 'Robot')
 
     expect(loadBot).to.be.a('function')
-    Hubot.loadBot('adapterPath', 'adapterName', 'enableHttpd', 'botName', 'botAlias')
-    expect(Hubot.Robot).to.be.called.calledWith('adapterPath', 'adapterName', 'enableHttpd', 'botName', 'botAlias')
+    Botforge.loadBot('adapterPath', 'adapterName', 'enableHttpd', 'botName', 'botAlias')
+    expect(Botforge.Robot).to.be.called.calledWith('adapterPath', 'adapterName', 'enableHttpd', 'botName', 'botAlias')
   })
 })

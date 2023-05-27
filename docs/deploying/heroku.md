@@ -5,7 +5,7 @@ permalink: /docs/deploying/heroku/
 # Deploying to Heroku
 
 If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
-[Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubot.
+[Heroku](http://www.heroku.com/) is an easy and supported way to deploy botforge.
 
 Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) to start, then follow their '[Getting Started](https://devcenter.heroku.com/articles/heroku-cli#getting-started)' instructions, including logging in the first time:
 
@@ -18,7 +18,7 @@ Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) to st
     Generating new SSH public key.
     Uploading ssh public key /Users/you/.ssh/id_rsa.pub
 
-Inside your new hubot directory, make sure you've created a git repository, and that your work is committed:
+Inside your new botforge directory, make sure you've created a git repository, and that your work is committed:
 
     % git init
     % git add .
@@ -32,13 +32,13 @@ Then create a Heroku application:
     Git remote heroku added
 
 Before you deploy the application, you'll need to configure some environment
-variables for hubot to use. The specific variables you'll need depends on which
+variables for botforge to use. The specific variables you'll need depends on which
 [adapter](../adapters.md) and scripts you are using. For Campfire, with no other
 scripts, you'd need to set the following environment variables:
 
-    % heroku config:set HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount
-    % heroku config:set HUBOT_CAMPFIRE_TOKEN=yourcampfiretoken
-    % heroku config:set HUBOT_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
+    % heroku config:set BOTFORGE_CAMPFIRE_ACCOUNT=yourcampfireaccount
+    % heroku config:set BOTFORGE_CAMPFIRE_TOKEN=yourcampfiretoken
+    % heroku config:set BOTFORGE_CAMPFIRE_ROOMS=comma,separated,list,of,rooms,to,join
 
 At this point, you are ready to deploy and start chatting. With Heroku, that's a
 git push away:
@@ -51,7 +51,7 @@ at the logs to try to debug:
 
     % heroku logs
 
-If you make any changes to your hubot, just commit and push them as
+If you make any changes to your botforge, just commit and push them as
 before:
 
     % git commit -am "Awesome scripts OMG"
@@ -61,6 +61,6 @@ Some scripts needs Redis to work, Heroku offers an addon called [Redis Cloud](ht
 
     % heroku addons:create rediscloud
 
-Note: the free redis plans don't offer any persistence so your hubot will lose all the information when it goes to sleep.
+Note: the free redis plans don't offer any persistence so your botforge will lose all the information when it goes to sleep.
 
-Free dynos on Heroku will [sleep after 30 minutes of inactivity](https://devcenter.heroku.com/articles/dyno-sleeping). That means your hubot would leave the chat room and only rejoin when it does get traffic. This is extremely inconvenient since most interaction is done through chat, and hubot has to be online and in the room to respond to messages. To get around this, you can use the [hubot-heroku-keepalive](https://github.com/hubot-scripts/hubot-heroku-keepalive) script, which will keep your free dyno alive for up to 18 hours/day. If you never want Hubot to sleep, you will need to [upgrade to Heroku's hobby plan](https://www.heroku.com/pricing).
+Free dynos on Heroku will [sleep after 30 minutes of inactivity](https://devcenter.heroku.com/articles/dyno-sleeping). That means your botforge would leave the chat room and only rejoin when it does get traffic. This is extremely inconvenient since most interaction is done through chat, and botforge has to be online and in the room to respond to messages. To get around this, you can use the [botforge-heroku-keepalive](https://github.com/botforge-scripts/botforge-heroku-keepalive) script, which will keep your free dyno alive for up to 18 hours/day. If you never want Botforge to sleep, you will need to [upgrade to Heroku's hobby plan](https://www.heroku.com/pricing).

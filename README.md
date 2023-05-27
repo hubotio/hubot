@@ -4,7 +4,7 @@
 
 # Botforge
 
-Botforge is a framework to build chat bots, a fork of [Hubot](https://github.com/hubotio/hubot).
+Botforge is a framework to build chat bots, a fork of [Botforge](https://github.com/hubot-new/botforge).
 They're pretty cool. They are [extendable with scripts](http://hubot.github.com/docs/#scripts) and can work
 on [many different chat services](https://hubot.github.com/docs/adapters/).
 

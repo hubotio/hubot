@@ -5,15 +5,15 @@ permalink: /docs/deploying/unix/
 # Deploying to Unix
 
 Because there are so many variations of Linux, and more generally UNIX, it's
-difficult for the hubot team to have canonical documentation for installing and
+difficult for the botforge team to have canonical documentation for installing and
 deploying it to every version out there. So, this is an attempt to give an
 overview of what's needed to get deploying.
 
-There are 3 primary things to deploying and running hubot:
+There are 3 primary things to deploying and running botforge:
 
   * node and npm
   * a way to get source code updated on the server
-  * a way to start hubot, start it up if it crashes, and restart it when code
+  * a way to start botforge, start it up if it crashes, and restart it when code
     updates
 
 ## node and npm
@@ -23,8 +23,8 @@ for [installing Node.js via package manager](https://github.com/joyent/node/wiki
 
 ## Updating code on the server
 
-The simplest way to update your hubot's code is going to be to have a git
-checkout of your hubot's source code (that you've created during [Getting Started](../index.md), not the [github/hubot repository](http://github.com/github/hubot), and just git pull to get change. This may
+The simplest way to update your botforge's code is going to be to have a git
+checkout of your botforge's source code (that you've created during [Getting Started](../index.md), not the [hubot-new/botforge repository](http://github.com/hubot-new/botforge), and just git pull to get change. This may
 feel a dirty hack, but it works when you are starting out.
 
 If you have a Ruby background, you might be more comfortable using
@@ -34,21 +34,21 @@ If you have a [Chef](http://www.chef.io/chef/) background, there's a
 [deploy](https://docs.chef.io/resource_deploy.html) resource for managing
 deployments.
 
-## Starting, stopping, and restarting hubot
+## Starting, stopping, and restarting botforge
 
-Every hubot install has a `bin/hubot` script to handle starting up the hubot.
+Every botforge install has a `bin/botforge` script to handle starting up the botforge.
 You can run this command from your git checkout on the server, but there are some problems you can encounter:
 
-* you disconnect, and hubot dies
-* hubot dies, for any reason, and doesn't start again
+* you disconnect, and botforge dies
+* botforge dies, for any reason, and doesn't start again
 * it doesn't start up at boot automatically
 
-For handling you disconnecting, you can start with running `bin/hubot` in
+For handling you disconnecting, you can start with running `bin/botforge` in
 [screen session](http://www.gnu.org/software/screen/) or with
 [nohup](http://linux.die.net/man/1/nohup).
 
-For handling hubot dying, and restarting it automatically, you can imagine
-running `bin/hubot` in a
+For handling botforge dying, and restarting it automatically, you can imagine
+running `bin/botforge` in a
 [bash while loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html#ss7.3). But
 really, you probably want some process monitoring using tools like
 [monit](http://mmonit.com/monit/),
@@ -60,7 +60,7 @@ really, you probably want some process monitoring using tools like
 
 For starting at boot, you can create an init script appropriate for your UNIX
 distribution. If you are using one of the process monitoring tools above, make
-sure it boots at startup. See the [examples](https://github.com/github/hubot/tree/main/examples)
+sure it boots at startup. See the [examples](https://github.com/hubot-new/botforge/tree/main/examples)
 for configuration examples.
 
 ## Recommendations
@@ -68,5 +68,5 @@ for configuration examples.
 This document has been deliberately light on strong recommendations. At a high
 level though, it's strongly recommended to avoid anything that is overly manual
 and non-repeatable. That would mean using your OS's packages and tools whenever
-possible, and having a proper deploy tool to update hubot, and process
-management to keep hubot running.
+possible, and having a proper deploy tool to update botforge, and process
+management to keep botforge running.

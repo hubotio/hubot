@@ -4,29 +4,29 @@ permalink: /docs/patterns/
 
 # Patterns
 
-Shared patterns for dealing with common Hubot scenarios.
+Shared patterns for dealing with common Botforge scenarios.
 
-## Renaming the Hubot instance
+## Renaming the Botforge instance
 
-When you rename Hubot, he will no longer respond to his former name. In order to train your users on the new name, you may choose to add a deprecation notice when they try to say the old name. The pattern logic is:
+When you rename Botforge, he will no longer respond to his former name. In order to train your users on the new name, you may choose to add a deprecation notice when they try to say the old name. The pattern logic is:
 
 * listen to all messages that start with the old name
 * reply to the user letting them know about the new name
 
 Setting this up is very easy:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.js`
+1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Botforge instance called `rename-botforge.js`
 2. Add the following code, modified for your needs:
 
 ```javascript
 //  Description:
-//    Tell people hubot's new name if they use the old one
+//    Tell people botforge's new name if they use the old one
 
 //  Commands:
 //    None
 
 module.exports = (robot) => {
-  robot.hear(/^hubot:? (.+)/i, (res) => {
+  robot.hear(/^botforge:? (.+)/i, (res) => {
     let response = `Sorry, I'm a diva and only respond to ${robot.name}`
     response += robot.alias ? ` or ${robot.alias}` : ''
     return res.reply(response)
@@ -34,22 +34,22 @@ module.exports = (robot) => {
 }
 ```
 
-In the above pattern, modify both the hubot listener and the response message to suit your needs.
+In the above pattern, modify both the botforge listener and the response message to suit your needs.
 
-Also, it's important to note that the listener should be based on what hubot actually hears, instead of what is typed into the chat program before the Hubot Adapter has processed it. For example, the [HipChat Adapter](https://github.com/hipchat/hubot-hipchat) converts `@hubot` into `hubot:` before passing it to Hubot.
+Also, it's important to note that the listener should be based on what botforge actually hears, instead of what is typed into the chat program before the Botforge Adapter has processed it. For example, the [HipChat Adapter](https://github.com/hipchat/hubot-hipchat) converts `@botforge` into `botforge:` before passing it to Botforge.
 
 ## Deprecating or Renaming Listeners
 
-If you remove a script or change the commands for a script, it can be useful to let your users know about the change. One way is to just tell them in chat or let them discover the change by attempting to use a command that no longer exists. Another way is to have Hubot let people know when they've used a command that no longer works.
+If you remove a script or change the commands for a script, it can be useful to let your users know about the change. One way is to just tell them in chat or let them discover the change by attempting to use a command that no longer exists. Another way is to have Botforge let people know when they've used a command that no longer works.
 
-This pattern is similar to the Renaming the Hubot Instance pattern above:
+This pattern is similar to the Renaming the Botforge Instance pattern above:
 
 * listen to all messages that match the old command
 * reply to the user letting them know that it's been deprecated
 
 Here is the setup:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `deprecations.js`
+1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Botforge instance called `deprecations.js`
 2. Copy any old command listeners and add them to that file. For example, if you were to rename the help command for some silly reason:
 
 ```javascript
@@ -67,18 +67,18 @@ module.exports = (robot) => {
 
 ```
 
-## Preventing Hubot from Running Scripts Concurrently
+## Preventing Botforge from Running Scripts Concurrently
 
 Sometimes you have scripts that take several minutes to execute. If these scripts are doing something that could be interfered with by running subsequent commands, you may wish to code your scripts to prevent concurrent access.
 
-To do this, you can set up a lock in the Hubot [brain](scripting.md#persistence) object. The lock is set up here so that different scripts can share the same lock if necessary.
+To do this, you can set up a lock in the Botforge [brain](scripting.md#persistence) object. The lock is set up here so that different scripts can share the same lock if necessary.
 
 Setting up the lock looks something like this:
 
 ```javascript
 module.exports = (robot) => {
   robot.brain.on('loaded', ()=>{
-    // Clear the lock on startup in case Hubot has restarted and Hubot's brain has persistence (e.g. redis).
+    // Clear the lock on startup in case Botforge has restarted and Botforge's brain has persistence (e.g. redis).
     // We don't want any orphaned locks preventing us from running commands.
     robot.brain.remove('yourLockName')
   }
@@ -106,7 +106,7 @@ In many corporate environments, a web proxy is required to access the Internet a
 Due to the way Node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
 
 1. Install ProxyAgent. `npm install proxy-agent`
-2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.js`
+2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Botforge instance called `proxy.js`
 3. Add the following code, modified for your needs:
 
 ```javascript
@@ -119,14 +119,14 @@ module.exports = (robot) => {
 
 ## Dynamic matching of messages
 
-In some situations, you want to dynamically match different messages (e.g. factoids, JIRA projects). Rather than defining an overly broad regular expression that always matches, you can tell Hubot to only match when certain conditions are met.
+In some situations, you want to dynamically match different messages (e.g. factoids, JIRA projects). Rather than defining an overly broad regular expression that always matches, you can tell Botforge to only match when certain conditions are met.
 
 In a simple robot, this isn't much different from just putting the conditions in the Listener callback, but it makes a big difference when you are dealing with middleware: with the basic model, middleware will be executed for every match of the generic regex. With the dynamic matching model, middleware will only be executed when the dynamic conditions are matched.
 
 For example, the [factoid lookup command](https://github.com/github/hubot-scripts/blob/bd810f99f9394818a9dcc2ea3729427e4101b96d/src/scripts/factoid.coffee#L95-L99) could be reimplemented as:
 
 ```javascript
-// use case: Hubot>fact1
+// use case: Botforge>fact1
 // This listener doesn't require you to type the bot's name first
 
 const {TextMessage} = require('../src/message')
@@ -163,7 +163,7 @@ module.exports = (robot) => {
 
 ## Restricting access to commands
 
-One of the awesome features of Hubot is its ability to make changes to a production environment with a single chat message. However, not everyone with access to your chat service should be able to trigger production changes.
+One of the awesome features of Botforge is its ability to make changes to a production environment with a single chat message. However, not everyone with access to your chat service should be able to trigger production changes.
 
 There are a variety of different patterns for restricting access that you can follow depending on your specific needs:
 
@@ -244,7 +244,7 @@ Complex policies like this are currently best implemented in code directly.
 
 ### Specific access rules per room
 
-Organizations that have a number of chat rooms that serve different purposes often want to be able to use the same instance of hubot but have a different set of commands allowed in each room.
+Organizations that have a number of chat rooms that serve different purposes often want to be able to use the same instance of botforge but have a different set of commands allowed in each room.
 
 Work on generalized exlusion list solution is [ongoing](https://github.com/kristenmills/hubot-command-blacklist). An inclusive list soultion could take a similar approach.
 
@@ -256,10 +256,10 @@ It is possible to [install](https://docs.npmjs.com/cli/v7/commands/npm-install) 
 npm install <alias>@npm:<name>
 ```
 
-So for example to use `@foo/hubot-adapter` package as the adapter, you can:
+So for example to use `@foo/botforge-adapter` package as the adapter, you can:
 
 ```bash
-npm install hubot-foo@npm:@foo/hubot-adapter
+npm install botforge-foo@npm:@foo/botforge-adapter
 
-bin/hubot --adapter foo
+bin/botforge --adapter foo
 ```

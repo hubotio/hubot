@@ -12,7 +12,7 @@ const Robot = require('../src/robot')
 
 describe('Shell Adapter', function () {
   beforeEach(function () {
-    this.robot = new Robot(null, 'shell', false, 'TestHubot')
+    this.robot = new Robot(null, 'shell', false, 'TestBotforge')
     this.robot.run()
   })
 

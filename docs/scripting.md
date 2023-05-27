@@ -4,13 +4,13 @@ permalink: /docs/scripting/
 
 # Scripting
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](index.md#scripts) and it's easy to write your own. You can create a custom script in Hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
+Botforge out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](index.md#scripts) and it's easy to write your own. You can create a custom script in Botforge's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
-When you created your Hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples. For a script to be a script, it needs to:
+When you created your Botforge, the generator also created a `scripts` directory. If you peek around there, you will see some examples. For a script to be a script, it needs to:
 
-* live in a directory on the Hubot script load path (`src/scripts` and `scripts` by default)
+* live in a directory on the Botforge script load path (`src/scripts` and `scripts` by default)
 * be a `.js` file
 * export a function whos signature takes 1 parameter (`robot`)
 
@@ -26,7 +26,7 @@ The `robot` parameter is an instance of your robot friend. At this point, we can
 
 ## Hearing and responding
 
-Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
+Since this is a chat bot, the most common interactions are based on messages. Botforge can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
 
 ```javascript
 module.exports = (robot) => {
@@ -137,7 +137,7 @@ If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod
 
 ## Making HTTP calls (please use `fetch` instead)
 
-Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](../src/httpclient.js) available at `robot.http`. The simplest case looks like:
+Botforge can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](../src/httpclient.js) available at `robot.http`. The simplest case looks like:
 
 
 ```javascript
@@ -252,7 +252,7 @@ For consuming a Web Service that responds with HTML, you'll need an HTML parser.
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned previously, Hubot uses [ScopedHttpClient](../src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
+As mentioned previously, Botforge uses [ScopedHttpClient](../src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
 
 If you need to control options on `http` and `https` more directly, you pass a second parameter to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
 
@@ -267,7 +267,7 @@ In addition, if `ScopedHttpClient` doesn't suit you, you can use [http](http://n
 
 ## Random
 
-A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. Hubot includes a convenience method:
+A common pattern is to hear or respond to commands, and send with a random funny image or line of text from an array of possibilities. Botforge includes a convenience method:
 
 ```javascript
 const lulz = ['lol', 'rofl', 'lmao']
@@ -276,7 +276,7 @@ res.send(res.random(lulz))
 
 ## Topic
 
-Hubot can react to a room's topic changing, assuming that the adapter supports it.
+Botforge can react to a room's topic changing, assuming that the adapter supports it.
 
 ```javascript
 module.exports = (robot) => {
@@ -288,7 +288,7 @@ module.exports = (robot) => {
 
 ## Entering and leaving
 
-Hubot can see users entering and leaving, assuming that the adapter supports it.
+Botforge can see users entering and leaving, assuming that the adapter supports it.
 
 ```javascript
 const enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I see you']
@@ -334,10 +334,10 @@ See [the design patterns document](patterns.md#dynamic-matching-of-messages) for
 
 ## Environment variables
 
-Hubot can access the environment he's running in, just like any other Node.js program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `HUBOT_` prefix.
+Botforge can access the environment he's running in, just like any other Node.js program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `BOTFORGE_` prefix.
 
 ```javascript
-const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+const answer = process.env.BOTFORGE_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) => {
   robot.respond(/what is the answer to the ultimate question of life/, (res) => {
@@ -346,12 +346,12 @@ module.exports = (robot) => {
 }
 ```
 
-Take care to make sure the script can load if it's not defined, give the Hubot developer notes on how to define it, or default to something. It's up to the script writer to decide if that should be a fatal error (e.g. hubot exits), or not (make any script that relies on it to say it needs to be configured. When possible and when it makes sense to, having a script work without any other configuration is preferred.
+Take care to make sure the script can load if it's not defined, give the Botforge developer notes on how to define it, or default to something. It's up to the script writer to decide if that should be a fatal error (e.g. botforge exits), or not (make any script that relies on it to say it needs to be configured. When possible and when it makes sense to, having a script work without any other configuration is preferred.
 
 Here we can default to something:
 
 ```javascript
-const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING ?? 42
+const answer = process.env.BOTFORGE_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING ?? 42
 
 module.exports = (robot) => {
   robot.respond(/what is the answer to the ultimate question of life/, (res) => {
@@ -363,9 +363,9 @@ module.exports = (robot) => {
 Here we exit if it's not defined:
 
 ```javascript
-const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+const answer = process.env.BOTFORGE_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 if(!answer) {
-  console.log(`Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again`)
+  console.log(`Missing BOTFORGE_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again`)
   process.exit(1)
 }
 
@@ -379,12 +379,12 @@ module.exports = (robot) => {
 And lastly, we update the `robot.respond` to check it:
 
 ```javascript
-const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+const answer = process.env.BOTFORGE_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
 module.exports = (robot) => {
   robot.respond(/what is the answer to the ultimate question of life/, (res) => {
     if(!answer) {
-      return res.send('Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again')
+      return res.send('Missing BOTFORGE_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again')
     }
     res.send(`${answer}, but what is the question?`)
   }
@@ -393,11 +393,11 @@ module.exports = (robot) => {
 
 ## Dependencies
 
-Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+Botforge uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
 
 ```json
   "dependencies": {
-    "hubot": "2.5.5",
+    "botforge": "2.5.5",
     "lolimadeupthispackage": "1.2.3"
   },
 ```
@@ -406,7 +406,7 @@ If you are using scripts from hubot-scripts, take note of the `Dependencies` doc
 
 # Timeouts and Intervals
 
-Hubot can run code later using JavaScript's built-in [setTimeout](http://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg). It takes a callback method, and the amount of time to wait before calling it:
+Botforge can run code later using JavaScript's built-in [setTimeout](http://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg). It takes a callback method, and the amount of time to wait before calling it:
 
 ```javascript
 module.exports = (robot) => {
@@ -418,7 +418,7 @@ module.exports = (robot) => {
 }
 ```
 
-Additionally, Hubot can run code on an interval using [setInterval](http://nodejs.org/api/timers.html#timers_setinterval_callback_delay_arg). It takes a callback method, and the amount of time to wait between calls:
+Additionally, Botforge can run code on an interval using [setInterval](http://nodejs.org/api/timers.html#timers_setinterval_callback_delay_arg). It takes a callback method, and the amount of time to wait between calls:
 
 ```javascript
 module.exports = (robot) => {
@@ -462,7 +462,7 @@ module.exports = (robot) => {
 
 ## HTTP Listener
 
-Hubot includes support for the [express](http://expressjs.com) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
+Botforge includes support for the [express](http://expressjs.com) web framework to serve up HTTP requests. It listens on the port specified by the `EXPRESS_PORT` or `PORT` environment variables (preferred in that order) and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EXPRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
 
 You can increase the [maximum request body size](https://github.com/expressjs/body-parser#limit-3) by specifying `EXPRESS_LIMIT`. It defaults to '100kb'.  You can also set the [maximum number of parameters](https://github.com/expressjs/body-parser#parameterlimit) that are allowed in the URL-encoded data by setting `EXPRESS_PARAMETER_LIMIT`. The default is `1000`.
 
@@ -472,7 +472,7 @@ The most common use of this is for providing HTTP end points for services with w
 ```javascript
 module.exports = (robot) => {
   // the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
-  robot.router.post('/hubot/chatsecrets/:room', (req, res) => {
+  robot.router.post('/botforge/chatsecrets/:room', (req, res) => {
     const room = req.params.room
     const data = req.body?.payload ? JSON.parse(req.body.payload) : req.body
     const secret = data.secret
@@ -488,27 +488,27 @@ Test it with curl; also see section on [error handling](#error-handling) below.
 
 ```sh
 # raw json, must specify Content-Type: application/json
-curl -X POST -H "Content-Type: application/json" -d '{"secret":"C-TECH Astronomy"}' http://127.0.0.1:8080/hubot/chatsecrets/general
+curl -X POST -H "Content-Type: application/json" -d '{"secret":"C-TECH Astronomy"}' http://127.0.0.1:8080/botforge/chatsecrets/general
 
 # defaults Content-Type: application/x-www-form-urlencoded, must st payload=...
-curl -d 'payload=%7B%22secret%22%3A%22C-TECH+Astronomy%22%7D' http://127.0.0.1:8080/hubot/chatsecrets/general
+curl -d 'payload=%7B%22secret%22%3A%22C-TECH+Astronomy%22%7D' http://127.0.0.1:8080/botforge/chatsecrets/general
 ```
 
-All endpoint URLs should start with the literal string `/hubot` (regardless of what your robot's name is). This consistency makes it easier to set up webhooks (copy-pasteable URL) and guarantees that URLs are valid (not all bot names are URL-safe).
+All endpoint URLs should start with the literal string `/botforge` (regardless of what your robot's name is). This consistency makes it easier to set up webhooks (copy-pasteable URL) and guarantees that URLs are valid (not all bot names are URL-safe).
 
 ## Events
 
-Hubot can also respond to events which can be used to pass data between scripts. This is done by encapsulating Node.js's [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with `robot.emit` and `robot.on`.
+Botforge can also respond to events which can be used to pass data between scripts. This is done by encapsulating Node.js's [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with `robot.emit` and `robot.on`.
 
 One use case for this would be to have one script for handling interactions with a service, and then emitting events as they come up. For example, we could have a script that receives data from a GitHub post-commit hook, make that emit commits as they come in, and then have another script act on those commits.
 
 ```javascript
 // src/scripts/github-commits.js
 module.exports = (robot) => {
-  robot.router.post('/hubot/gh-commits', (req, res) => {
+  robot.router.post('/botforge/gh-commits', (req, res) => {
     robot.emit('commit', {
-        user: {}, //hubot user object
-        repo: 'https://github.com/github/hubot',
+        user: {}, //botforge user object
+        repo: 'https://github.com/github/botforge',
         hash: '2e1951c089bd865839328592ff673d2f08153643'
     })
   })
@@ -525,11 +525,11 @@ module.exports = (robot) => {
 }
 ```
 
-If you provide an event, it's highly recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
+If you provide an event, it's highly recommended to include a botforge user or room object in its data. This would allow for botforge to notify a user or room in chat.
 
 ## Error Handling
 
-No code is perfect, and errors and exceptions are to be expected. Previously, an uncaught exceptions would crash your hubot instance. Hubot now includes an `uncaughtException` handler, which provides hooks for scripts to do something about exceptions.
+No code is perfect, and errors and exceptions are to be expected. Previously, an uncaught exceptions would crash your botforge instance. Botforge now includes an `uncaughtException` handler, which provides hooks for scripts to do something about exceptions.
 
 ```javascript
 // src/scripts/does-not-compute.js
@@ -551,7 +551,7 @@ Under the hood, there is an 'error' event emitted, with the error handlers consu
 Using previous examples:
 
 ```javascript
-  robot.router.post()'/hubot/chatsecrets/:room', (req, res) => {
+  robot.router.post()'/botforge/chatsecrets/:room', (req, res) => {
     const room = req.params.room
     let data = null
     try {
@@ -580,7 +580,7 @@ For the second example, it's worth thinking about what messages the user would s
 
 ## Documenting Scripts
 
-Hubot scripts can be documented with comments at the top of their file, for example:
+Botforge scripts can be documented with comments at the top of their file, for example:
 
 ```javascript
 // Description:
@@ -593,7 +593,7 @@ Hubot scripts can be documented with comments at the top of their file, for exam
 //   LIST_OF_ENV_VARS_TO_SET
 //
 // Commands:
-//   hubot <trigger> - <what the respond trigger does>
+//   botforge <trigger> - <what the respond trigger does>
 //   <trigger> - <what the hear trigger does>
 //
 // Notes:
@@ -603,20 +603,20 @@ Hubot scripts can be documented with comments at the top of their file, for exam
 //   <github username of the original script author>
 ```
 
-The most important and user facing of these is `Commands`. At load time, Hubot looks at the `Commands` section of each scripts, and build a list of all commands. The [hubot-help](https://github.com/hubotio/hubot-help) script lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
+The most important and user facing of these is `Commands`. At load time, Botforge looks at the `Commands` section of each scripts, and build a list of all commands. The [hubot-help](https://github.com/hubotio/hubot-help) script lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
 
 When documenting commands, here are some best practices:
 
 * Stay on one line. Help commands get sorted, so would insert the second line at an unexpected location, where it probably won't make sense.
-* Refer to the Hubot as hubot, even if your hubot is named something else. It will automatically be replaced with the correct name. This makes it easier to share scripts without having to update docs.
-* For `robot.respond` documentation, always prefix with `hubot`. Hubot will automatically replace this with your robot's name, or the robot's alias if it has one
+* Refer to the Botforge as `botforge`, even if your botforge is named something else. It will automatically be replaced with the correct name. This makes it easier to share scripts without having to update docs.
+* For `robot.respond` documentation, always prefix with `botforge`. Botforge will automatically replace this with your robot's name, or the robot's alias if it has one
 * Check out how man pages document themselves. In particular, brackets indicate optional parts, '...' for any number of parameters, etc.
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
 ## Persistence
 
-Hubot has two persistence methods available that can be used to store and retrieve data by scripts: an in-memory key-value store exposed as `robot.brain`, and an optional persistent database-backed key-value store expsoed as `robot.datastore`.
+Botforge has two persistence methods available that can be used to store and retrieve data by scripts: an in-memory key-value store exposed as `robot.brain`, and an optional persistent database-backed key-value store expsoed as `robot.datastore`.
 
 ### Brain
 
@@ -704,8 +704,8 @@ module.exports = (robot) ->
 
 There are three main sources to load scripts from:
 
-* all scripts __bundled__ with your hubot installation under `scripts/` directory
-* __community scripts__ specified in `hubot-scripts.json` and shipped in the `hubot-scripts` npm package
+* all scripts __bundled__ with your botforge installation under `scripts/` directory
+* __community scripts__ specified in `botforge-scripts.json` and shipped in the `botforge-scripts` npm package
 * scripts loaded from external __npm packages__ and specified in `external-scripts.json`
 
 Scripts loaded from the `scripts/` directory are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
@@ -720,26 +720,26 @@ Once you've built some new scripts to extend the abilities of your robot friend,
 
 ## See if a script already exists
 
-Start by [checking if an NPM package](index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+Start by [checking if an NPM package](index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `botforge` script [yeoman](http://yeoman.io/) generator.
 
 ## Creating A Script Package
 
-Creating a script package for hubot is very simple. Start by installing the `hubot` [yeoman](http://yeoman.io/) generator:
+Creating a script package for botforge is very simple. Start by installing the `botforge` [yeoman](http://yeoman.io/) generator:
 
 
 ```
-% npm install -g yo generator-hubot
+% npm install -g yo generator-botforge
 ```
 
-Once you've got the hubot generator installed, creating a hubot script is similar to creating a new hubot.  You create a directory for your hubot script and generate a new `hubot:script` in it.  For example, if we wanted to create a hubot script called "my-awesome-script":
+Once you've got the botforge generator installed, creating a botforge script is similar to creating a new botforge.  You create a directory for your botforge script and generate a new `botforge:script` in it.  For example, if we wanted to create a botforge script called "my-awesome-script":
 
 ```
-% mkdir hubot-my-awesome-script
-% cd hubot-my-awesome-script
-% yo hubot:script
+% mkdir botforge-my-awesome-script
+% cd botforge-my-awesome-script
+% yo botforge:script
 ```
 
-At this point, you'll be asked a few questions about the author of the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+At this point, you'll be asked a few questions about the author of the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `botforge, botforge-scripts` in this list).
 
 If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
 
@@ -749,11 +749,11 @@ If you are using git, the generated directory includes a .gitignore, so you can 
 % git commit -m "Initial commit"
 ```
 
-You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.js` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
+You now have a botforge script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.js` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
 
 You'll probably want to write some unit tests for your new script. A sample test script is written to
 `test/awesome-script-test.js`, which you can run with `grunt`. For more information on tests,
-see the [Testing Hubot Scripts](#testing-hubot-scripts) section.
+see the [Testing Botforge Scripts](#testing-botforge-scripts) section.
 
 # Listener Metadata
 
@@ -791,7 +791,7 @@ Response middleware runs for every response sent to a message.
 
 ## Execution Process and API
 
-Similar to [Express middleware](http://expressjs.com/api.html#middleware), Hubot executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
+Similar to [Express middleware](http://expressjs.com/api.html#middleware), Botforge executes middleware in definition order. Each middleware can either continue the chain (by calling `next`) or interrupt the chain (by calling `done`). If all middleware continues, the listener callback is executed and `done` is called. Middleware may wrap the `done` callback to allow executing code in the second half of the process (after the listener callback has been executed or a deeper piece of middleware has interrupted).
 
 Middleware is called with:
 
@@ -810,11 +810,11 @@ Every middleware receives the same API signature of `context`, `next`, and
 
 ### Error Handling
 
-For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
+For synchronous middleware (never yields to the event loop), botforge will automatically catch errors and emit an `error` event, just like in standard listeners. Botforge will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
 
 # Listener Middleware
 
-Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
+Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other botforge scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Listener Middleware Examples
 
@@ -898,7 +898,7 @@ excluded commands that have not been updated to add an ID, metrics, and more.
 
 ## Receive Middleware Example
 
-This simple middlware bans hubot use by a particular user, including `hear`
+This simple middlware bans botforge use by a particular user, including `hear`
 listeners. If the user attempts to run a command explicitly, it will return
 an error message.
 
@@ -912,7 +912,7 @@ robot.receiveMiddleware((context, next, done) => {
     // Don't process this message further.
     context.response.message.finish()
 
-    // If the message starts with 'hubot' or the alias pattern, this user was
+    // If the message starts with 'botforge' or the alias pattern, this user was
     // explicitly trying to run a command, so respond with an error message.
     if (context.response.message.text?.match(robot.respondPattern(''))) {
       context.response.reply(`I'm sorry @${context.response.message.user.name}, but I'm configured to ignore your commands.`)
@@ -938,7 +938,7 @@ of `next` and `done`. Receive middleware context includes these fields:
 
 # Response Middleware
 
-Response middleware runs against every message hubot sends to a chat room. It's
+Response middleware runs against every message botforge sends to a chat room. It's
 helpful for message formatting, preventing password leaks, metrics, and more.
 
 ## Response Middleware Example
@@ -973,13 +973,13 @@ of `next` and `done`. Receive middleware context includes these fields:
   - `plaintext`
     - `true` or `undefined`. This will be set to `true` if the message is of a normal plaintext type, such as `send` or `reply`. This property should be treated as read-only.
 
-# Testing Hubot Scripts
+# Testing Botforge Scripts
 
 [hubot-test-helper](https://github.com/mtsmfm/hubot-test-helper) is a good
 framework for unit testing Hubot scripts. (Note that, in order to use
 hubot-test-helper, you'll need a recent Node.js version with support for Promises.)
 
-Install the package in your Hubot instance:
+Install the package in your Botforge instance:
 
 ``` % npm install hubot-test-helper --save-dev ```
 
@@ -993,10 +993,10 @@ You may also want to install:
  * a mocking library such as *Sinon.js* (if your script performs webservice calls or
    other asynchronous actions)
 
-[Note: This section is still refering to Coffeescript, but we've update Hubot for Javascript. We'll have to replace this when we get a JavaScript example.]
+[Note: This section is still refering to Coffeescript, but we've update Botforge for Javascript. We'll have to replace this when we get a JavaScript example.]
 
 Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/main/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
+[Botforge sample script](https://github.com/hubotio/generator-hubot/blob/main/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
 ```coffeescript
@@ -1018,21 +1018,21 @@ describe 'example script', ->
     @room.user.say('alice', 'did someone call for a badger?').then =>
       expect(@room.messages).to.eql [
         ['alice', 'did someone call for a badger?']
-        ['hubot', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
+        ['botforge', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
       ]
 
   it 'won\'t open the pod bay doors', ->
-    @room.user.say('bob', '@hubot open the pod bay doors').then =>
+    @room.user.say('bob', '@botforge open the pod bay doors').then =>
       expect(@room.messages).to.eql [
-        ['bob', '@hubot open the pod bay doors']
-        ['hubot', '@bob I\'m afraid I can\'t let you do that.']
+        ['bob', '@botforge open the pod bay doors']
+        ['botforge', '@bob I\'m afraid I can\'t let you do that.']
       ]
 
   it 'will open the dutch doors', ->
-    @room.user.say('bob', '@hubot open the dutch doors').then =>
+    @room.user.say('bob', '@botforge open the dutch doors').then =>
       expect(@room.messages).to.eql [
-        ['bob', '@hubot open the dutch doors']
-        ['hubot', '@bob Opening dutch doors']
+        ['bob', '@botforge open the dutch doors']
+        ['botforge', '@bob Opening dutch doors']
       ]
 ```
 

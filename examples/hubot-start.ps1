@@ -1,12 +1,12 @@
-#Hubot PowerShell Start Script
+#Botforge PowerShell Start Script
 #Invoke from the PowerShell prompt or start via automated tools 
 
-$HubotPath = "drive:\path\to\hubot"
-$HubotAdapter = "Hubot adapter"
+$BotforgePath = "drive:\path\to\botforge"
+$BotforgeAdapter = "Botforge adapter"
 
-Write-Host "Starting Hubot Watcher"
+Write-Host "Starting Botforge Watcher"
 While (1)
 {
-    Write-Host "Starting Hubot"
-    Start-Process powershell -ArgumentList "$HubotPath\bin\hubot –adapter $HubotAdapter" -wait
+    Write-Host "Starting Botforge"
+    Start-Process powershell -ArgumentList "$BotforgePath\bin\botforge –adapter $BotforgeAdapter" -wait
 }

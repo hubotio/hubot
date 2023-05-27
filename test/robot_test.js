@@ -11,7 +11,6 @@ chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 
-// Hubot classes
 const Robot = require('../src/robot')
 const CatchAllMessage = require('../src/message').CatchAllMessage
 const EnterMessage = require('../src/message').EnterMessage
@@ -19,7 +18,6 @@ const LeaveMessage = require('../src/message').LeaveMessage
 const TextMessage = require('../src/message').TextMessage
 const TopicMessage = require('../src/message').TopicMessage
 
-// mock `hubot-mock-adapter` module from fixture
 const mockery = require('mockery')
 const path = require('path')
 
@@ -29,10 +27,10 @@ describe('Robot', function () {
       warnOnReplace: false,
       warnOnUnregistered: false
     })
-    mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+    mockery.registerMock('botforge-mock-adapter', require('./fixtures/mock-adapter'))
     process.env.EXPRESS_PORT = 0
-    this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
-    this.robot.alias = 'Hubot'
+    this.robot = new Robot(null, 'mock-adapter', true, 'TestBotforge')
+    this.robot.alias = 'Botforge'
     this.robot.run()
 
     // Re-throw AssertionErrors for clearer test failures
@@ -45,7 +43,7 @@ describe('Robot', function () {
     })
 
     this.user = this.robot.brain.userForId('1', {
-      name: 'hubottester',
+      name: 'tester',
       room: '#mocha'
     })
   })
@@ -76,7 +74,7 @@ describe('Robot', function () {
       })
 
       it('sets a sane user agent', function () {
-        expect(this.httpClient.options.headers['User-Agent']).to.contain('Hubot')
+        expect(this.httpClient.options.headers['User-Agent']).to.contain('Botforge')
       })
 
       it('merges in any global http options', function () {
@@ -561,7 +559,7 @@ describe('Robot', function () {
     describe('#respond', function () {
       it('matches TextMessages addressed to the robot', function () {
         const callback = sinon.spy()
-        const testMessage = new TextMessage(this.user, 'TestHubot message123')
+        const testMessage = new TextMessage(this.user, 'TestBotforge message123')
         const testRegex = /message123$/
 
         this.robot.respond(testRegex, callback)

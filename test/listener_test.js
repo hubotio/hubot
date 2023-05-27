@@ -10,7 +10,6 @@ chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 
-// Hubot classes
 const EnterMessage = require('../src/message').EnterMessage
 const TextMessage = require('../src/message').TextMessage
 const Listener = require('../src/listener').Listener
@@ -41,7 +40,7 @@ describe('Listener', function () {
     // Test user
     this.user = new User({
       id: 1,
-      name: 'hubottester',
+      name: 'tester',
       room: '#mocha'
     })
   })

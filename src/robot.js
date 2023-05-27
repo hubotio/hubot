@@ -15,8 +15,8 @@ const Listener = require('./listener')
 const Message = require('./message')
 const Middleware = require('./middleware')
 
-const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell']
-const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
+const BOTFORGE_DEFAULT_ADAPTERS = ['campfire', 'shell']
+const BOTFORGE_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
 class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -25,11 +25,11 @@ class Robot {
   // adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
   // adapter     - A String of the adapter name.
   // httpd       - A Boolean whether to enable the HTTP daemon.
-  // name        - A String of the robot name, defaults to Hubot.
+  // name        - A String of the robot name, defaults to Botforge.
   // alias       - A String of the alias of the robot name
   constructor (adapterPath, adapter, httpd, name, alias) {
     if (name == null) {
-      name = 'Hubot'
+      name = 'Botforge'
     }
     if (alias == null) {
       alias = false
@@ -50,7 +50,7 @@ class Robot {
       response: new Middleware(this),
       receive: new Middleware(this)
     }
-    process.env.LOG_LEVEL = process.env.LOG_LEVEL || process.env.HUBOT_LOG_LEVEL || 'info'
+    process.env.LOG_LEVEL = process.env.LOG_LEVEL || process.env.BOTFORGE_LOG_LEVEL || 'info'
     this.logger = log.get('robot')
 
     this.pingIntervalId = null
@@ -354,7 +354,6 @@ class Robot {
     const ext = path.extname(filename)
     const full = path.join(filepath, path.basename(filename, ext))
 
-    // see https://github.com/hubotio/hubot/issues/1355
     if (['.js', '.mjs', '.coffee'].indexOf(ext) == -1) { // eslint-disable-line
       return
     }
@@ -387,21 +386,21 @@ class Robot {
     }
   }
 
-  // Public: Load scripts specified in the `hubot-scripts.json` file.
+  // Public: Load scripts specified in the `botforge-scripts.json` file.
   //
-  // path    - A String path to the hubot-scripts files.
+  // path    - A String path to the botforge-scripts files.
   // scripts - An Array of scripts to load.
   //
   // Returns nothing.
-  loadHubotScripts (path, scripts) {
-    this.logger.debug(`Loading hubot-scripts from ${path}`)
+  loadBotforgeScripts (path, scripts) {
+    this.logger.debug(`Loading botforge-scripts from ${path}`)
     Array.from(scripts).map(script => this.loadFile(path, script))
   }
 
   // Public: Load scripts from packages specified in the
   // `external-scripts.json` file.
   //
-  // packages - An Array of packages containing hubot scripts to load.
+  // packages - An Array of packages containing botforge scripts to load.
   //
   // Returns nothing.
   loadExternalScripts (packages) {
@@ -438,7 +437,7 @@ class Robot {
     const app = express()
 
     app.use((req, res, next) => {
-      res.setHeader('X-Powered-By', `hubot/${encodeURI(this.name)}`)
+      res.setHeader('X-Powered-By', `botforge/${encodeURI(this.name)}`)
       return next()
     })
 
@@ -475,7 +474,7 @@ class Robot {
         herokuUrl += '/'
       }
       this.pingIntervalId = setInterval(() => {
-        HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
+        HttpClient.create(`${herokuUrl}botforge/ping`).post()((_err, res, body) => {
           this.logger.info('keep alive ping!')
         })
       }, 5 * 60 * 1000)
@@ -496,7 +495,7 @@ class Robot {
     }
   }
 
-  // Load the adapter Hubot is going to use.
+  // Load the adapter Botforge is going to use.
   //
   // path    - A String of the path to adapter if local.
   // adapter - A String of the adapter name to use.
@@ -506,7 +505,7 @@ class Robot {
     this.logger.debug(`Loading adapter ${adapter}`)
 
     try {
-      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
+      const path = Array.from(BOTFORGE_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `botforge-${adapter}`
 
       this.adapter = require(path).use(this)
     } catch (err) {
@@ -548,7 +547,7 @@ class Robot {
       }
 
       nextSection = line.toLowerCase().replace(':', '')
-      if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
+      if (Array.from(BOTFORGE_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
         currentSection = nextSection
         scriptDocumentation[currentSection] = []
       } else {
@@ -570,7 +569,7 @@ class Robot {
           continue
         }
 
-        cleanedLine = line.slice(2, +line.length + 1 || 9e9).replace(/^hubot/i, this.name).trim()
+        cleanedLine = line.slice(2, +line.length + 1 || 9e9).replace(/^botforge/i, this.name).trim()
         scriptDocumentation.commands.push(cleanedLine)
         this.commands.push(cleanedLine)
       }
@@ -668,7 +667,7 @@ class Robot {
     this.brain.close()
   }
 
-  // Public: The version of Hubot from npm
+  // Public: The version of Botforge from npm
   //
   // Returns a String of the version number.
   parseVersion () {
@@ -713,7 +712,7 @@ class Robot {
   http (url, options) {
     const httpOptions = extend({}, this.globalHttpOptions, options)
 
-    return HttpClient.create(url, httpOptions).header('User-Agent', `Hubot/${this.version}`)
+    return HttpClient.create(url, httpOptions).header('User-Agent', `Botforge/${this.version}`)
   }
 }
 

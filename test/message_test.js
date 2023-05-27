@@ -9,7 +9,6 @@ chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 
-// Hubot classes
 const User = require('../src/user')
 const Message = require('../src/message').Message
 const TextMessage = require('../src/message').TextMessage
@@ -18,7 +17,7 @@ describe('Message', function () {
   beforeEach(function () {
     this.user = new User({
       id: 1,
-      name: 'hubottester',
+      name: 'tester',
       room: '#mocha'
     })
   })

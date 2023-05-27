@@ -10,13 +10,11 @@ chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 
-// Hubot classes
 const Robot = require('../src/robot')
 const TextMessage = require('../src/message').TextMessage
 const Response = require('../src/response')
 const Middleware = require('../src/middleware')
 
-// mock `hubot-mock-adapter` module from fixture
 const mockery = require('mockery')
 
 describe('Middleware', function () {
@@ -350,9 +348,9 @@ describe('Middleware', function () {
         warnOnReplace: false,
         warnOnUnregistered: false
       })
-      mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter'))
+      mockery.registerMock('botforge-mock-adapter', require('./fixtures/mock-adapter'))
       process.env.EXPRESS_PORT = 0
-      this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
+      this.robot = new Robot(null, 'mock-adapter', true, 'TestBotforge')
       this.robot.run
 
       // Re-throw AssertionErrors for clearer test failures
@@ -365,7 +363,7 @@ describe('Middleware', function () {
       })
 
       this.user = this.robot.brain.userForId('1', {
-        name: 'hubottester',
+        name: 'tester',
         room: '#mocha'
       })
 

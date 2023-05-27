@@ -11,9 +11,9 @@ const _require = require('../message')
 
 const TextMessage = _require.TextMessage
 
-const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.env.HUBOT_SHELL_HISTSIZE) : 1024
+const historySize = process.env.BOTFORGE_SHELL_HISTSIZE != null ? parseInt(process.env.BOTFORGE_SHELL_HISTSIZE) : 1024
 
-const historyPath = '.hubot_history'
+const historyPath = '.BOTFORGE_history'
 const bold = str => `\x1b[1m${str}\x1b[22m`
 
 class Shell extends Adapter {
@@ -55,12 +55,12 @@ class Shell extends Adapter {
     this.cli = cline()
 
     this.cli.command('*', input => {
-      let userId = process.env.HUBOT_SHELL_USER_ID || '1'
+      let userId = process.env.BOTFORGE_SHELL_USER_ID || '1'
       if (userId.match(/A\d+z/)) {
         userId = parseInt(userId)
       }
 
-      const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
+      const userName = process.env.BOTFORGE_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
       this.receive(new TextMessage(user, input, 'messageId'))
     })
@@ -108,7 +108,7 @@ class Shell extends Adapter {
 process.stdout._handle.setBlocking(false)
 exports.use = robot => new Shell(robot)
 
-// load history from .hubot_history.
+// load history from .BOTFORGE_history.
 //
 // callback - A Function that is called with the loaded history items (or an empty array if there is no history)
 function loadHistory (callback) {

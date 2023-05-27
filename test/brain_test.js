@@ -12,7 +12,6 @@ const expect = chai.expect
 
 const isCircular = require('is-circular')
 
-// Hubot classes
 const Brain = require('../src/brain')
 const User = require('../src/user')
 
