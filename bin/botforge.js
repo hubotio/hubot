@@ -16,7 +16,7 @@ const switches = [
   ['-n', '--name NAME', 'The name of the robot in chat'],
   ['-r', '--require PATH', 'Alternative scripts path'],
   ['-t', '--config-check', "Test botforge's config to make sure it won't fail at startup"],
-  ['-v', '--version', 'Displays the version of botforge installed']
+  ['-v', '--version', 'Displays the version of hubot installed']
 ]
 
 const options = {
@@ -89,121 +89,121 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/main/docs/index.md for more details on getting started.')
   process.exit(1)
 }
+(async () => {
+  const robot = Botforge.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias)
+  await robot.loadAdapter(options.adapter)
+  if (options.version) {
+    console.log(robot.version)
+    process.exit(0)
+  }
 
-const robot = Botforge.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias)
+  if (options.configCheck) {
+    loadScripts()
+    console.log('OK')
+    process.exit(0)
+  }
 
-if (options.version) {
-  console.log(robot.version)
-  process.exit(0)
-}
+  robot.adapter.once('connected', () => loadScripts().then().catch(err => console.error(err)))
 
-if (options.configCheck) {
-  loadScripts()
-  console.log('OK')
-  process.exit(0)
-}
+  robot.run()
 
-robot.adapter.once('connected', loadScripts)
+  async function loadScripts () {
+    await robot.load(pathResolve('.', 'scripts'))
+    await robot.load(pathResolve('.', 'src', 'scripts'))
 
-robot.run()
+    loadBotforgeScripts()
+    loadExternalScripts()
 
-function loadScripts () {
-  robot.load(pathResolve('.', 'scripts'))
-  robot.load(pathResolve('.', 'src', 'scripts'))
-
-  loadBotforgeScripts()
-  loadExternalScripts()
-
-  options.scripts.forEach((scriptPath) => {
-    if (scriptPath[0] === '/') {
-      return robot.load(scriptPath)
+    for await (const scriptPath of options.scripts) {
+      if (scriptPath[0] === '/') {
+        return await robot.load(scriptPath)
+      }
+      await robot.load(pathResolve('.', scriptPath))
     }
+  }
 
-    robot.load(pathResolve('.', scriptPath))
-  })
-}
+  function loadBotforgeScripts () {
+    const botforgeScripts = pathResolve('.', 'botforge-scripts.json')
+    let scripts
+    let scriptsPath
 
-function loadBotforgeScripts () {
-  const botforgeScripts = pathResolve('.', 'botforge-scripts.json')
-  let scripts
-  let scriptsPath
+    if (fs.existsSync(botforgeScripts)) {
+      let botforgeScriptsWarning
+      const data = fs.readFileSync(botforgeScripts)
 
-  if (fs.existsSync(botforgeScripts)) {
-    let botforgeScriptsWarning
-    const data = fs.readFileSync(botforgeScripts)
+      if (data.length === 0) {
+        return
+      }
 
-    if (data.length === 0) {
+      try {
+        scripts = JSON.parse(data)
+        scriptsPath = pathResolve('node_modules', 'botforge-scripts', 'src', 'scripts')
+        robot.loadBotforgeScripts(scriptsPath, scripts)
+      } catch (error) {
+        const err = error
+        robot.logger.error(`Error parsing JSON data from botforge-scripts.json: ${err}`)
+        process.exit(1)
+      }
+
+      botforgeScriptsWarning = 'Loading scripts from botforge-scripts.json is deprecated and ' + 'will be removed in 3.0 (https://github.com/github/hubot-scripts/issues/1113) ' + 'in favor of packages for each script.\n\n'
+
+      if (scripts.length === 0) {
+        botforgeScriptsWarning += 'Your botforge-scripts.json is empty, so you just need to remove it.'
+        return robot.logger.warning(botforgeScriptsWarning)
+      }
+
+      const botforgeScriptsReplacements = pathResolve('node_modules', 'botforge-scripts', 'replacements.json')
+      const replacementsData = fs.readFileSync(botforgeScriptsReplacements)
+      const replacements = JSON.parse(replacementsData)
+      const scriptsWithoutReplacements = []
+
+      if (!fs.existsSync(botforgeScriptsReplacements)) {
+        botforgeScriptsWarning += 'To get a list of recommended replacements, update your botforge-scripts: npm install --save botforge-scripts@latest'
+        return robot.logger.warning(botforgeScriptsWarning)
+      }
+
+      botforgeScriptsWarning += 'The following scripts have known replacements. Follow the link for installation instructions, then remove it from botforge-scripts.json:\n'
+
+      scripts.forEach((script) => {
+        const replacement = replacements[script]
+
+        if (replacement) {
+          botforgeScriptsWarning += `* ${script}: ${replacement}\n`
+        } else {
+          scriptsWithoutReplacements.push(script)
+        }
+      })
+
+      botforgeScriptsWarning += '\n'
+
+      if (scriptsWithoutReplacements.length > 0) {
+        botforgeScriptsWarning += 'The following scripts don’t have (known) replacements. You can try searching https://www.npmjs.com/ or http://github.com/search or your favorite search engine. You can copy the script into your local scripts directory, or consider creating a new package to maintain yourself. If you find a replacement or create a package yourself, please post on https://github.com/github/hubot-scripts/issues/1641:\n'
+        botforgeScriptsWarning += scriptsWithoutReplacements.map((script) => `* ${script}\n`).join('')
+        botforgeScriptsWarning += '\nYou an also try updating botforge-scripts to get the latest list of replacements: npm install --save botforge-scripts@latest'
+      }
+
+      robot.logger.warning(botforgeScriptsWarning)
+    }
+  }
+
+  function loadExternalScripts () {
+    const externalScripts = pathResolve('.', 'external-scripts.json')
+
+    if (!fs.existsSync(externalScripts)) {
       return
     }
 
-    try {
-      scripts = JSON.parse(data)
-      scriptsPath = pathResolve('node_modules', 'botforge-scripts', 'src', 'scripts')
-      robot.loadBotforgeScripts(scriptsPath, scripts)
-    } catch (error) {
-      const err = error
-      robot.logger.error(`Error parsing JSON data from botforge-scripts.json: ${err}`)
-      process.exit(1)
-    }
+    fs.readFile(externalScripts, function (error, data) {
+      if (error) {
+        throw error
+      }
 
-    botforgeScriptsWarning = 'Loading scripts from botforge-scripts.json is deprecated and ' + 'will be removed in 3.0 (https://github.com/github/hubot-scripts/issues/1113) ' + 'in favor of packages for each script.\n\n'
-
-    if (scripts.length === 0) {
-      botforgeScriptsWarning += 'Your botforge-scripts.json is empty, so you just need to remove it.'
-      return robot.logger.warning(botforgeScriptsWarning)
-    }
-
-    const botforgeScriptsReplacements = pathResolve('node_modules', 'botforge-scripts', 'replacements.json')
-    const replacementsData = fs.readFileSync(botforgeScriptsReplacements)
-    const replacements = JSON.parse(replacementsData)
-    const scriptsWithoutReplacements = []
-
-    if (!fs.existsSync(botforgeScriptsReplacements)) {
-      botforgeScriptsWarning += 'To get a list of recommended replacements, update your botforge-scripts: npm install --save botforge-scripts@latest'
-      return robot.logger.warning(botforgeScriptsWarning)
-    }
-
-    botforgeScriptsWarning += 'The following scripts have known replacements. Follow the link for installation instructions, then remove it from botforge-scripts.json:\n'
-
-    scripts.forEach((script) => {
-      const replacement = replacements[script]
-
-      if (replacement) {
-        botforgeScriptsWarning += `* ${script}: ${replacement}\n`
-      } else {
-        scriptsWithoutReplacements.push(script)
+      try {
+        robot.loadExternalScripts(JSON.parse(data))
+      } catch (error) {
+        console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
+        process.exit(1)
       }
     })
-
-    botforgeScriptsWarning += '\n'
-
-    if (scriptsWithoutReplacements.length > 0) {
-      botforgeScriptsWarning += 'The following scripts don’t have (known) replacements. You can try searching https://www.npmjs.com/ or http://github.com/search or your favorite search engine. You can copy the script into your local scripts directory, or consider creating a new package to maintain yourself. If you find a replacement or create a package yourself, please post on https://github.com/github/hubot-scripts/issues/1641:\n'
-      botforgeScriptsWarning += scriptsWithoutReplacements.map((script) => `* ${script}\n`).join('')
-      botforgeScriptsWarning += '\nYou an also try updating botforge-scripts to get the latest list of replacements: npm install --save botforge-scripts@latest'
-    }
-
-    robot.logger.warning(botforgeScriptsWarning)
   }
-}
-
-function loadExternalScripts () {
-  const externalScripts = pathResolve('.', 'external-scripts.json')
-
-  if (!fs.existsSync(externalScripts)) {
-    return
-  }
-
-  fs.readFile(externalScripts, function (error, data) {
-    if (error) {
-      throw error
-    }
-
-    try {
-      robot.loadExternalScripts(JSON.parse(data))
-    } catch (error) {
-      console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
-      process.exit(1)
-    }
-  })
-}
+})()

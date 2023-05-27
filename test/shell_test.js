@@ -11,8 +11,9 @@ const expect = chai.expect
 const Robot = require('../src/robot')
 
 describe('Shell Adapter', function () {
-  beforeEach(function () {
+  beforeEach(async function () {
     this.robot = new Robot(null, 'shell', false, 'TestBotforge')
+    await this.robot.loadAdapter('shell')
     this.robot.run()
   })
 
