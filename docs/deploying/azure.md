@@ -20,7 +20,7 @@ Inside your new hubot directory, make sure you've created a git repository, and 
 Then [create a GitHub repository](https://help.github.com/articles/create-a-repo/) for your hubot. This is where Azure will pull your code from instead of needing to deploy directly from your dev machine to Azure.
 
     % git remote add origin _your GitHub repo_
-    % git push -u origin master
+    % git push -u origin main
 
 Once you have your GitHub repo, create an Azure website linked to your repo. In Azure, create a website and select integrated source control. When it asks "where is your source control" select GitHub and link this website to your git repo that you created in the previous step. If you have downloaded the Azure PowerShell modules, you can also do this via PowerShell.
 

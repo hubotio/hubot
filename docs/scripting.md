@@ -818,7 +818,7 @@ Listener middleware inserts logic between the listener matching a message and th
 
 ## Listener Middleware Examples
 
-A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/main/src/rate-limit.coffee).
 
 A simple example of middleware logging command executions:
 
@@ -996,7 +996,7 @@ You may also want to install:
 [Note: This section is still refering to Coffeescript, but we've update Hubot for Javascript. We'll have to replace this when we get a JavaScript example.]
 
 Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
+[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/main/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
 ```coffeescript

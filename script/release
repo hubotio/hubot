@@ -11,10 +11,10 @@ cd $(dirname "$0")/..
 
 npm update && script/smoke-test
 
-# Make sure we're on the master branch.
+# Make sure we're on the main branch.
 
-(git branch | grep -q '* master') || {
-  echo "Only release from the master branch."
+(git branch | grep -q '* main') || {
+  echo "Only release from the main branch."
   exit 1
 }
 
@@ -41,4 +41,4 @@ git fetch -t origin
 # Tag it and bag it.
 
 npm publish && git tag "$tag" &&
-  git push origin master --tags
+  git push origin main --tags

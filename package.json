@@ -51,7 +51,7 @@
   },
   "release": {
     "branches": [
-      "master"
+      "main"
     ],
     "dryRun": false
   }
