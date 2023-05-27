@@ -1,18 +1,17 @@
 {
-  "name": "hubot",
+  "name": "botforge",
   "version": "0.0.0-development",
-  "author": "hubot",
+  "author": "botforge",
   "keywords": [
-    "github",
-    "hubot",
-    "campfire",
-    "bot"
+    "botforge",
+    "bot",
+    "chatbot"
   ],
-  "description": "A simple helpful robot for your Company",
+  "description": "A simple helpful robot for you",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hubotio/hubot.git"
+    "url": "https://github.com/hubot-new/botforge.git"
   },
   "dependencies": {
     "async": "^3.2.4",
@@ -41,10 +40,10 @@
   },
   "main": "./index",
   "bin": {
-    "hubot": "./bin/hubot"
+    "botforge": "./bin/botforge"
   },
   "scripts": {
-    "start": "bin/hubot",
+    "start": "bin/botforge",
     "pretest": "standard",
     "test": "mocha --exit",
     "test:smoke": "node src/**/*.js"

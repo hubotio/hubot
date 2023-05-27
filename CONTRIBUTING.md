@@ -2,18 +2,18 @@
 
 Contributions to this project are [released](https://help.github.com/articles/github-terms-of-service/#6-contributions-under-repository-license) to the public under the [project's open source license](LICENSE.md).
 
-Everyone is welcome to contribute to Hubot. Contributing doesn’t just mean submitting pull requests—there are many different ways for you to get involved, including answering questions in [chat](https://hubot-slackin.herokuapp.com/), reporting or triaging [issues](https://github.com/github/hubot/issues), and participating in the [Hubot Evolution](https://github.com/hubotio/evolution) process.
+Everyone is welcome to contribute to Botforge. Contributing doesn’t just mean submitting pull requests; there are many different ways for you to get involved, including answering questions, reporting or triaging [issues](https://github.com/hubot-new/botforge/issues), and participating in the [Botforge Evolution](https://github.com/hubot-new/botforge/projects?query=is%3Aopen) process.
 
 No matter how you want to get involved, we ask that you first learn what’s expected of anyone who participates in the project by reading the [Contributor Covenant Code of Conduct](http://contributor-covenant.org). By participating, you are expected to uphold this code.
 
 We love pull requests. Here's a quick guide:
 
-1. If you're adding a new feature or changing user-facing APIs, check out the [Hubot Evolution](https://github.com/hubotio/evolution) process.
-1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [main branch](https://github.com/github/hubot/commits/main)
+1. If you're adding a new feature or changing user-facing APIs, check out the [Botforge Evolution](https://github.com/hubot-new/botforge/projects?query=is%3Aopen) process.
+1. Check for [existing issues](https://github.com/hubot-new/botforge/issues) for duplicates and confirm that it hasn't been fixed already in the [main branch](https://github.com/hubot-new/botforge/commits/main)
 1. Fork the repo, and clone it locally
-1. `npm link` to make your cloned repo available to npm
+1. `npm link` to make all references to `Botforge` in your local application development point to your local repo of `Botforge`
 1. Follow [Getting Started](docs/index.md) to generate a testbot
-1. `npm link hubot` in your newly created bot to use your hubot fork
+1. `npm link botforge` in your newly created bot to use your `Botforge` fork
 1. Create a new branch for your contribution
 1. Add [tests](test/) (run with `npm test`)
 1. Push to your fork and submit a pull request
@@ -28,7 +28,7 @@ Some things that will increase the chance that your pull request is accepted:
   update everything affected by your contribution.
 * Include any information that would be relevant to reproducing bugs, use cases for new features, etc.
 
-* Discuss the impact on existing [hubot installs](docs/index.md), [hubot adapters](docs/adapters.md), and [hubot scripts](docs/scripting.md) (e.g. backwards compatibility)
+* Discuss the impact on existing [botforge installs](docs/index.md), [botforge adapters](docs/adapters.md), and [botforge scripts](docs/scripting.md) (e.g. backwards compatibility)
   * If the change does break compatibility, how can it be updated to become backwards compatible, while directing users to the new way of doing things?
 * Your commits are associated with your GitHub user: https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/
 * Make pull requests against a feature branch,
@@ -55,7 +55,7 @@ The goal of this process is to keep the list of open issues and pull requests fo
 
 # Pull Request Reviews & releasing
 
-Releasing `hubot` is fully automated using [semantic-release](https://github.com/semantic-release/semantic-release). Once merged into the `main` branch, `semantic-release` will automatically release a new version based on the commit messages of the pull request. For it to work correctly, make sure that the correct commit message conventions have been used. The ones relevant are
+Releasing `Botforge` is fully automated using [semantic-release](https://github.com/semantic-release/semantic-release). Once merged into the `main` branch, `semantic-release` will automatically release a new version based on the commit messages of the pull request. For it to work correctly, make sure that the correct commit message conventions have been used. The ones relevant are
 
 * `fix: …` will bump the fix version, e.g. 1.2.3 → 1.2.4
 * `feat: …` will bump the feature version, e.g. 1.2.3 → 1.3.0

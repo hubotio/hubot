@@ -2,15 +2,14 @@
 
 const inherits = require('util').inherits
 
-const hubotExport = require('./es2015')
+const botforgeExport = require('./es2015')
 
 // make all es2015 class declarations compatible with CoffeeScript’s extend
-// see https://github.com/hubotio/evolution/pull/4#issuecomment-306437501
-module.exports = Object.keys(hubotExport).reduce((map, current) => {
+module.exports = Object.keys(botforgeExport).reduce((map, current) => {
   if (current !== 'loadBot') {
-    map[current] = makeClassCoffeeScriptCompatible(hubotExport[current])
+    map[current] = makeClassCoffeeScriptCompatible(botforgeExport[current])
   } else {
-    map[current] = hubotExport[current]
+    map[current] = botforgeExport[current]
   }
   return map
 }, {})

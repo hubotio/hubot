@@ -1,5 +1,5 @@
 node_modules
-.hubot_history
+.botforge_history
 .node-version
 .nyc_output/
 npm-debug.log
