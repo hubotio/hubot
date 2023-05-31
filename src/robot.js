@@ -1,12 +1,10 @@
 'use strict'
-require('log-node')()
-
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const path = require('path')
 
 const async = require('async')
-const log = require('log')
+const pino = require('pino')
 const HttpClient = require('./httpclient')
 
 const Brain = require('./brain')
@@ -50,8 +48,15 @@ class Robot {
       response: new Middleware(this),
       receive: new Middleware(this)
     }
-    process.env.LOG_LEVEL = process.env.LOG_LEVEL || process.env.HUBOT_LOG_LEVEL || 'info'
-    this.logger = log.get('robot')
+    this.logger = pino({
+      name,
+      level: process.env.HUBOT_LOG_LEVEL || 'info'
+    })
+    Reflect.defineProperty(this.logger, 'warning', {
+      value: this.logger.warn,
+      enumerable: true,
+      configurable: true
+    })
 
     this.pingIntervalId = null
     this.globalHttpOptions = {}
@@ -62,8 +67,6 @@ class Robot {
     } else {
       this.setupNullRouter()
     }
-
-    this.loadAdapter(adapter)
 
     this.adapterName = adapter
     this.errorHandlers = []
@@ -350,9 +353,9 @@ class Robot {
   // filename - A String filename in path on the filesystem.
   //
   // Returns nothing.
-  loadFile (filepath, filename) {
+  async loadFile (filepath, filename) {
     const ext = path.extname(filename)
-    const full = path.join(filepath, path.basename(filename, ext))
+    const full = path.join(filepath, path.basename(filename))
 
     // see https://github.com/hubotio/hubot/issues/1355
     if (['.js', '.mjs', '.coffee'].indexOf(ext) == -1) { // eslint-disable-line
@@ -360,10 +363,28 @@ class Robot {
     }
 
     try {
-      const script = require(full)
-
+      const script = await (async () => {
+        let mod = null
+        if (ext === '.mjs') {
+          try {
+            mod = await import(full)
+          } catch (e) {
+            this.logger.warning(`Expected ${full} to export default (robot) => {}, got: ${typeof mod} ${e}`)
+          }
+          return mod
+        }
+        try {
+          mod = require(full)
+        } catch (e) {
+          this.logger.warning(`Expected ${full} to assign a function to module.exports, got: ${typeof mod} ${e}`)
+        }
+        return mod
+      })()
       if (typeof script === 'function') {
         script(this)
+        this.parseHelp(path.join(filepath, filename))
+      } else if (typeof script?.default === 'function') {
+        await script.default(this)
         this.parseHelp(path.join(filepath, filename))
       } else {
         this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
@@ -379,11 +400,12 @@ class Robot {
   // path - A String path on the filesystem.
   //
   // Returns nothing.
-  load (path) {
+  async load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
-
     if (fs.existsSync(path)) {
-      fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
+      for await (const file of fs.readdirSync(path).sort()) {
+        await this.loadFile(path, file)
+      }
     }
   }
 
@@ -395,7 +417,7 @@ class Robot {
   // Returns nothing.
   loadHubotScripts (path, scripts) {
     this.logger.debug(`Loading hubot-scripts from ${path}`)
-    Array.from(scripts).map(script => this.loadFile(path, script))
+    Array.from(scripts).map(script => this.loadFile(path, script).then().catch(err => console.error(err)))
   }
 
   // Public: Load scripts from packages specified in the
@@ -502,17 +524,31 @@ class Robot {
   // adapter - A String of the adapter name to use.
   //
   // Returns nothing.
-  loadAdapter (adapter) {
+  async loadAdapter (adapter) {
     this.logger.debug(`Loading adapter ${adapter}`)
 
     try {
-      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
-
-      this.adapter = require(path).use(this)
+      if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1) {
+        this.adapter = this.loadAdapterFrom(`${this.adapterPath}/${adapter}`)
+      } else if (path.extname(adapter) === '.js') {
+        this.adapter = this.loadAdapterFrom(path.resolve(`${this.adapterPath}/${adapter}`))
+      } else if (path.extname(adapter) === '.mjs') {
+        this.adapter = await this.loadAdapterWithImport(path.resolve(`${this.adapterPath}/${adapter}`))
+      } else {
+        this.adapter = this.loadAdapterFrom(`hubot-${adapter}`)
+      }
     } catch (err) {
       this.logger.error(`Cannot load adapter ${adapter} - ${err}`)
       process.exit(1)
     }
+  }
+
+  loadAdapterFrom (adapterPath) {
+    return require(adapterPath).use(this)
+  }
+
+  async loadAdapterWithImport (adapterPath) {
+    return await (await import(adapterPath)).default(this)
   }
 
   // Public: Help Commands for Running Scripts.

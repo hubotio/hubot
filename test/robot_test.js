@@ -6,7 +6,6 @@
 // Assertions and Stubbing
 const chai = require('chai')
 const sinon = require('sinon')
-const emitter = require('log/lib/emitter')
 chai.use(require('sinon-chai'))
 
 const expect = chai.expect
@@ -24,7 +23,7 @@ const mockery = require('mockery')
 const path = require('path')
 
 describe('Robot', function () {
-  beforeEach(function () {
+  beforeEach(async function () {
     mockery.enable({
       warnOnReplace: false,
       warnOnUnregistered: false
@@ -33,6 +32,7 @@ describe('Robot', function () {
     process.env.EXPRESS_PORT = 0
     this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
     this.robot.alias = 'Hubot'
+    await this.robot.loadAdapter('mock-adapter')
     this.robot.run()
 
     // Re-throw AssertionErrors for clearer test failures
@@ -382,15 +382,15 @@ describe('Robot', function () {
         this.sandbox.restore()
       })
 
-      it('should require the specified file', function () {
+      it('should require the specified file', async function () {
         const module = require('module')
 
         const script = sinon.spy(function (robot) {})
         this.sandbox.stub(module, '_load').returns(script)
         this.sandbox.stub(this.robot, 'parseHelp')
 
-        this.robot.loadFile('./scripts', 'test-script.js')
-        expect(module._load).to.have.been.calledWith(path.join('scripts', 'test-script'))
+        await this.robot.loadFile('./scripts', 'test-script.js')
+        expect(module._load).to.have.been.calledWith(path.join('scripts', 'test-script.js'))
       })
 
       describe('proper script', function () {
@@ -402,13 +402,13 @@ describe('Robot', function () {
           this.sandbox.stub(this.robot, 'parseHelp')
         })
 
-        it('should call the script with the Robot', function () {
-          this.robot.loadFile('./scripts', 'test-script.js')
+        it('should call the script with the Robot', async function () {
+          await this.robot.loadFile('./scripts', 'test-script.js')
           expect(this.script).to.have.been.calledWith(this.robot)
         })
 
-        it('should parse the script documentation', function () {
-          this.robot.loadFile('./scripts', 'test-script.js')
+        it('should parse the script documentation', async function () {
+          await this.robot.loadFile('./scripts', 'test-script.js')
           expect(this.robot.parseHelp).to.have.been.calledWith(path.join('scripts', 'test-script.js'))
         })
       })
@@ -422,25 +422,16 @@ describe('Robot', function () {
           this.sandbox.stub(this.robot, 'parseHelp')
         })
 
-        it('logs a warning for a .js file', function () {
-          let wasCalled = false
-          const listener = e => {
-            wasCalled = e.messageTokens.some(t => t.indexOf('Expected scripts/test-script') > -1)
-          }
-          emitter.on('log', listener)
-          this.robot.loadFile('./scripts', 'test-script.js')
-          expect(wasCalled).to.be.true
-          emitter.off('log', listener)
+        it('logs a warning for a .js file', async function () {
+          sinon.stub(this.robot.logger, 'warning')
+          await this.robot.loadFile('./scripts', 'test-script.js')
+          expect(this.robot.logger.warning).to.have.been.called
         })
 
-        it('logs a warning for a .mjs file', function () {
-          let wasCalled = false
-          const listener = e => {
-            wasCalled = e.messageTokens.some(t => t.indexOf('Expected scripts/test-script') > -1)
-          }
-          emitter.on('log', listener)
-          this.robot.loadFile('./scripts', 'test-script.mjs')
-          expect(wasCalled).to.be.true
+        it('logs a warning for a .mjs file', async function () {
+          sinon.stub(this.robot.logger, 'warning')
+          await this.robot.loadFile('./scripts', 'test-script.mjs')
+          expect(this.robot.logger.warning).to.have.been.called
         })
       })
 
