@@ -32,7 +32,7 @@ class Robot {
     if (alias == null) {
       alias = false
     }
-    this.adapterPath = path.join(__dirname, 'adapters')
+    this.adapterPath = adapterPath
 
     this.name = name
     this.events = new EventEmitter()
@@ -67,8 +67,6 @@ class Robot {
     } else {
       this.setupNullRouter()
     }
-
-    this.loadAdapter(adapter)
 
     this.adapterName = adapter
     this.errorHandlers = []
@@ -507,17 +505,31 @@ class Robot {
   // adapter - A String of the adapter name to use.
   //
   // Returns nothing.
-  loadAdapter (adapter) {
-    this.logger.debug(`Loading adapter ${adapter}`)
-
+  async loadAdapter () {
+    this.logger.debug(`Loading adapter ${this.adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
+    const ext = path.extname(this.adapterName) ?? '.js'
     try {
-      const path = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(adapter) !== -1 ? `${this.adapterPath}/${adapter}` : `hubot-${adapter}`
-
-      this.adapter = require(path).use(this)
+      if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
+        this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
+      } else if (['.js', '.cjs', '.coffee'].includes(ext)) {
+        this.adapter = this.requireAdapterFrom(path.resolve(path.join(this.adapterPath, this.adapterName)))
+      } else if (['.mjs'].includes(ext)) {
+        this.adapter = await this.importAdapterFrom(path.resolve(path.join(this.adapterPath, this.adapterName)))
+      } else {
+        this.adapter = this.requireAdapterFrom(`hubot-${this.adapterName}`)
+      }
     } catch (err) {
-      this.logger.error(`Cannot load adapter ${adapter} - ${err}`)
+      this.logger.error(`Cannot load adapter ${this.adapterName} - ${err}`)
       process.exit(1)
     }
+  }
+
+  requireAdapterFrom (adapaterPath) {
+    return require(adapaterPath).use(this)
+  }
+
+  async importAdapterFrom (adapterPath) {
+    return await (await import(adapterPath)).default(this)
   }
 
   // Public: Help Commands for Running Scripts.

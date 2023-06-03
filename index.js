@@ -1,4 +1,5 @@
 'use strict'
+require('coffeescript/register')
 
 const inherits = require('util').inherits
 

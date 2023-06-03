@@ -8,7 +8,8 @@ const OptParse = require('optparse')
 const Hubot = require('..')
 
 const switches = [
-  ['-a', '--adapter ADAPTER', 'The Adapter to use'],
+  ['-a', '--adapter ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
+  ['-p', '--path PATH', 'Path to adapter directory, e.g. "./adapters" (Note: if this is set, the adapter option will be used as the file name to load from this folder)'],
   ['-c', '--create PATH', 'Create a deployable hubot'],
   ['-d', '--disable-httpd', 'Disable the HTTP server'],
   ['-h', '--help', 'Display the help information'],
@@ -26,7 +27,7 @@ const options = {
   enableHttpd: process.env.HUBOT_HTTPD !== 'false',
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
-  path: process.env.HUBOT_PATH || '.',
+  path: process.env.HUBOT_PATH || undefined,
   configCheck: false
 }
 
@@ -35,6 +36,10 @@ Parser.banner = 'Usage hubot [options]'
 
 Parser.on('adapter', (opt, value) => {
   options.adapter = value
+})
+
+Parser.on('path', (opt, value) => {
+  options.path = value
 })
 
 Parser.on('create', function (opt, value) {
@@ -90,22 +95,7 @@ if (options.create) {
   process.exit(1)
 }
 
-const robot = Hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias)
-
-if (options.version) {
-  console.log(robot.version)
-  process.exit(0)
-}
-
-if (options.configCheck) {
-  loadScripts()
-  console.log('OK')
-  process.exit(0)
-}
-
-robot.adapter.once('connected', loadScripts)
-
-robot.run()
+const robot = Hubot.loadBot(options.path, options.adapter, options.enableHttpd, options.name, options.alias)
 
 function loadScripts () {
   robot.load(pathResolve('.', 'scripts'))
@@ -207,3 +197,21 @@ function loadExternalScripts () {
     }
   })
 }
+
+(async () => {
+  await robot.loadAdapter()
+  if (options.version) {
+    console.log(robot.version)
+    process.exit(0)
+  }
+
+  if (options.configCheck) {
+    loadScripts()
+    console.log('OK')
+    process.exit(0)
+  }
+
+  robot.adapter.once('connected', loadScripts)
+
+  robot.run()
+})()

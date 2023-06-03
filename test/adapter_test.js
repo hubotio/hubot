@@ -15,9 +15,6 @@ describe('Adapter', function () {
     this.robot = { receive: sinon.spy() }
   })
 
-  // this one is hard, as it requires files
-  it('can load adapter by name')
-
   describe('Public API', function () {
     beforeEach(function () {
       this.adapter = new Adapter(this.robot)
