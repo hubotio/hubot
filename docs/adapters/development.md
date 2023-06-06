@@ -33,7 +33,7 @@ class Sample extends Adapter {
     }
     run() {
         this.robot.logger.info('Run')
-        this.emit('connected') // this line is required. Scripts won't get loadded if this event never fires.
+        this.emit('connected') // The 'connected' event is required to trigger loading of Hubot scripts.
         const user = new User(1001, 'Sample User')
         const message = new TextMessage(user, 'Some Sample Message', 'MSG-001')
         this.robot.receive(message)
