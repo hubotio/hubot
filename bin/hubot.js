@@ -9,7 +9,7 @@ const Hubot = require('..')
 
 const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
-  ['-p', '--path PATH', 'Path to adapter directory, e.g. "./adapters" (Note: if this is set, the adapter option will be used as the file name to load from this folder)'],
+  ['-f', '--file PATH', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
   ['-c', '--create PATH', 'Create a deployable hubot'],
   ['-d', '--disable-httpd', 'Disable the HTTP server'],
   ['-h', '--help', 'Display the help information'],
@@ -21,13 +21,13 @@ const switches = [
 ]
 
 const options = {
-  adapter: process.env.HUBOT_ADAPTER || 'shell',
+  adapter: process.env.HUBOT_ADAPTER,
   alias: process.env.HUBOT_ALIAS || false,
   create: process.env.HUBOT_CREATE || false,
   enableHttpd: process.env.HUBOT_HTTPD !== 'false',
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
-  path: process.env.HUBOT_PATH || undefined,
+  file: process.env.HUBOT_FILE,
   configCheck: false
 }
 
@@ -38,8 +38,8 @@ Parser.on('adapter', (opt, value) => {
   options.adapter = value
 })
 
-Parser.on('path', (opt, value) => {
-  options.path = value
+Parser.on('file', (opt, value) => {
+  options.file = value
 })
 
 Parser.on('create', function (opt, value) {
@@ -94,16 +94,20 @@ if (options.create) {
   console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
   process.exit(1)
 }
-
-const robot = Hubot.loadBot(options.path, options.adapter, options.enableHttpd, options.name, options.alias)
+if (options.file) {
+  options.adapter = options.file.split('/').pop().split('.')[0]
+}
+const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)
 
 function loadScripts () {
+  console.log('loading scripts')
   robot.load(pathResolve('.', 'scripts'))
   robot.load(pathResolve('.', 'src', 'scripts'))
 
   loadExternalScripts()
 
   options.scripts.forEach((scriptPath) => {
+    console.log('loadding', scriptPath)
     if (scriptPath[0] === '/') {
       return robot.load(scriptPath)
     }
@@ -134,7 +138,7 @@ function loadExternalScripts () {
 }
 
 (async () => {
-  await robot.loadAdapter()
+  await robot.loadAdapter(options.file)
   if (options.version) {
     console.log(robot.version)
     process.exit(0)

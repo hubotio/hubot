@@ -30,7 +30,7 @@ describe('Robot', function () {
     })
     mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
     process.env.EXPRESS_PORT = 0
-    this.robot = new Robot(null, 'mock-adapter', true, 'TestHubot')
+    this.robot = new Robot('mock-adapter', true, 'TestHubot')
     this.robot.alias = 'Hubot'
     await this.robot.loadAdapter()
     this.robot.run()
@@ -1087,9 +1087,9 @@ describe('Robot ES6', () => {
   let robot = null
   beforeEach(async () => {
     process.env.EXPRESS_PORT = 0
-    robot = new Robot('./test/fixtures/', 'MockAdapter.mjs', true, 'TestHubot')
+    robot = new Robot('MockAdapter', true, 'TestHubot')
     robot.alias = 'Hubot'
-    await robot.loadAdapter()
+    await robot.loadAdapter('./test/fixtures/MockAdapter.mjs')
     robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.js')
     robot.run()
   })
@@ -1114,9 +1114,9 @@ describe('Robot Coffeescript', () => {
   let robot = null
   beforeEach(async () => {
     process.env.EXPRESS_PORT = 0
-    robot = new Robot('./test/fixtures/', 'MockAdapter.coffee', true, 'TestHubot')
+    robot = new Robot('MockAdapter', true, 'TestHubot')
     robot.alias = 'Hubot'
-    await robot.loadAdapter()
+    await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
     robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
     robot.run()
   })

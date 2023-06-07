@@ -20,19 +20,17 @@ class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
   // dispatch them to matching listeners.
   //
-  // adapterPath -  A String of the path to built-in adapters (defaults to src/adapters)
   // adapter     - A String of the adapter name.
   // httpd       - A Boolean whether to enable the HTTP daemon.
   // name        - A String of the robot name, defaults to Hubot.
   // alias       - A String of the alias of the robot name
-  constructor (adapterPath, adapter, httpd, name, alias) {
+  constructor (adapter, httpd, name, alias) {
     if (name == null) {
       name = 'Hubot'
     }
     if (alias == null) {
       alias = false
     }
-    this.adapterPath = adapterPath
 
     this.name = name
     this.events = new EventEmitter()
@@ -505,21 +503,22 @@ class Robot {
   // adapter - A String of the adapter name to use.
   //
   // Returns nothing.
-  async loadAdapter () {
-    this.logger.debug(`Loading adapter ${this.adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
-    const ext = path.extname(this.adapterName) ?? '.js'
+  async loadAdapter (adapterPath = null) {
+    
+    this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
+    const ext = path.extname(adapterPath ?? '') ?? '.js'
     try {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
         this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
       } else if (['.js', '.cjs', '.coffee'].includes(ext)) {
-        this.adapter = this.requireAdapterFrom(path.resolve(path.join(this.adapterPath, this.adapterName)))
+        this.adapter = this.requireAdapterFrom(path.resolve(adapterPath))
       } else if (['.mjs'].includes(ext)) {
-        this.adapter = await this.importAdapterFrom(path.resolve(path.join(this.adapterPath, this.adapterName)))
+        this.adapter = await this.importAdapterFrom(path.resolve(adapterPath))
       } else {
         this.adapter = this.requireAdapterFrom(`hubot-${this.adapterName}`)
       }
     } catch (err) {
-      this.logger.error(`Cannot load adapter ${this.adapterName} - ${err}`)
+      this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${err}`)
       process.exit(1)
     }
   }
@@ -529,7 +528,7 @@ class Robot {
   }
 
   async importAdapterFrom (adapterPath) {
-    return await (await import(adapterPath)).default(this)
+    return await (await import(adapterPath)).default.use(this)
   }
 
   // Public: Help Commands for Running Scripts.
