@@ -100,7 +100,6 @@ if (options.file) {
 const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)
 
 function loadScripts () {
-  console.log('loading scripts')
   robot.load(pathResolve('.', 'scripts'))
   robot.load(pathResolve('.', 'src', 'scripts'))
 
