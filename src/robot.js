@@ -504,7 +504,6 @@ class Robot {
   //
   // Returns nothing.
   async loadAdapter (adapterPath = null) {
-    
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
     const ext = path.extname(adapterPath ?? '') ?? '.js'
     try {
