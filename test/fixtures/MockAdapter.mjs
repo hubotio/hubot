@@ -36,4 +36,8 @@ class MockAdapter extends Adapter {
 export {
   MockAdapter
 }
-export default robot => new MockAdapter(robot)
+export default {
+  use (robot) {
+    return new MockAdapter(robot)
+  }
+}
