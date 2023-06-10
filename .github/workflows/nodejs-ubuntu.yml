@@ -2,9 +2,9 @@ name: Node.js (Ubuntu) CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
   schedule:
     - cron:  '5 4 * * 0'
 

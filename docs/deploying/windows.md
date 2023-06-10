@@ -63,4 +63,4 @@ You can set this .ps1 as scheduled task on boot if you like or some other way to
 
 ## Expanding the documentation
 
-Not yet fleshed out. [Help contribute by submitting a pull request, please?](https://github.com/github/hubot/pull/new/master)
+Not yet fleshed out. [Help contribute by submitting a pull request, please?](https://github.com/github/hubot/pull/new/main)

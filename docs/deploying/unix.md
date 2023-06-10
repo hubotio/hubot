@@ -60,7 +60,7 @@ really, you probably want some process monitoring using tools like
 
 For starting at boot, you can create an init script appropriate for your UNIX
 distribution. If you are using one of the process monitoring tools above, make
-sure it boots at startup. See the [examples](https://github.com/github/hubot/tree/master/examples)
+sure it boots at startup. See the [examples](https://github.com/github/hubot/tree/main/examples)
 for configuration examples.
 
 ## Recommendations
