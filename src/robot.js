@@ -66,7 +66,7 @@ class Robot {
       this.setupNullRouter()
     }
 
-    this.adapterName = adapter
+    this.adapterName = adapter ?? 'shell'
     this.errorHandlers = []
 
     this.on('error', (err, res) => {

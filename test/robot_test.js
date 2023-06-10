@@ -1083,6 +1083,23 @@ describe('Robot', function () {
   })
 })
 
+describe('Robot Defaults', () => {
+  let robot = null
+  beforeEach(async () => {
+    process.env.EXPRESS_PORT = 0
+    robot = new Robot(null, true, 'TestHubot')
+    robot.alias = 'Hubot'
+    await robot.loadAdapter()
+    robot.run()
+  })
+  afterEach(() => {
+    robot.shutdown()
+  })
+  it('should load the builtin shell adapter by default', async () => {
+    expect(robot.adapter.name).to.equal('Shell')
+  })
+})
+
 describe('Robot ES6', () => {
   let robot = null
   beforeEach(async () => {
