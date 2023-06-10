@@ -33,7 +33,7 @@ class Sample extends Adapter {
     }
     run() {
         this.robot.logger.info('Run')
-        this.emit('connected')
+        this.emit('connected') // The 'connected' event is required to trigger loading of Hubot scripts.
         const user = new User(1001, 'Sample User')
         const message = new TextMessage(user, 'Some Sample Message', 'MSG-001')
         this.robot.receive(message)
@@ -42,23 +42,23 @@ class Sample extends Adapter {
 exports.use = (robot) => new Sample(robot)
 ```
 
-## Setting Up Your Development Environment
+## Option 1. Setting Up Your Development Environment
 
 1. Create a new folder for your adapter `hubot-sample`
   - `mkdir hubot-sample`
 2. Change your working directory to `hubot-sample`
   - `cd hubot-sample`
 3. Run `npm init` to create your package.json
-  - make sure the entry point is `src/sample.coffee`
+  - make sure the entry point is `src/sample.js`
 4. Add your `.gitignore` to include `node_modules`
-5. Edit the `src/sample.coffee` file to include the above stub for your adapter
+5. Edit the `src/sample.js` file to include the above stub for your adapter
 6. Edit the `package.json` to add a peer dependency on `hubot`
 
   ```json
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": ">=2.0"
+    "hubot": ">=3.0"
   },
   "devDependencies": {
     "coffeescript": ">=1.2.0"
@@ -96,3 +96,30 @@ There is a an open issue in the node community around [npm linked peer dependenc
 3. Now try running `hubot -a sample` again and see that the imports are properly loaded.
 4. Once this is working properly, you can build out the functionality of your adapter as you see fit.  Take a look at some of the other adapters to get some ideas for your implementation.
   - Once packaged and deployed via `npm`, you won't need the dependency in `hubot` anymore since the peer dependency should work as an official module.
+
+## Option 2. Setting Up Your Development Environment
+
+Another option is to load the file from local disk.
+
+1. Create a new folder for your adapter `hubot-sample`
+  - `mkdir hubot-sample`
+2. Change your working directory to `hubot-sample`
+  - `cd hubot-sample`
+3. Run `npm init` to create your package.json
+  - make sure the entry point is `src/sample.js`
+4. Add your `.gitignore` to include `node_modules`
+5. Edit the `src/sample.js` file to include the above stub for your adapter
+6. Edit the `package.json` to add a peer dependency on `hubot`
+
+  ```json
+  "dependencies": {
+  },
+  "peerDependencies": {
+    "hubot": ">=4.2.0"
+  },
+  "devDependencies": {
+    "coffeescript": ">=1.2.0"
+  }
+  ```
+
+7. Run `npx hubot -p ./src -a sample.js`
