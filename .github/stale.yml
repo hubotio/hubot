@@ -13,7 +13,7 @@ staleLabel: stale
 # Comment to post when marking as stale. Set to `false` to disable
 markComment: >
   This issue has been automatically marked as stale because it has [not had
-  recent activity](https://github.com/github/hubot/blob/master/CONTRIBUTING.md#stale-issue-and-pull-request-policy).
+  recent activity](https://github.com/github/hubot/blob/main/CONTRIBUTING.md#stale-issue-and-pull-request-policy).
   It will be closed if no further activity occurs. Thank you for your contributions.
 # Comment to post when removing the stale label. Set to `false` to disable
 unmarkComment: false

@@ -2,7 +2,7 @@ name: Node.js (macOS) CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   schedule:
     - cron:  '5 4 * * 0'
 

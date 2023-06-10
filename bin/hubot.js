@@ -91,7 +91,7 @@ if (options.create) {
   console.error(`    mkdir -p ${options.path}`)
   console.error(`    cd ${options.path}`)
   console.error('    yo hubot')
-  console.error('See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.')
+  console.error('See https://github.com/github/hubot/blob/main/docs/index.md for more details on getting started.')
   process.exit(1)
 }
 if (options.file) {

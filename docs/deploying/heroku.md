@@ -43,7 +43,7 @@ scripts, you'd need to set the following environment variables:
 At this point, you are ready to deploy and start chatting. With Heroku, that's a
 git push away:
 
-    % git push heroku master
+    % git push heroku main
 
 You'll see some text flying, and eventually some success. You should be able to
 see your bot in your configured chat rooms at this point. If not, you can peek
@@ -55,7 +55,7 @@ If you make any changes to your hubot, just commit and push them as
 before:
 
     % git commit -am "Awesome scripts OMG"
-    % git push heroku master
+    % git push heroku main
 
 Some scripts needs Redis to work, Heroku offers an addon called [Redis Cloud](https://addons.heroku.com/rediscloud), which has a free plan. To use it:
 
