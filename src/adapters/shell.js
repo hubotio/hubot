@@ -17,6 +17,11 @@ const historyPath = '.hubot_history'
 const bold = str => `\x1b[1m${str}\x1b[22m`
 
 class Shell extends Adapter {
+  constructor (robot) {
+    super(robot)
+    this.name = 'Shell'
+  }
+
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
