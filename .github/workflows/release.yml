@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - next
 permissions:
   contents: read
 jobs:

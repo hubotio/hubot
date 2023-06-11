@@ -50,7 +50,8 @@
   },
   "release": {
     "branches": [
-      "main"
+      "main",
+      "next"
     ],
     "dryRun": false
   }
