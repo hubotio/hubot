@@ -389,17 +389,6 @@ class Robot {
     }
   }
 
-  // Public: Load scripts specified in the `hubot-scripts.json` file.
-  //
-  // path    - A String path to the hubot-scripts files.
-  // scripts - An Array of scripts to load.
-  //
-  // Returns nothing.
-  loadHubotScripts (path, scripts) {
-    this.logger.debug(`Loading hubot-scripts from ${path}`)
-    Array.from(scripts).map(script => this.loadFile(path, script))
-  }
-
   // Public: Load scripts from packages specified in the
   // `external-scripts.json` file.
   //
