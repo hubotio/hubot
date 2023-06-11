@@ -1,0 +1,8 @@
+.editorconfig
+.github
+.hubot_history
+bin/e2e-test.sh
+test
+docs
+examples
+script
