@@ -818,7 +818,7 @@ Listener middleware inserts logic between the listener matching a message and th
 
 ## Listener Middleware Examples
 
-A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/main/src/rate-limit.coffee).
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
 
 A simple example of middleware logging command executions:
 
