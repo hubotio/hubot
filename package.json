@@ -46,7 +46,8 @@
     "start": "bin/hubot",
     "pretest": "standard",
     "test": "mocha --exit",
-    "test:smoke": "node src/**/*.js"
+    "test:smoke": "node src/**/*.js",
+    "test:e2e": "bin/e2e-test.sh"
   },
   "release": {
     "branches": [

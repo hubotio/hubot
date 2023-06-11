@@ -4,86 +4,64 @@ permalink: /docs/
 
 ## Getting Started With Hubot
 
-You will need [node.js and npm](https://docs.npmjs.com/getting-started/installing-node). Once those are installed, we can install the hubot generator:
+You will need [node.js and npm](https://docs.npmjs.com/getting-started/installing-node). Once those are installed, you can setup a new codebase for a new Hubot instance with the following shell commands:
 
-    %  npm install -g yo generator-hubot
+```sh
+mkdir myhubot
+cd myhubot
+npm init -y
+npm i hubot coffeescript
+```
 
-This will give us the `hubot` [yeoman](http://yeoman.io/) generator. Now we
-can make a new directory, and generate a new instance of hubot in it. For example, if
-we wanted to make a bot called myhubot:
+Now open `package.json` in your code editor and add a `start` property to the `scripts` property:
 
+```json
+...
+"scripts": {
+    "start": "hubot"
+}
+...
+```
 
-    % mkdir myhubot
-    % cd myhubot
-    % yo hubot
+Start your Hubot instance by executing `npm start`. It will start with the built in [shell adapter](./adapters/shell.md), which starts a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop) where you can type commands.
 
-At this point, you'll be asked a few questions about who is creating the bot,
-and which [adapter](adapters.md) you'll be using. Adapters are hubot's
-way of integrating with different chat providers.
+Your terminal should look like:
 
-If you are using git, the generated directory includes a .gitignore, so you can
-initialize and add everything:
+```sh
+Hubot>
+```
 
-    % git init
-    % git add .
-    % git commit -m "Initial commit"
+Typing `help` will list some default commands that Hubot's default adapter, Shell, can handle.
 
-If you'd prefer to automate your hubot build without being interactively
-prompted for its configuration, you can add the following options
-to the `yo hubot` command to do so:
+```sh
+Hubot> help
+usage:
+history 
+exit, \q - close shell and exit
+help, \? - print this usage
+clear, \c - clear the terminal screen
+Hubot>
+```
 
-| Option                                      | Description                                            |
-|:--------------------------------------------|:-------------------------------------------------------|
-| `--owner="Bot Wrangler <bw@example.com>"`   | Bot owner, e.g. "Bot Wrangler <bw@example.com>"        |
-| `--name="Hubot"`                            | Bot name, e.g. "Hubot"                                 |
-| `--description="Delightfully aware robutt"` | Bot description, e.g. "Delightfully aware robutt"      |
-| `--adapter=campfire`                        | Bot adapter, e.g. "campfire"                           |
-| `--defaults`                                | Declare all defaults are set and no prompting required |
+Changing your Hubot instances name will reduce confusion down the road, so set the `--name` argument in the `hubot` command:
 
-You now have your own functional hubot! There's a `bin/hubot`
-command for convenience, to handle installing npm dependencies, loading scripts,
-and then launching your hubot.
+```json
+...
+"scripts": {
+    "start": "hubot --name sam"
+}
+...
+```
 
-Note: Hubot can use Redis to persist data, so before you can start hubot on your own computer, if you want to persist data, then you should have Redis running on your machine accessible via `localhost`. Then, ensure that `hubot-redis-brain` is listed in `external-scripts.json` as an `Array` of module names (e.g. `['hubot-redis-brain']`) or an `object` where the key is the name of the module (e.g. `{'hubot-redis-brain': 'some arbitrary value'}`) where the value of the property in the object is passed to the module function as the second argument. The first argument being the hubot Robot instance.
-
-    % bin/hubot
-    Hubot>
-
-This starts hubot using the [shell adapter](./adapters/shell.md), which is mostly useful for development. Make note of the name in the `hubot>` prompt; this is the name your hubot will respond to with commands. If the prompt reads `myhubot>` then your commands must start with `myhubot <command>`.
-
-For example, to list available commands:
-
-    % bin/hubot
-    myhubot> myhubot help
-    myhubot> Shell: myhubot adapter - Reply with the adapter
-    myhubot animate me <query> - The same thing as `image me`, except adds a few parameters to try to return an animated GIF instead.
-    myhubot echo <text> - Reply back with <text>
-    myhubot help - Displays all of the help commands that Hubot knows about.
-    myhubot help <query> - Displays all help commands that match <query>.
-    myhubot image me <query> - The Original. Queries Google Images for <query> and returns a random top result.
-    myhubot map me <query> - Returns a map view of the area returned by `query`.
-    myhubot mustache me <url|query> - Adds a mustache to the specified URL or query result.
-    myhubot ping - Reply with pong
-    myhubot pug bomb N - get N pugs
-    myhubot pug me - Receive a pug
-    myhubot the rules - Make sure hubot still knows the rules.
-    myhubot time - Reply with current time
-    myhubot translate me <phrase> - Searches for a translation for the <phrase> and then prints that bad boy out.
-    myhubot translate me from <source> into <target> <phrase> - Translates <phrase> from <source> into <target>. Both <source> and <target> are optional
-    ship it - Display a motivation squirrel
-
-You almost definitely will want to change your hubot's name to add character. bin/hubot takes a `--name`:
-
-    % bin/hubot --name sam
-    sam>
-
-Your hubot will now respond as `sam`. This is
+Your hubot will now respond as `sam`. Note, a common usage pattern is prefixing a command message with Hubot's name. Hubot's code pattern matches on it in order to trigger sending it to Hubot. This is
 case-insensitive, and can be prefixed with `@` or suffixed with `:`. These are equivalent:
 
-    SAM help
-    sam help
-    @sam help
-    sam: help
+```
+sam> SAM help
+sam> sam help
+sam> @sam help
+sam> sam: help
+```
 
 ## Scripts
 
@@ -100,15 +78,20 @@ hubot-github          Giving Hubot the ability to be a vital member of your gith
 
 To use a script from an NPM package:
 
-1. Run `npm install --save <package-name>` to add the package as a dependency and install it.
-2. Add the package to `external-scripts.json`.
+1. Run `npm install <package-name>` in the codebase directory to install it.
+2. Add the package name to `external-scripts.json`.
+
+```json
+["hubot-diagnostics", "hubot-help"]
+```
+
 3. Run `npm home <package-name>` to open a browser window for the homepage of the script, where you can find more information about configuring and installing the script.
 
-You can also put your own scripts under the `scripts/` directory. All scripts (files ending with either `.js` or `.mjs`) placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](scripting.md).
+You can also create your own scripts and save them in a folder called `./scripts/` (`./` means current working directory) in your codebase directory. All scripts (files ending with `.js`) placed there are automatically loaded and ready to use with your hubot. Read more about customizing hubot by [writing your own scripts](scripting.md).
 
 ## Adapters
 
-Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](adapters.md), along with details on how to configure them.
+Hubot uses the adapter pattern to support multiple chat-backends. Here is a [list of available adapters](adapters.md), along with details on how to configure them. Please note that Hubot is undergoing major changes and old adapters may no longer work with the latest version of Hubot (anything after 3.5).
 
 ## Deploying
 
@@ -119,6 +102,29 @@ You can deploy hubot to Heroku, which is the officially supported method. Additi
 * [Deploying Hubot onto Heroku](./deploying/heroku.md)
 * [Deploying Hubot onto Unix](./deploying/unix.md)
 * [Deploying Hubot onto Windows](./deploying/windows.md)
+
+## Redis
+
+Hubot can use Redis to persist data, so if you want to persist data, then you should have Redis running on your machine accessible via `localhost`. Then, ensure that `hubot-redis-brain` is listed in `external-scripts.json` as an `Array` of module names (e.g. `["hubot-redis-brain"]`) or an `object` where the key is the name of the module (e.g. `{"hubot-redis-brain": "some arbitrary value"}`) where the value of the property in the object is passed to the module function as the second argument. The first argument being the hubot Robot instance.
+
+An example `external-scripts.json` file might look like the following:
+
+```json
+["hubot-redis-brain", "hubot-help", "hubot-diagnostics"]
+```
+
+or
+
+```json
+{
+    "hubot-redis-brain": "some arbitrary value",
+    "hubot-help": "this value will be sent to the hubot-help module",
+    "hubot-diagnostics": {
+        "name": "test",
+        "age": "21"
+    }
+}
+```
 
 ## Patterns
 

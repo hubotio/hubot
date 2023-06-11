@@ -30,6 +30,8 @@ jobs:
         run: npm audit signatures
       - name: Run Tests
         run: npm test
+      - name: E2E Tests
+        run: npm run test:e2e
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
