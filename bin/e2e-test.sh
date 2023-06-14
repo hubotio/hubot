@@ -21,7 +21,7 @@ EOF
 echo "$ NODE_PATH=$HUBOT_FOLDER/node_modules:$TEMP_ROOT/node_modules"
 export NODE_PATH=$NODE_PATH/$HUBOT_FOLDER/node_modules:$TEMP_ROOT/node_modules
 export PATH=$PATH:$TEMP_ROOT/node_modules/.bin
-
+ls -al
 ## start, but have to sleep 1 second to wait for hubot to start and the scripts to load
 expect <<EOL
   set timeout 30
