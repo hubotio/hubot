@@ -19,6 +19,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install expect
+      run: sudo apt-get install expect
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
