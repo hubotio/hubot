@@ -15,10 +15,12 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x, latest]
+        node-version: [16.x, 18.x, latest]
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install expect
+      run: sudo apt-get install expect
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -26,3 +28,4 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm test
+    - run: npm run test:e2e
