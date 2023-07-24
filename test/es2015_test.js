@@ -193,7 +193,7 @@ describe('hubot/es2015', function () {
     sinon.stub(Hubot, 'Robot')
 
     expect(loadBot).to.be.a('function')
-    Hubot.loadBot(null, 'adapter', 'enableHttpd', 'botName', 'botAlias')
-    expect(Hubot.Robot).to.be.called.calledWith(null, 'adapter', 'enableHttpd', 'botName', 'botAlias')
+    Hubot.loadBot('adapter', 'enableHttpd', 'botName', 'botAlias')
+    expect(Hubot.Robot).to.be.called.calledWith('adapter', 'enableHttpd', 'botName', 'botAlias')
   })
 })

@@ -25,8 +25,7 @@ module.exports = {
   CatchAllMessage: Message.CatchAllMessage,
   DataStore: DataStore.DataStore,
   DataStoreUnavailable: DataStore.DataStoreUnavailable,
-
-  loadBot (adapterPath, adapterName, enableHttpd, botName, botAlias) {
-    return new module.exports.Robot(adapterPath, adapterName, enableHttpd, botName, botAlias)
+  loadBot (adapter, enableHttpd, name, alias) {
+    return new module.exports.Robot(adapter, enableHttpd, name, alias)
   }
 }
