@@ -352,7 +352,7 @@ describe('Middleware', function () {
       })
       mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
       process.env.EXPRESS_PORT = 0
-      this.robot = new Robot('mock-adapter', true, 'TestHubot')
+      this.robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
       await this.robot.loadAdapter()
       this.robot.run
 

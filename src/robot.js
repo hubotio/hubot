@@ -504,7 +504,16 @@ class Robot {
       } else if (['.mjs'].includes(ext)) {
         this.adapter = await this.importAdapterFrom(pathToFileURL(path.resolve(adapterPath)).href)
       } else {
-        this.adapter = this.requireAdapterFrom(`hubot-${this.adapterName}`)
+        const adapterPathInCurrentWorkingDirectory = this.adapterName
+        try {
+          this.adapter = this.requireAdapterFrom(adapterPathInCurrentWorkingDirectory)
+        } catch (err) {
+          if (err.name === 'SyntaxError' && err.message.includes('Cannot use import statement outside a module')) {
+            this.adapter = await this.importAdapterFrom(adapterPathInCurrentWorkingDirectory)
+          } else {
+            throw err
+          }
+        }
       }
     } catch (err) {
       this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${err}`)
