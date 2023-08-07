@@ -15,6 +15,9 @@ cat <<EOF > external-scripts.json
 ["hubot-diagnostics"]
 EOF
 
+mkdir -p $TEMP_ROOT/scripts
+cp $HUBOT_FOLDER/test/fixtures/TestScript.mjs $TEMP_ROOT/scripts/
+
 # npm install /path/to/hubot will create a symlink in npm 5+ (http://blog.npmjs.org/post/161081169345/v500).
 # As the require calls for app-specific scripts happen inside hubot, we have to
 # set NODE_PATH to the app’s node_modules path so they can be found

@@ -11,7 +11,7 @@ const switches = [
   ['-a', '--adapter ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
   ['-f', '--file PATH', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
   ['-c', '--create PATH', 'Create a deployable hubot'],
-  ['-d', '--disable-httpd', 'Disable the HTTP server'],
+  ['-d', '--disable-httpd DISABLE_HTTPD', 'Disable the HTTP server'],
   ['-h', '--help', 'Display the help information'],
   ['-l', '--alias ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name NAME', 'The name of the robot in chat'],
@@ -98,21 +98,23 @@ if (options.file) {
   options.adapter = options.file.split('/').pop().split('.')[0]
 }
 const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)
+module.exports = robot
 
-function loadScripts () {
-  robot.load(pathResolve('.', 'scripts'))
-  robot.load(pathResolve('.', 'src', 'scripts'))
+async function loadScripts () {
+  await robot.load(pathResolve('.', 'scripts'))
+  await robot.load(pathResolve('.', 'src', 'scripts'))
 
   loadExternalScripts()
 
-  options.scripts.forEach((scriptPath) => {
+  const tasks = options.scripts.map((scriptPath) => {
     console.log('loadding', scriptPath)
     if (scriptPath[0] === '/') {
       return robot.load(scriptPath)
     }
 
-    robot.load(pathResolve('.', scriptPath))
+    return robot.load(pathResolve('.', scriptPath))
   })
+  await Promise.all(tasks)
 }
 
 function loadExternalScripts () {
@@ -144,7 +146,7 @@ function loadExternalScripts () {
   }
 
   if (options.configCheck) {
-    loadScripts()
+    await loadScripts()
     console.log('OK')
     process.exit(0)
   }
