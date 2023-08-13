@@ -13,7 +13,7 @@ const { TextMessage, User } = require('../index.js')
 describe('hubot', () => {
   let hubot
   before(() => {
-    process.env.HUBOT_ADAPTER = path.join(__dirname, './fixtures/MockAdapter.mjs')
+    process.env.HUBOT_ADAPTER = path.resolve(__dirname, 'fixtures', 'MockAdapter.mjs')
     hubot = require('../bin/hubot.js')
   })
   after(() => {
