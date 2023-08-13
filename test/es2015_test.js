@@ -195,5 +195,6 @@ describe('hubot/es2015', function () {
     expect(loadBot).to.be.a('function')
     Hubot.loadBot('adapter', 'enableHttpd', 'botName', 'botAlias')
     expect(Hubot.Robot).to.be.called.calledWith('adapter', 'enableHttpd', 'botName', 'botAlias')
+    sinon.restore()
   })
 })

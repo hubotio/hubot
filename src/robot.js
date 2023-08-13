@@ -346,30 +346,47 @@ class Robot {
     })
   }
 
+  async loadmjs (filePath) {
+    const script = await import(filePath)
+    if (typeof script?.default === 'function') {
+      script.default(this)
+    } else {
+      this.logger.warning(`Expected ${filePath} to assign a function to export default, got ${typeof script}`)
+    }
+  }
+
+  async loadcoffee (filePath) {
+    return await this.loadjs(filePath)
+  }
+
+  async loadjs (filePath) {
+    const script = require(filePath)
+    if (typeof script === 'function') {
+      script(this)
+    } else {
+      this.logger.warning(`Expected ${filePath} to assign a function to module.exports, got ${typeof script}`)
+    }
+  }
+
   // Public: Loads a file in path.
   //
   // filepath - A String path on the filesystem.
   // filename - A String filename in path on the filesystem.
   //
   // Returns nothing.
-  loadFile (filepath, filename) {
-    const ext = path.extname(filename)
-    const full = path.join(filepath, path.basename(filename, ext))
+  async loadFile (filepath, filename) {
+    const ext = path.extname(filename)?.replace('.', '')
+    const full = path.join(filepath, path.basename(filename))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (['.js', '.mjs', '.coffee'].indexOf(ext) == -1) { // eslint-disable-line
+    if (['js', 'mjs', 'coffee'].indexOf(ext) === -1) {
+      this.logger.debug(`Skipping unsupported file type ${full}`)
       return
     }
 
     try {
-      const script = require(full)
-
-      if (typeof script === 'function') {
-        script(this)
-        this.parseHelp(path.join(filepath, filename))
-      } else {
-        this.logger.warning(`Expected ${full} to assign a function to module.exports, got ${typeof script}`)
-      }
+      await this[`load${ext}`](full)
+      this.parseHelp(full)
     } catch (error) {
       this.logger.error(`Unable to load ${full}: ${error.stack}`)
       process.exit(1)
@@ -381,11 +398,12 @@ class Robot {
   // path - A String path on the filesystem.
   //
   // Returns nothing.
-  load (path) {
+  async load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
 
     if (fs.existsSync(path)) {
-      fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
+      const tasks = fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
+      await Promise.all(tasks)
     }
   }
 

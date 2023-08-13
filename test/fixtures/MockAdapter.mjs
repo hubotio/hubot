@@ -9,19 +9,19 @@ class MockAdapter extends Adapter {
   }
 
   send (envelope, ...strings) {
-    this.emit('send', envelope, strings)
+    this.emit('send', envelope, ...strings)
   }
 
   reply (envelope, ...strings) {
-    this.emit('reply', envelope, strings)
+    this.emit('reply', envelope, ...strings)
   }
 
   topic (envelope, ...strings) {
-    this.emit('topic', envelope, strings)
+    this.emit('topic', envelope, ...strings)
   }
 
   play (envelope, ...strings) {
-    this.emit('play', envelope, strings)
+    this.emit('play', envelope, ...strings)
   }
 
   run () {

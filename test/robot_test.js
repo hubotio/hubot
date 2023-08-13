@@ -382,71 +382,42 @@ describe('Robot', function () {
         this.sandbox.restore()
       })
 
-      it('should require the specified file', function () {
-        const module = require('module')
+      it('should require the specified file', async function () {
+        await this.robot.loadFile(path.resolve('./test/fixtures'), 'TestScript.js')
+        expect(this.robot.hasLoadedTestJsScript).to.be.true
+      })
 
-        const script = sinon.spy(function (robot) {})
-        this.sandbox.stub(module, '_load').returns(script)
-        this.sandbox.stub(this.robot, 'parseHelp')
-
-        this.robot.loadFile('./scripts', 'TestScript.js')
-        expect(module._load).to.have.been.calledWith(path.join('scripts', 'TestScript'))
+      it('should load an .mjs file', async function () {
+        await this.robot.loadFile(path.resolve('./test/fixtures'), 'TestScript.mjs')
+        expect(this.robot.hasLoadedTestMjsScript).to.be.true
       })
 
       describe('proper script', function () {
-        beforeEach(function () {
-          const module = require('module')
-
-          this.script = sinon.spy(function (robot) {})
-          this.sandbox.stub(module, '_load').returns(this.script)
-          this.sandbox.stub(this.robot, 'parseHelp')
-        })
-
-        it('should call the script with the Robot', function () {
-          this.robot.loadFile('./scripts', 'TestScript.js')
-          expect(this.script).to.have.been.calledWith(this.robot)
-        })
-
-        it('should parse the script documentation', function () {
-          this.robot.loadFile('./scripts', 'TestScript.js')
-          expect(this.robot.parseHelp).to.have.been.calledWith(path.join('scripts', 'TestScript.js'))
+        it('should parse the script documentation', async function () {
+          await this.robot.loadFile(path.resolve('./test/fixtures'), 'TestScript.js')
+          expect(this.robot.helpCommands()).to.eql(['hubot test - Responds with a test response'])
         })
       })
 
       describe('non-Function script', function () {
-        beforeEach(function () {
-          const module = require('module')
-
-          this.script = {}
-          this.sandbox.stub(module, '_load').returns(this.script)
-          this.sandbox.stub(this.robot, 'parseHelp')
-        })
-
-        it('logs a warning for a .js file', function () {
+        it('logs a warning for a .js file that does not export the correct API', async function () {
           sinon.stub(this.robot.logger, 'warning')
-          this.robot.loadFile('./scripts', 'TestScript.js')
+          await this.robot.loadFile(path.resolve('./test/fixtures'), 'TestScriptIncorrectApi.js')
           expect(this.robot.logger.warning).to.have.been.called
         })
 
-        it('logs a warning for a .mjs file', function () {
+        it('logs a warning for a .mjs file that does not export the correct API', async function () {
           sinon.stub(this.robot.logger, 'warning')
-          this.robot.loadFile('./scripts', 'TestScript.mjs')
+          await this.robot.loadFile(path.resolve('./test/fixtures'), 'TestScriptIncorrectApi.mjs')
           expect(this.robot.logger.warning).to.have.been.called
         })
       })
 
       describe('unsupported file extension', function () {
-        beforeEach(function () {
-          const module = require('module')
-
-          this.script = sinon.spy(function (robot) {})
-          this.sandbox.stub(module, '_load').returns(this.script)
-          this.sandbox.stub(this.robot, 'parseHelp')
-        })
-
-        it('should not be loaded by the Robot', function () {
-          this.robot.loadFile('./scripts', 'unsupported.yml')
-          expect(this.script).to.not.have.been.calledWith(this.robot)
+        it('should not be loaded by the Robot', async function () {
+          sinon.spy(this.robot.logger, 'debug')
+          await this.robot.loadFile(path.resolve('./test/fixtures'), 'unsupported.yml')
+          expect(this.robot.logger.debug).to.have.been.calledWithMatch(/unsupported file type/)
         })
       })
     })
@@ -1107,7 +1078,7 @@ describe('Robot ES6', () => {
     robot = new Robot('MockAdapter', true, 'TestHubot')
     robot.alias = 'Hubot'
     await robot.loadAdapter('./test/fixtures/MockAdapter.mjs')
-    robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.js')
+    await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.js')
     robot.run()
   })
   afterEach(() => {
@@ -1134,7 +1105,7 @@ describe('Robot Coffeescript', () => {
     robot = new Robot('MockAdapter', true, 'TestHubot')
     robot.alias = 'Hubot'
     await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
-    robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
+    await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
     robot.run()
   })
   afterEach(() => {
