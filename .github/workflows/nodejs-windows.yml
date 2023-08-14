@@ -23,4 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: HUBOT_LOG_LEVEL=debug npm test
+    - name: Run Tests
+      env:
+        HUBOT_LOG_LEVEL: debug
+      run: npm test
