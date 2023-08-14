@@ -7,7 +7,7 @@
 const chai = require('chai')
 const sinon = require('sinon')
 chai.use(require('sinon-chai'))
-const mockery = require('mockery')
+const { hook, reset } = require('./fixtures/RequireMocker.js')
 
 const expect = chai.expect
 
@@ -53,19 +53,14 @@ describe('hubot/es2015', function () {
   })
 
   it('exports Robot class', async function () {
-    mockery.enable({
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    })
-    mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
+    hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
 
     class MyRobot extends Robot {}
     const robot = new MyRobot('hubot-mock-adapter', false, 'TestHubot')
     await robot.loadAdapter()
     expect(robot).to.be.an.instanceof(Robot)
     expect(robot.name).to.equal('TestHubot')
-
-    mockery.disable()
+    reset()
   })
 
   it('exports Adapter class', function () {

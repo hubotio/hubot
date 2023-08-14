@@ -18,17 +18,12 @@ const LeaveMessage = require('../src/message').LeaveMessage
 const TextMessage = require('../src/message').TextMessage
 const TopicMessage = require('../src/message').TopicMessage
 
-// mock `hubot-mock-adapter` module from fixture
-const mockery = require('mockery')
 const path = require('path')
+const { hook, reset } = require('./fixtures/RequireMocker.js')
 
 describe('Robot', function () {
   beforeEach(async function () {
-    mockery.enable({
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    })
-    mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
+    hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
     process.env.EXPRESS_PORT = 0
     this.robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
     this.robot.alias = 'Hubot'
@@ -51,7 +46,7 @@ describe('Robot', function () {
   })
 
   afterEach(function () {
-    mockery.disable()
+    reset()
     this.robot.shutdown()
   })
 
