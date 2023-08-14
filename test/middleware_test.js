@@ -16,8 +16,7 @@ const TextMessage = require('../src/message').TextMessage
 const Response = require('../src/response')
 const Middleware = require('../src/middleware')
 
-// mock `hubot-mock-adapter` module from fixture
-const mockery = require('mockery')
+const { hook, reset } = require('./fixtures/RequireMocker.js')
 
 describe('Middleware', function () {
   describe('Unit Tests', function () {
@@ -346,11 +345,7 @@ describe('Middleware', function () {
   // tested for.
   describe('Public Middleware APIs', function () {
     beforeEach(async function () {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false
-      })
-      mockery.registerMock('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
+      hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
       process.env.EXPRESS_PORT = 0
       this.robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
       await this.robot.loadAdapter()
@@ -379,7 +374,7 @@ describe('Middleware', function () {
     })
 
     afterEach(function () {
-      mockery.disable()
+      reset()
       this.robot.shutdown()
     })
 
