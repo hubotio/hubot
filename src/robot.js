@@ -347,7 +347,7 @@ class Robot {
   }
 
   async loadmjs (filePath) {
-    const script = await import(filePath)
+    const script = await import(pathToFileURL(filePath))
     if (typeof script?.default === 'function') {
       script.default(this)
     } else {

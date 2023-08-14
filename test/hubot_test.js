@@ -23,7 +23,7 @@ describe('Running bin/hubot.js', () => {
         hubot.shutdown()
         done()
       })
-      hubot.loadFile(path.resolve(root, 'test/fixtures'), 'TestScript.mjs').then(() => {
+      hubot.loadFile(path.resolve(root, 'test', 'fixtures'), 'TestScript.mjs').then(() => {
         hubot.receive(new TextMessage(new User('mocha', { room: '#mocha' }), '@Hubot test'))
         expect(hubot.hasLoadedTestMjsScript).to.be.true
         expect(hubot.name).to.equal('Hubot')
