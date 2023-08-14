@@ -526,7 +526,7 @@ class Robot {
         try {
           this.adapter = this.requireAdapterFrom(adapterPathInCurrentWorkingDirectory)
         } catch (err) {
-          if (err.name === 'SyntaxError' && err.message.includes('Cannot use import statement outside a module')) {
+          if (err.name === 'SyntaxError') {
             this.adapter = await this.importAdapterFrom(adapterPathInCurrentWorkingDirectory)
           } else {
             throw err
