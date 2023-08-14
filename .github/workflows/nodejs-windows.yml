@@ -1,20 +1,16 @@
 name: Node.js (Windows) CI
-
 on:
   push:
     branches:
       - main
-      - fix-windows-path
-
+  schedule:
+    - cron: '5 4 * * 0'
 jobs:
   npm-test:
-
     runs-on: windows-latest
-
     strategy:
       matrix:
         node-version: [18.x]
-
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
