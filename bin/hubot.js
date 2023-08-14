@@ -8,13 +8,13 @@ const OptParse = require('optparse')
 const Hubot = require('..')
 
 const switches = [
-  ['-a', '--adapter ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
-  ['-f', '--file PATH', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
-  ['-c', '--create PATH', 'Create a deployable hubot'],
-  ['-d', '--disable-httpd DISABLE_HTTPD', 'Disable the HTTP server'],
+  ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
+  ['-f', '--file HUBOT_FILE', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
+  ['-c', '--create HUBOT_CREATE', 'Create a deployable hubot'],
+  ['-d', '--disable-httpd HUBOT_HTTPD', 'Disable the HTTP server'],
   ['-h', '--help', 'Display the help information'],
-  ['-l', '--alias ALIAS', "Enable replacing the robot's name with alias"],
-  ['-n', '--name NAME', 'The name of the robot in chat'],
+  ['-l', '--alias HUBOT_ALIAS', "Enable replacing the robot's name with alias"],
+  ['-n', '--name HUBOT_NAME', 'The name of the robot in chat'],
   ['-r', '--require PATH', 'Alternative scripts path'],
   ['-t', '--config-check', "Test hubot's config to make sure it won't fail at startup"],
   ['-v', '--version', 'Displays the version of hubot installed']
@@ -97,6 +97,7 @@ if (options.create) {
 if (options.file) {
   options.adapter = options.file.split('/').pop().split('.')[0]
 }
+
 const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)
 module.exports = robot
 
@@ -107,7 +108,6 @@ async function loadScripts () {
   loadExternalScripts()
 
   const tasks = options.scripts.map((scriptPath) => {
-    console.log('loadding', scriptPath)
     if (scriptPath[0] === '/') {
       return robot.load(scriptPath)
     }

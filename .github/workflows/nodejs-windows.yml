@@ -1,20 +1,16 @@
 name: Node.js (Windows) CI
-
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   schedule:
-    - cron:  '5 4 * * 0'
-
+    - cron: '5 4 * * 0'
 jobs:
   npm-test:
-
     runs-on: windows-latest
-
     strategy:
       matrix:
         node-version: [18.x]
-
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -23,4 +19,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm test
+    - name: Run Tests
+      env:
+        HUBOT_LOG_LEVEL: debug
+      run: npm test
