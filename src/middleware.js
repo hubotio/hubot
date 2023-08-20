@@ -1,7 +1,5 @@
 'use strict'
 
-const async = require('async')
-
 class Middleware {
   constructor (robot) {
     this.robot = robot
@@ -24,59 +22,26 @@ class Middleware {
   //
   // Returns nothing
   // Returns before executing any middleware
-  execute (context, next, done) {
-    const self = this
-
-    if (done == null) {
-      done = function () {}
-    }
-
-    // Execute a single piece of middleware and update the completion callback
-    // (each piece of middleware can wrap the 'done' callback with additional
-    // logic).
-    function executeSingleMiddleware (doneFunc, middlewareFunc, cb) {
-      // Match the async.reduce interface
-      function nextFunc (newDoneFunc) {
-        cb(null, newDoneFunc || doneFunc)
-      }
-
-      // Catch errors in synchronous middleware
+  async execute (context) {
+    let shouldContinue = true
+    for await (const middleware of this.stack) {
       try {
-        middlewareFunc(context, nextFunc, doneFunc)
-      } catch (err) {
-        // Maintaining the existing error interface (Response object)
-        self.robot.emit('error', err, context.response)
-        // Forcibly fail the middleware and stop executing deeper
-        doneFunc()
+        shouldContinue = await middleware(context)
+        if (shouldContinue === false) break
+      } catch (e) {
+        this.robot.emit('error', e, context.response)
       }
     }
-
-    // Executed when the middleware stack is finished
-    function allDone (_, finalDoneFunc) {
-      next(context, finalDoneFunc)
-    }
-
-    // Execute each piece of middleware, collecting the latest 'done' callback
-    // at each step.
-    process.nextTick(async.reduce.bind(null, this.stack, done, executeSingleMiddleware, allDone))
+    return shouldContinue
   }
 
   // Public: Registers new middleware
   //
-  // middleware - A generic pipeline component function that can either
-  //              continue the pipeline or interrupt it. The function is called
-  //              with (robot, context, next, done). If execution should
-  //              continue (next middleware, final callback), the middleware
-  //              should call the 'next' function with 'done' as an optional
-  //              argument.
-  //              If not, the middleware should call the 'done' function with
-  //              no arguments. Middleware may wrap the 'done' function in
-  //              order to execute logic after the final callback has been
-  //              executed.
+  // middleware - Middleware function to execute prior to the listener callback. Return false to prevent execution of the listener callback.
   //
   // Returns nothing.
   register (middleware) {
-    if (middleware.length !== 3) {
+    if (middleware.length !== 1) {
       throw new Error(`Incorrect number of arguments for middleware callback (expected 3, got ${middleware.length})`)
     }
     this.stack.push(middleware)

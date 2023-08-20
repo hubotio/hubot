@@ -17,7 +17,7 @@ class Adapter extends EventEmitter {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  send (envelope/* , ...strings */) {}
+  async send (envelope/* , ...strings */) {}
 
   // Public: Raw method for sending emote data back to the chat source.
   // Defaults as an alias for send
@@ -26,7 +26,7 @@ class Adapter extends EventEmitter {
   // strings  - One or more Strings for each message to send.
   //
   // Returns nothing.
-  emote (envelope/* , ...strings */) {
+  async emote (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
     return this.send.apply(this, [envelope].concat(strings))
   }
@@ -38,7 +38,7 @@ class Adapter extends EventEmitter {
   // strings  - One or more Strings for each reply to send.
   //
   // Returns nothing.
-  reply (envelope/* , ...strings */) {}
+  async reply (envelope/* , ...strings */) {}
 
   // Public: Raw method for setting a topic on the chat source. Extend this.
   //
@@ -46,7 +46,7 @@ class Adapter extends EventEmitter {
   // strings  - One more more Strings to set as the topic.
   //
   // Returns nothing.
-  topic (envelope/* , ...strings */) {}
+  async topic (envelope/* , ...strings */) {}
 
   // Public: Raw method for playing a sound in the chat source. Extend this.
   //
@@ -54,7 +54,7 @@ class Adapter extends EventEmitter {
   // strings  - One or more strings for each play message to send.
   //
   // Returns nothing
-  play (envelope/* , ...strings */) {}
+  async play (envelope/* , ...strings */) {}
 
   // Public: Raw method for invoking the bot to run. Extend this.
   //
@@ -69,8 +69,8 @@ class Adapter extends EventEmitter {
   // Public: Dispatch a received message to the robot.
   //
   // Returns nothing.
-  receive (message) {
-    this.robot.receive(message)
+  async receive (message) {
+    await this.robot.receive(message)
   }
 
   // Public: Get an Array of User objects stored in the brain.

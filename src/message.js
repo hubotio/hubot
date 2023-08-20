@@ -7,7 +7,7 @@ class Message {
   constructor (user, done) {
     this.user = user
     this.done = done || false
-    this.room = this.user.room
+    this.room = this.user?.room
   }
 
   // Indicates that no other Listener should be called on this object

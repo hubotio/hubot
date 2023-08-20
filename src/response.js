@@ -14,8 +14,7 @@ class Response {
     this.match = match
     this.envelope = {
       room: this.message.room,
-      user: this.message.user,
-      message: this.message
+      user: this.message.user
     }
   }
 
