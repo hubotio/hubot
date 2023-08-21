@@ -14,14 +14,7 @@ class Middleware {
   // context - context object that is passed through the middleware stack.
   //     When handling errors, this is assumed to have a `response` property.
   //
-  // next(context, done) - Called when all middleware is complete (assuming
-  //     all continued by calling respective 'next' functions)
-  //
-  // done() - Initial (final) completion callback. May be wrapped by
-  //     executed middleware.
-  //
-  // Returns nothing
-  // Returns before executing any middleware
+  // Returns bool, true | false, whether or not to continue execution
   async execute (context) {
     let shouldContinue = true
     for await (const middleware of this.stack) {
@@ -42,7 +35,7 @@ class Middleware {
   // Returns nothing.
   register (middleware) {
     if (middleware.length !== 1) {
-      throw new Error(`Incorrect number of arguments for middleware callback (expected 3, got ${middleware.length})`)
+      throw new Error(`Incorrect number of arguments for middleware callback (expected 1, got ${middleware.length})`)
     }
     this.stack.push(middleware)
   }

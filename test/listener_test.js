@@ -17,6 +17,7 @@ const Listener = require('../src/listener').Listener
 const TextListener = require('../src/listener').TextListener
 const Response = require('../src/response')
 const User = require('../src/user')
+const Middleware = require('../src/middleware')
 
 describe('Listener', function () {
   beforeEach(function () {
@@ -32,7 +33,10 @@ describe('Listener', function () {
       },
       // Ignore log messages
       logger: {
-        debug () {}
+        debug () {},
+        error (...args) {
+          console.error(...args)
+        }
       },
       // Why is this part of the Robot object??
       Response
@@ -48,35 +52,29 @@ describe('Listener', function () {
 
   describe('Unit Tests', function () {
     describe('#call', function () {
-      it('calls the matcher', function (done) {
-        const callback = sinon.spy()
-        const testMatcher = sinon.spy()
-        const testMessage = {}
-
-        const testListener = new Listener(this.robot, testMatcher, callback)
-        testListener.call(testMessage, function (_) {
-          expect(testMatcher).to.have.been.calledWith(testMessage)
-          done()
+      it('calls the matcher', async function () {
+        const testMessage = new TextMessage(this.user, 'message')
+        const testMatcher = message => {
+          expect(message).to.be.equal(testMessage)
+          return true
+        }
+        const middleware = new Middleware(this.robot)
+        middleware.register(async context => {
+          expect(context.listener).to.be.equal(testListener)
         })
+        const testListener = new Listener(this.robot, testMatcher, async response => true)
+        await testListener.call(testMessage, middleware)
       })
 
-      it('passes the matcher result on to the listener callback', function (done) {
+      it('the response object should have the match results so listeners can have access to it', async function () {
         const matcherResult = {}
-        const testMatcher = sinon.stub().returns(matcherResult)
-        const testMessage = {}
+        const testMatcher = message => {
+          return matcherResult
+        }
+        const testMessage = new TextMessage(this.user, 'response should have match')
         const listenerCallback = response => expect(response.match).to.be.equal(matcherResult)
-
-        // sanity check; matcherResult must be truthy
-        expect(matcherResult).to.be.ok
-
         const testListener = new Listener(this.robot, testMatcher, listenerCallback)
-        testListener.call(testMessage, function (result) {
-          // sanity check; message should have been processed
-          expect(testMatcher).to.have.been.called
-          expect(result).to.be.ok
-
-          done()
-        })
+        await testListener.call(testMessage, null)
       })
 
       describe('if the matcher returns true', function () {

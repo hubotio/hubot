@@ -49,14 +49,9 @@ class Listener {
   //
   // message - A Message instance.
   // middleware - Optional Middleware object to execute before the Listener callback
-  // callback - Optional Function called with a boolean of whether the matcher matched
   //
-  // Returns a boolean of whether the matcher matched.
-  async call (message, middleware, didMatchCallback) {
-    if (didMatchCallback == null && typeof middleware === 'function') {
-      didMatchCallback = middleware
-      middleware = undefined
-    }
+  // Returns the result of the callback.
+  async call (message, middleware) {
     if (!middleware) {
       middleware = new Middleware(this.robot)
     }
@@ -71,7 +66,6 @@ class Listener {
 
     try {
       const shouldContinue = await middleware.execute({ listener: this, response })
-      console.log('shouldContinue', shouldContinue)
       if (shouldContinue === false) return null
     } catch (e) {
       this.robot.logger.error(`Error executing middleware for listener: ${e.stack}`)
