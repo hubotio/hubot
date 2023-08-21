@@ -52,6 +52,12 @@ class Listener {
   //
   // Returns the result of the callback.
   async call (message, middleware) {
+    if (middleware && typeof middleware === 'function') {
+      const fn = middleware
+      middleware = new Middleware(this.robot)
+      middleware.register(fn)
+    }
+
     if (!middleware) {
       middleware = new Middleware(this.robot)
     }
@@ -70,7 +76,6 @@ class Listener {
     } catch (e) {
       this.robot.logger.error(`Error executing middleware for listener: ${e.stack}`)
     }
-
     try {
       return await this.callback(response)
     } catch (e) {

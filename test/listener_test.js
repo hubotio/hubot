@@ -84,14 +84,13 @@ describe('Listener', function () {
           }
         })
 
-        it('executes the listener callback', function (done) {
+        it('executes the listener callback', async function () {
           const listenerCallback = sinon.spy()
           const testMessage = {}
 
           const testListener = this.createListener(listenerCallback)
-          testListener.call(testMessage, function (_) {
+          await testListener.call(testMessage, async function (_) {
             expect(listenerCallback).to.have.been.called
-            done()
           })
         })
 
@@ -190,38 +189,33 @@ describe('Listener', function () {
           testListener.call(testMessage, testMiddleware, sinon.spy())
         })
 
-        it('executes the listener callback if middleware succeeds', function (testDone) {
+        it('executes the listener callback if middleware succeeds', async function () {
           const listenerCallback = sinon.spy()
           const testMessage = {}
 
           const testListener = this.createListener(listenerCallback)
 
-          testListener.call(testMessage, function (result) {
-            expect(listenerCallback).to.have.been.called
-            // Matcher matched, so we true
+          await testListener.call(testMessage, function (result) {
             expect(result).to.be.ok
-            testDone()
           })
+          expect(listenerCallback).to.have.been.called
         })
 
-        it('does not execute the listener callback if middleware fails', function (testDone) {
+        it('does not execute the listener callback if middleware fails', async function () {
           const listenerCallback = sinon.spy()
           const testMessage = {}
 
           const testListener = this.createListener(listenerCallback)
           const testMiddleware = {
-            execute (context, next, done) {
-              // Middleware fails
-              done()
+            async execute (context) {
+              return false
             }
           }
 
-          testListener.call(testMessage, testMiddleware, function (result) {
-            expect(listenerCallback).to.not.have.been.called
-            // Matcher still matched, so we true
+          await testListener.call(testMessage, testMiddleware, function (result) {
             expect(result).to.be.ok
-            testDone()
           })
+          expect(listenerCallback).to.not.have.been.called
         })
 
         it('unwinds the middleware stack if there is an error in the listener callback', function (testDone) {
