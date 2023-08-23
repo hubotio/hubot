@@ -284,7 +284,7 @@ class Robot {
   // message - A Message instance. Listeners can flag this message as 'done' to
   //           prevent further execution.
   //
-  // Returns results from listeners.
+  // Returns array of results from listeners.
   async receive (message) {
     const context = { response: new Response(this, message) }
     const shouldContinue = await this.middleware.receive.execute(context)
