@@ -7,7 +7,7 @@
 //
 module.exports = robot => {
   robot.hasLoadedTestJsScript = true
-  robot.respond('test', res => {
-    res.send('test response')
+  robot.respond('test', async res => {
+    await res.send('test response')
   })
 }

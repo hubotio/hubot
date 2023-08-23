@@ -3,24 +3,20 @@
 const Adapter = require('../..').Adapter
 
 class MockAdapter extends Adapter {
-  send (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-    this.emit('send', envelope, strings)
+  async send (envelope, ...strings) {
+    this.emit('send', envelope, ...strings)
   }
 
-  reply (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-    this.emit('reply', envelope, strings)
+  async reply (envelope, ...strings) {
+    this.emit('reply', envelope, ...strings)
   }
 
-  topic (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-    this.emit('topic', envelope, strings)
+  async topic (envelope, ...strings) {
+    this.emit('topic', envelope, ...strings)
   }
 
-  play (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-    this.emit('play', envelope, strings)
+  async play (envelope, ...strings) {
+    this.emit('play', envelope, ...strings)
   }
 
   run () {

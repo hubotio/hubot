@@ -8,19 +8,19 @@ class MockAdapter extends Adapter {
     this.name = 'MockAdapter'
   }
 
-  send (envelope, ...strings) {
+  async send (envelope, ...strings) {
     this.emit('send', envelope, ...strings)
   }
 
-  reply (envelope, ...strings) {
+  async reply (envelope, ...strings) {
     this.emit('reply', envelope, ...strings)
   }
 
-  topic (envelope, ...strings) {
+  async topic (envelope, ...strings) {
     this.emit('topic', envelope, ...strings)
   }
 
-  play (envelope, ...strings) {
+  async play (envelope, ...strings) {
     this.emit('play', envelope, ...strings)
   }
 
