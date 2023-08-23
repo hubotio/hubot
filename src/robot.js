@@ -243,11 +243,8 @@ class Robot {
   //
   // middleware - A function that determines whether or not a given matching
   //              Listener should be executed. The function is called with
-  //              (context, next, done). If execution should
-  //              continue (next middleware, Listener callback), the middleware
-  //              should call the 'next' function with 'done' as an argument.
-  //              If not, the middleware should call the 'done' function with
-  //              no arguments.
+  //              (context). If execution should, the middleware should return
+  //              true. If not, the middleware should return false.
   //
   // Returns nothing.
   listenerMiddleware (middleware) {
@@ -259,9 +256,8 @@ class Robot {
   //
   // middleware - A function that examines an outgoing message and can modify
   //              it or prevent its sending. The function is called with
-  //              (context, next, done). If execution should continue,
-  //              the middleware should call next(done). If execution should
-  //              stop, the middleware should call done(). To modify the
+  //              (context). If execution should continue, return true
+  //              otherwise return false to stop. To modify the
   //              outgoing message, set context.string to a new message.
   //
   // Returns nothing.
@@ -272,11 +268,10 @@ class Robot {
   // Public: Registers new middleware for execution before matching
   //
   // middleware - A function that determines whether or not listeners should be
-  //              checked. The function is called with (context, next, done). If
-  //              ext, next, done). If execution should continue to the next
-  //              middleware or matching phase, it should call the 'next'
-  //              function with 'done' as an argument. If not, the middleware
-  //              should call the 'done' function with no arguments.
+  //              checked. The function is called with (context). If execution
+  //              should continue to the next
+  //              middleware or matching phase, it should return true or nothing
+  //              otherwise return false to stop.
   //
   // Returns nothing.
   receiveMiddleware (middleware) {

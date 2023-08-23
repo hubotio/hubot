@@ -80,6 +80,7 @@ class Listener {
       return await this.callback(response)
     } catch (e) {
       this.robot.logger.error(`Error executing listener callback: ${e.stack}`)
+      this.robot.emit('error', e, response)
     }
     return null
   }

@@ -16,6 +16,9 @@ describe('Running bin/hubot.js', () => {
     process.env.HUBOT_FILE = path.resolve(root, 'test', 'fixtures', 'MockAdapter.mjs')
     const hubot = require('../bin/hubot.js')
     await hubot.loadFile(path.resolve(root, 'test', 'fixtures'), 'TestScript.mjs')
+    while (!hubot.adapter) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
     hubot.adapter.on('reply', (envelope, ...strings) => {
       expect(strings[0]).to.equal('test response from .mjs script')
       delete process.env.HUBOT_FILE

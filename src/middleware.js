@@ -23,6 +23,7 @@ class Middleware {
         if (shouldContinue === false) break
       } catch (e) {
         this.robot.emit('error', e, context.response)
+        break
       }
     }
     return shouldContinue

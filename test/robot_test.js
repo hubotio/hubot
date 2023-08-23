@@ -31,8 +31,8 @@ describe('Robot', function () {
     this.robot.run()
 
     // Re-throw AssertionErrors for clearer test failures
-    this.robot.on('error', function (name, err, response) {
-      if (err?.constructor.name === 'AssertionError' || name instanceof chai.AssertionError) {
+    this.robot.on('error', function (err, response) {
+      if (err?.constructor.name === 'AssertionError' || err instanceof chai.AssertionError) {
         process.nextTick(function () {
           throw err
         })
@@ -291,8 +291,7 @@ describe('Robot', function () {
 
         this.robot.listen(() => true, null, badListener)
         this.robot.listen(() => true, null, goodListener)
-        this.robot.on('error', (name, err, response) => {
-          expect(name).to.equal('error')
+        this.robot.on('error', (err, response) => {
           expect(err).to.equal(theError)
           expect(response.message).to.equal(testMessage)
         })
@@ -658,8 +657,7 @@ describe('Robot', function () {
       this.robot.hear(/^message123$/, async response => {
         goodListenerCalled = true
       })
-      this.robot.on('error', (name, err, response) => {
-        expect(name).to.equal('error')
+      this.robot.on('error', (err, response) => {
         expect(err).to.equal(theError)
         expect(response.message).to.equal(testMessage)
       })
@@ -826,7 +824,7 @@ describe('Robot', function () {
       it('executes response middleware in order', async function () {
         let sendSpy
         this.robot.adapter.send = (sendSpy = sinon.spy())
-        this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.'))
+        this.robot.hear(/^message123$/, async response => await response.send('foobar, sir, foobar.'))
 
         this.robot.responseMiddleware(async context => {
           context.strings[0] = context.strings[0].replace(/foobar/g, 'barfoo')
@@ -883,8 +881,7 @@ describe('Robot', function () {
         let sendSpy
         this.robot.adapter.send = (sendSpy = sinon.spy())
         let asserted = false
-        const postSendCallback = function () {}
-        this.robot.hear(/^message123$/, response => response.send('foobar, sir, foobar.', postSendCallback))
+        this.robot.hear(/^message123$/, async response => await response.send('foobar, sir, foobar.'))
 
         this.robot.responseMiddleware(async context => {
           // We don't send the callback function to middleware, so it's not here.
@@ -897,7 +894,6 @@ describe('Robot', function () {
         await this.robot.receive(testMessage)
         expect(asserted).to.equal(true)
         expect(sendSpy.getCall(0).args[1]).to.equal('foobar, sir, foobar.')
-        expect(sendSpy.getCall(0).args[2]).to.equal(postSendCallback)
       })
     })
   })
