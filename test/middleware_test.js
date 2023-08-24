@@ -118,7 +118,7 @@ describe('Middleware', function () {
       })
 
       // Dummy middleware
-      this.middleware = sinon.spy((context, next, done) => next(done))
+      this.middleware = sinon.spy(async context => true)
 
       this.testMessage = new TextMessage(this.user, 'message123')
       this.robot.hear(/^message123$/, function (response) {})

@@ -45,7 +45,7 @@ class Response {
   //
   // Returns result from middleware.
   async reply (...strings) {
-    return await this.runWithMiddleware('reply', { plaintext: true }, ...strings)
+    return await this.#runWithMiddleware('reply', { plaintext: true }, ...strings)
   }
 
   // Public: Posts a topic changing message
