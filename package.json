@@ -15,7 +15,6 @@
     "url": "https://github.com/hubotio/hubot.git"
   },
   "dependencies": {
-    "async": "^3.2.4",
     "cline": "^0.8.2",
     "coffeescript": "^2.7.0",
     "connect-multiparty": "^2.2.0",
