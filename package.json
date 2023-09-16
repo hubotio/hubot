@@ -21,8 +21,7 @@
     "express": "^4.18.2",
     "express-basic-auth": "^1.2.1",
     "optparse": "^1.0.5",
-    "pino": "^8.11.0",
-    "standard": "^17.1.0"
+    "pino": "^8.11.0"
   },
   "devDependencies": {
     "chai": "^4.3.7",
@@ -30,7 +29,8 @@
     "mocha": "^10.2.0",
     "semantic-release": "^21.0.1",
     "sinon": "^15.0.4",
-    "sinon-chai": "^3.7.0"
+    "sinon-chai": "^3.7.0",
+    "standard": "^17.1.0"
   },
   "engines": {
     "node": "> 16.20.2",
