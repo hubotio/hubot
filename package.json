@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "0.0.0-development",
+  "version": "9.0.0",
   "author": "hubot",
   "keywords": [
     "github",
@@ -15,7 +15,6 @@
     "url": "https://github.com/hubotio/hubot.git"
   },
   "dependencies": {
-    "async": "^3.2.4",
     "cline": "^0.8.2",
     "coffeescript": "^2.7.0",
     "connect-multiparty": "^2.2.0",
@@ -34,8 +33,8 @@
     "standard": "^17.1.0"
   },
   "engines": {
-    "node": "> 4.0.0",
-    "npm": "> 2.0.0"
+    "node": "> 16.20.2",
+    "npm": "> 8.19.4"
   },
   "main": "./index",
   "bin": {

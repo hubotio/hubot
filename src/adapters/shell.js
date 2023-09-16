@@ -22,21 +22,17 @@ class Shell extends Adapter {
     this.name = 'Shell'
   }
 
-  send (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-
+  async send (envelope, ...strings) {
     Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
-  emote (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
+  async emote (envelope, ...strings) {
     Array.from(strings).map(str => this.send(envelope, `* ${str}`))
   }
 
-  reply (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1).map((s) => `${envelope.user.name}: ${s}`)
-
-    this.send.apply(this, [envelope].concat(strings))
+  async reply (envelope, ...strings) {
+    strings = strings.map((s) => `${envelope.user.name}: ${s}`)
+    this.send(envelope, ...strings)
   }
 
   run () {

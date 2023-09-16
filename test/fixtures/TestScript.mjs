@@ -8,7 +8,7 @@
 
 export default robot => {
   robot.hasLoadedTestMjsScript = true
-  robot.respond(/test$/, res => {
-    res.reply('test response from .mjs script')
+  robot.respond(/test$/, async res => {
+    await res.reply('test response from .mjs script')
   })
 }

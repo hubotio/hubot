@@ -20,19 +20,19 @@ class Listener {
   constructor (robot, matcher, options, callback) {
     this.robot = robot
     this.matcher = matcher
-    this.options = options
+    this.options = options ?? {}
     this.callback = callback
 
     if (this.matcher == null) {
       throw new Error('Missing a matcher for Listener')
     }
 
-    if (this.callback == null) {
+    if (!this.callback) {
       this.callback = this.options
       this.options = {}
     }
 
-    if (this.options.id == null) {
+    if (!this.options?.id) {
       this.options.id = null
     }
 
@@ -49,60 +49,40 @@ class Listener {
   //
   // message - A Message instance.
   // middleware - Optional Middleware object to execute before the Listener callback
-  // callback - Optional Function called with a boolean of whether the matcher matched
   //
-  // Returns a boolean of whether the matcher matched.
-  // Returns before executing callback
-  call (message, middleware, didMatchCallback) {
-    // middleware argument is optional
-    if (didMatchCallback == null && typeof middleware === 'function') {
-      didMatchCallback = middleware
-      middleware = undefined
+  // Returns the result of the callback.
+  async call (message, middleware) {
+    if (middleware && typeof middleware === 'function') {
+      const fn = middleware
+      middleware = new Middleware(this.robot)
+      middleware.register(fn)
     }
 
-    // ensure we have a Middleware object
-    if (middleware == null) {
+    if (!middleware) {
       middleware = new Middleware(this.robot)
     }
 
     const match = this.matcher(message)
-    if (match) {
-      if (this.regex) {
-        this.robot.logger.debug(`Message '${message}' matched regex /${inspect(this.regex)}/; listener.options = ${inspect(this.options)}`)
-      }
-
-      // special middleware-like function that always executes the Listener's
-      // callback and calls done (never calls 'next')
-      const executeListener = (context, done) => {
-        this.robot.logger.debug(`Executing listener callback for Message '${message}'`)
-        try {
-          this.callback(context.response)
-        } catch (err) {
-          this.robot.emit('error', err, context.response)
-        }
-        done()
-      }
-
-      // When everything is finished (down the middleware stack and back up),
-      // pass control back to the robot
-      const allDone = function allDone () {
-        // Yes, we tried to execute the listener callback (middleware may
-        // have intercepted before actually executing though)
-        if (didMatchCallback != null) {
-          process.nextTick(() => didMatchCallback(true))
-        }
-      }
-
-      const response = new this.robot.Response(this.robot, message, match)
-      middleware.execute({ listener: this, response }, executeListener, allDone)
-      return true
-    } else {
-      if (didMatchCallback != null) {
-        // No, we didn't try to execute the listener callback
-        process.nextTick(() => didMatchCallback(false))
-      }
-      return false
+    if (!match) return null
+    if (this.regex) {
+      this.robot.logger.debug(`Message '${message}' matched regex /${inspect(this.regex)}/; listener.options = ${inspect(this.options)}`)
     }
+
+    const response = new this.robot.Response(this.robot, message, match)
+
+    try {
+      const shouldContinue = await middleware.execute({ listener: this, response })
+      if (shouldContinue === false) return null
+    } catch (e) {
+      this.robot.logger.error(`Error executing middleware for listener: ${e.stack}`)
+    }
+    try {
+      return await this.callback(response)
+    } catch (e) {
+      this.robot.logger.error(`Error executing listener callback: ${e.stack}`)
+      this.robot.emit('error', e, response)
+    }
+    return null
   }
 }
 
