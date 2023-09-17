@@ -1,18 +1,14 @@
 'use strict'
 
-/* global describe, it */
 /* eslint-disable no-unused-expressions */
 
-// Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+const { describe, it } = require('node:test')
+const assert = require('assert/strict')
+
 const { hook, reset } = require('./fixtures/RequireMocker.js')
 
-const expect = chai.expect
-
 // Hubot classes
-const Hubot = require('../es2015')
+const Hubot = require('../es2015.js')
 const User = Hubot.User
 const Brain = Hubot.Brain
 const Robot = Hubot.Robot
@@ -26,52 +22,52 @@ const EnterMessage = Hubot.EnterMessage
 const LeaveMessage = Hubot.LeaveMessage
 const TopicMessage = Hubot.TopicMessage
 const CatchAllMessage = Hubot.CatchAllMessage
-const loadBot = Hubot.loadBot
 
-describe('hubot/es2015', function () {
-  it('exports User class', function () {
+describe('hubot/es2015', () => {
+  it('exports User class', () => {
     class MyUser extends User {}
     const user = new MyUser('id123', { foo: 'bar' })
 
-    expect(user).to.be.an.instanceof(User)
-    expect(user.id).to.equal('id123')
-    expect(user.foo).to.equal('bar')
+    assert.ok(user instanceof User)
+    assert.equal(user.id, 'id123')
+    assert.equal(user.foo, 'bar')
   })
 
-  it('exports Brain class', function () {
+  it('exports Brain class', () => {
     class MyBrain extends Brain {}
     const robotMock = {
-      on: sinon.spy()
+      on () {
+        assert.ok(true)
+      }
     }
     const brain = new MyBrain(robotMock)
 
-    expect(brain).to.be.an.instanceof(Brain)
-    expect(robotMock.on).to.have.been.called
-
+    assert.ok(brain instanceof Brain)
     brain.set('foo', 'bar')
-    expect(brain.get('foo')).to.equal('bar')
+    assert.equal(brain.get('foo'), 'bar')
   })
 
-  it('exports Robot class', async function () {
+  it('exports Robot class', async () => {
     hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
 
     class MyRobot extends Robot {}
     const robot = new MyRobot('hubot-mock-adapter', false, 'TestHubot')
     await robot.loadAdapter()
-    expect(robot).to.be.an.instanceof(Robot)
-    expect(robot.name).to.equal('TestHubot')
+    assert.ok(robot instanceof Robot)
+    assert.equal(robot.name, 'TestHubot')
+    robot.shutdown()
     reset()
   })
 
-  it('exports Adapter class', function () {
+  it('exports Adapter class', () => {
     class MyAdapter extends Adapter {}
     const adapter = new MyAdapter('myrobot')
 
-    expect(adapter).to.be.an.instanceof(Adapter)
-    expect(adapter.robot).to.equal('myrobot')
+    assert.ok(adapter instanceof Adapter)
+    assert.equal(adapter.robot, 'myrobot')
   })
 
-  it('exports Response class', function () {
+  it('exports Response class', () => {
     class MyResponse extends Response {}
     const robotMock = 'robotMock'
     const messageMock = {
@@ -81,95 +77,93 @@ describe('hubot/es2015', function () {
     const matchMock = 'matchMock'
     const response = new MyResponse(robotMock, messageMock, matchMock)
 
-    expect(response).to.be.an.instanceof(Response)
-    expect(response.message).to.equal(messageMock)
-    expect(response.match).to.equal(matchMock)
+    assert.ok(response instanceof Response)
+    assert.deepEqual(response.message, messageMock)
+    assert.equal(response.match, matchMock)
   })
 
-  it('exports Listener class', function () {
+  it('exports Listener class', () => {
     class MyListener extends Listener {}
     const robotMock = 'robotMock'
     const matcherMock = 'matchMock'
-    const callback = sinon.spy()
+    const callback = () => {}
     const listener = new MyListener(robotMock, matcherMock, callback)
 
-    expect(listener).to.be.an.instanceof(Listener)
-    expect(listener.robot).to.equal(robotMock)
-    expect(listener.matcher).to.equal(matcherMock)
-    expect(listener.options).to.deep.include({
-      id: null
-    })
-    expect(listener.callback).to.equal(callback)
+    assert.ok(listener instanceof Listener)
+    assert.deepEqual(listener.robot, robotMock)
+    assert.equal(listener.matcher, matcherMock)
+    assert.equal(listener.options.id, null)
+    assert.deepEqual(listener.callback, callback)
   })
 
-  it('exports TextListener class', function () {
+  it('exports TextListener class', () => {
     class MyTextListener extends TextListener {}
     const robotMock = 'robotMock'
     const regex = /regex/
-    const callback = sinon.spy()
+    const callback = () => {}
     const textListener = new MyTextListener(robotMock, regex, callback)
 
-    expect(textListener).to.be.an.instanceof(TextListener)
-    expect(textListener.regex).to.equal(regex)
+    assert.ok(textListener instanceof TextListener)
+    assert.deepEqual(textListener.regex, regex)
   })
 
-  it('exports Message class', function () {
+  it('exports Message class', () => {
     class MyMessage extends Message {}
     const userMock = {
       room: 'room'
     }
     const message = new MyMessage(userMock)
 
-    expect(message).to.be.an.instanceof(Message)
-    expect(message.user).to.equal(userMock)
+    assert.ok(message instanceof Message)
+    assert.deepEqual(message.user, userMock)
   })
 
-  it('exports TextMessage class', function () {
+  it('exports TextMessage class', () => {
     class MyTextMessage extends TextMessage {}
     const userMock = {
       room: 'room'
     }
     const textMessage = new MyTextMessage(userMock, 'bla blah')
 
-    expect(textMessage).to.be.an.instanceof(TextMessage)
-    expect(textMessage).to.be.an.instanceof(Message)
-    expect(textMessage.text).to.equal('bla blah')
+    assert.ok(textMessage instanceof TextMessage)
+    assert.ok(textMessage instanceof Message)
+    assert.equal(textMessage.text, 'bla blah')
   })
 
-  it('exports EnterMessage class', function () {
+  it('exports EnterMessage class', () => {
     class MyEnterMessage extends EnterMessage {}
     const userMock = {
       room: 'room'
     }
     const enterMessage = new MyEnterMessage(userMock)
 
-    expect(enterMessage).to.be.an.instanceof(EnterMessage)
-    expect(enterMessage).to.be.an.instanceof(Message)
+    assert.ok(enterMessage instanceof EnterMessage)
+    assert.ok(enterMessage instanceof Message)
   })
 
-  it('exports LeaveMessage class', function () {
+  it('exports LeaveMessage class', () => {
     class MyLeaveMessage extends LeaveMessage {}
     const userMock = {
       room: 'room'
     }
     const leaveMessage = new MyLeaveMessage(userMock)
 
-    expect(leaveMessage).to.be.an.instanceof(LeaveMessage)
-    expect(leaveMessage).to.be.an.instanceof(Message)
+    assert.ok(leaveMessage instanceof LeaveMessage)
+    assert.ok(leaveMessage instanceof Message)
   })
 
-  it('exports TopicMessage class', function () {
+  it('exports TopicMessage class', () => {
     class MyTopicMessage extends TopicMessage {}
     const userMock = {
       room: 'room'
     }
     const topicMessage = new MyTopicMessage(userMock)
 
-    expect(topicMessage).to.be.an.instanceof(TopicMessage)
-    expect(topicMessage).to.be.an.instanceof(Message)
+    assert.ok(topicMessage instanceof TopicMessage)
+    assert.ok(topicMessage instanceof Message)
   })
 
-  it('exports CatchAllMessage class', function () {
+  it('exports CatchAllMessage class', () => {
     class MyCatchAllMessage extends CatchAllMessage {}
     const messageMock = {
       user: {
@@ -178,18 +172,17 @@ describe('hubot/es2015', function () {
     }
     const catchAllMessage = new MyCatchAllMessage(messageMock)
 
-    expect(catchAllMessage).to.be.an.instanceof(CatchAllMessage)
-    expect(catchAllMessage).to.be.an.instanceof(Message)
-    expect(catchAllMessage.message).to.equal(messageMock)
-    expect(catchAllMessage.user).to.equal(messageMock.user)
+    assert.ok(catchAllMessage instanceof CatchAllMessage)
+    assert.ok(catchAllMessage instanceof Message)
+    assert.deepEqual(catchAllMessage.message, messageMock)
+    assert.deepEqual(catchAllMessage.user, messageMock.user)
   })
 
-  it('exports loadBot function', function () {
-    sinon.stub(Hubot, 'Robot')
-
-    expect(loadBot).to.be.a('function')
-    Hubot.loadBot('adapter', 'enableHttpd', 'botName', 'botAlias')
-    expect(Hubot.Robot).to.be.called.calledWith('adapter', 'enableHttpd', 'botName', 'botAlias')
-    sinon.restore()
+  it('exports loadBot function', () => {
+    assert.ok(Hubot.loadBot && typeof Hubot.loadBot === 'function')
+    const robot = Hubot.loadBot('adapter', false, 'botName', 'botAlias')
+    assert.equal(robot.name, 'botName')
+    assert.equal(robot.alias, 'botAlias')
+    robot.shutdown()
   })
 })

@@ -17,6 +17,7 @@ const historyPath = '.hubot_history'
 const bold = str => `\x1b[1m${str}\x1b[22m`
 
 class Shell extends Adapter {
+  #rl = null
   constructor (robot) {
     super(robot)
     this.name = 'Shell'
@@ -37,19 +38,22 @@ class Shell extends Adapter {
 
   run () {
     this.buildCli()
-    loadHistory((error, history) => {
+
+    this.#rl = loadHistory((error, history) => {
       if (error) {
-        console.log(error.message)
+        console.error(error)
       }
       this.cli.history(history)
-      this.cli.interact(`${this.robot.name}> `)
+      this.cli.interact(`${this.robot.name ?? this.robot.alias}> `)
       return this.emit('connected', this)
     })
   }
 
-  shutdown () {
-    this.robot.shutdown()
-    return process.exit(0)
+  close () {
+    super.close()
+    this.#rl.close()
+    this.cli.removeAllListeners()
+    this.cli.close()
   }
 
   buildCli () {
@@ -86,7 +90,7 @@ class Shell extends Adapter {
       history = this.cli.history()
 
       if (history.length <= historySize) {
-        return this.shutdown()
+        return
       }
 
       const startIndex = history.length - historySize
@@ -96,11 +100,11 @@ class Shell extends Adapter {
       }
 
       const outstream = fs.createWriteStream(historyPath, fileOpts)
-      outstream.on('end', this.shutdown.bind(this))
       for (i = 0, len = history.length; i < len; i++) {
         item = history[i]
         outstream.write(item + '\n')
       }
+      outstream.end()
     })
   }
 }
@@ -124,13 +128,16 @@ function loadHistory (callback) {
 
   const items = []
 
-  readline.createInterface({ input: instream, output: outstream, terminal: false })
+  const rl = readline.createInterface({ input: instream, output: outstream, terminal: false })
     .on('line', function (line) {
       line = line.trim()
       if (line.length > 0) {
         items.push(line)
       }
     })
-    .on('close', () => callback(null, items))
+    .on('close', () => {
+      callback(null, items)
+    })
     .on('error', callback)
+  return rl
 }

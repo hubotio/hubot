@@ -65,7 +65,7 @@ class Response {
   //
   // Returns result from middleware.
   async play (...strings) {
-    return await this.#runWithMiddleware('play', ...strings)
+    return await this.#runWithMiddleware('play', {}, ...strings)
   }
 
   // Public: Posts a message in an unlogged room

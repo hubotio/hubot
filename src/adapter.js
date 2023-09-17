@@ -27,7 +27,7 @@ class Adapter extends EventEmitter {
   //
   // Returns results from adapter.
   async emote (envelope, ...strings) {
-    return this.senda(envelope, ...strings)
+    return this.send(envelope, ...strings)
   }
 
   // Public: Raw method for building a reply and sending it back to the chat
@@ -63,7 +63,9 @@ class Adapter extends EventEmitter {
   // Public: Raw method for shutting the bot down. Extend this.
   //
   // Returns nothing.
-  close () {}
+  close () {
+    this.removeAllListeners()
+  }
 
   // Public: Dispatch a received message to the robot.
   //
@@ -75,24 +77,27 @@ class Adapter extends EventEmitter {
   // Public: Get an Array of User objects stored in the brain.
   //
   // Returns an Array of User objects.
+  // @deprecated Use @robot.brain
   users () {
-    this.robot.logger.warning('@users() is going to be deprecated in 3.0.0 use @robot.brain.users()')
+    this.robot.logger.warning('@users() is going to be deprecated in 11.0.0 use @robot.brain.users()')
     return this.robot.brain.users()
   }
 
   // Public: Get a User object given a unique identifier.
   //
   // Returns a User instance of the specified user.
+  // @deprecated Use @robot.brain
   userForId (id, options) {
-    this.robot.logger.warning('@userForId() is going to be deprecated in 3.0.0 use @robot.brain.userForId()')
+    this.robot.logger.warning('@userForId() is going to be deprecated in 11.0.0 use @robot.brain.userForId()')
     return this.robot.brain.userForId(id, options)
   }
 
   // Public: Get a User object given a name.
   //
   // Returns a User instance for the user with the specified name.
+  // @deprecated Use @robot.brain
   userForName (name) {
-    this.robot.logger.warning('@userForName() is going to be deprecated in 3.0.0 use @robot.brain.userForName()')
+    this.robot.logger.warning('@userForName() is going to be deprecated in 11.0.0 use @robot.brain.userForName()')
     return this.robot.brain.userForName(name)
   }
 
@@ -101,8 +106,9 @@ class Adapter extends EventEmitter {
   // nicknames, etc.
   //
   // Returns an Array of User instances matching the fuzzy name.
+  // @deprecated Use @robot.brain
   usersForRawFuzzyName (fuzzyName) {
-    this.robot.logger.warning('@userForRawFuzzyName() is going to be deprecated in 3.0.0 use @robot.brain.userForRawFuzzyName()')
+    this.robot.logger.warning('@userForRawFuzzyName() is going to be deprecated in 11.0.0 use @robot.brain.userForRawFuzzyName()')
     return this.robot.brain.usersForRawFuzzyName(fuzzyName)
   }
 
@@ -111,8 +117,9 @@ class Adapter extends EventEmitter {
   // fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
   //
   // Returns an Array of User instances matching the fuzzy name.
+  // @deprecated Use @robot.brain
   usersForFuzzyName (fuzzyName) {
-    this.robot.logger.warning('@userForFuzzyName() is going to be deprecated in 3.0.0 use @robot.brain.userForFuzzyName()')
+    this.robot.logger.warning('@userForFuzzyName() is going to be deprecated in 11.0.0 use @robot.brain.userForFuzzyName()')
     return this.robot.brain.usersForFuzzyName(fuzzyName)
   }
 
@@ -122,8 +129,9 @@ class Adapter extends EventEmitter {
   // send the request.
   //
   // Returns a ScopedClient instance.
+  // @deprecated Use node.js fetch.
   http (url) {
-    this.robot.logger.warning('@http() is going to be deprecated in 3.0.0 use @robot.http()')
+    this.robot.logger.warning('@http() is going to be deprecated in 11.0.0 use @robot.http()')
     return this.robot.http(url)
   }
 }

@@ -1,97 +1,107 @@
 'use strict'
-
-/* global describe, beforeEach, it */
-
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
-
-const expect = chai.expect
-
+const { describe, it, beforeEach, afterEach } = require('node:test')
+const assert = require('assert/strict')
 const Adapter = require('../src/adapter')
+const { TextMessage } = require('../src/message.js')
+const User = require('../src/user.js')
 
-describe('Adapter', function () {
-  beforeEach(function () {
-    this.robot = { receive: sinon.spy() }
+describe('Adapter', () => {
+  let robot = null
+  beforeEach(() => {
+    robot = { receive (msg) {} }
   })
 
-  describe('Public API', function () {
-    beforeEach(function () {
-      this.adapter = new Adapter(this.robot)
+  describe('Public API', () => {
+    let adapter = null
+    beforeEach(() => {
+      adapter = new Adapter(robot)
+    })
+    afterEach(() => {
+      adapter.close()
+      process.removeAllListeners()
     })
 
-    it('assigns robot', function () {
-      expect(this.adapter.robot).to.equal(this.robot)
+    it('assigns robot', () => {
+      assert.deepEqual(adapter.robot, robot, 'The adapter should have a reference to the robot.')
     })
 
-    describe('send', function () {
-      it('is a function', function () {
-        expect(this.adapter.send).to.be.a('function')
+    describe('send', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.send === 'function', 'The adapter should have a send method.')
       })
 
-      it('does nothing', function () {
-        this.adapter.send({}, 'nothing')
-      })
-    })
-
-    describe('reply', function () {
-      it('is a function', function () {
-        expect(this.adapter.reply).to.be.a('function')
-      })
-
-      it('does nothing', function () {
-        this.adapter.reply({}, 'nothing')
+      it('does nothing', () => {
+        adapter.send({}, 'nothing')
       })
     })
 
-    describe('topic', function () {
-      it('is a function', function () {
-        expect(this.adapter.topic).to.be.a('function')
+    describe('reply', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.reply === 'function', 'The adapter should have a reply method.')
       })
 
-      it('does nothing', function () {
-        this.adapter.topic({}, 'nothing')
+      it('does nothing', () => {
+        adapter.reply({}, 'nothing')
+      })
+    })
+    describe('emote', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.emote === 'function', 'The adapter should have a emote method.')
+      })
+
+      it('does nothing', () => {
+        adapter.emote({}, 'nothing')
+      })
+    })
+    describe('topic', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.topic === 'function', 'The adapter should have a topic method.')
+      })
+
+      it('does nothing', () => {
+        adapter.topic({}, 'nothing')
       })
     })
 
-    describe('play', function () {
-      it('is a function', function () {
-        expect(this.adapter.play).to.be.a('function')
+    describe('play', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.play === 'function', 'The adapter should have a play method.')
       })
 
-      it('does nothing', function () {
-        this.adapter.play({}, 'nothing')
-      })
-    })
-
-    describe('run', function () {
-      it('is a function', function () {
-        expect(this.adapter.run).to.be.a('function')
-      })
-
-      it('does nothing', function () {
-        this.adapter.run()
+      it('does nothing', () => {
+        adapter.play({}, 'nothing')
       })
     })
 
-    describe('close', function () {
-      it('is a function', function () {
-        expect(this.adapter.close).to.be.a('function')
+    describe('run', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.run === 'function', 'The adapter should have a run method.')
       })
 
-      it('does nothing', function () {
-        this.adapter.close()
+      it('does nothing', () => {
+        adapter.run()
+      })
+    })
+
+    describe('close', () => {
+      it('is a function', () => {
+        assert.ok(typeof adapter.close === 'function', 'The adapter should have a close method.')
+      })
+
+      it('does nothing', () => {
+        adapter.close()
       })
     })
   })
 
-  it('dispatches received messages to the robot', function () {
-    this.robot.receive = sinon.spy()
-    this.adapter = new Adapter(this.robot)
-    this.message = sinon.spy()
-
-    this.adapter.receive(this.message)
-
-    expect(this.robot.receive).to.have.been.calledWith(this.message)
+  it('dispatches received messages to the robot', (t, done) => {
+    const adapter = new Adapter(robot)
+    const message = new TextMessage(new User('node'), 'hello', 1)
+    robot.receive = (msg) => {
+      assert.deepEqual(msg, message, 'The message should be passed through.')
+      done()
+    }
+    adapter.receive(message)
+    adapter.close()
   })
 })
