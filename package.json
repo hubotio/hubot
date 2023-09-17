@@ -28,8 +28,8 @@
     "standard": "^17.1.0"
   },
   "engines": {
-    "node": "> 16.20.2",
-    "npm": "> 8.19.4"
+    "node": ">= 18",
+    "npm": ">= 9"
   },
   "main": "./index",
   "bin": {
