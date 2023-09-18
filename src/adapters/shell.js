@@ -51,7 +51,10 @@ class Shell extends Adapter {
 
   close () {
     super.close()
-    this.#rl.close()
+    // Getting an error message on GitHubt Actions: error: 'this[#rl].close is not a function'
+    if (this.#rl.close) {
+      this.#rl.close()
+    }
     this.cli.removeAllListeners()
     this.cli.close()
   }
