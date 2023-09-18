@@ -224,9 +224,6 @@ class Robot {
     }
 
     this.listen(isCatchAllMessage, options, async msg => {
-      // TODO: Delete these commented out lines.
-      // console.log('catch all', msg.message)
-      // msg.message = msg.message.message
       await callback(msg.message)
     })
   }
