@@ -1012,7 +1012,7 @@ describe('Robot', () => {
       const robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
       await robot.loadAdapter()
       robot.run()
-      const res = await fetch(`http://localhost:${process.env.PORT}/hubot/version`)
+      const res = await fetch(`http://127.0.0.1:${process.env.PORT}/hubot/version`)
       assert.equal(res.status, 404)
       assert.match(await res.text(), /Cannot GET \/hubot\/version/ig)
       robot.shutdown()
