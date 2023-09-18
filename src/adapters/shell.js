@@ -41,7 +41,7 @@ class Shell extends Adapter {
 
     this.#rl = loadHistory((error, history) => {
       if (error) {
-        console.error(error)
+        console.log(error)
       }
       this.cli.history(history)
       this.cli.interact(`${this.robot.name ?? this.robot.alias}> `)
