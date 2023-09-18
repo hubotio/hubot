@@ -72,8 +72,9 @@ describe('Datastore', () => {
     })
 
     it('creates an object from scratch when none exists', async () => {
-      await robot.datastore.setObject('object', 'key', 'value')
-      const value = await robot.datastore.get('object')
+      const datastore = new InMemoryDataStore(robot)
+      await datastore.setObject('object', 'key', 'value')
+      const value = await datastore.get('object')
       assert.deepEqual(value, { key: 'value' })
     })
 
@@ -85,14 +86,16 @@ describe('Datastore', () => {
     })
 
     it('creates an array from scratch when none exists', async () => {
-      await robot.datastore.setArray('array', 4)
-      const value = await robot.datastore.get('array')
+      const datastore = new InMemoryDataStore(robot)
+      await datastore.setArray('array', 4)
+      const value = await datastore.get('array')
       assert.deepEqual(value, [4])
     })
     it('creates an array with an array', async () => {
       const expected = [1, 2, 3]
-      await robot.datastore.setArray('array', [1, 2, 3])
-      const actual = await robot.datastore.get('array')
+      const datastore = new InMemoryDataStore(robot)
+      await datastore.setArray('array', [1, 2, 3])
+      const actual = await datastore.get('array')
       assert.deepEqual(actual, expected)
     })
   })

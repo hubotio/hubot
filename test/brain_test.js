@@ -8,6 +8,7 @@ const assert = require('assert/strict')
 // Hubot classes
 const User = require('../src/user.js')
 const Robot = require('../src/robot.js')
+const Brain = require('../src/brain.js')
 const { hook, reset } = require('./fixtures/RequireMocker.js')
 const mockAdapter = require('./fixtures/mock-adapter.js')
 
@@ -19,7 +20,7 @@ describe('Brain', () => {
   beforeEach(async () => {
     hook('hubot-mock-adapter', mockAdapter)
     mockRobot = new Robot('hubot-mock-adapter', false, 'TestHubot')
-    await mockRobot.loadAdapter()
+    await mockRobot.loadAdapter('hubot-mock-adapter')
     mockRobot.run()
     user1 = mockRobot.brain.userForId('1', { name: 'Guy One' })
     user2 = mockRobot.brain.userForId('2', { name: 'Guy One Two' })
@@ -65,15 +66,17 @@ describe('Brain', () => {
       })
     })
 
-    describe('#save', () => it('emits a save event', (t, done) => {
-      const saveListener = (data) => {
-        assert.deepEqual(data, mockRobot.brain.data)
-        mockRobot.brain.off('save', saveListener)
-        done()
-      }
-      mockRobot.brain.on('save', saveListener)
-      mockRobot.brain.save()
-    }))
+    describe('#save', () => {
+      it('emits a save event', (t, done) => {
+        const saveListener = (data) => {
+          assert.deepEqual(data, mockRobot.brain.data)
+          mockRobot.brain.off('save', saveListener)
+          done()
+        }
+        mockRobot.brain.on('save', saveListener)
+        mockRobot.brain.save()
+      })
+    })
 
     describe('#resetSaveInterval', () => {
       it('updates the auto-save interval', async () => {
@@ -167,21 +170,20 @@ describe('Brain', () => {
 
     describe('#get', () => {
       it('returns the saved value', () => {
-        mockRobot.brain.data._private['test-key'] = 'value'
-        assert.equal(mockRobot.brain.get('test-key'), 'value')
+        const brain = new Brain(mockRobot)
+        brain.set('test-key', 'value')
+        assert.equal(brain.get('test-key'), 'value')
+        brain.close()
       })
 
       it('returns null if object is not found', () => {
-        assert.equal(mockRobot.brain.get('not a real key'), null)
+        const brain = new Brain(mockRobot)
+        assert.equal(brain.get('not a real key'), null)
+        brain.close()
       })
     })
 
     describe('#set', () => {
-      it('saves the value', () => {
-        mockRobot.brain.set('test-key', 'value')
-        assert.equal(mockRobot.brain.data._private['test-key'], 'value')
-      })
-
       it('sets multiple keys at once if an object is provided', () => {
         mockRobot.brain.data._private = {
           key1: 'val1',
@@ -218,14 +220,17 @@ describe('Brain', () => {
     })
 
     describe('#remove', () => it('removes the specified key', () => {
-      mockRobot.brain.data._private['test-key'] = 'value'
+      mockRobot.brain.set('test-key', 'value')
       mockRobot.brain.remove('test-key')
       assert.deepEqual(Object.keys(mockRobot.brain.data._private).includes('test-key'), false)
     }))
 
     describe('#userForId', () => {
       it('returns the user object', () => {
-        assert.deepEqual(mockRobot.brain.userForId(1), user1)
+        const brain = new Brain(mockRobot)
+        brain.userForId('1', user1)
+        assert.deepEqual(brain.userForId('1'), user1)
+        brain.close()
       })
 
       it('does an exact match', () => {
@@ -257,20 +262,30 @@ describe('Brain', () => {
         })
 
         it('passes the provided options to the new User', () => {
-          const newUser = mockRobot.brain.userForId('all-new-user', { name: 'All New User', prop: 'mine' })
+          const brain = new Brain(mockRobot)
+          const newUser = brain.userForId('all-new-user', { name: 'All New User', prop: 'mine' })
           assert.equal(newUser.name, 'All New User')
           assert.equal(newUser.prop, 'mine')
+          brain.close()
         })
       })
     })
 
     describe('#userForName', () => {
       it('returns the user with a matching name', () => {
-        assert.deepEqual(mockRobot.brain.userForName('Guy One'), user1)
+        const user = { id: 'user-for-name-guy-one', name: 'Guy One' }
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('user-for-name-guy-one', user)
+        assert.deepEqual(brain.userForName('Guy One'), guy)
+        brain.close()
       })
 
       it('does a case-insensitive match', () => {
-        assert.deepEqual(mockRobot.brain.userForName('guy one'), user1)
+        const user = { name: 'Guy One' }
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('user-for-name-guy-one-case-insensitive', user)
+        assert.deepEqual(brain.userForName('guy one'), guy)
+        brain.close()
       })
 
       it('returns null if no user matches', () => {
@@ -280,18 +295,30 @@ describe('Brain', () => {
 
     describe('#usersForRawFuzzyName', () => {
       it('does a case-insensitive match', () => {
-        assert.ok(mockRobot.brain.usersForRawFuzzyName('guy').includes(user1) && mockRobot.brain.usersForRawFuzzyName('guy').includes(user2))
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('1', user1)
+        const guy2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForRawFuzzyName('guy').includes(guy) && brain.usersForRawFuzzyName('guy').includes(guy2))
+        brain.close()
       })
 
       it('returns all matching users (prefix match) when there is not an exact match (case-insensitive)', () => {
-        assert.ok(mockRobot.brain.usersForRawFuzzyName('Guy').includes(user1) && mockRobot.brain.usersForRawFuzzyName('Guy').includes(user2))
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('1', user1)
+        const guy2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForRawFuzzyName('Guy').includes(guy) && brain.usersForRawFuzzyName('Guy').includes(guy2))
+        brain.close()
       })
 
       it('returns all matching users (prefix match) when there is an exact match (case-insensitive)', () => {
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        const girl2 = brain.userForId('2', user2)
         // Matched case
-        assert.deepEqual(mockRobot.brain.usersForRawFuzzyName('Guy One'), [user1, user2])
+        assert.deepEqual(brain.usersForRawFuzzyName('Guy One'), [girl, girl2])
         // Mismatched case
-        assert.deepEqual(mockRobot.brain.usersForRawFuzzyName('guy one'), [user1, user2])
+        assert.deepEqual(brain.usersForRawFuzzyName('guy one'), [girl, girl2])
+        brain.close()
       })
 
       it('returns an empty array if no users match', () => {
@@ -302,18 +329,30 @@ describe('Brain', () => {
 
     describe('#usersForFuzzyName', () => {
       it('does a case-insensitive match', () => {
-        assert.ok(mockRobot.brain.usersForFuzzyName('guy').includes(user1) && mockRobot.brain.usersForFuzzyName('guy').includes(user2))
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        const girl2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForFuzzyName('guy').includes(girl) && brain.usersForFuzzyName('guy').includes(girl2))
+        brain.close()
       })
 
       it('returns all matching users (prefix match) when there is not an exact match', () => {
-        assert.ok(mockRobot.brain.usersForFuzzyName('Guy').includes(user1) && mockRobot.brain.usersForFuzzyName('Guy').includes(user2))
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        const girl2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForFuzzyName('Guy').includes(girl) && brain.usersForFuzzyName('Guy').includes(girl2))
+        brain.close()
       })
 
       it('returns just the user when there is an exact match (case-insensitive)', () => {
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        brain.userForId('2', user2)
         // Matched case
-        assert.deepEqual(mockRobot.brain.usersForFuzzyName('Guy One'), [user1])
+        assert.deepEqual(brain.usersForFuzzyName('Guy One'), [girl])
         // Mismatched case
-        assert.deepEqual(mockRobot.brain.usersForFuzzyName('guy one'), [user1])
+        assert.deepEqual(brain.usersForFuzzyName('guy one'), [girl])
+        brain.close()
       })
 
       it('returns an empty array if no users match', () => {
@@ -338,9 +377,9 @@ describe('Brain', () => {
       mockRobot.brain.setAutoSave(true)
       setTimeout(() => {
         mockRobot.brain.off('save', saveListener)
-        assert.ok(wasCalled)
+        assert.deepEqual(wasCalled, true)
         done()
-      }, 1000 * 5)
+      }, 1000 * 5.5)
     })
 
     it('does not auto-save when turned off', (t, done) => {

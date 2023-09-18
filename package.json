@@ -38,7 +38,7 @@
   "scripts": {
     "start": "bin/hubot",
     "pretest": "standard",
-    "test": "node --test --experimental-test-coverage",
+    "test": "node --test",
     "test:smoke": "node src/**/*.js",
     "test:e2e": "bin/e2e-test.sh"
   },
