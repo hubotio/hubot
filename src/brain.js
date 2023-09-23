@@ -109,6 +109,7 @@ class Brain extends EventEmitter {
     clearInterval(this.saveInterval)
     this.save()
     this.emit('close')
+    this.removeAllListeners()
   }
 
   // Public: Enable or disable the automatic saving

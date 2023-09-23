@@ -50,11 +50,6 @@ class Robot {
       name,
       level: process.env.HUBOT_LOG_LEVEL || 'info'
     })
-    Reflect.defineProperty(this.logger, 'warning', {
-      value: this.logger.warn,
-      enumerable: true,
-      configurable: true
-    })
 
     this.pingIntervalId = null
     this.globalHttpOptions = {}
@@ -72,10 +67,6 @@ class Robot {
     this.on('error', (err, res) => {
       return this.invokeErrorHandlers(err, res)
     })
-    this.onUncaughtException = err => {
-      return this.emit('error', err)
-    }
-    process.on('uncaughtException', this.onUncaughtException)
   }
 
   // Public: Adds a custom Listener with the provided matcher, options, and
@@ -232,9 +223,8 @@ class Robot {
       options = {}
     }
 
-    this.listen(isCatchAllMessage, options, function listenCallback (msg) {
-      msg.message = msg.message.message
-      callback(msg)
+    this.listen(isCatchAllMessage, options, async msg => {
+      await callback(msg.message)
     })
   }
 
@@ -376,7 +366,7 @@ class Robot {
       this.parseHelp(full)
     } catch (error) {
       this.logger.error(`Unable to load ${full}: ${error.stack}`)
-      process.exit(1)
+      throw error
     }
   }
 
@@ -411,7 +401,7 @@ class Robot {
       Object.keys(packages).forEach(key => require(key)(this, packages[key]))
     } catch (error) {
       this.logger.error(`Error loading scripts from npm package - ${error.stack}`)
-      process.exit(1)
+      throw error
     }
   }
 
@@ -459,9 +449,8 @@ class Robot {
       this.server = app.listen(port, address)
       this.router = app
     } catch (error) {
-      const err = error
-      this.logger.error(`Error trying to start HTTP server: ${err}\n${err.stack}`)
-      process.exit(1)
+      this.logger.error(`Error trying to start HTTP server: ${error}\n${error.stack}`)
+      throw error
     }
 
     let herokuUrl = process.env.HEROKU_URL
@@ -520,9 +509,9 @@ class Robot {
           }
         }
       }
-    } catch (err) {
-      this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${err}`)
-      process.exit(1)
+    } catch (error) {
+      this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${error}`)
+      throw error
     }
   }
 
@@ -654,11 +643,11 @@ class Robot {
 
   // Public: Kick off the event loop for the adapter
   //
-  // Returns nothing.
-  run () {
+  // Returns whatever the adapter returns.
+  async run () {
     this.emit('running')
 
-    this.adapter.run()
+    return await this.adapter.run()
   }
 
   // Public: Gracefully shutdown the robot process
@@ -668,13 +657,12 @@ class Robot {
     if (this.pingIntervalId != null) {
       clearInterval(this.pingIntervalId)
     }
-    process.removeListener('uncaughtException', this.onUncaughtException)
-    this.adapter.close()
+    this.adapter?.close()
     if (this.server) {
       this.server.close()
     }
-
     this.brain.close()
+    this.events.removeAllListeners()
   }
 
   // Public: The version of Hubot from npm

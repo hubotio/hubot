@@ -24,17 +24,12 @@
     "pino": "^8.11.0"
   },
   "devDependencies": {
-    "chai": "^4.3.7",
-    "is-circular": "^1.0.2",
-    "mocha": "^10.2.0",
     "semantic-release": "^21.0.1",
-    "sinon": "^15.0.4",
-    "sinon-chai": "^3.7.0",
     "standard": "^17.1.0"
   },
   "engines": {
-    "node": "> 16.20.2",
-    "npm": "> 8.19.4"
+    "node": ">= 18",
+    "npm": ">= 9"
   },
   "main": "./index",
   "bin": {
@@ -43,7 +38,7 @@
   "scripts": {
     "start": "bin/hubot",
     "pretest": "standard",
-    "test": "mocha --exit",
+    "test": "node --test test/*_test.js",
     "test:smoke": "node src/**/*.js",
     "test:e2e": "bin/e2e-test.sh"
   },

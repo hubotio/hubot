@@ -1,154 +1,130 @@
 'use strict'
 
-/* global describe, beforeEach, it */
+const { describe, it, beforeEach, afterEach } = require('node:test')
+const assert = require('assert/strict')
 
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
+const Brain = require('../src/brain.js')
+const InMemoryDataStore = require('../src/datastores/memory.js')
 
-const expect = chai.expect
-
-const Brain = require('../src/brain')
-const InMemoryDataStore = require('../src/datastores/memory')
-
-describe('Datastore', function () {
-  beforeEach(function () {
-    this.clock = sinon.useFakeTimers()
-    this.robot = {
+describe('Datastore', () => {
+  let robot = null
+  beforeEach(() => {
+    robot = {
       emit () {},
       on () {},
-      receive: sinon.spy()
+      receive (msg) {}
     }
-
-    // This *should* be callsArgAsync to match the 'on' API, but that makes
-    // the tests more complicated and seems irrelevant.
-    sinon.stub(this.robot, 'on').withArgs('running').callsArg(1)
-
-    this.robot.brain = new Brain(this.robot)
-    this.robot.datastore = new InMemoryDataStore(this.robot)
-    this.robot.brain.userForId('1', { name: 'User One' })
-    this.robot.brain.userForId('2', { name: 'User Two' })
+    robot.brain = new Brain(robot)
+    robot.datastore = new InMemoryDataStore(robot)
+    robot.brain.userForId('1', { name: 'User One' })
+    robot.brain.userForId('2', { name: 'User Two' })
+  })
+  afterEach(() => {
+    robot.brain.close()
+    // Getting warning about too many listeners, so remove them all
+    process.removeAllListeners()
   })
 
-  this.afterEach(function () {
-    this.clock.restore()
-  })
-
-  describe('global scope', function () {
-    it('returns undefined for values not in the datastore', function () {
-      return this.robot.datastore.get('blah').then(function (value) {
-        expect(value).to.be.an('undefined')
-      })
+  describe('global scope', () => {
+    it('returns undefined for values not in the datastore', async () => {
+      const value = await robot.datastore.get('blah')
+      assert.deepEqual(value, undefined)
     })
 
-    it('can store simple values', function () {
-      return this.robot.datastore.set('key', 'value').then(() => {
-        return this.robot.datastore.get('key').then((value) => {
-          expect(value).to.equal('value')
-        })
-      })
+    it('can store simple values', async () => {
+      await robot.datastore.set('key', 'value')
+      const value = await robot.datastore.get('key')
+      assert.equal(value, 'value')
     })
 
-    it('can store arbitrary JavaScript values', function () {
+    it('can store arbitrary JavaScript values', async () => {
       const object = {
         name: 'test',
         data: [1, 2, 3]
       }
-      return this.robot.datastore.set('key', object).then(() => {
-        return this.robot.datastore.get('key').then((value) => {
-          expect(value.name).to.equal('test')
-          expect(value.data).to.deep.equal([1, 2, 3])
-        })
-      })
+      await robot.datastore.set('key', object)
+      const value = await robot.datastore.get('key')
+      assert.equal(value.name, 'test')
+      assert.deepEqual(value.data, [1, 2, 3])
     })
 
-    it('can dig inside objects for values', function () {
+    it('can dig inside objects for values', async () => {
       const object = {
         a: 'one',
         b: 'two'
       }
-      return this.robot.datastore.set('key', object).then(() => {
-        return this.robot.datastore.getObject('key', 'a').then((value) => {
-          expect(value).to.equal('one')
-        })
-      })
+      await robot.datastore.set('key', object)
+      const value = await robot.datastore.getObject('key', 'a')
+      assert.equal(value, 'one')
     })
 
-    it('can set individual keys inside objects', function () {
+    it('can set individual keys inside objects', async () => {
       const object = {
         a: 'one',
         b: 'two'
       }
-      return this.robot.datastore.set('object', object).then(() => {
-        return this.robot.datastore.setObject('object', 'c', 'three').then(() => {
-          return this.robot.datastore.get('object').then((value) => {
-            expect(value.a).to.equal('one')
-            expect(value.b).to.equal('two')
-            expect(value.c).to.equal('three')
-          })
-        })
-      })
+      await robot.datastore.set('object', object)
+      await robot.datastore.setObject('object', 'c', 'three')
+      const value = await robot.datastore.get('object')
+      assert.equal(value.a, 'one')
+      assert.equal(value.b, 'two')
+      assert.equal(value.c, 'three')
     })
 
-    it('creates an object from scratch when none exists', function () {
-      return this.robot.datastore.setObject('object', 'key', 'value').then(() => {
-        return this.robot.datastore.get('object').then((value) => {
-          const expected = { key: 'value' }
-          expect(value).to.deep.equal(expected)
-        })
-      })
+    it('creates an object from scratch when none exists', async () => {
+      const datastore = new InMemoryDataStore(robot)
+      await datastore.setObject('object', 'key', 'value')
+      const value = await datastore.get('object')
+      assert.deepEqual(value, { key: 'value' })
     })
 
-    it('can append to an existing array', function () {
-      return this.robot.datastore.set('array', [1, 2, 3]).then(() => {
-        return this.robot.datastore.setArray('array', 4).then(() => {
-          return this.robot.datastore.get('array').then((value) => {
-            expect(value).to.deep.equal([1, 2, 3, 4])
-          })
-        })
-      })
+    it('can append to an existing array', async () => {
+      await robot.datastore.set('array', [1, 2, 3])
+      await robot.datastore.setArray('array', 4)
+      const value = await robot.datastore.get('array')
+      assert.deepEqual(value, [1, 2, 3, 4])
     })
 
-    it('creates an array from scratch when none exists', function () {
-      return this.robot.datastore.setArray('array', 4).then(() => {
-        return this.robot.datastore.get('array').then((value) => {
-          expect(value).to.deep.equal([4])
-        })
-      })
+    it('creates an array from scratch when none exists', async () => {
+      const datastore = new InMemoryDataStore(robot)
+      await datastore.setArray('array', 4)
+      const value = await datastore.get('array')
+      assert.deepEqual(value, [4])
+    })
+    it('creates an array with an array', async () => {
+      const expected = [1, 2, 3]
+      const datastore = new InMemoryDataStore(robot)
+      await datastore.setArray('array', [1, 2, 3])
+      const actual = await datastore.get('array')
+      assert.deepEqual(actual, expected)
     })
   })
 
-  describe('User scope', function () {
-    it('has access to the robot object', function () {
-      const user = this.robot.brain.userForId('1')
-      expect(user._getRobot()).to.equal(this.robot)
+  describe('User scope', () => {
+    it('has access to the robot object', () => {
+      const user = robot.brain.userForId('1')
+      assert.deepEqual(user._getRobot(), robot)
     })
 
-    it('can store user data which is separate from global data', function () {
-      const user = this.robot.brain.userForId('1')
-      return user.set('blah', 'blah').then(() => {
-        return user.get('blah').then((userBlah) => {
-          return this.robot.datastore.get('blah').then((datastoreBlah) => {
-            expect(userBlah).to.not.equal(datastoreBlah)
-            expect(userBlah).to.equal('blah')
-            expect(datastoreBlah).to.be.an('undefined')
-          })
-        })
-      })
+    it('can store user data which is separate from global data', async () => {
+      const user = robot.brain.userForId('1')
+      await user.set('blah', 'blah')
+      const userBlah = await user.get('blah')
+      const datastoreBlah = await robot.datastore.get('blah')
+      assert.notDeepEqual(userBlah, datastoreBlah)
+      assert.equal(userBlah, 'blah')
+      assert.deepEqual(datastoreBlah, undefined)
     })
 
-    it('stores user data separate per-user', function () {
-      const userOne = this.robot.brain.userForId('1')
-      const userTwo = this.robot.brain.userForId('2')
-      return userOne.set('blah', 'blah').then(() => {
-        return userOne.get('blah').then((valueOne) => {
-          return userTwo.get('blah').then((valueTwo) => {
-            expect(valueOne).to.not.equal(valueTwo)
-            expect(valueOne).to.equal('blah')
-            expect(valueTwo).to.be.an('undefined')
-          })
-        })
-      })
+    it('stores user data separate per-user', async () => {
+      const userOne = robot.brain.userForId('1')
+      const userTwo = robot.brain.userForId('2')
+      await userOne.set('blah', 'blah')
+      const valueOne = await userOne.get('blah')
+      const valueTwo = await userTwo.get('blah')
+      assert.notDeepEqual(valueOne, valueTwo)
+      assert.equal(valueOne, 'blah')
+      assert.deepEqual(valueTwo, undefined)
     })
   })
 })

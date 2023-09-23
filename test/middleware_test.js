@@ -1,14 +1,9 @@
 'use strict'
 
-/* global describe, beforeEach, it, afterEach */
 /* eslint-disable no-unused-expressions */
 
-// Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
-
-const expect = chai.expect
+const { describe, it, beforeEach, afterEach } = require('node:test')
+const assert = require('node:assert/strict')
 
 // Hubot classes
 const Robot = require('../src/robot')
@@ -18,26 +13,28 @@ const Middleware = require('../src/middleware')
 
 const { hook, reset } = require('./fixtures/RequireMocker.js')
 
-describe('Middleware', function () {
-  describe('Unit Tests', function () {
-    beforeEach(function () {
-      // Stub out event emitting
-      this.robot = { emit: sinon.spy() }
-
-      this.middleware = new Middleware(this.robot)
+describe('Middleware', () => {
+  describe('Unit Tests', () => {
+    let robot = null
+    let middleware = null
+    beforeEach(() => {
+      robot = { emit () {} }
+      middleware = new Middleware(robot)
     })
 
-    describe('#execute', function () {
-      it('executes synchronous middleware', async function () {
-        const testMiddleware = sinon.spy(async context => {
+    describe('#execute', () => {
+      it('executes synchronous middleware', async () => {
+        let wasCalled = false
+        const testMiddleware = async context => {
+          wasCalled = true
           return true
-        })
-        this.middleware.register(testMiddleware)
-        await this.middleware.execute({})
-        expect(testMiddleware).to.have.been.called
+        }
+        middleware.register(testMiddleware)
+        await middleware.execute({})
+        assert.deepEqual(wasCalled, true)
       })
 
-      it('executes all registered middleware in definition order', async function () {
+      it('executes all registered middleware in definition order', async () => {
         const middlewareExecution = []
         const testMiddlewareA = async context => {
           middlewareExecution.push('A')
@@ -45,14 +42,14 @@ describe('Middleware', function () {
         const testMiddlewareB = async context => {
           middlewareExecution.push('B')
         }
-        this.middleware.register(testMiddlewareA)
-        this.middleware.register(testMiddlewareB)
-        await this.middleware.execute({})
-        expect(middlewareExecution).to.deep.equal(['A', 'B'])
+        middleware.register(testMiddlewareA)
+        middleware.register(testMiddlewareB)
+        await middleware.execute({})
+        assert.deepEqual(middlewareExecution, ['A', 'B'])
       })
 
-      describe('error handling', function () {
-        it('does not execute subsequent middleware after the error is thrown', async function () {
+      describe('error handling', () => {
+        it('does not execute subsequent middleware after the error is thrown', async () => {
           const middlewareExecution = []
 
           const testMiddlewareA = async context => {
@@ -68,26 +65,26 @@ describe('Middleware', function () {
             middlewareExecution.push('C')
           }
 
-          this.middleware.register(testMiddlewareA)
-          this.middleware.register(testMiddlewareB)
-          this.middleware.register(testMiddlewareC)
-          await this.middleware.execute({})
-          expect(middlewareExecution).to.deep.equal(['A', 'B'])
+          middleware.register(testMiddlewareA)
+          middleware.register(testMiddlewareB)
+          middleware.register(testMiddlewareC)
+          await middleware.execute({})
+          assert.deepEqual(middlewareExecution, ['A', 'B'])
         })
       })
     })
 
-    describe('#register', function () {
-      it('adds to the list of middleware', function () {
+    describe('#register', () => {
+      it('adds to the list of middleware', () => {
         const testMiddleware = async context => {}
-        this.middleware.register(testMiddleware)
-        expect(this.middleware.stack).to.include(testMiddleware)
+        middleware.register(testMiddleware)
+        assert.ok(middleware.stack.includes(testMiddleware))
       })
 
-      it('validates the arity of middleware', function () {
-        const testMiddleware = function (context, next, done, extra) {}
+      it('validates the arity of middleware', () => {
+        const testMiddleware = async (context, next, done, extra) => {}
 
-        expect(() => this.middleware.register(testMiddleware)).to.throw(/Incorrect number of arguments/)
+        assert.throws(() => middleware.register(testMiddleware), 'Incorrect number of arguments')
       })
     })
   })
@@ -95,98 +92,79 @@ describe('Middleware', function () {
   // Per the documentation in docs/scripting.md
   // Any new fields that are exposed to middleware should be explicitly
   // tested for.
-  describe('Public Middleware APIs', function () {
-    beforeEach(async function () {
+  describe('Public Middleware APIs', () => {
+    let robot = null
+    let user = null
+    let testListener = null
+    let testMessage = null
+    beforeEach(async () => {
       hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
-      process.env.EXPRESS_PORT = 0
-      this.robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
-      await this.robot.loadAdapter()
-      this.robot.run
+      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run
 
       // Re-throw AssertionErrors for clearer test failures
-      this.robot.on('error', function (err, response) {
+      robot.on('error', function (err, response) {
         if (__guard__(err != null ? err.constructor : undefined, x => x.name) === 'AssertionError') {
-          process.nextTick(function () {
+          process.nextTick(() => {
             throw err
           })
         }
       })
 
-      this.user = this.robot.brain.userForId('1', {
+      user = robot.brain.userForId('1', {
         name: 'hubottester',
         room: '#mocha'
       })
-
-      // Dummy middleware
-      this.middleware = sinon.spy(async context => true)
-
-      this.testMessage = new TextMessage(this.user, 'message123')
-      this.robot.hear(/^message123$/, function (response) {})
-      this.testListener = this.robot.listeners[0]
+      testMessage = new TextMessage(user, 'message123')
+      robot.hear(/^message123$/, async response => {})
+      testListener = robot.listeners[0]
     })
 
-    afterEach(function () {
+    afterEach(() => {
       reset()
-      this.robot.shutdown()
+      robot.shutdown()
     })
 
-    describe('listener middleware context', function () {
-      beforeEach(function () {
-        this.robot.listenerMiddleware(async context => {
-          await this.middleware(context)
-        })
-      })
-
-      describe('listener', function () {
-        it('is the listener object that matched', async function () {
-          await this.robot.receive(this.testMessage)
-          expect(this.middleware).to.have.been.calledWithMatch(
-            sinon.match.has('listener',
-              sinon.match.same(this.testListener)) // context
-          )
-        })
-
-        it('has options.id (metadata)', async function () {
-          await this.robot.receive(this.testMessage)
-          expect(this.middleware).to.have.been.calledWithMatch(
-            sinon.match.has('listener',
-              sinon.match.has('options',
-                sinon.match.has('id'))) // context
-          )
+    describe('listener middleware context', () => {
+      describe('listener', () => {
+        it('is the listener object that matched, has metadata in options object with id', async () => {
+          robot.listenerMiddleware(async context => {
+            assert.deepEqual(context.listener, testListener)
+            assert.ok(context.listener.options)
+            assert.deepEqual(context.listener.options.id, null)
+            return true
+          })
+          await robot.receive(testMessage)
         })
       })
 
       describe('response', () =>
-        it('is a Response that wraps the message', async function () {
-          await this.robot.receive(this.testMessage)
-          expect(this.middleware).to.have.been.calledWithMatch(
-            sinon.match.has('response',
-              sinon.match.instanceOf(Response).and(
-                sinon.match.has('message',
-                  sinon.match.same(this.testMessage)))) // context
-          )
+        it('is a Response that wraps the message', async () => {
+          robot.listenerMiddleware(async context => {
+            assert.ok(context.response instanceof Response)
+            assert.ok(context.response.message)
+            assert.deepEqual(context.response.message, testMessage)
+            return true
+          })
+          await robot.receive(testMessage)
         })
       )
     })
 
-    describe('receive middleware context', function () {
-      beforeEach(function () {
-        this.robot.receiveMiddleware(async context => {
-          await this.middleware(context)
+    describe('receive middleware context', () => {
+      describe('response', () => {
+        it('is a match-less Response object', async () => {
+          robot.receiveMiddleware(async context => {
+            assert.ok(context.response instanceof Response)
+            assert.ok(context.response.message)
+            assert.deepEqual(context.response.message, testMessage)
+            return true
+          })
+
+          await robot.receive(testMessage)
         })
       })
-
-      describe('response', () =>
-        it('is a match-less Response object', async function () {
-          await this.robot.receive(this.testMessage)
-          expect(this.middleware).to.have.been.calledWithMatch(
-            sinon.match.has('response',
-              sinon.match.instanceOf(Response).and(
-                sinon.match.has('message',
-                  sinon.match.same(this.testMessage)))) // context
-          )
-        })
-      )
     })
   })
 })

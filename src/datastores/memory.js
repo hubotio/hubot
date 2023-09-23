@@ -1,6 +1,6 @@
 'use strict'
 
-const DataStore = require('../datastore').DataStore
+const DataStore = require('../datastore.js').DataStore
 
 class InMemoryDataStore extends DataStore {
   constructor (robot) {
@@ -11,11 +11,11 @@ class InMemoryDataStore extends DataStore {
     }
   }
 
-  _get (key, table) {
+  async _get (key, table) {
     return Promise.resolve(this.data[table][key])
   }
 
-  _set (key, value, table) {
+  async _set (key, value, table) {
     return Promise.resolve(this.data[table][key] = value)
   }
 }

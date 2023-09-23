@@ -1,14 +1,12 @@
 'use strict'
 
-/* global describe, it */
 /* eslint-disable no-unused-expressions */
 
-const path = require('path')
-const chai = require('chai')
-chai.use(require('sinon-chai'))
-const expect = chai.expect
+const { describe, it } = require('node:test')
+const assert = require('assert/strict')
 const root = __dirname.replace(/test$/, '')
 const { TextMessage, User } = require('../index.js')
+const path = require('node:path')
 
 describe('Running bin/hubot.js', () => {
   it('should load adapter from HUBOT_FILE environment variable', async function () {
@@ -20,15 +18,15 @@ describe('Running bin/hubot.js', () => {
       await new Promise(resolve => setTimeout(resolve, 100))
     }
     hubot.adapter.on('reply', (envelope, ...strings) => {
-      expect(strings[0]).to.equal('test response from .mjs script')
+      assert.equal(strings[0], 'test response from .mjs script')
       delete process.env.HUBOT_FILE
       delete process.env.HUBOT_HTTPD
       hubot.shutdown()
     })
     try {
       await hubot.receive(new TextMessage(new User('mocha', { room: '#mocha' }), '@Hubot test'))
-      expect(hubot.hasLoadedTestMjsScript).to.be.true
-      expect(hubot.name).to.equal('Hubot')
+      assert.deepEqual(hubot.hasLoadedTestMjsScript, true)
+      assert.equal(hubot.name, 'Hubot')
     } finally {
       hubot.shutdown()
     }

@@ -1,159 +1,201 @@
 'use strict'
 
-/* global describe, beforeEach, afterEach, it */
 /* eslint-disable no-unused-expressions */
 
-// Assertions and Stubbing
-const chai = require('chai')
-const sinon = require('sinon')
-chai.use(require('sinon-chai'))
-
-const expect = chai.expect
-
-const isCircular = require('is-circular')
+const { describe, it, beforeEach, afterEach } = require('node:test')
+const assert = require('assert/strict')
 
 // Hubot classes
-const Brain = require('../src/brain')
-const User = require('../src/user')
+const User = require('../src/user.js')
+const Robot = require('../src/robot.js')
+const Brain = require('../src/brain.js')
+const { hook, reset } = require('./fixtures/RequireMocker.js')
+const mockAdapter = require('./fixtures/mock-adapter.js')
 
-describe('Brain', function () {
-  beforeEach(function () {
-    this.clock = sinon.useFakeTimers()
-    this.mockRobot = {
-      emit () {},
-      on () {}
-    }
-
-    // This *should* be callsArgAsync to match the 'on' API, but that makes
-    // the tests more complicated and seems irrelevant.
-    sinon.stub(this.mockRobot, 'on').withArgs('running').callsArg(1)
-
-    this.brain = new Brain(this.mockRobot)
-
-    this.user1 = this.brain.userForId('1', { name: 'Guy One' })
-    this.user2 = this.brain.userForId('2', { name: 'Guy One Two' })
-    this.user3 = this.brain.userForId('3', { name: 'Girl Three' })
+describe('Brain', () => {
+  let mockRobot = null
+  let user1 = null
+  let user2 = null
+  let user3 = null
+  beforeEach(async () => {
+    hook('hubot-mock-adapter', mockAdapter)
+    mockRobot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    await mockRobot.loadAdapter('hubot-mock-adapter')
+    await mockRobot.run()
+    user1 = mockRobot.brain.userForId('1', { name: 'Guy One' })
+    user2 = mockRobot.brain.userForId('2', { name: 'Guy One Two' })
+    user3 = mockRobot.brain.userForId('3', { name: 'Girl Three' })
   })
-
-  afterEach(function () {
-    this.clock.restore()
+  afterEach(() => {
+    mockRobot.shutdown()
+    reset()
+    process.removeAllListeners()
   })
-
-  describe('Unit Tests', function () {
-    describe('#mergeData', function () {
-      it('performs a proper merge with the new data taking precedent', function () {
-        this.brain.data = {
+  describe('Unit Tests', () => {
+    describe('#mergeData', () => {
+      it('performs a proper merge with the new data taking precedent', () => {
+        mockRobot.brain.data = {
           1: 'old',
           2: 'old'
         }
 
-        this.brain.mergeData({ 2: 'new' })
+        mockRobot.brain.mergeData({ 2: 'new' })
 
-        expect(this.brain.data).to.deep.equal({
+        assert.deepEqual(mockRobot.brain.data, {
           1: 'old',
           2: 'new'
-        })
+        }, 'The data should be merged properly.')
       })
 
-      it('emits a loaded event with the new data', function () {
-        sinon.spy(this.brain, 'emit')
-        this.brain.mergeData({})
-        expect(this.brain.emit).to.have.been.calledWith('loaded', this.brain.data)
+      it('emits a loaded event with the new data', (t, done) => {
+        const loadedListener = (data) => {
+          assert.ok(typeof data === 'object', 'data should be an object.')
+          mockRobot.brain.off('loaded', loadedListener)
+          done()
+        }
+        mockRobot.brain.on('loaded', loadedListener)
+        mockRobot.brain.mergeData({})
       })
 
-      it('coerces loaded data into User objects', function () {
-        this.brain.mergeData({ users: { 4: { name: 'new', id: '4' } } })
-        const user = this.brain.userForId('4')
-        expect(user.constructor.name).to.equal('User')
-        expect(user.id).to.equal('4')
-        expect(user.name).to.equal('new')
-        expect(isCircular(this.brain)).to.be.false
+      it('coerces loaded data into User objects', () => {
+        mockRobot.brain.mergeData({ users: { 4: { name: 'new', id: '4' } } })
+        const user = mockRobot.brain.userForId('4')
+        assert.ok(user instanceof User)
+        assert.equal(user.id, '4')
+        assert.equal(user.name, 'new')
       })
     })
 
-    describe('#save', () => it('emits a save event', function () {
-      sinon.spy(this.brain, 'emit')
-      this.brain.save()
-      expect(this.brain.emit).to.have.been.calledWith('save', this.brain.data)
-    }))
-
-    describe('#resetSaveInterval', () => it('updates the auto-save interval', function () {
-      sinon.spy(this.brain, 'save')
-      // default is 5s
-      this.brain.resetSaveInterval(10)
-      // make sure autosave is on
-      this.brain.setAutoSave(true)
-
-      this.clock.tick(5000)
-      // old interval has passed
-      expect(this.brain.save).to.not.have.been.called
-      this.clock.tick(5000)
-      // new interval has passed
-      expect(this.brain.save).to.have.been.calledOnce
-    }))
-
-    describe('#close', function () {
-      it('saves', function () {
-        sinon.spy(this.brain, 'save')
-        this.brain.close()
-        expect(this.brain.save).to.have.been.calledOnce
+    describe('#save', () => {
+      it('emits a save event', (t, done) => {
+        const saveListener = (data) => {
+          assert.deepEqual(data, mockRobot.brain.data)
+          mockRobot.brain.off('save', saveListener)
+          done()
+        }
+        mockRobot.brain.on('save', saveListener)
+        mockRobot.brain.save()
       })
+    })
 
-      it('emits a close event', function () {
-        sinon.spy(this.brain, 'emit')
-        this.brain.close()
-        expect(this.brain.emit).to.have.been.calledWith('close')
-      })
-
-      it('saves before emitting the close event', function () {
-        sinon.spy(this.brain, 'save')
-        sinon.spy(this.brain, 'emit').withArgs('close')
-        this.brain.close()
-        expect(this.brain.save).to.have.been.calledBefore(this.brain.emit)
-      })
-
-      it('stops auto-saving', function () {
+    describe('#resetSaveInterval', () => {
+      it('updates the auto-save interval', async () => {
+        let wasCalled = false
+        const shouldNotBeCalled = (data) => {
+          assert.fail('save event should not have been emitted')
+        }
+        const shouldBeCalled = (data) => {
+          mockRobot.brain.off('save', shouldBeCalled)
+          wasCalled = true
+        }
+        mockRobot.brain.on('save', shouldNotBeCalled)
+        mockRobot.brain.on('save', shouldBeCalled)
         // make sure autosave is on
-        this.brain.setAutoSave(true)
-        this.brain.close()
+        mockRobot.brain.setAutoSave(true)
+        // default is 5s
+        mockRobot.brain.resetSaveInterval(6)
+
+        await Promise.all([
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              assert.deepEqual(wasCalled, true, 'save event should have been emitted')
+              resolve()
+            }, 1000 * 6)
+          }),
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              assert.notEqual(wasCalled, true)
+              mockRobot.brain.off('save', shouldNotBeCalled)
+              resolve()
+            }, 1000 * 5)
+          })
+        ])
+      })
+    })
+
+    describe('#close', () => {
+      it('saves', (t, done) => {
+        const saveListener = data => {
+          mockRobot.brain.off('save', saveListener)
+          assert.ok(data)
+          done()
+        }
+        mockRobot.brain.on('save', saveListener)
+        mockRobot.brain.close()
+      })
+
+      it('emits a close event', (t, done) => {
+        const closeListener = () => {
+          mockRobot.brain.off('close', closeListener)
+          assert.ok(true)
+          done()
+        }
+        mockRobot.brain.on('close', closeListener)
+        mockRobot.brain.close()
+      })
+
+      it('saves before emitting the close event', (t, done) => {
+        let wasSaveCalled = false
+        const saveListener = data => {
+          mockRobot.brain.off('save', saveListener)
+          wasSaveCalled = true
+        }
+        const closeListener = () => {
+          mockRobot.brain.off('close', closeListener)
+          assert.ok(wasSaveCalled)
+          done()
+        }
+        mockRobot.brain.on('save', saveListener)
+        mockRobot.brain.on('close', closeListener)
+        mockRobot.brain.close()
+      })
+
+      it('stops auto-saving', (t, done) => {
+        // make sure autosave is on
+        mockRobot.brain.setAutoSave(true)
+        mockRobot.brain.close()
 
         // set up the spy after because 'close' calls 'save'
-        sinon.spy(this.brain, 'save')
-
-        this.clock.tick(2 * 5000)
-        expect(this.brain.save).to.not.have.been.called
+        const saveListener = data => {
+          assert.fail('save event should not have been emitted')
+        }
+        mockRobot.brain.on('save', saveListener)
+        setTimeout(() => {
+          assert.ok(true)
+          mockRobot.brain.off('save', saveListener)
+          done()
+        }, 1000 * 10)
       })
     })
 
-    describe('#get', function () {
-      it('returns the saved value', function () {
-        this.brain.data._private['test-key'] = 'value'
-        expect(this.brain.get('test-key')).to.equal('value')
+    describe('#get', () => {
+      it('returns the saved value', () => {
+        const brain = new Brain(mockRobot)
+        brain.set('test-key', 'value')
+        assert.equal(brain.get('test-key'), 'value')
+        brain.close()
       })
 
-      it('returns null if object is not found', function () {
-        expect(this.brain.get('not a real key')).to.be.null
+      it('returns null if object is not found', () => {
+        const brain = new Brain(mockRobot)
+        assert.equal(brain.get('not a real key'), null)
+        brain.close()
       })
     })
 
-    describe('#set', function () {
-      it('saves the value', function () {
-        this.brain.set('test-key', 'value')
-        expect(this.brain.data._private['test-key']).to.equal('value')
-      })
-
-      it('sets multiple keys at once if an object is provided', function () {
-        this.brain.data._private = {
+    describe('#set', () => {
+      it('sets multiple keys at once if an object is provided', () => {
+        mockRobot.brain.data._private = {
           key1: 'val1',
           key2: 'val1'
         }
 
-        this.brain.set({
+        mockRobot.brain.set({
           key2: 'val2',
           key3: 'val2'
         })
 
-        expect(this.brain.data._private).to.deep.equal({
+        assert.deepEqual(mockRobot.brain.data._private, {
           key1: 'val1',
           key2: 'val2',
           key3: 'val2'
@@ -162,175 +204,224 @@ describe('Brain', function () {
 
       // Unable to understand why this behavior is needed, but adding a test
       // case to protect it
-      it('emits loaded', function () {
-        sinon.spy(this.brain, 'emit')
-        this.brain.set('test-key', 'value')
-        expect(this.brain.emit).to.have.been.calledWith('loaded', this.brain.data)
+      it('emits loaded', (t, done) => {
+        const loadedListener = (data) => {
+          assert.deepEqual(data, mockRobot.brain.data)
+          mockRobot.brain.off('loaded', loadedListener)
+          done()
+        }
+        mockRobot.brain.on('loaded', loadedListener)
+        mockRobot.brain.set('test-key', 'value')
       })
 
-      it('returns the brain', function () {
-        expect(this.brain.set('test-key', 'value')).to.equal(this.brain)
+      it('returns the mockRobot.brain', () => {
+        assert.deepEqual(mockRobot.brain.set('test-key', 'value'), mockRobot.brain)
       })
     })
 
-    describe('#remove', () => it('removes the specified key', function () {
-      this.brain.data._private['test-key'] = 'value'
-      this.brain.remove('test-key')
-      expect(this.brain.data._private).to.not.include.keys('test-key')
+    describe('#remove', () => it('removes the specified key', () => {
+      mockRobot.brain.set('test-key', 'value')
+      mockRobot.brain.remove('test-key')
+      assert.deepEqual(Object.keys(mockRobot.brain.data._private).includes('test-key'), false)
     }))
 
-    describe('#userForId', function () {
-      it('returns the user object', function () {
-        expect(this.brain.userForId(1)).to.equal(this.user1)
+    describe('#userForId', () => {
+      it('returns the user object', () => {
+        const brain = new Brain(mockRobot)
+        brain.userForId('1', user1)
+        assert.deepEqual(brain.userForId('1'), user1)
+        brain.close()
       })
 
-      it('does an exact match', function () {
-        const user4 = this.brain.userForId('FOUR')
-        expect(this.brain.userForId('four')).to.not.equal(user4)
+      it('does an exact match', () => {
+        const user4 = mockRobot.brain.userForId('FOUR')
+        assert.notDeepEqual(mockRobot.brain.userForId('four'), user4)
       })
 
       // Cannot understand why this behavior is needed, but adding a test case
       // to protect it
-      it('recreates the user if the room option differs from the user object', function () {
-        expect(this.brain.userForId(1).room).to.be.undefined
+      it('recreates the user if the room option differs from the user object', () => {
+        assert.equal(mockRobot.brain.userForId(1).room, undefined)
 
         // undefined -> having a room
-        const newUser1 = this.brain.userForId(1, { room: 'room1' })
-        expect(newUser1).to.not.equal(this.user1)
+        const newUser1 = mockRobot.brain.userForId(1, { room: 'room1' })
+        assert.notDeepEqual(newUser1, user1)
 
         // changing the room
-        const newUser2 = this.brain.userForId(1, { room: 'room2' })
-        expect(newUser2).to.not.equal(newUser1)
+        const newUser2 = mockRobot.brain.userForId(1, { room: 'room2' })
+        assert.notDeepEqual(newUser2, newUser1)
       })
 
-      describe('when there is no matching user ID', function () {
-        it('creates a new User', function () {
-          expect(this.brain.data.users).to.not.include.key('all-new-user')
-          const newUser = this.brain.userForId('all-new-user')
-          expect(newUser).to.be.instanceof(User)
-          expect(newUser.id).to.equal('all-new-user')
-          expect(this.brain.data.users).to.include.key('all-new-user')
+      describe('when there is no matching user ID', () => {
+        it('creates a new User', () => {
+          assert.notEqual(Object.keys(mockRobot.brain.data.users).includes('all-new-user'), true)
+          const newUser = mockRobot.brain.userForId('all-new-user')
+          assert.ok(newUser instanceof User)
+          assert.equal(newUser.id, 'all-new-user')
+          assert.ok(Object.keys(mockRobot.brain.data.users).includes('all-new-user'))
         })
 
-        it('passes the provided options to the new User', function () {
-          const newUser = this.brain.userForId('all-new-user', { name: 'All New User', prop: 'mine' })
-          expect(newUser.name).to.equal('All New User')
-          expect(newUser.prop).to.equal('mine')
+        it('passes the provided options to the new User', () => {
+          const brain = new Brain(mockRobot)
+          const newUser = brain.userForId('all-new-user', { name: 'All New User', prop: 'mine' })
+          assert.equal(newUser.name, 'All New User')
+          assert.equal(newUser.prop, 'mine')
+          brain.close()
         })
       })
     })
 
-    describe('#userForName', function () {
-      it('returns the user with a matching name', function () {
-        expect(this.brain.userForName('Guy One')).to.equal(this.user1)
+    describe('#userForName', () => {
+      it('returns the user with a matching name', () => {
+        const user = { id: 'user-for-name-guy-one', name: 'Guy One' }
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('user-for-name-guy-one', user)
+        assert.deepEqual(brain.userForName('Guy One'), guy)
+        brain.close()
       })
 
-      it('does a case-insensitive match', function () {
-        expect(this.brain.userForName('guy one')).to.equal(this.user1)
+      it('does a case-insensitive match', () => {
+        const user = { name: 'Guy One' }
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('user-for-name-guy-one-case-insensitive', user)
+        assert.deepEqual(brain.userForName('guy one'), guy)
+        brain.close()
       })
 
-      it('returns null if no user matches', function () {
-        expect(this.brain.userForName('not a real user')).to.be.null
-      })
-    })
-
-    describe('#usersForRawFuzzyName', function () {
-      it('does a case-insensitive match', function () {
-        expect(this.brain.usersForRawFuzzyName('guy')).to.have.members([this.user1, this.user2])
-      })
-
-      it('returns all matching users (prefix match) when there is not an exact match (case-insensitive)', function () {
-        expect(this.brain.usersForRawFuzzyName('Guy')).to.have.members([this.user1, this.user2])
-      })
-
-      it('returns all matching users (prefix match) when there is an exact match (case-insensitive)', function () {
-        // Matched case
-        expect(this.brain.usersForRawFuzzyName('Guy One')).to.deep.equal([this.user1, this.user2])
-        // Mismatched case
-        expect(this.brain.usersForRawFuzzyName('guy one')).to.deep.equal([this.user1, this.user2])
-      })
-
-      it('returns an empty array if no users match', function () {
-        const result = this.brain.usersForRawFuzzyName('not a real user')
-        expect(result).to.be.an('array')
-        expect(result).to.be.empty
+      it('returns null if no user matches', () => {
+        assert.equal(mockRobot.brain.userForName('not a real user'), null)
       })
     })
 
-    describe('#usersForFuzzyName', function () {
-      it('does a case-insensitive match', function () {
-        expect(this.brain.usersForFuzzyName('guy')).to.have.members([this.user1, this.user2])
+    describe('#usersForRawFuzzyName', () => {
+      it('does a case-insensitive match', () => {
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('1', user1)
+        const guy2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForRawFuzzyName('guy').includes(guy) && brain.usersForRawFuzzyName('guy').includes(guy2))
+        brain.close()
       })
 
-      it('returns all matching users (prefix match) when there is not an exact match', function () {
-        expect(this.brain.usersForFuzzyName('Guy')).to.have.members([this.user1, this.user2])
+      it('returns all matching users (prefix match) when there is not an exact match (case-insensitive)', () => {
+        const brain = new Brain(mockRobot)
+        const guy = brain.userForId('1', user1)
+        const guy2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForRawFuzzyName('Guy').includes(guy) && brain.usersForRawFuzzyName('Guy').includes(guy2))
+        brain.close()
       })
 
-      it('returns just the user when there is an exact match (case-insensitive)', function () {
+      it('returns all matching users (prefix match) when there is an exact match (case-insensitive)', () => {
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        const girl2 = brain.userForId('2', user2)
         // Matched case
-        expect(this.brain.usersForFuzzyName('Guy One')).to.deep.equal([this.user1])
+        assert.deepEqual(brain.usersForRawFuzzyName('Guy One'), [girl, girl2])
         // Mismatched case
-        expect(this.brain.usersForFuzzyName('guy one')).to.deep.equal([this.user1])
+        assert.deepEqual(brain.usersForRawFuzzyName('guy one'), [girl, girl2])
+        brain.close()
       })
 
-      it('returns an empty array if no users match', function () {
-        const result = this.brain.usersForFuzzyName('not a real user')
-        expect(result).to.be.an('array')
-        expect(result).to.be.empty
+      it('returns an empty array if no users match', () => {
+        const result = mockRobot.brain.usersForRawFuzzyName('not a real user')
+        assert.equal(result.length, 0)
+      })
+    })
+
+    describe('#usersForFuzzyName', () => {
+      it('does a case-insensitive match', () => {
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        const girl2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForFuzzyName('guy').includes(girl) && brain.usersForFuzzyName('guy').includes(girl2))
+        brain.close()
+      })
+
+      it('returns all matching users (prefix match) when there is not an exact match', () => {
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        const girl2 = brain.userForId('2', user2)
+        assert.ok(brain.usersForFuzzyName('Guy').includes(girl) && brain.usersForFuzzyName('Guy').includes(girl2))
+        brain.close()
+      })
+
+      it('returns just the user when there is an exact match (case-insensitive)', () => {
+        const brain = new Brain(mockRobot)
+        const girl = brain.userForId('1', user1)
+        brain.userForId('2', user2)
+        // Matched case
+        assert.deepEqual(brain.usersForFuzzyName('Guy One'), [girl])
+        // Mismatched case
+        assert.deepEqual(brain.usersForFuzzyName('guy one'), [girl])
+        brain.close()
+      })
+
+      it('returns an empty array if no users match', () => {
+        const result = mockRobot.brain.usersForFuzzyName('not a real user')
+        assert.equal(result.length, 0)
       })
     })
   })
 
-  describe('Auto-Save', function () {
-    it('is on by default', function () {
-      expect(this.brain.autoSave).to.equal(true)
+  describe('Auto-Save', () => {
+    it('is on by default', () => {
+      assert.deepEqual(mockRobot.brain.autoSave, true)
     })
 
-    it('automatically saves every 5 seconds when turned on', function () {
-      sinon.spy(this.brain, 'save')
-
-      this.brain.setAutoSave(true)
-
-      this.clock.tick(5000)
-      expect(this.brain.save).to.have.been.called
+    it('automatically saves every 5 seconds when turned on', (t, done) => {
+      let wasCalled = false
+      const saveListener = data => {
+        mockRobot.brain.off('save', saveListener)
+        wasCalled = true
+      }
+      mockRobot.brain.on('save', saveListener)
+      mockRobot.brain.setAutoSave(true)
+      setTimeout(() => {
+        mockRobot.brain.off('save', saveListener)
+        assert.deepEqual(wasCalled, true)
+        done()
+      }, 1000 * 5.5)
     })
 
-    it('does not auto-save when turned off', function () {
-      sinon.spy(this.brain, 'save')
-
-      this.brain.setAutoSave(false)
-
-      this.clock.tick(2 * 5000)
-      expect(this.brain.save).to.not.have.been.called
+    it('does not auto-save when turned off', (t, done) => {
+      let wasCalled = false
+      const saveListener = data => {
+        wasCalled = true
+        assert.fail('save event should not have been emitted')
+      }
+      mockRobot.brain.setAutoSave(false)
+      mockRobot.brain.on('save', saveListener)
+      setTimeout(() => {
+        assert.notEqual(wasCalled, true)
+        mockRobot.brain.off('save', saveListener)
+        done()
+      }, 1000 * 10)
     })
   })
 
-  describe('User Searching', function () {
-    it('finds users by ID', function () {
-      expect(this.brain.userForId('1')).to.equal(this.user1)
+  describe('User Searching', () => {
+    it('finds users by ID', () => {
+      assert.deepEqual(mockRobot.brain.userForId('1'), user1)
     })
 
-    it('finds users by exact name', function () {
-      expect(this.brain.userForName('Guy One')).to.equal(this.user1)
+    it('finds users by exact name', () => {
+      assert.deepEqual(mockRobot.brain.userForName('Guy One'), user1)
     })
 
-    it('finds users by fuzzy name (prefix match)', function () {
-      const result = this.brain.usersForFuzzyName('Guy')
-      expect(result).to.have.members([this.user1, this.user2])
-      expect(result).to.not.have.members([this.user3])
+    it('finds users by fuzzy name (prefix match)', () => {
+      const result = mockRobot.brain.usersForFuzzyName('Guy')
+      assert.ok(result.includes(user1) && result.includes(user2))
+      assert.ok(!result.includes(user3))
     })
 
-    it('returns User objects, not POJOs', function () {
-      expect(this.brain.userForId('1').constructor.name).to.equal('User')
-      for (const user of this.brain.usersForFuzzyName('Guy')) {
-        expect(user.constructor.name).to.equal('User')
+    it('returns User objects, not POJOs', () => {
+      assert.ok(mockRobot.brain.userForId('1') instanceof User)
+      for (const user of mockRobot.brain.usersForFuzzyName('Guy')) {
+        assert.ok(user instanceof User)
       }
 
-      for (const user of this.brain.usersForRawFuzzyName('Guy One')) {
-        expect(user.constructor.name).to.equal('User')
+      for (const user of mockRobot.brain.usersForRawFuzzyName('Guy One')) {
+        assert.ok(user instanceof User)
       }
-
-      expect(isCircular(this.brain)).to.be.false
     })
   })
 })

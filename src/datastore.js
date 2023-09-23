@@ -13,52 +13,49 @@ class DataStore {
   // write has completed.
   //
   // Value can be any JSON-serializable type.
-  set (key, value) {
-    return this._set(key, value, 'global')
+  async set (key, value) {
+    return await this._set(key, value, 'global')
   }
 
   // Public: Assuming `key` represents an object in the database,
   // sets its `objectKey` to `value`. If `key` isn't already
   // present, it's instantiated as an empty object.
-  setObject (key, objectKey, value) {
-    return this.get(key).then((object) => {
-      const target = object || {}
-      target[objectKey] = value
-      return this.set(key, target)
-    })
+  async setObject (key, objectKey, value) {
+    const object = await this.get(key)
+    const target = object || {}
+    target[objectKey] = value
+    return await this.set(key, target)
   }
 
   // Public: Adds the supplied value(s) to the end of the existing
   // array in the database marked by `key`. If `key` isn't already
   // present, it's instantiated as an empty array.
-  setArray (key, value) {
-    return this.get(key).then((object) => {
-      const target = object || []
-      // Extend the array if the value is also an array, otherwise
-      // push the single value on the end.
-      if (Array.isArray(value)) {
-        return this.set(key, target.push.apply(target, value))
-      } else {
-        return this.set(key, target.concat(value))
-      }
-    })
+  async setArray (key, value) {
+    const object = await this.get(key)
+    const target = object ?? []
+    // Extend the array if the value is also an array, otherwise
+    // push the single value on the end.
+    if (Array.isArray(value)) {
+      return await this.set(key, target.concat(value))
+    } else {
+      return await this.set(key, target.concat([value]))
+    }
   }
 
   // Public: Get value by key if in the database or return `undefined`
   // if not found. Returns a promise which resolves to the
   // requested value.
-  get (key) {
-    return this._get(key, 'global')
+  async get (key) {
+    return await this._get(key, 'global')
   }
 
   // Public: Digs inside the object at `key` for a key named
   // `objectKey`. If `key` isn't already present, or if it doesn't
   // contain an `objectKey`, returns `undefined`.
-  getObject (key, objectKey) {
-    return this.get(key).then((object) => {
-      const target = object || {}
-      return target[objectKey]
-    })
+  async getObject (key, objectKey) {
+    const object = await this.get(key)
+    const target = object || {}
+    return target[objectKey]
   }
 
   // Private: Implements the underlying `set` logic for the datastore.
@@ -70,7 +67,7 @@ class DataStore {
   // This returns a resolved promise when the `set` operation is
   // successful, and a rejected promise if the operation fails.
   _set (key, value, table) {
-    return Promise.reject(new DataStoreUnavailable('Setter called on the abstract class.'))
+    throw new DataStoreUnavailable('Setter called on the abstract class.')
   }
 
   // Private: Implements the underlying `get` logic for the datastore.
@@ -82,7 +79,7 @@ class DataStore {
   // This returns a resolved promise containing the fetched value on
   // success, and a rejected promise if the operation fails.
   _get (key, table) {
-    return Promise.reject(new DataStoreUnavailable('Getter called on the abstract class.'))
+    throw new DataStoreUnavailable('Getter called on the abstract class.')
   }
 }
 

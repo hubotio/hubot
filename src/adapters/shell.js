@@ -17,6 +17,7 @@ const historyPath = '.hubot_history'
 const bold = str => `\x1b[1m${str}\x1b[22m`
 
 class Shell extends Adapter {
+  #rl = null
   constructor (robot) {
     super(robot)
     this.name = 'Shell'
@@ -35,27 +36,33 @@ class Shell extends Adapter {
     this.send(envelope, ...strings)
   }
 
-  run () {
+  async run () {
     this.buildCli()
-    loadHistory((error, history) => {
-      if (error) {
-        console.log(error.message)
-      }
+    try {
+      const { readlineInterface, history } = await this.#loadHistory()
       this.cli.history(history)
-      this.cli.interact(`${this.robot.name}> `)
-      return this.emit('connected', this)
-    })
+      this.cli.interact(`${this.robot.name ?? this.robot.alias}> `)
+      this.#rl = readlineInterface
+      this.emit('connected', this)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  shutdown () {
-    this.robot.shutdown()
-    return process.exit(0)
+  close () {
+    super.close()
+    // Getting an error message on GitHubt Actions: error: 'this[#rl].close is not a function'
+    if (this.#rl?.close) {
+      this.#rl.close()
+    }
+    this.cli.removeAllListeners()
+    this.cli.close()
   }
 
   buildCli () {
     this.cli = cline()
 
-    this.cli.command('*', input => {
+    this.cli.command('*', async input => {
       let userId = process.env.HUBOT_SHELL_USER_ID || '1'
       if (userId.match(/A\d+z/)) {
         userId = parseInt(userId)
@@ -63,7 +70,7 @@ class Shell extends Adapter {
 
       const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
-      this.receive(new TextMessage(user, input, 'messageId'))
+      await this.receive(new TextMessage(user, input, 'messageId'))
     })
 
     this.cli.command('history', () => {
@@ -86,7 +93,7 @@ class Shell extends Adapter {
       history = this.cli.history()
 
       if (history.length <= historySize) {
-        return this.shutdown()
+        return
       }
 
       const startIndex = history.length - historySize
@@ -96,11 +103,35 @@ class Shell extends Adapter {
       }
 
       const outstream = fs.createWriteStream(historyPath, fileOpts)
-      outstream.on('end', this.shutdown.bind(this))
       for (i = 0, len = history.length; i < len; i++) {
         item = history[i]
         outstream.write(item + '\n')
       }
+      outstream.end()
+    })
+  }
+
+  async #loadHistory () {
+    if (!fs.existsSync(historyPath)) {
+      return new Error('No history available')
+    }
+    const instream = fs.createReadStream(historyPath)
+    const outstream = new Stream()
+    outstream.readable = true
+    outstream.writable = true
+    const history = []
+    const readlineInterface = readline.createInterface({ input: instream, output: outstream, terminal: false })
+    return new Promise((resolve, reject) => {
+      readlineInterface.on('line', line => {
+        line = line.trim()
+        if (line.length > 0) {
+          history.push(line)
+        }
+      })
+      readlineInterface.on('close', () => {
+        resolve({ readlineInterface, history })
+      })
+      readlineInterface.on('error', reject)
     })
   }
 }
@@ -108,29 +139,3 @@ class Shell extends Adapter {
 // Prevent output buffer "swallowing" every other character on OSX / Node version > 16.19.0.
 process.stdout._handle.setBlocking(false)
 exports.use = robot => new Shell(robot)
-
-// load history from .hubot_history.
-//
-// callback - A Function that is called with the loaded history items (or an empty array if there is no history)
-function loadHistory (callback) {
-  if (!fs.existsSync(historyPath)) {
-    return callback(new Error('No history available'))
-  }
-
-  const instream = fs.createReadStream(historyPath)
-  const outstream = new Stream()
-  outstream.readable = true
-  outstream.writable = true
-
-  const items = []
-
-  readline.createInterface({ input: instream, output: outstream, terminal: false })
-    .on('line', function (line) {
-      line = line.trim()
-      if (line.length > 0) {
-        items.push(line)
-      }
-    })
-    .on('close', () => callback(null, items))
-    .on('error', callback)
-}
