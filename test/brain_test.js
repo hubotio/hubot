@@ -21,7 +21,7 @@ describe('Brain', () => {
     hook('hubot-mock-adapter', mockAdapter)
     mockRobot = new Robot('hubot-mock-adapter', false, 'TestHubot')
     await mockRobot.loadAdapter('hubot-mock-adapter')
-    mockRobot.run()
+    await mockRobot.run()
     user1 = mockRobot.brain.userForId('1', { name: 'Guy One' })
     user2 = mockRobot.brain.userForId('2', { name: 'Guy One Two' })
     user3 = mockRobot.brain.userForId('3', { name: 'Girl Three' })

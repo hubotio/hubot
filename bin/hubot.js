@@ -153,5 +153,5 @@ function loadExternalScripts () {
 
   robot.adapter.once('connected', loadScripts)
 
-  robot.run()
+  await robot.run()
 })()

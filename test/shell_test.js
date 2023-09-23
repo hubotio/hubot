@@ -1,6 +1,6 @@
 'use strict'
 
-const { describe, it, beforeEach, afterEach } = require('node:test')
+const { describe, it, beforeEach } = require('node:test')
 const assert = require('assert/strict')
 
 const Robot = require('../src/robot')
@@ -12,11 +12,6 @@ describe('Shell Adapter', () => {
   beforeEach(async () => {
     robot = new Robot('shell', false, 'TestHubot')
     await robot.loadAdapter()
-    robot.run()
-  })
-
-  afterEach(() => {
-    robot.shutdown()
   })
 
   describe('Public API', () => {
@@ -29,52 +24,64 @@ describe('Shell Adapter', () => {
       assert.deepEqual(adapter.robot, robot, 'The adapter should have a reference to the robot.')
     })
 
-    it('sends a message', (t, done) => {
+    it('sends a message', async () => {
       const old = console.log
+      let wasCalled = false
       console.log = (...args) => {
         console.log = old
         assert.deepEqual(args[0], '\x1b[1mhello\x1b[22m', 'Message should be outputed as bold to the console.')
-        done()
+        wasCalled = true
       }
-      adapter.send({ room: 'general' }, 'hello')
+      await adapter.send({ room: 'general' }, 'hello')
+      assert.deepEqual(wasCalled, true)
     })
 
-    it('emotes a message', (t, done) => {
+    it('emotes a message', async () => {
       const old = console.log
+      let wasCalled = false
       console.log = (...args) => {
         console.log = old
         assert.deepEqual(args[0], '\x1b[1m* hello\x1b[22m', 'Message should be bold and have an * in front.')
-        done()
+        wasCalled = true
       }
-      adapter.emote({ room: 'general' }, 'hello')
+      await adapter.emote({ room: 'general' }, 'hello')
+      assert.deepEqual(wasCalled, true)
     })
 
-    it('replies to a message', (t, done) => {
+    it('replies to a message', async () => {
       const old = console.log
+      let wasCalled = false
       console.log = (...args) => {
         console.log = old
         assert.deepEqual(args[0], '\x1b[1mnode: hello\x1b[22m', 'The strings should be passed through.')
-        done()
+        wasCalled = true
       }
-      adapter.reply({ room: 'general', user: { name: 'node' } }, 'hello')
+      await adapter.reply({ room: 'general', user: { name: 'node' } }, 'hello')
+      assert.deepEqual(wasCalled, true)
     })
 
-    it('runs the adapter and emits connected', (t, done) => {
+    it('runs the adapter and emits connected', async () => {
+      let wasCalled = false
       const connected = () => {
         adapter.off('connected', connected)
-        done()
+        assert.ok(true, 'The connected event should be emitted.')
+        wasCalled = true
       }
       adapter.on('connected', connected)
-      adapter.run()
+      await adapter.run()
+      assert.deepEqual(wasCalled, true)
+      robot.shutdown()
     })
 
-    it('dispatches received messages to the robot', (t, done) => {
+    it('dispatches received messages to the robot', async () => {
       const message = new TextMessage(new User('node'), 'hello', 1)
+      let wasCalled = false
       robot.receive = (msg) => {
         assert.deepEqual(msg, message, 'The message should be passed through.')
-        done()
+        wasCalled = true
       }
-      adapter.receive(message)
+      await adapter.receive(message)
+      assert.deepEqual(wasCalled, true)
     })
   })
 })

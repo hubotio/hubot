@@ -101,7 +101,7 @@ describe('Middleware', () => {
       hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
       robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
       await robot.loadAdapter()
-      robot.run
+      await robot.run
 
       // Re-throw AssertionErrors for clearer test failures
       robot.on('error', function (err, response) {

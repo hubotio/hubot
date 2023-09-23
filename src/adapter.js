@@ -57,8 +57,8 @@ class Adapter extends EventEmitter {
 
   // Public: Raw method for invoking the bot to run. Extend this.
   //
-  // Returns nothing.
-  run () {}
+  // Returns whatever the extended adapter returns.
+  async run () {}
 
   // Public: Raw method for shutting the bot down. Extend this.
   //

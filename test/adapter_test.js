@@ -78,8 +78,8 @@ describe('Adapter', () => {
         assert.ok(typeof adapter.run === 'function', 'The adapter should have a run method.')
       })
 
-      it('does nothing', () => {
-        adapter.run()
+      it('does nothing', async () => {
+        await adapter.run()
       })
     })
 

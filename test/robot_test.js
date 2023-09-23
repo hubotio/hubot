@@ -337,7 +337,7 @@ describe('Robot', () => {
       hook('hubot-mock-adapter', mockAdapter)
       robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
       await robot.loadAdapter()
-      robot.run()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -846,7 +846,7 @@ describe('Robot', () => {
       user = new User('1', { name: 'node', room: '#test' })
       robot.alias = 'Hubot'
       await robot.loadAdapter()
-      robot.run()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -948,7 +948,7 @@ describe('Robot', () => {
       robot.alias = 'Hubot'
       await robot.loadAdapter('./test/fixtures/MockAdapter.mjs')
       await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.js')
-      robot.run()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -973,7 +973,7 @@ describe('Robot', () => {
       robot.alias = 'Hubot'
       await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
       await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
-      robot.run()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -995,7 +995,7 @@ describe('Robot', () => {
       robot = new Robot(null, false, 'TestHubot')
       robot.alias = 'Hubot'
       await robot.loadAdapter()
-      robot.run()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -1011,7 +1011,7 @@ describe('Robot', () => {
       hook('hubot-mock-adapter', mockAdapter)
       const robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
       await robot.loadAdapter()
-      robot.run()
+      await robot.run()
       const res = await fetch(`http://127.0.0.1:${process.env.PORT}/hubot/version`)
       assert.equal(res.status, 404)
       assert.match(await res.text(), /Cannot GET \/hubot\/version/ig)

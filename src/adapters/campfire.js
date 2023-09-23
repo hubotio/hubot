@@ -82,7 +82,7 @@ class Campfire extends Adapter {
     })
   }
 
-  run () {
+  async run () {
     const self = this
 
     const options = {

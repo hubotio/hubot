@@ -643,11 +643,11 @@ class Robot {
 
   // Public: Kick off the event loop for the adapter
   //
-  // Returns nothing.
-  run () {
+  // Returns whatever the adapter returns.
+  async run () {
     this.emit('running')
 
-    this.adapter.run()
+    return await this.adapter.run()
   }
 
   // Public: Gracefully shutdown the robot process
