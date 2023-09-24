@@ -1,15 +1,14 @@
-const { spawn, spawnSync } = require('child_process')
+const { spawnSync } = require('child_process')
 const File = require('fs')
 const path = require('path')
 
-function runCommands(hubotDirectory, options) {
+function runCommands (hubotDirectory, options) {
   try {
     spawnSync('mkdir', [hubotDirectory])
     console.log(`${hubotDirectory} created successfully.`)
   } catch (error) {
     console.log(`${hubotDirectory} exists, continuing to the next operation.`)
   }
-  
   const envFilePath = path.resolve(process.cwd(), '.env')
   process.chdir(hubotDirectory)
 
@@ -19,9 +18,9 @@ function runCommands(hubotDirectory, options) {
   const packageJson = JSON.parse(File.readFileSync(packageJsonPath, 'utf8'))
 
   packageJson.scripts = {
-    start: 'hubot',
+    start: 'hubot'
   }
-  if(options.adapter) {
+  if (options.adapter) {
     packageJson.scripts.start += ` --adapter ${options.adapter}`
   }
 
@@ -49,37 +48,11 @@ function runCommands(hubotDirectory, options) {
   } catch (error) {
     console.log('.env file not found, continuing to the next operation.')
   }
-  
-
-//   const hubotProcess = spawn('npx', ['hubot'], { stdio: 'inherit', env: process.env })
-//   hubotProcess.on('exit', (code) => {
-//     console.log(`Hubot process exited with code ${code}`)
-//     process.exit(code)
-//   })
 }
-
-async function spawnAsync(command, args) {
-  return new Promise((resolve, reject) => {
-    const childProcess = spawn(command, args, { stdio: 'inherit', env: process.env })
-
-    childProcess.on('error', (error) => {
-      reject(error)
-    })
-
-    childProcess.on('exit', (code) => {
-      if (code === 0) {
-        resolve(childProcess)
-      } else {
-        reject(new Error(`Command '${command} ${args.join(' ')}' exited with code ${code}`))
-      }
-    })
-  })
-}
-
 module.exports = (hubotDirectory, options) => {
   try {
     runCommands(hubotDirectory, options)
   } catch (error) {
     console.error('An error occurred:', error)
-  }  
+  }
 }
