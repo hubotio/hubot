@@ -20,4 +20,4 @@ jobs:
     - name: Run Tests
       env:
         HUBOT_LOG_LEVEL: debug
-      run: npm run test-windows
+      run: npm test -- test/robot_test.js
