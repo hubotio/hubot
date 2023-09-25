@@ -494,7 +494,7 @@ class Robot {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
         this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
       } else if (['.js', '.cjs', '.coffee'].includes(ext)) {
-        this.adapter = this.requireAdapterFrom(pathToFileURL(path.resolve(adapterPath)).pathname)
+        this.adapter = this.requireAdapterFrom(path.resolve(adapterPath))
       } else if (['.mjs'].includes(ext)) {
         this.adapter = await this.importAdapterFrom(pathToFileURL(path.resolve(adapterPath)).href)
       } else {
