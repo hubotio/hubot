@@ -490,6 +490,9 @@ class Robot {
   async loadAdapter (adapterPath = null) {
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
     const ext = path.extname(adapterPath ?? '') ?? '.js'
+    console.log('ext', ext)
+    console.log('adapterPath', adapterPath)
+    console.log('path to file url', pathToFileURL(path.resolve(adapterPath)))
     try {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
         this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
