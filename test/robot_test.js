@@ -969,7 +969,8 @@ describe('Robot', () => {
   describe('Robot Coffeescript', () => {
     let robot = null
     beforeEach(async () => {
-      robot = new Robot('MockAdapter', false, 'TestHubot')
+      const CoffeeRobot = require('hubot/index.js').Robot
+      robot = new CoffeeRobot('MockAdapter', false, 'TestHubot')
       robot.alias = 'Hubot'
       await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
       await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
