@@ -19,11 +19,11 @@ function runCommands (hubotDirectory, options) {
 
   const externalScriptsPath = path.resolve('./', 'external-scripts.json')
   let escripts = File.readFileSync(externalScriptsPath, 'utf8')
-  if(escripts.length == 0) escripts = '[]'
+  if (escripts.length === 0) escripts = '[]'
   const externalScripts = JSON.parse(escripts)
   externalScripts.push('hubot-help')
   externalScripts.push('hubot-diagnostics')
-  
+
   File.writeFileSync(externalScriptsPath, JSON.stringify(externalScripts, null, 2))
 
   File.writeFileSync('./scripts/example.mjs', `export default (robot) => {
@@ -31,6 +31,7 @@ function runCommands (hubotDirectory, options) {
       await res.send('Hello World!')
     })
   }`)
+
   const packageJsonPath = path.resolve('./', 'package.json')
   const packageJson = JSON.parse(File.readFileSync(packageJsonPath, 'utf8'))
 
