@@ -14,6 +14,23 @@ function runCommands (hubotDirectory, options) {
 
   spawnSync('npm', ['init', '-y'])
   spawnSync('npm', ['i', 'hubot'].concat(options.adapter))
+  spawnSync('mkdir', ['scripts'])
+  spawnSync('touch', ['external-scripts.json'])
+
+  const externalScriptsPath = path.resolve('./', 'external-scripts.json')
+  let escripts = File.readFileSync(externalScriptsPath, 'utf8')
+  if(escripts.length == 0) escripts = '[]'
+  const externalScripts = JSON.parse(escripts)
+  externalScripts.push('hubot-help')
+  externalScripts.push('hubot-diagnostics')
+  
+  File.writeFileSync(externalScriptsPath, JSON.stringify(externalScripts, null, 2))
+
+  File.writeFileSync('./scripts/example.mjs', `export default (robot) => {
+    robot.respond(/hello/, async res => {
+      await res.send('Hello World!')
+    })
+  }`)
   const packageJsonPath = path.resolve('./', 'package.json')
   const packageJson = JSON.parse(File.readFileSync(packageJsonPath, 'utf8'))
 
