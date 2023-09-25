@@ -1,0 +1,23 @@
+name: Testing Windows Pipeline
+on:
+  push:
+    branches:
+      - fix-windows-test-coffeescript
+jobs:
+  npm-test:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - name: Run Tests
+      env:
+        HUBOT_LOG_LEVEL: debug
+      run: npm test -- --test-name-pattern "Robot Coffeescript" test/robot_test.js

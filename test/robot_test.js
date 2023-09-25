@@ -1,6 +1,5 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
 require('coffeescript/register.js')
 const { describe, it, beforeEach, afterEach } = require('node:test')
 const assert = require('assert/strict')
@@ -969,8 +968,7 @@ describe('Robot', () => {
   describe('Robot Coffeescript', () => {
     let robot = null
     beforeEach(async () => {
-      const CoffeeRobot = require('hubot/index.js').Robot
-      robot = new CoffeeRobot('MockAdapter', false, 'TestHubot')
+      robot = new Robot('MockAdapter', false, 'TestHubot')
       robot.alias = 'Hubot'
       await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
       await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
