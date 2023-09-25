@@ -20,4 +20,4 @@ jobs:
     - name: Run Tests
       env:
         HUBOT_LOG_LEVEL: debug
-      run: npm test -- --test-name-pattern `Robot Coffeescript` test/robot_test.js
+      run: npm run test-windows

@@ -40,7 +40,8 @@
     "pretest": "standard",
     "test": "node --test",
     "test:smoke": "node src/**/*.js",
-    "test:e2e": "bin/e2e-test.sh"
+    "test:e2e": "bin/e2e-test.sh",
+    "test-windows": "node --test --test-name-pattern 'Robot Coffeescript' test/robot_test.js"
   },
   "release": {
     "branches": [
