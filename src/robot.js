@@ -490,14 +490,11 @@ class Robot {
   async loadAdapter (adapterPath = null) {
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
     const ext = path.extname(adapterPath ?? '') ?? '.js'
-    this.logger.debug(`extension: ${ext}`)
-    this.logger.debug(`adapter path: ${adapterPath}`)
-    this.logger.debug(`path to file url: ${pathToFileURL(path.resolve(adapterPath))}`)
     try {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
         this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
       } else if (['.js', '.cjs', '.coffee'].includes(ext)) {
-        this.adapter = this.requireAdapterFrom(pathToFileURL(path.resolve(adapterPath)).pathname)
+        this.adapter = this.requireAdapterFrom(path.resolve(adapterPath))
       } else if (['.mjs'].includes(ext)) {
         this.adapter = await this.importAdapterFrom(pathToFileURL(path.resolve(adapterPath)).href)
       } else {
@@ -519,6 +516,7 @@ class Robot {
   }
 
   requireAdapterFrom (adapaterPath) {
+    console.log(adapaterPath)
     return require(adapaterPath).use(this)
   }
 
