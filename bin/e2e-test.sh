@@ -37,4 +37,9 @@ expect <<EOL
     "PONG" {}
     timeout {exit 1}
   }
+  send "e2etest adapter\r"
+  expect {
+    "shell" {}
+    timeout {exit 1}
+  }
 EOL
