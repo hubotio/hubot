@@ -1,4 +1,4 @@
-name: Pipeline
+name: Build and release pipeline
 on:
   push:
     branches:
@@ -32,22 +32,24 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Install
+      - name: Install dependencies
         run: npm ci
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
   test:
     name: Fast Tests
     runs-on: ubuntu-latest
+    needs: build
     strategy:
       matrix:
         node-version:
           - 18.x
           - latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install expect
-        run: sudo apt-get install expect
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -56,7 +58,9 @@ jobs:
       - run: npm test
   e2etest:
     name: E2E Test
-    needs: [build, test]
+    needs:
+      - build
+      - test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,11 +68,14 @@ jobs:
           - 18.x
           - latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install expect
+        run: sudo apt-get install expect
       - name: E2E Test
-      - uses: actions/checkout@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
