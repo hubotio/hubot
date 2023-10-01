@@ -88,7 +88,7 @@ Parser.parse(process.argv)
 
 if (options.create) {
   create(options.path, options)
-  process.exit(1)
+  return
 }
 
 if (options.file) {

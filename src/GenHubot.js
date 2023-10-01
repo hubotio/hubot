@@ -1,11 +1,11 @@
-const { spawnSync } = require('child_process')
+const { spawnSync, spawn } = require('child_process')
 const File = require('fs')
 const path = require('path')
 
 function runCommands (hubotDirectory, options) {
+  console.log('creating hubot directory', hubotDirectory)
   try {
     spawnSync('mkdir', [hubotDirectory])
-    console.log(`${hubotDirectory} created successfully.`)
   } catch (error) {
     console.log(`${hubotDirectory} exists, continuing to the next operation.`)
   }
@@ -13,7 +13,7 @@ function runCommands (hubotDirectory, options) {
   process.chdir(hubotDirectory)
 
   spawnSync('npm', ['init', '-y'])
-  spawnSync('npm', ['i', 'hubot'].concat(options.adapter))
+  spawnSync('npm', ['i', 'hubot'].concat(options.adapter, 'hubot-help', 'hubot-rules', 'hubot-diagnostics'))
   spawnSync('mkdir', ['scripts'])
   spawnSync('touch', ['external-scripts.json'])
 
@@ -22,17 +22,28 @@ function runCommands (hubotDirectory, options) {
   if (escripts.length === 0) escripts = '[]'
   const externalScripts = JSON.parse(escripts)
   externalScripts.push('hubot-help')
+  externalScripts.push('hubot-rules')
   externalScripts.push('hubot-diagnostics')
 
   File.writeFileSync(externalScriptsPath, JSON.stringify(externalScripts, null, 2))
 
-  File.writeFileSync('./scripts/example.mjs', `export default (robot) => {
-    robot.respond(/hello/, async res => {
-      await res.send('Hello World!')
-    })
-  }`)
+  File.writeFileSync('./scripts/example.mjs', `// Description:
+//   Test script
+//
+// Commands:
+//   hubot helo - Responds with Hello World!.
+//
+// Notes:
+//   This is a test script.
+//
 
-  const packageJsonPath = path.resolve('./', 'package.json')
+export default (robot) => {
+  robot.respond(/helo/, async res => {
+    await res.send('Hello World!')
+  })
+}`)
+
+  const packageJsonPath = path.resolve(process.cwd(), 'package.json')
   const packageJson = JSON.parse(File.readFileSync(packageJsonPath, 'utf8'))
 
   packageJson.scripts = {

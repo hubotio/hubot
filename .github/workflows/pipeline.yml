@@ -1,0 +1,93 @@
+name: Pipeline
+on:
+  push:
+    branches:
+      - main
+      - next
+  pull_request:
+    branches:
+      - main
+      - next
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+jobs:
+  build:
+    name: Build and Verify
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 18.x
+          - latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install
+        run: npm ci
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+  test:
+    name: Fast Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 18.x
+          - latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install expect
+        run: sudo apt-get install expect
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm test
+  e2etest:
+    name: E2E Test
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 18.x
+          - latest
+    steps:
+      - name: E2E Test
+      - uses: actions/checkout@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+        run: npm run test:e2e
+  release:
+    name: Release
+    if: github.ref == 'refs/heads/main' && success()
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['lts/*']
+    steps:
+      - name: Release
+      - uses: actions/checkout@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+        run: npx semantic-release
