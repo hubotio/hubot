@@ -19,9 +19,9 @@ are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTI
 
 # Create your own Hubot instance
 
+This will create a directory called `myhubot` in the current working directory.
+
 ```sh
-mkdir myhubot
-cd myhubot
 npx hubot --create myhubot --adapter @hubot-friends/hubot-slack
 ```
 
