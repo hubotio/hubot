@@ -1,8 +1,9 @@
-const { spawnSync, spawn } = require('child_process')
+const { spawnSync } = require('child_process')
 const File = require('fs')
 const path = require('path')
 
 function runCommands (hubotDirectory, options) {
+  options.hubotInstallationPath = options?.hubotInstallationPath ?? 'hubot'
   console.log('creating hubot directory', hubotDirectory)
   try {
     spawnSync('mkdir', [hubotDirectory])
@@ -13,7 +14,7 @@ function runCommands (hubotDirectory, options) {
   process.chdir(hubotDirectory)
 
   spawnSync('npm', ['init', '-y'])
-  spawnSync('npm', ['i', 'hubot'].concat(options.adapter, 'hubot-help', 'hubot-rules', 'hubot-diagnostics'))
+  spawnSync('npm', ['i', options.hubotInstallationPath].concat(options.adapter, 'hubot-help', 'hubot-rules', 'hubot-diagnostics'))
   spawnSync('mkdir', ['scripts'])
   spawnSync('touch', ['external-scripts.json'])
 

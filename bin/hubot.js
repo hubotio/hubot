@@ -87,8 +87,9 @@ Parser.on((opt, value) => {
 Parser.parse(process.argv)
 
 if (options.create) {
+  options.hubotInstallationPath = process.env.HUBOT_INSTALLATION_PATH ?? 'hubot'
   create(options.path, options)
-  return
+  process.exit(0)
 }
 
 if (options.file) {
