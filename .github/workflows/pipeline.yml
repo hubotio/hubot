@@ -74,12 +74,12 @@ jobs:
           fetch-depth: 0
       - name: Install expect
         run: sudo apt-get install expect
-      - name: E2E Test
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-        run: npm run test:e2e
+      - run: npm run test:e2e
   release:
     name: Release
     if: github.ref == 'refs/heads/main' && success()
@@ -89,12 +89,10 @@ jobs:
       matrix:
         node-version: ['lts/*']
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Release
-      - uses: actions/checkout@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
         run: npx semantic-release
