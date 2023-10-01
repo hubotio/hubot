@@ -6,6 +6,7 @@ const pathResolve = require('path').resolve
 const OptParse = require('optparse')
 
 const Hubot = require('..')
+const create = require('../src/GenHubot.js')
 
 const switches = [
   ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
@@ -86,14 +87,11 @@ Parser.on((opt, value) => {
 Parser.parse(process.argv)
 
 if (options.create) {
-  console.error("'hubot --create' is deprecated. Use the yeoman generator instead:")
-  console.error('    npm install -g yo generator-hubot')
-  console.error(`    mkdir -p ${options.path}`)
-  console.error(`    cd ${options.path}`)
-  console.error('    yo hubot')
-  console.error('See https://github.com/github/hubot/blob/main/docs/index.md for more details on getting started.')
-  process.exit(1)
+  options.hubotInstallationPath = process.env.HUBOT_INSTALLATION_PATH ?? 'hubot'
+  create(options.path, options)
+  process.exit(0)
 }
+
 if (options.file) {
   options.adapter = options.file.split('/').pop().split('.')[0]
 }

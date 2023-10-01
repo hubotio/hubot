@@ -15,6 +15,16 @@ for details on getting up and running with your very own robot friend.
 In most cases, you'll probably never have to hack on this repo directly if you
 are building your own bot. But if you do, check out [CONTRIBUTING.md](CONTRIBUTING.md)
 
+# Create your own Hubot instance
+
+```sh
+mkdir myhubot
+cd myhubot
+npx hubot --create myhubot --adapter @hubot-friends/hubot-slack
+```
+
+Review `scripts/example.mjs`. Create more scripts in the `scripts` folder.
+
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
