@@ -8,11 +8,11 @@ trap "{ CODE=$?; popd; rm -rf $TEMP_ROOT; exit $CODE; }" EXIT
 
 ## https://github.com/hubotio/hubot/blob/main/docs/index.md
 
-## use hubot from last commit
+## use this hubot version
 echo "$ create hubot in $TEMP_ROOT"
-pwd
+echo "$ install Hubot from $HUBOT_FOLDER"
 npm init -y
-npm i $HUBOT_FOLDER/. coffeescript
+npm i $HUBOT_FOLDER coffeescript
 
 ./node_modules/.bin/hubot --create myhubot
 cd myhubot
@@ -23,7 +23,7 @@ cd myhubot
 echo "$ Update NODE_PATH=$TEMP_ROOT/node_modules so everything can be found correctly."
 export NODE_PATH=$TEMP_ROOT/node_modules:$TEMP_ROOT/myhubot/node_modules
 export PATH=$PATH:$TEMP_ROOT/node_modules/.bin:$TEMP_ROOT/myhubot/node_modules/.bin
-export HUBOT_INSTALLATION_PATH=$HUBOT_FOLDER/.
+export HUBOT_INSTALLATION_PATH=$HUBOT_FOLDER
 echo $HUBOT_INSTALLATION_PATH
 
 ## start, but have to sleep 1 second to wait for hubot to start and the scripts to load
