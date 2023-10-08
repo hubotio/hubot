@@ -907,7 +907,7 @@ const EXCLUDED_USERS = [
   '12345' // Restrict access for a user ID for a contractor
 ]
 
-robot.receiveMiddleware((context, next, done) => {
+robot.receiveMiddleware(async context => {
   if (EXCLUDED_USERS.some( id => context.response.message.user.id == id)) {
     // Don't process this message further.
     context.response.message.finish()
@@ -919,9 +919,9 @@ robot.receiveMiddleware((context, next, done) => {
     }
 
     // Don't process further middleware.
-    done()
+    return false
   } else {
-    next(done)
+    return true
   }
 })
 ```
