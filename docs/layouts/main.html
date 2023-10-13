@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="/assets/stylesheets/application.css"/>
+        <meta name="viewport" content="initial-scale=1"/>
+        <title>{{ title }}</title>
+        <meta name="generator" content="Hubot" />
+        <meta property="og:title" content="Kaizen Hubot" />
+        <meta property="og:locale" content="en_US" />
+        <meta name="description" content="Hubot is your friendly robot sidekick. Install him in your company to dramatically improve employee efficiency." />
+        <meta property="og:description" content="Hubot is your friendly robot sidekick. Install him in your company to dramatically improve employee efficiency." />
+        <link rel="canonical" href="{{ canonical }}" />
+        <meta property="og:url" content="{{ canonical }}" />
+        <meta property="og:site_name" content="Kaizen Hubot" />
+        <meta property="og:image" content="https://hubot.gokaizen.io/assets/images/screenshots/dangerroom-full.png" />
+        <script type="application/ld+json">
+            {"image":"https://hubot.gokaizen.io/assets/images/screenshots/dangerroom-full.png","headline":"Kaizen Hubot","@type":"WebSite","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://hubot.gokaizen.io/assets/images/screenshots/dangerroom-full.png"}},"url":"https://hubot.gokaizen.io/","description":"Hubot is your friendly robot sidekick. Install him in your company to dramatically improve employee efficiency.","name":"Kaizen Hubot","@context":"https://schema.org"}
+        </script>
+    </head>
+    <body class="home">
+        <div class="container">
+            <header class="clearfix">
+                <div class="frame">
+                    <div class="hubot-avatar">
+                        <img src="/assets/images/layout/hubot-avatar@2x.png" alt="hubot logo" class="hubot-avatar-img" width="106" />
+                    </div>
+                </div>
+                <h1>Hubot <span>(note: it's prounounced <b>hew-bot</b>)</span></h1>
+                <h2>A Customizable,<br />Life Embetterment Robot</h2>
+                <p>Commissioned by <a href="http://github.com" class="logo">GitHub</a></p>
+            </header>
+            {{> @partial-block }}
+        </div>
+        <footer class="footer clearfix">
+            <a class="left" href="/"><span class="mega-icon mega-icon-invertocat"></span></a>
+            <p class="right">Built with &lt;3 by friends of Hubot</p>
+        </footer>
+    </body>
+</html>

@@ -1,5 +1,7 @@
 ---
-permalink: /docs/deploying/unix/
+title: Deploying to Unix
+layout: layouts/docs.html
+permalink: /deploying/unix.html
 ---
 
 # Deploying to Unix

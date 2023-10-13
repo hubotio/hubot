@@ -1,5 +1,9 @@
 ---
-permalink: /docs/patterns/
+title: Patterns
+layout: layouts/docs.html
+should_publish: yes
+published: 2023-10-10T19:25:22.000Z
+permalink: /patterns.html
 ---
 
 # Patterns

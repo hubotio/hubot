@@ -1,5 +1,7 @@
 ---
-permalink: /docs/deploying/heroku/
+title: Deploying to Heroku
+layout: layouts/docs.html
+permalink: /deploying/heroku.html
 ---
 
 # Deploying to Heroku

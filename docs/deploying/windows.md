@@ -1,5 +1,7 @@
 ---
-permalink: /docs/deploying/windows/
+title: Deploying to Windows
+layout: layouts/docs.html
+permalink: /deploying/windows.html
 ---
 
 # Deploying to Windows

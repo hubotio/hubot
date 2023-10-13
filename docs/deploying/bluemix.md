@@ -1,5 +1,7 @@
 ---
-permalink: /docs/deploying/bluemix/
+title: Deploying to Bluemix
+layout: layouts/docs.html
+permalink: /deploying/bluemix.html
 ---
 
 # Deploying to Bluemix

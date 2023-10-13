@@ -1,5 +1,7 @@
 ---
-permalink: /docs/deploying/
+title: Deploying
+layout: layouts/docs.html
+permalink: /deploying.html
 ---
 
 # Deploying

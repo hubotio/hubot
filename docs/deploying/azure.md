@@ -1,5 +1,7 @@
 ---
-permalink: /docs/deploying/azure/
+title: Deploying to Azure
+layout: layouts/docs.html
+permalink: /deploying/azure.html
 ---
 
 # Deploying to Azure

@@ -1,5 +1,7 @@
 ---
-permalink: /docs/adapters/
+title: Adapters
+layout: layouts/docs.html
+permalink: /adapters.html
 ---
 
 # Adapters

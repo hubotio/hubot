@@ -1,5 +1,7 @@
 ---
-permalink: /docs/adapters/shell/
+title: Shell adapter
+layout: layouts/docs.html
+permalink: /adapters/shell.html
 ---
 
 # Shell adapter

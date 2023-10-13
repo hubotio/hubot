@@ -1,5 +1,7 @@
 ---
-permalink: /docs/adapters/campfire/
+title: Campfire adapter
+layout: layouts/docs.html
+permalink: /adapters/campfire.html
 ---
 
 # Campfire adapter

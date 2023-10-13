@@ -1,5 +1,7 @@
 ---
-permalink: /docs/adapters/development/
+title: Development adapter
+layout: layouts/docs.html
+permalink: /adapters/development.html
 ---
 
 # Development adapter
