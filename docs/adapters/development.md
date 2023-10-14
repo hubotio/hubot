@@ -1,5 +1,7 @@
 ---
-permalink: /docs/adapters/development/
+title: Development adapter
+layout: layouts/docs.html
+permalink: /adapters/development.html
 ---
 
 # Development adapter
@@ -65,7 +67,7 @@ exports.use = (robot) => new Sample(robot)
   }
   ```
 
-7. Generate your Hubot using the `yo hubot` [command](https://hubot.github.com/docs/)
+7. Generate your Hubot using the `npx hubot --create myhubot`
 8. Change working directories to the `hubot` you created in step 7.
 9. Now perform an `npm link` to add your adapter to `hubot`
   - `npm link ../hubot-sample`
@@ -115,10 +117,10 @@ Another option is to load the file from local disk.
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": ">=4.2.0"
+    "hubot": ">=9"
   },
   "devDependencies": {
-    "coffeescript": ">=1.2.0"
+    "coffeescript": ">=2.7.0"
   }
   ```
 

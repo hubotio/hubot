@@ -1,5 +1,9 @@
 ---
-permalink: /docs/patterns/
+title: Patterns
+layout: layouts/docs.html
+should_publish: yes
+published: 2023-10-10T19:25:22.000Z
+permalink: /patterns.html
 ---
 
 # Patterns
@@ -15,7 +19,7 @@ When you rename Hubot, he will no longer respond to his former name. In order to
 
 Setting this up is very easy:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `rename-hubot.js`
+1. Create a [bundled script](scripting.html) in the `scripts/` directory of your Hubot instance called `rename-hubot.js`
 2. Add the following code, modified for your needs:
 
 ```javascript
@@ -49,7 +53,7 @@ This pattern is similar to the Renaming the Hubot Instance pattern above:
 
 Here is the setup:
 
-1. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `deprecations.js`
+1. Create a [bundled script](scripting.html) in the `scripts/` directory of your Hubot instance called `deprecations.js`
 2. Copy any old command listeners and add them to that file. For example, if you were to rename the help command for some silly reason:
 
 ```javascript
@@ -71,7 +75,7 @@ module.exports = (robot) => {
 
 Sometimes you have scripts that take several minutes to execute. If these scripts are doing something that could be interfered with by running subsequent commands, you may wish to code your scripts to prevent concurrent access.
 
-To do this, you can set up a lock in the Hubot [brain](scripting.md#persistence) object. The lock is set up here so that different scripts can share the same lock if necessary.
+To do this, you can set up a lock in the Hubot [brain](scripting.html#persistence) object. The lock is set up here so that different scripts can share the same lock if necessary.
 
 Setting up the lock looks something like this:
 
@@ -106,7 +110,7 @@ In many corporate environments, a web proxy is required to access the Internet a
 Due to the way Node.js handles HTTP and HTTPS requests, you need to specify a different Agent for each protocol. ScopedHTTPClient will then automatically choose the right ProxyAgent for each request.
 
 1. Install ProxyAgent. `npm install proxy-agent`
-2. Create a [bundled script](scripting.md) in the `scripts/` directory of your Hubot instance called `proxy.js`
+2. Create a [bundled script](scripting.html) in the `scripts/` directory of your Hubot instance called `proxy.js`
 3. Add the following code, modified for your needs:
 
 ```javascript

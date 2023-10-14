@@ -1,11 +1,13 @@
 ---
-permalink: /docs/deploying/azure/
+title: Deploying to Azure
+layout: layouts/docs.html
+permalink: /deploying/azure.html
 ---
 
 # Deploying to Azure
 
-If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
-[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](heroku.md).
+If you've been following along with [Getting Started](../index.html), it's time to deploy so you can use it beyond just your local machine.
+[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](heroku.html).
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
 
@@ -69,7 +71,7 @@ Finally, add one more environment variables to your website. You can do this eit
     % $settings["HUBOT_BRAIN_AZURE_CONNSTRING"] = "your Azure blob storage connection string"
     % Set-AzureWebsite -AppSettings $settings mynewhubot
 
-Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](../scripting.md). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
+Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](../scripting.html). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
 
 ### Troubleshooting tips and tricks
 

@@ -1,6 +1,7 @@
 ---
 title: Implementation Notes
-permalink: /docs/implementation/
+layout: layouts/docs.html
+permalink: /implementation.html
 ---
 
 # Implementation

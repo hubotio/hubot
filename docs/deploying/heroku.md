@@ -1,10 +1,12 @@
 ---
-permalink: /docs/deploying/heroku/
+title: Deploying to Heroku
+layout: layouts/docs.html
+permalink: /deploying/heroku.html
 ---
 
 # Deploying to Heroku
 
-If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
+If you've been following along with [Getting Started](../index.html), it's time to deploy so you can use it beyond just your local machine.
 [Heroku](http://www.heroku.com/) is an easy and supported way to deploy hubot.
 
 Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) to start, then follow their '[Getting Started](https://devcenter.heroku.com/articles/heroku-cli#getting-started)' instructions, including logging in the first time:
@@ -33,7 +35,7 @@ Then create a Heroku application:
 
 Before you deploy the application, you'll need to configure some environment
 variables for hubot to use. The specific variables you'll need depends on which
-[adapter](../adapters.md) and scripts you are using. For Campfire, with no other
+[adapter](../adapters.html) and scripts you are using. For Campfire, with no other
 scripts, you'd need to set the following environment variables:
 
     % heroku config:set HUBOT_CAMPFIRE_ACCOUNT=yourcampfireaccount

@@ -1,23 +1,35 @@
 ---
-permalink: /docs/scripting/
+title: Scripting
+layout: layouts/docs.html
+should_publish: yes
+published: 2023-10-10T19:25:22.000Z
+permalink: /scripting.html
 ---
 
 # Scripting
 
-Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](index.md#scripts) and it's easy to write your own. You can create a custom script in Hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
+Hubot out of the box doesn't do too much, but it is an extensible, scriptable robot friend. There are [hundreds of scripts written and maintained by the community](docs.html#scripts) and it's easy to write your own. You can create a custom script in Hubot's `scripts` directory or [create a script package](#creating-a-script-package) for sharing with the community!
 
 ## Anatomy of a script
 
 When you created your Hubot, the generator also created a `scripts` directory. If you peek around there, you will see some examples. For a script to be a script, it needs to:
 
 * live in a directory on the Hubot script load path (`src/scripts` and `scripts` by default)
-* be a `.js` file
+* be a `.js` or `.mjs` file
 * export a function whos signature takes 1 parameter (`robot`)
 
 By export a function, we just mean:
 
 ```javascript
-module.exports = (robot) => {
+// .mjs
+export default async robot => {
+  // your code here
+}
+```
+
+```javascript
+// .js
+module.exports = async robot => {
   // your code here
 }
 ```
@@ -29,12 +41,13 @@ The `robot` parameter is an instance of your robot friend. At this point, we can
 Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
 
 ```javascript
-module.exports = (robot) => {
-  robot.hear(/badger/i, (res) => {
+// .mjs
+export default async robot => {
+  robot.hear(/badger/i, async res => {
     // your code here
   })
 
-  robot.respond(/open the pod bay doors/i, (res) => {
+  robot.respond(/open the pod bay doors/i, async res => {
     // your code here
   }
 }
@@ -65,16 +78,17 @@ It wouldn't be called for:
 The `res` parameter is an instance of `Response` (historically, this parameter was `msg` and you may see other scripts use it this way). With it, you can `send` a message back to the room the `res` came from, `emote` a message to a room (If the given adapter supports it), or `reply` to the person that sent the message. For example:
 
 ```javascript
-module.exports = (robot) => {
-  robot.hear(/badger/i, (res) => {
+// .mjs
+export default async robot => {
+  robot.hear(/badger/i, async res => {
     res.send(`Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS`)
   }
 
-  robot.respond(/open the pod bay doors/i, (res) => {
+  robot.respond(/open the pod bay doors/i, async res => {
     res.reply(`I'm afraid I can't let you do that.`)
   }
 
-  robot.hear(/I like pie/i, (res) => {
+  robot.hear(/I like pie/i, async res => {
     res.emote('makes a freshly baked pie')
   }
 }
@@ -89,10 +103,11 @@ If a user Dave says "HAL: open the pod bay doors", `robot.respond(/open the pod 
 Messages can be sent to a specified room or user using the messageRoom function.
 
 ```javascript
-module.exports = (robot) => {
-  robot.hear(/green eggs/i, (res) => {    
+// .mjs
+export default async robot => {
+  robot.hear(/green eggs/i, async res => {    
     const room = 'mytestroom'
-    robot.messageRoom(room, 'I do not like green eggs and ham.  I do not like them Sam-I-Am.')
+    await robot.messageRoom(room, 'I do not like green eggs and ham.  I do not like them Sam-I-Am.')
   }
 }
 ```
@@ -100,24 +115,24 @@ module.exports = (robot) => {
 User name can be explicitely specified if desired ( for a cc to an admin/manager), or using the response object a private message can be sent to the original sender.
 
 ```javascript
-  robot.respond(/I don't like sam-i-am/i, (res) => {
+  robot.respond(/I don't like sam-i-am/i, async res => {
     const room = 'joemanager'
-    robot.messageRoom(room, 'Someone does not like Dr. Seus')
-    res.reply('That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
+    await robot.messageRoom(room, 'Someone does not like Dr. Seus')
+    await res.reply('That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
   }
 
-  robot.hear(/Sam-I-Am/i, (res) => {
+  robot.hear(/Sam-I-Am/i, async res => {
     const room = res.envelope.user.name
-    robot.messageRoom(room, 'That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
+    await robot.messageRoom(room, 'That Sam-I-Am\nThat Sam-I-Am\nI do not like\nthat Sam-I-Am')
   }
 ```
 
 ## Capturing data
 
-So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated on `res.match`. For example, if we update a script like:
+So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated on `res.match`. For example, if we update a script like:
 
 ```javascript
-  robot.respond(/open the (.*) doors/i, (res) => {
+  robot.respond(/open the (.*) doors/i, async res => {
     // your code here
   }
 ```
@@ -125,19 +140,19 @@ So far, our scripts have had static responses, which while amusing, are boring f
 If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod bay doors", and `res.match[1]` is just "pod bay". Now we can start doing more dynamic things:
 
 ```javascript
-  robot.respond(/open the (.*) doors/i, (res) => {
+  robot.respond(/open the (.*) doors/i, async res => {
     const doorType = res.match[1]
     if (doorType == 'pod bay') {
-      res.reply(`I'm afraid I can't let you do that.`)
+      await res.reply(`I'm afraid I can't let you do that.`)
     } else {
-      res.reply(`Opening ${doorType} doors`)
+      await res.reply(`Opening ${doorType} doors`)
     }
   }
 ```
 
 ## Making HTTP calls (please use `fetch` instead)
 
-Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](../src/httpclient.js) available at `robot.http`. The simplest case looks like:
+Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](https://github.com/hubotio/hubot/blob/main/src/httpclient.js) available at `robot.http`. The simplest case looks like:
 
 
 ```javascript
@@ -252,7 +267,7 @@ For consuming a Web Service that responds with HTML, you'll need an HTML parser.
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned previously, Hubot uses [ScopedHttpClient](../src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
+As mentioned previously, Hubot uses [ScopedHttpClient](https://github.com/hubotio/hubot/blob/main/src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
 
 If you need to control options on `http` and `https` more directly, you pass a second parameter to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
 
@@ -279,9 +294,10 @@ res.send(res.random(lulz))
 Hubot can react to a room's topic changing, assuming that the adapter supports it.
 
 ```javascript
-module.exports = (robot) => {
-  robot.topic((res) => {
-    res.send()`${res.message.text}? That's a Paddlin'`)
+// .mjs
+export default async robot => {
+  robot.topic(async res => {
+    await res.send()`${res.message.text}? That's a Paddlin'`)
   })
 }
 ```
@@ -291,16 +307,17 @@ module.exports = (robot) => {
 Hubot can see users entering and leaving, assuming that the adapter supports it.
 
 ```javascript
+// .mjs
 const enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I see you']
 const leaveReplies = ['Are you still there?', 'Target lost', 'Searching']
 
-module.exports = (robot) => {
-  robot.enter(res) => {
-    res.send(res.random(enterReplies))
-  }
-  robot.leave(res) => {
-    res.send(res.random(leaveReplies))
-  }
+export default async robot => {
+  robot.enter(async res => {
+    await res.send(res.random(enterReplies))
+  })
+  robot.leave(async res => {
+    await res.send(res.random(leaveReplies))
+  })
 }
 ```
 
@@ -311,7 +328,8 @@ While the above helpers cover most of the functionality the average user needs (
 The match function must return a truthy value if the listener callback should be executed. The truthy return value of the match function is then passed to the callback as `res.match`.
 
 ```javascript
-module.exports = (robot) =>{
+// .mjs
+export default async robot =>{
   robot.listen(
     (message) => {
       // Match function
@@ -321,28 +339,29 @@ module.exports = (robot) =>{
       // Occassionally respond to things that Steve says
       return message.user.name == 'Steve' && Math.random() > 0.8
     },
-    (res) => {
+    async res => {
       // Standard listener callback
       // Let Steve know how happy you are that he exists
-      res.reply(`HI STEVE! YOU'RE MY BEST FRIEND! (but only like ${res.match * 100}% of the time)`)
+      await res.reply(`HI STEVE! YOU'RE MY BEST FRIEND! (but only like ${res.match * 100}% of the time)`)
     }
   )
 }
 ```
 
-See [the design patterns document](patterns.md#dynamic-matching-of-messages) for examples of complex matchers.
+See [the design patterns document](patterns.html#dynamic-matching-of-messages) for examples of complex matchers.
 
 ## Environment variables
 
 Hubot can access the environment he's running in, just like any other Node.js program, using [`process.env`](http://nodejs.org/api/process.html#process_process_env). This can be used to configure how scripts are run, with the convention being to use the `HUBOT_` prefix.
 
 ```javascript
+// .mjs
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
-module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
-    res.send(`${answer}, but what is the question?`)
-  }
+export default async robot => {
+  robot.respond(/what is the answer to the ultimate question of life/, async res => {
+    await res.send(`${answer}, but what is the question?`)
+  })
 }
 ```
 
@@ -351,49 +370,52 @@ Take care to make sure the script can load if it's not defined, give the Hubot d
 Here we can default to something:
 
 ```javascript
+// .mjs
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING ?? 42
 
-module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
-    res.send(`${answer}, but what is the question?`)
-  }
+export default async robot => {
+  robot.respond(/what is the answer to the ultimate question of life/, async res => {
+    await res.send(`${answer}, but what is the question?`)
+  })
 }
 ```
 
 Here we exit if it's not defined:
 
 ```javascript
+// .mjs
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 if(!answer) {
   console.log(`Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again`)
   process.exit(1)
 }
 
-module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
-    res.send(`${answer}, but what is the question?`)
-  }
+export default async robot => {
+  robot.respond(/what is the answer to the ultimate question of life/, async res => {
+    await res.send(`${answer}, but what is the question?`)
+  })
 }
 ```
 
 And lastly, we update the `robot.respond` to check it:
 
 ```javascript
+// .mjs
 const answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
 
-module.exports = (robot) => {
-  robot.respond(/what is the answer to the ultimate question of life/, (res) => {
+export default async robot => {
+  robot.respond(/what is the answer to the ultimate question of life/, async res => {
     if(!answer) {
-      return res.send('Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again')
+      return await res.send('Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again')
     }
-    res.send(`${answer}, but what is the question?`)
-  }
+    await res.send(`${answer}, but what is the question?`)
+  })
 }
 ```
 
 ## Dependencies
 
-Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+Hubot uses [npm](https://www.npmjs.com) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
 
 ```json
   "dependencies": {
@@ -402,6 +424,8 @@ Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To a
   },
 ```
 
+by executing `npm i lolimadeupthispackage@1.2.3`.
+
 If you are using scripts from hubot-scripts, take note of the `Dependencies` documentation in the script to add. They are listed in a format that can be copy & pasted into `package.json`, just make sure to add commas as necessary to make it valid JSON.
 
 # Timeouts and Intervals
@@ -409,10 +433,11 @@ If you are using scripts from hubot-scripts, take note of the `Dependencies` doc
 Hubot can run code later using JavaScript's built-in [setTimeout](http://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg). It takes a callback method, and the amount of time to wait before calling it:
 
 ```javascript
-module.exports = (robot) => {
-  robot.respond(/you are a little slow/, (res) => {
-    setTimeout(() => {
-      res.send(`Who you calling 'slow'?`)
+// .mjs
+export default async robot => {
+  robot.respond(/you are a little slow/, async res => {
+    setTimeout(async () => {
+      await res.send(`Who you calling 'slow'?`)
     }, 60 * 1000)
   })
 }
@@ -421,11 +446,12 @@ module.exports = (robot) => {
 Additionally, Hubot can run code on an interval using [setInterval](http://nodejs.org/api/timers.html#timers_setinterval_callback_delay_arg). It takes a callback method, and the amount of time to wait between calls:
 
 ```javascript
-module.exports = (robot) => {
-  robot.respond(/annoy me/, (res) => {
-    res.send('Hey, want to hear the most annoying sound in the world?')
-    setInterval(() => {
-      res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
+// .mjs
+export default async robot => {
+  robot.respond(/annoy me/, async res => {
+    await res.send('Hey, want to hear the most annoying sound in the world?')
+    setInterval(async () => {
+      await res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
     }, 1000)
   })
 }
@@ -434,27 +460,28 @@ module.exports = (robot) => {
 Both `setTimeout` and `setInterval` return the ID of the timeout or interval it created. This can be used to to `clearTimeout` and `clearInterval`.
 
 ```javascript
-module.exports = (robot) => {
+// .mjs
+export default async robot => {
   let annoyIntervalId = null
 
-  robot.respond(/annoy me/, (res) => {
+  robot.respond(/annoy me/, async res => {
     if (annoyIntervalId) {
-      return res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
+      return await res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
     }
 
-    res.send('Hey, want to hear the most annoying sound in the world?')
-    annoyIntervalId = setInterval(() => {
-      res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
+    await res.send('Hey, want to hear the most annoying sound in the world?')
+    annoyIntervalId = setInterval(async () => {
+      await res.send('AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH')
     }, 1000)
   }
 
-  robot.respond(/unannoy me/, (res) => {
+  robot.respond(/unannoy me/, async res => {
     if (annoyIntervalId) {
-      res.send('GUYS, GUYS, GUYS!')
+      await res.send('GUYS, GUYS, GUYS!')
       clearInterval(annoyIntervalId)
       annoyIntervalId = null
     } else {
-      res.send('Not annoying you right now, am I?')
+      await res.send('Not annoying you right now, am I?')
     }
   }
 }
@@ -470,14 +497,15 @@ The most common use of this is for providing HTTP end points for services with w
 
 
 ```javascript
-module.exports = (robot) => {
+// .mjs
+export default async robot => {
   // the expected value of :room is going to vary by adapter, it might be a numeric id, name, token, or some other value
-  robot.router.post('/hubot/chatsecrets/:room', (req, res) => {
+  robot.router.post('/hubot/chatsecrets/:room', async (req, res) => { // NOTE: this is the Express route handler, not Hubot's, so `res.send` isn't async/await.
     const room = req.params.room
     const data = req.body?.payload ? JSON.parse(req.body.payload) : req.body
     const secret = data.secret
 
-    robot.messageRoom(room, `I have a secret: ${secret}`)
+    await robot.messageRoom(room, `I have a secret: ${secret}`)
 
     res.send('OK')
   })
@@ -503,8 +531,8 @@ Hubot can also respond to events which can be used to pass data between scripts.
 One use case for this would be to have one script for handling interactions with a service, and then emitting events as they come up. For example, we could have a script that receives data from a GitHub post-commit hook, make that emit commits as they come in, and then have another script act on those commits.
 
 ```javascript
-// src/scripts/github-commits.js
-module.exports = (robot) => {
+// src/scripts/github-commits.mjs
+export default async robot => {
   robot.router.post('/hubot/gh-commits', (req, res) => {
     robot.emit('commit', {
         user: {}, //hubot user object
@@ -516,10 +544,10 @@ module.exports = (robot) => {
 ```
 
 ```javascript
-// src/scripts/heroku.js
-module.exports = (robot) => {
-  robot.on('commit', (commit) => {
-    robot.send(commit.user, `Will now deploy ${commit.hash} from ${commit.repo}!`)
+// src/scripts/heroku.mjs
+export default async robot => {
+  robot.on('commit', async (commit) => {
+    await robot.send(commit.user, `Will now deploy ${commit.hash} from ${commit.repo}!`)
     // deploy code goes here
   }
 }
@@ -527,18 +555,18 @@ module.exports = (robot) => {
 
 If you provide an event, it's highly recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
 
-## Error Handling
+## <a name="error-handling">Error Handling</a>
 
 No code is perfect, and errors and exceptions are to be expected. Previously, an uncaught exceptions would crash your hubot instance. Hubot now includes an `uncaughtException` handler, which provides hooks for scripts to do something about exceptions.
 
 ```javascript
-// src/scripts/does-not-compute.js
-module.exports = (robot) => {
-  robot.error((err, res) => {
+// src/scripts/does-not-compute.mjs
+export default async robot => {
+  robot.error(async (err, res) => {
     robot.logger.error('DOES NOT COMPUTE')
 
     if(res) {
-      res.reply('DOES NOT COMPUTE')
+      await res.reply('DOES NOT COMPUTE')
     }
   }
 }
@@ -614,36 +642,36 @@ When documenting commands, here are some best practices:
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
-## Persistence
+## <a name="persistence">Persistence</a>
 
 Hubot has two persistence methods available that can be used to store and retrieve data by scripts: an in-memory key-value store exposed as `robot.brain`, and an optional persistent database-backed key-value store expsoed as `robot.datastore`.
 
 ### Brain
 
 ```javascript
-robot.respond(/have a soda/i, (res) => {
+robot.respond(/have a soda/i, async res => {
   // Get number of sodas had (coerced to a number).
   const sodasHad = robot.brain.get('totalSodas') * 1 ?? 0
 
   if (sodasHad > 4) {
-    res.reply(`I'm too fizzy..`)
+    await res.reply(`I'm too fizzy..`)
   } else {
-    res.reply('Sure!')
+    await res.reply('Sure!')
     robot.brain.set('totalSodas', sodasHad + 1)
   }
 })
 
-robot.respond(/sleep it off/i, (res) => {
+robot.respond(/sleep it off/i, async res => {
   robot.brain.set('totalSodas', 0)
-  res.reply('zzzzz')
+  await res.reply('zzzzz')
 }
 ```
 
 If the script needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, `userForFuzzyName`, and `usersForFuzzyName`.
 
 ```javascript
-module.exports = (robot) => {
-  robot.respond(/who is @?([\w .\-]+)\?*$/i, (res) => {
+export default async robot => {
+  robot.respond(/who is @?([\w .\-]+)\?*$/i, async res => {
     const name = res.match[1].trim()
 
     const users = robot.brain.usersForFuzzyName(name)
@@ -651,7 +679,7 @@ module.exports = (robot) => {
       const user = users[0]
       // Do something interesting here..
     }
-    res.send(`${name} is user - ${user}`)
+    await res.send(`${name} is user - ${user}`)
   })
 }
 ```
@@ -661,41 +689,39 @@ module.exports = (robot) => {
 Unlike the brain, the datastore's getter and setter methods are asynchronous and don't resolve until the call to the underlying database has resolved. This requires a slightly different approach to accessing data:
 
 ```javascript
-robot.respond(/have a soda/i, (res) => {
+robot.respond(/have a soda/i, async res => {
   // Get number of sodas had (coerced to a number).
   robot.datastore.get('totalSodas').then((value) => {
     const sodasHad = value * 1 ?? 0
 
     if (sodasHad > 4) {
-      res.reply(`I'm too fizzy..`)
+      await res.reply(`I'm too fizzy..`)
     } else {
-      res.reply('Sure!')
+      await res.reply('Sure!')
       robot.brain.set('totalSodas', sodasHad + 1)
     }
   })
 })
 
-robot.respond(/sleep it off/i, (res) => {
-  robot.datastore.set('totalSodas', 0).then(() => {
-    res.reply('zzzzz')
-  })
+robot.respond(/sleep it off/i, async res => {
+  await robot.datastore.set('totalSodas', 0)
+  await res.reply('zzzzz')
 })
 ```
 
 The datastore also allows setting and getting values which are scoped to individual users:
 
 ```javascript
-module.exports = (robot) ->
+export default async robot ->
 
-  robot.respond(/who is @?([\w .\-]+)\?*$/i, (res) => {
+  robot.respond(/who is @?([\w .\-]+)\?*$/i, async res => {
     const name = res.match[1].trim()
 
     const users = robot.brain.usersForFuzzyName(name)
     if (users.length == 1) {
       const user = users[0]
-      user.get('roles').then((roles) => {
-        res.send "#{name} is #{roles.join(', ')}"
-      })
+      const roles = await user.get('roles')
+      await res.send(`${name} is ${roles.join(', ')}`)
     }
   })
 ```
@@ -720,42 +746,42 @@ Once you've built some new scripts to extend the abilities of your robot friend,
 
 ## See if a script already exists
 
-Start by [checking if an NPM package](index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+Start by [checking if an NPM package](https://www.npmjs.com) for a script like yours already exists. If you don't see an existing package that you can contribute to, then you can easily get started using `npx hubot --create myhubot`.
 
-## Creating A Script Package
+## <a name="creating-a-script-package">Creating A Script Package</a>
 
-Creating a script package for hubot is very simple. Start by installing the `hubot` [yeoman](http://yeoman.io/) generator:
+Creating a script package for hubot is very simple. Start by running `npx hubot --create myhubot` to create your own instance.
 
+`cd myhubot` and create a script. For example, if we wanted to create a hubot script called "my-awesome-script":
 
-```
-% npm install -g yo generator-hubot
-```
-
-Once you've got the hubot generator installed, creating a hubot script is similar to creating a new hubot.  You create a directory for your hubot script and generate a new `hubot:script` in it.  For example, if we wanted to create a hubot script called "my-awesome-script":
-
-```
-% mkdir hubot-my-awesome-script
-% cd hubot-my-awesome-script
-% yo hubot:script
+```sh
+% npm hubot --create my-awesome-script
+% cd my-awesome-script
+% mkdir src
+% touch src/AwesomeScript.mjs
 ```
 
-At this point, you'll be asked a few questions about the author of the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+Open `package.json` and add:
+
+```json
+"peerDependencies": {
+  "hubot": ">=9"
+},
+```
 
 If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
 
-```
+```sh
 % git init
 % git add .
 % git commit -m "Initial commit"
 ```
 
-You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.js` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
+You now have a hubot script repository that's ready to roll! Feel free to crack open `src/AwesomeScript.mjs` and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
 
-You'll probably want to write some unit tests for your new script. A sample test script is written to
-`test/awesome-script-test.js`, which you can run with `grunt`. For more information on tests,
-see the [Testing Hubot Scripts](#testing-hubot-scripts) section.
+You'll probably want to write some unit tests for your new script. Review the [Hubot Repo](https://github.com/hubotio/hubot/tree/main/test for examples creating tests.
 
-# Listener Metadata
+# <a name="listener-metadata">Listener Metadata</a>
 
 In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
 
@@ -766,12 +792,12 @@ Additional extensions may define and handle additional metadata keys. For more i
 Returning to an earlier example:
 
 ```javascript
-module.exports = (robot) => {
-  robot.respond(/annoy me/, id:'annoyance.start', (res) => {
+export default async robot => {
+  robot.respond(/annoy me/, id:'annoyance.start', async res => {
     // code to annoy someone
   })
 
-  robot.respond(/unannoy me/, id:'annoyance.stop', (res) => {
+  robot.respond(/unannoy me/, id:'annoyance.stop', async res => {
     // code to stop annoying someone
   })
 }
@@ -797,38 +823,33 @@ Middleware is called with:
 
 - `context`
   - See the each middleware type's API to see what the context will expose.
-- `next`
-  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
-  - `next` should be called with a single, optional parameter: either the provided `done` function or a new function that eventually calls `done`. If the parameter is not given, the provided `done` will be assumed.
-- `done`
- - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
- - `done` should be called with no parameters
 
-Every middleware receives the same API signature of `context`, `next`, and
-`done`. Different kinds of middleware may receive different information in the
+`return true` to allow the message to continue; `return false` to stop it from continuing.
+
+Every middleware receives the same API signature of `context`. Different kinds of middleware may receive different information in the
 `context` object. For more details, see the API for each type of middleware.
 
 ### Error Handling
 
-For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
+Asynchronous middleware should catch its own exceptions, emit an `error` event, and return `true` or `false`. Any uncaught exceptions will interrupt all execution of middleware.
 
-# Listener Middleware
+# <a name="listener-middleware">Listener Middleware</a>
 
 Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Listener Middleware Examples
 
-A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee) (Note, this is a coffee version, non-async/await).
 
 A simple example of middleware logging command executions:
 
 ```javascript
-module.exports = (robot) => {
-  robot.listenerMiddleware((context, next, done) => {
+export default async robot => {
+  robot.listenerMiddleware(async context => {
     // Log commands
     robot.logger.info(`${context.response.message.user.name} asked me to ${context.response.message.text}`)
     // Continue executing middleware
-    next()
+    return true
   })
 }
 ```
@@ -838,11 +859,11 @@ In this example, a log message will be written for each chat message that matche
 A more complex example making a rate limiting decision:
 
 ```javascript
-module.exports = (robot) => {
+export default async robot => {
   // Map of listener ID to last time it was executed
   let lastExecutedTime = {}
 
-  robot.listenerMiddleware((context, next, done) => {
+  robot.listenerMiddleware(async context => {
     try {
       // Default to 1s unless listener provides a different minimum period
       const minPeriodMs = context.listener.options?.rateLimits?.minPeriodMs ?? 1000
@@ -851,12 +872,10 @@ module.exports = (robot) => {
       if (lastExecutedTime.hasOwnProperty(context.listener.options.id) &&
          lastExecutedTime[context.listener.options.id] > Date.now() - minPeriodMs) {
            // Command is being executed too quickly!
-           done()
+           return false
       } else {
-        next(()=> {
-          lastExecutedTime[context.listener.options.id] = Date.now()
-          done()
-        })
+        lastExecutedTime[context.listener.options.id] = Date.now()
+        return true
       }
     } catch(err) {
       robot.emit('error', err, context.response)
@@ -865,24 +884,23 @@ module.exports = (robot) => {
 }
 ```
 
-In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware `return false` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware records the time the listener *finished* executing and `return true`.
 
 This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
 
 ```javascript
-module.exports = (robot) => {
-  robot.hear(/hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, (res) => {
+// .mjs
+export default async robot => {
+  robot.hear(/hello/, id: 'my-hello', rateLimits: {minPeriodMs: 10000}, async res => {
     // This will execute no faster than once every ten seconds
-    res.reply('Why, hello there!')
+    await res.reply('Why, hello there!')
   })
 }
 ```
 
 ## Listener Middleware API
 
-Listener middleware callbacks receive three parameters, `context`, `next`, and
-`done`. See the [middleware API](#execution-process-and-api) for a description
-of `next` and `done`. Listener middleware context includes these fields:
+Listener middleware callbacks receive 1 argument, `context`. Listener middleware context includes these fields:
   - `listener`
     - `options`: a simple Object containing options set when defining the listener. See [Listener Metadata](#listener-metadata).
     - all other properties should be considered internal
@@ -898,9 +916,7 @@ excluded commands that have not been updated to add an ID, metrics, and more.
 
 ## Receive Middleware Example
 
-This simple middlware bans hubot use by a particular user, including `hear`
-listeners. If the user attempts to run a command explicitly, it will return
-an error message.
+This simple middlware bans hubot use by a particular user, including `hear` listeners. If the user attempts to run a command explicitly, it will return an error message.
 
 ```javascript
 const EXCLUDED_USERS = [
@@ -915,7 +931,7 @@ robot.receiveMiddleware(async context => {
     // If the message starts with 'hubot' or the alias pattern, this user was
     // explicitly trying to run a command, so respond with an error message.
     if (context.response.message.text?.match(robot.respondPattern(''))) {
-      context.response.reply(`I'm sorry @${context.response.message.user.name}, but I'm configured to ignore your commands.`)
+      await context.response.reply(`I'm sorry @${context.response.message.user.name}, but I'm configured to ignore your commands.`)
     }
 
     // Don't process further middleware.
@@ -928,9 +944,7 @@ robot.receiveMiddleware(async context => {
 
 ## Receive Middleware API
 
-Receive middleware callbacks receive three parameters, `context`, `next`, and
-`done`. See the [middleware API](#execution-process-and-api) for a description
-of `next` and `done`. Receive middleware context includes these fields:
+Receive middleware callbacks receive 1 argument, `context`. Receive middleware context includes these fields:
   - `response`
     - this response object will not have a `match` property, as no listeners have been run yet to match it.
     - middleware may decorate the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
@@ -938,32 +952,28 @@ of `next` and `done`. Receive middleware context includes these fields:
 
 # Response Middleware
 
-Response middleware runs against every message hubot sends to a chat room. It's
-helpful for message formatting, preventing password leaks, metrics, and more.
+Response middleware runs against every message hubot sends to a chat room. It's helpful for message formatting, preventing password leaks, metrics, and more.
 
 ## Response Middleware Example
 
-This simple example changes the format of links sent to a chat room from
-markdown links (like [example](https://example.com)) to the format supported
-by [Slack](https://slack.com), <https://example.com|example>.
+This simple example changes the format of links sent to a chat room from markdown links (like [example](https://example.com)) to the format supported by [Slack](https://slack.com), <https://example.com|example>.
 
 ```javascript
-module.exports = (robot)=> {
-  robot.responseMiddleware((context, next, done) => {
-    if(!context.plaintext) return
+// .mjs
+export default async robot=> {
+  robot.responseMiddleware(async context=> {
+    if(!context.plaintext) return true
     context.strings.forEach(string => {
       string.replace(/\[([^\[\]]*?)\]\((https?:\/\/.*?)\)/, "<$2|$1>"
     })
-    next()
+    return true
   })
 }
 ```
 
 ## Response Middleware API
 
-Response middleware callbacks receive three parameters, `context`, `next`, and
-`done`. See the [middleware API](#execution-process-and-api) for a description
-of `next` and `done`. Receive middleware context includes these fields:
+Response middleware callbacks receive 1 parameters, `context` and are Promises/async/await. Receive middleware context includes these fields:
   - `response`
     - This response object can be used to send new messages from the middleware. Middleware will be called on these new responses. Be careful not to create infinite loops.
   - `strings`
@@ -975,30 +985,30 @@ of `next` and `done`. Receive middleware context includes these fields:
 
 # Testing Hubot Scripts
 
-[hubot-test-helper](https://github.com/mtsmfm/hubot-test-helper) is a good
-framework for unit testing Hubot scripts. (Note that, in order to use
-hubot-test-helper, you'll need a recent Node.js version with support for Promises.)
+[hubot-test-helper](https://github.com/mtsmfm/hubot-test-helper) is a good framework for unit testing Hubot scripts. (Note that, in order to use hubot-test-helper, you'll need a recent Node.js version with support for Promises.)
 
 Install the package in your Hubot instance:
 
-``` % npm install hubot-test-helper --save-dev ```
+`% npm install hubot-test-helper --save-dev`
 
 You'll also need to install:
 
- * a JavaScript testing framework such as *Mocha*
- * an assertion library such as *chai* or *expect.js*
+* a JavaScript testing framework such as *Mocha*
+* an assertion library such as *chai* or *expect.js*
+* Or just use [Node's Test Runner](https://nodejs.org/dist/latest-v20.x/docs/api/test.html)
 
 You may also want to install:
 
- * a mocking library such as *Sinon.js* (if your script performs webservice calls or
-   other asynchronous actions)
+* a mocking library such as *Sinon.js* (if your script performs webservice calls or
+  other asynchronous actions)
+* Or just use Node Test Runner's Mocking facility
 
 [Note: This section is still refering to Coffeescript, but we've update Hubot for Javascript. We'll have to replace this when we get a JavaScript example.]
 
-Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
+Here is a sample script that tests the first couple of commands in the [Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
+
 ```coffeescript
 Helper = require('hubot-test-helper')
 chai = require 'chai'
@@ -1037,15 +1047,12 @@ describe 'example script', ->
 ```
 
 **sample output**
-```bash
+
+```sh
 % mocha --require coffeescript/register test/*.coffee
-
-
   example script
     ✓ doesn't need badgers
     ✓ won't open the pod bay doors
     ✓ will open the dutch doors
-
-
   3 passing (212ms)
 ```

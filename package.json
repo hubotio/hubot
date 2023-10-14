@@ -40,7 +40,9 @@
     "pretest": "standard",
     "test": "node --test",
     "test:smoke": "node src/**/*.js",
-    "test:e2e": "bin/e2e-test.sh"
+    "test:e2e": "bin/e2e-test.sh",
+    "build:local": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose --serve --watch-path ./docs",
+    "build": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose"
   },
   "release": {
     "branches": [
