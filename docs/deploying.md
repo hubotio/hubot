@@ -6,8 +6,8 @@ permalink: /deploying.html
 
 # Deploying
 
-- [Azure](./deploying/azure.md)
-- [Bluemix](./deploying/bluemix.md)
-- [Heroku](./deploying/heroku.md)
-- [Unix](./deploying/unix.md)
-- [Windows](./deploying/windows.md)
+- [Azure](./deploying/azure.html)
+- [Bluemix](./deploying/bluemix.html)
+- [Heroku](./deploying/heroku.html)
+- [Unix](./deploying/unix.html)
+- [Windows](./deploying/windows.html)

@@ -129,7 +129,7 @@ User name can be explicitely specified if desired ( for a cc to an admin/manager
 
 ## Capturing data
 
-So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated on `res.match`. For example, if we update a script like:
+So far, our scripts have had static responses, which while amusing, are boring functionality-wise. `res.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated on `res.match`. For example, if we update a script like:
 
 ```javascript
   robot.respond(/open the (.*) doors/i, async res => {
@@ -152,7 +152,7 @@ If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod
 
 ## Making HTTP calls (please use `fetch` instead)
 
-Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](../src/httpclient.js) available at `robot.http`. The simplest case looks like:
+Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](https://github.com/hubotio/hubot/blob/main/src/httpclient.js) available at `robot.http`. The simplest case looks like:
 
 
 ```javascript
@@ -267,7 +267,7 @@ For consuming a Web Service that responds with HTML, you'll need an HTML parser.
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned previously, Hubot uses [ScopedHttpClient](../src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
+As mentioned previously, Hubot uses [ScopedHttpClient](https://github.com/hubotio/hubot/blob/main/src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
 
 If you need to control options on `http` and `https` more directly, you pass a second parameter to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
 
@@ -348,7 +348,7 @@ export default async robot =>{
 }
 ```
 
-See [the design patterns document](patterns.md#dynamic-matching-of-messages) for examples of complex matchers.
+See [the design patterns document](patterns.html#dynamic-matching-of-messages) for examples of complex matchers.
 
 ## Environment variables
 
@@ -415,7 +415,7 @@ export default async robot => {
 
 ## Dependencies
 
-Hubot uses [npm](https://github.com/isaacs/npm) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
+Hubot uses [npm](https://www.npmjs.com) to manage its dependencies. To add additional packages, add them to `dependencies` in `package.json`. For example, to add lolimadeupthispackage 1.2.3, it'd look like:
 
 ```json
   "dependencies": {
@@ -555,7 +555,7 @@ export default async robot => {
 
 If you provide an event, it's highly recommended to include a hubot user or room object in its data. This would allow for hubot to notify a user or room in chat.
 
-## Error Handling
+## <a name="error-handling">Error Handling</a>
 
 No code is perfect, and errors and exceptions are to be expected. Previously, an uncaught exceptions would crash your hubot instance. Hubot now includes an `uncaughtException` handler, which provides hooks for scripts to do something about exceptions.
 
@@ -642,7 +642,7 @@ When documenting commands, here are some best practices:
 
 The other sections are more relevant to developers of the bot, particularly dependencies, configuration variables, and notes. All contributions to [hubot-scripts](https://github.com/github/hubot-scripts) should include all these sections that are related to getting up and running with the script.
 
-## Persistence
+## <a name="persistence">Persistence</a>
 
 Hubot has two persistence methods available that can be used to store and retrieve data by scripts: an in-memory key-value store exposed as `robot.brain`, and an optional persistent database-backed key-value store expsoed as `robot.datastore`.
 
@@ -746,42 +746,42 @@ Once you've built some new scripts to extend the abilities of your robot friend,
 
 ## See if a script already exists
 
-Start by [checking if an NPM package](index.md#scripts) for a script like yours already exists.  If you don't see an existing package that you can contribute to, then you can easily get started using the `hubot` script [yeoman](http://yeoman.io/) generator.
+Start by [checking if an NPM package](https://www.npmjs.com) for a script like yours already exists. If you don't see an existing package that you can contribute to, then you can easily get started using `npx hubot --create myhubot`.
 
 ## <a name="creating-a-script-package">Creating A Script Package</a>
 
-Creating a script package for hubot is very simple. Start by installing the `hubot` [yeoman](http://yeoman.io/) generator:
+Creating a script package for hubot is very simple. Start by running `npx hubot --create myhubot` to create your own instance.
 
+`cd myhubot` and create a script. For example, if we wanted to create a hubot script called "my-awesome-script":
 
-```
-% npm install -g yo generator-hubot
-```
-
-Once you've got the hubot generator installed, creating a hubot script is similar to creating a new hubot.  You create a directory for your hubot script and generate a new `hubot:script` in it.  For example, if we wanted to create a hubot script called "my-awesome-script":
-
-```
-% mkdir hubot-my-awesome-script
-% cd hubot-my-awesome-script
-% yo hubot:script
+```sh
+% npm hubot --create my-awesome-script
+% cd my-awesome-script
+% mkdir src
+% touch src/AwesomeScript.mjs
 ```
 
-At this point, you'll be asked a few questions about the author of the script, name of the script (which is guessed by the directory name), a short description, and keywords to find it (we suggest having at least `hubot, hubot-scripts` in this list).
+Open `package.json` and add:
+
+```json
+"peerDependencies": {
+  "hubot": ">=9"
+},
+```
 
 If you are using git, the generated directory includes a .gitignore, so you can initialize and add everything:
 
-```
+```sh
 % git init
 % git add .
 % git commit -m "Initial commit"
 ```
 
-You now have a hubot script repository that's ready to roll! Feel free to crack open the pre-created `src/awesome-script.js` file and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
+You now have a hubot script repository that's ready to roll! Feel free to crack open `src/AwesomeScript.mjs` and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
 
-You'll probably want to write some unit tests for your new script. A sample test script is written to
-`test/awesome-script-test.js`, which you can run with `grunt`. For more information on tests,
-see the [Testing Hubot Scripts](#testing-hubot-scripts) section.
+You'll probably want to write some unit tests for your new script. Review the [Hubot Repo](https://github.com/hubotio/hubot/tree/main/test for examples creating tests.
 
-# Listener Metadata
+# <a name="listener-metadata">Listener Metadata</a>
 
 In addition to a regular expression and callback, the `hear` and `respond` functions also accept an optional options Object which can be used to attach arbitrary metadata to the generated Listener object. This metadata allows for easy extension of your script's behavior without modifying the script package.
 
@@ -823,28 +823,23 @@ Middleware is called with:
 
 - `context`
   - See the each middleware type's API to see what the context will expose.
-- `next`
-  - a Function with no additional properties that should be called to continue on to the next piece of middleware/execute the Listener callback
-  - `next` should be called with a single, optional parameter: either the provided `done` function or a new function that eventually calls `done`. If the parameter is not given, the provided `done` will be assumed.
-- `done`
- - a Function with no additional properties that should be called to interrupt middleware execution and begin executing the chain of completion functions.
- - `done` should be called with no parameters
 
-Every middleware receives the same API signature of `context`, `next`, and
-`done`. Different kinds of middleware may receive different information in the
+`return true` to allow the message to continue; `return false` to stop it from continuing.
+
+Every middleware receives the same API signature of `context`. Different kinds of middleware may receive different information in the
 `context` object. For more details, see the API for each type of middleware.
 
 ### Error Handling
 
-For synchronous middleware (never yields to the event loop), hubot will automatically catch errors and emit an `error` event, just like in standard listeners. Hubot will also automatically call the most recent `done` callback to unwind the middleware stack. Asynchronous middleware should catch its own exceptions, emit an `error` event, and call `done`. Any uncaught exceptions will interrupt all execution of middleware completion callbacks.
+Asynchronous middleware should catch its own exceptions, emit an `error` event, and return `true` or `false`. Any uncaught exceptions will interrupt all execution of middleware.
 
-# Listener Middleware
+# <a name="listener-middleware">Listener Middleware</a>
 
 Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
 ## Listener Middleware Examples
 
-A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee).
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee) (Note, this is a coffee version, non-async/await).
 
 A simple example of middleware logging command executions:
 
@@ -889,7 +884,7 @@ export default async robot => {
 }
 ```
 
-In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware calls `done` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware attaches a `done` handler so that it can record the time the listener *finished* executing.
+In this example, the middleware checks to see if the listener has been executed in the last 1,000ms. If it has, the middleware `return false` immediately, preventing the listener callback from being called. If the listener is allowed to execute, the middleware records the time the listener *finished* executing and `return true`.
 
 This example also shows how listener-specific metadata can be leveraged to create very powerful extensions: a script developer can use the rate limiting middleware to easily rate limit commands at different rates by just adding the middleware and setting a listener option.
 
@@ -905,9 +900,7 @@ export default async robot => {
 
 ## Listener Middleware API
 
-Listener middleware callbacks receive three parameters, `context`, `next`, and
-`done`. See the [middleware API](#execution-process-and-api) for a description
-of `next` and `done`. Listener middleware context includes these fields:
+Listener middleware callbacks receive 1 argument, `context`. Listener middleware context includes these fields:
   - `listener`
     - `options`: a simple Object containing options set when defining the listener. See [Listener Metadata](#listener-metadata).
     - all other properties should be considered internal
@@ -923,9 +916,7 @@ excluded commands that have not been updated to add an ID, metrics, and more.
 
 ## Receive Middleware Example
 
-This simple middlware bans hubot use by a particular user, including `hear`
-listeners. If the user attempts to run a command explicitly, it will return
-an error message.
+This simple middlware bans hubot use by a particular user, including `hear` listeners. If the user attempts to run a command explicitly, it will return an error message.
 
 ```javascript
 const EXCLUDED_USERS = [
@@ -953,9 +944,7 @@ robot.receiveMiddleware(async context => {
 
 ## Receive Middleware API
 
-Receive middleware callbacks receive three parameters, `context`, `next`, and
-`done`. See the [middleware API](#execution-process-and-api) for a description
-of `next` and `done`. Receive middleware context includes these fields:
+Receive middleware callbacks receive 1 argument, `context`. Receive middleware context includes these fields:
   - `response`
     - this response object will not have a `match` property, as no listeners have been run yet to match it.
     - middleware may decorate the response object with additional information (e.g. add a property to `response.message.user` with a user's LDAP groups)
@@ -963,14 +952,11 @@ of `next` and `done`. Receive middleware context includes these fields:
 
 # Response Middleware
 
-Response middleware runs against every message hubot sends to a chat room. It's
-helpful for message formatting, preventing password leaks, metrics, and more.
+Response middleware runs against every message hubot sends to a chat room. It's helpful for message formatting, preventing password leaks, metrics, and more.
 
 ## Response Middleware Example
 
-This simple example changes the format of links sent to a chat room from
-markdown links (like [example](https://example.com)) to the format supported
-by [Slack](https://slack.com), <https://example.com|example>.
+This simple example changes the format of links sent to a chat room from markdown links (like [example](https://example.com)) to the format supported by [Slack](https://slack.com), <https://example.com|example>.
 
 ```javascript
 // .mjs
@@ -1003,26 +989,26 @@ Response middleware callbacks receive 1 parameters, `context` and are Promises/a
 
 Install the package in your Hubot instance:
 
-``` % npm install hubot-test-helper --save-dev ```
+`% npm install hubot-test-helper --save-dev`
 
 You'll also need to install:
 
- * a JavaScript testing framework such as *Mocha*
- * an assertion library such as *chai* or *expect.js*
- * Or just use [Node's Test Runner](https://nodejs.org/dist/latest-v20.x/docs/api/test.html)
+* a JavaScript testing framework such as *Mocha*
+* an assertion library such as *chai* or *expect.js*
+* Or just use [Node's Test Runner](https://nodejs.org/dist/latest-v20.x/docs/api/test.html)
 
 You may also want to install:
 
- * a mocking library such as *Sinon.js* (if your script performs webservice calls or
-   other asynchronous actions)
- * Or just use Node Test Runner's Mocking facility
+* a mocking library such as *Sinon.js* (if your script performs webservice calls or
+  other asynchronous actions)
+* Or just use Node Test Runner's Mocking facility
 
 [Note: This section is still refering to Coffeescript, but we've update Hubot for Javascript. We'll have to replace this when we get a JavaScript example.]
 
-Here is a sample script that tests the first couple of commands in the
-[Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
+Here is a sample script that tests the first couple of commands in the [Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
 **test/example-test.coffee**
+
 ```coffeescript
 Helper = require('hubot-test-helper')
 chai = require 'chai'
@@ -1061,15 +1047,12 @@ describe 'example script', ->
 ```
 
 **sample output**
-```bash
+
+```sh
 % mocha --require coffeescript/register test/*.coffee
-
-
   example script
     ✓ doesn't need badgers
     ✓ won't open the pod bay doors
     ✓ will open the dutch doors
-
-
   3 passing (212ms)
 ```
