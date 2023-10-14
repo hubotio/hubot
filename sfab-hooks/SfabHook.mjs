@@ -1,11 +1,11 @@
 export default () => {
-    return {
-        model(file, model) {
-            return {
-                base: {
-                    href: '/hubot/'
-                }
-            }
+  return {
+    model (file, model) {
+      return {
+        base: {
+          href: '/hubot/'
         }
+      }
     }
+  }
 }
