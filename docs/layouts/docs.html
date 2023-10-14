@@ -2,7 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <link rel="stylesheet" href="/assets/stylesheets/application.css"/>
+        <base href="{{ base.href }}"/>
+        <link rel="stylesheet" href="assets/stylesheets/application.css"/>
         <meta name="viewport" content="initial-scale=1"/>
         <title>{{ title }}</title>
         <meta name="generator" content="Hubot" />
@@ -12,18 +13,18 @@
         <meta property="og:description" content="{{ description }}" />
         <link rel="canonical" href="{{ permalink }}" />
         <meta property="og:url" content="{{ permalink }}" />
-        <meta property="og:site_name" content="Kaizen Hubot" />
-        <meta property="og:image" content="https://hubot.gokaizen.io/assets/images/screenshots/dangerroom-full.png" />
+        <meta property="og:site_name" content="Hubot" />
+        <meta property="og:image" content="https://hubotio.github.io/hubot/assets/images/screenshots/dangerroom-full.png" />
         <script type="application/ld+json">
-            {"image":"https://hubot.gokaizen.io/assets/images/screenshots/dangerroom-full.png","headline":"Kaizen Hubot","@type":"WebSite","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://hubot.gokaizen.io/assets/images/screenshots/dangerroom-full.png"}},"url":"https://hubot.gokaizen.io/","description":"Hubot is your friendly robot sidekick. Install him in your company to dramatically improve employee efficiency.","name":"Kaizen Hubot","@context":"https://schema.org"}
+            {"image":"https://hubotio.github.io/hubot/assets/images/screenshots/dangerroom-full.png","headline":"Hubot","@type":"WebSite","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://hubotio.github.io/hubot/assets/images/screenshots/dangerroom-full.png"}},"url":"https://hubotio.github.io/hubot/","description":"Hubot is your friendly robot sidekick. Install him in your company to dramatically improve employee efficiency.","name":"Hubot","@context":"https://schema.org"}
         </script>
     </head>
     <body class="docs">
         <div class="container">
             <header class="clearfix">
-                <a href="/">
+                <a href="{{ base.href }}">
                     <div class="hubot-avatar">
-                        <img src="/assets/images/layout/hubot-avatar@2x.png" alt="hubot logo" class="hubot-avatar-img" width="106" />
+                        <img src="assets/images/layout/hubot-avatar@2x.png" alt="hubot logo" class="hubot-avatar-img" width="106" />
                     </div>
                 </a>
                 <h1>Hubot Documentation</h1>
@@ -31,25 +32,25 @@
             <section class="main">
                 <nav class="docs-nav">
                     <ul class="docs-list">
-                        <li><a class="docs-link{{current permalink '/docs.html'}}" href="/docs.html">Overview</a></li>
-                        <li><a class="docs-link{{current permalink '/scripting.html'}}" href="/scripting.html">Scripting</a></li>
-                        <li><a class="docs-link{{current permalink '/patterns.html'}}" href="/patterns.html">Patterns</a></li>
-                        <li><a class="docs-link{{current permalink '/implementation.html'}}" href="/implementation.html">Implementation</a></li>
+                        <li><a class="docs-link{{current permalink 'docs.html'}}" href="docs.html">Overview</a></li>
+                        <li><a class="docs-link{{current permalink 'scripting.html'}}" href="scripting.html">Scripting</a></li>
+                        <li><a class="docs-link{{current permalink 'patterns.html'}}" href="patterns.html">Patterns</a></li>
+                        <li><a class="docs-link{{current permalink 'implementation.html'}}" href="implementation.html">Implementation</a></li>
                         <li>
-                            <a class="docs-link{{current permalink '/adapters.html'}}" href="/adapters.html">Adapters</a>
+                            <a class="docs-link{{current permalink 'adapters.html'}}" href="adapters.html">Adapters</a>
                             <ul class="subnav">
-                                <li class="subpage"><a href="/adapters/campfire.html" class="docs-link{{current permalink '/adapters/campfire.html'}}">Campfire</a></li>
-                                <li class="subpage"><a href="/adapters/shell.html" class="docs-link{{current permalink '/adapters/shell.html'}}">Shell</a></li>
-                                <li class="subpage"><a href="/adapters/development.html" class="docs-link{{current permalink '/adapters/development.html'}}">Development</a></li>
+                                <li class="subpage"><a href="adapters/campfire.html" class="docs-link{{current permalink 'adapters/campfire.html'}}">Campfire</a></li>
+                                <li class="subpage"><a href="adapters/shell.html" class="docs-link{{current permalink 'adapters/shell.html'}}">Shell</a></li>
+                                <li class="subpage"><a href="adapters/development.html" class="docs-link{{current permalink 'adapters/development.html'}}">Development</a></li>
                             </ul>
                         </li>
                         <li>
-                            <a class="docs-link{{current permalink '/deploying.html'}}" href="/deploying.html">Deploying</a>
+                            <a class="docs-link{{current permalink 'deploying.html'}}" href="deploying.html">Deploying</a>
                             <ul class="subnav">
-                                <li class="subpage"><a href="/deploying/heroku.html" class="docs-link{{current permalink '/deploying/heroku.html'}}">Heroku</a></li>
-                                <li class="subpage"><a href="/deploying/unix.html" class="docs-link{{current permalink '/deploying/unix.html'}}">Unix</a></li>
-                                <li class="subpage"><a href="/deploying/windows.html" class="docs-link{{current permalink '/deploying/windows.html'}}">Windows</a></li>
-                                <li class="subpage"><a href="/deploying/azure.html" class="docs-link{{current permalink '/deploying/azure.html'}}">Azure</a></li>
+                                <li class="subpage"><a href="deploying/heroku.html" class="docs-link{{current permalink 'deploying/heroku.html'}}">Heroku</a></li>
+                                <li class="subpage"><a href="deploying/unix.html" class="docs-link{{current permalink 'deploying/unix.html'}}">Unix</a></li>
+                                <li class="subpage"><a href="deploying/windows.html" class="docs-link{{current permalink 'deploying/windows.html'}}">Windows</a></li>
+                                <li class="subpage"><a href="deploying/azure.html" class="docs-link{{current permalink 'deploying/azure.html'}}">Azure</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -61,23 +62,7 @@
         </div>
         <footer class="footer clearfix">
             <a class="left" href="/"><span class="mega-icon mega-icon-invertocat"></span></a>
-            <p class="right">Built with <3 by <a href="http://www.kaizen.io">Kaizen.io</a></p>
-            <nav class="footer-nav">
-                <a href="https://www.kaizen.io">Kaizen.io</a>
-            </nav>
+            <p class="right">Built with &lt;3 by friends of Hubot</p>
         </footer>
     </body>
-    <script type="module">
-        class NavLink extends HTMLElement {
-            constructor() {
-                super()
-                if (this.getAttribute('href') === window.location.pathname) {
-                    this.classList.add('current');
-                } else {
-                    this.classList.remove('current');
-                }
-            }
-        }
-        customElements.define('nav-link', NavLink);
-    </script>
 </html>

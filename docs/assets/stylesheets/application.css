@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'octicons';
-    src: url("/assets/vendors/octicons/octicons/octicons.eot");
-    src: url("/assets/vendors/octicons/octicons/octicons.eot?#iefix") format("embedded-opentype"),
-        url("/assets/vendors/octicons/octicons/octicons.woff") format("woff"),
-        url("/assets/vendors/octicons/octicons/octicons.ttf") format("truetype"),
-        url("/assets/vendors/octicons/octicons/octicons.svg#svgFontName") format("svg");
+    src: url("../vendors/octicons/octicons/octicons.eot");
+    src: url("../vendors/octicons/octicons/octicons.eot?#iefix") format("embedded-opentype"),
+        url("../vendors/octicons/octicons/octicons.woff") format("woff"),
+        url("../vendors/octicons/octicons/octicons.ttf") format("truetype"),
+        url("../vendors/octicons/octicons/octicons.svg#svgFontName") format("svg");
 }
 
 * {
@@ -292,83 +292,83 @@ td {
 
 @font-face {
     font-family: HandOfSeanRegular;
-    src: url("/assets/fonts/eot/handsean-webfont.eot");
-    src: local("☺"), url("/assets/fonts/otf/handsean-webfont.ttf") format("truetype"),
-        url("/assets/fonts/svg/handsean-webfont.svg#webfontV6q8jOTr") format("svg"),
-        url("/assets/fonts/woff/handsean-webfont.woff") format("woff");
+    src: url("../fonts/eot/handsean-webfont.eot");
+    src: local("☺"), url("../fonts/otf/handsean-webfont.ttf") format("truetype"),
+        url("../fonts/svg/handsean-webfont.svg#webfontV6q8jOTr") format("svg"),
+        url("../fonts/woff/handsean-webfont.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: PoliticaThin;
-    src: url("/assets/fonts/eot/style_154053.eot");
-    src: local("☺"), url("/assets/fonts/otf/style_154053.otf") format("opentype"),
-        url("/assets/fonts/svg/style_154053.svg#PoliticaThin") format("svg"),
-        url("/assets/fonts/woff/style_154053.woff") format("woff");
+    src: url("../fonts/eot/style_154053.eot");
+    src: local("☺"), url("../fonts/otf/style_154053.otf") format("opentype"),
+        url("../fonts/svg/style_154053.svg#PoliticaThin") format("svg"),
+        url("../fonts/woff/style_154053.woff") format("woff");
 }
 
 @font-face {
     font-family: PoliticaThin-Italic;
-    src: url("/assets/fonts/eot/style_154049.eot");
-    src: local("☺"), url("/assets/fonts/svg/style_154049.svg#PoliticaThin-Italic") format("svg"),
-        url("/assets/fonts/woff/style_154049.woff") format("woff");
+    src: url("../fonts/eot/style_154049.eot");
+    src: local("☺"), url("../fonts/svg/style_154049.svg#PoliticaThin-Italic") format("svg"),
+        url("../fonts/woff/style_154049.woff") format("woff");
 }
 
 @font-face {
     font-family: PoliticaLight;
-    src: url("/assets/fonts/eot/style_154051.eot");
-    src: local("☺"), url("/assets/fonts/otf/style_154051.otf") format("opentype"),
-        url("/assets/fonts/svg/style_154051.svg#PoliticaLight") format("svg"),
-        url("/assets/fonts/woff/style_154051.woff") format("woff");
+    src: url("../fonts/eot/style_154051.eot");
+    src: local("☺"), url("../fonts/otf/style_154051.otf") format("opentype"),
+        url("../fonts/svg/style_154051.svg#PoliticaLight") format("svg"),
+        url("../fonts/woff/style_154051.woff") format("woff");
 }
 
 @font-face {
     font-family: PoliticaLight-Italic;
-    src: url("/assets/fonts/eot/style_154044.eot");
-    src: local("☺"), url("/assets/fonts/svg/style_154044.svg#PoliticaLight-Italic") format("svg"),
-        url("/assets/fonts/woff/style_154044.woff") format("woff");
+    src: url("../fonts/eot/style_154044.eot");
+    src: local("☺"), url("../fonts/svg/style_154044.svg#PoliticaLight-Italic") format("svg"),
+        url("../fonts/woff/style_154044.woff") format("woff");
 }
 
 @font-face {
     font-family: Politica;
-    src: url("/assets/fonts/eot/style_154046.eot");
-    src: local("☺"), url("/assets/fonts/otf/style_154046.otf") format("opentype"),
-        url("/assets/fonts/svg/style_154046.svg#Politica") format("svg"),
-        url("/assets/fonts/woff/style_154046.woff") format("woff");
+    src: url("../fonts/eot/style_154046.eot");
+    src: local("☺"), url("../fonts/otf/style_154046.otf") format("opentype"),
+        url("../fonts/svg/style_154046.svg#Politica") format("svg"),
+        url("../fonts/woff/style_154046.woff") format("woff");
 }
 
 @font-face {
     font-family: Politica-Italic;
-    src: url("/assets/fonts/eot/style_154048");
-    src: local("☺"), url("/assets/fonts/otf/style_154048.otf") format("opentype"),
-        url("/assets/fonts/svg/style_154048.svg#Politica-Italic") format("svg"),
-        url("/assets/fonts/woff/style_154048.woff") format("woff");
+    src: url("../fonts/eot/style_154048");
+    src: local("☺"), url("../fonts/otf/style_154048.otf") format("opentype"),
+        url("../fonts/svg/style_154048.svg#Politica-Italic") format("svg"),
+        url("../fonts/woff/style_154048.woff") format("woff");
 }
 
 @font-face {
     font-family: Politica-Bold;
-    src: url("/assets/fonts/eot/style_154045.eot");
-    src: local("☺"), url("/assets/fonts/otf/style_154045.otf") format("opentype"),
-        url("/assets/fonts/svg/style_154045.svg#Politica-Bold") format("svg"),
-        url("/assets/fonts/woff/style_154045.woff") format("woff");
+    src: url("../fonts/eot/style_154045.eot");
+    src: local("☺"), url("../fonts/otf/style_154045.otf") format("opentype"),
+        url("../fonts/svg/style_154045.svg#Politica-Bold") format("svg"),
+        url("../fonts/woff/style_154045.woff") format("woff");
 }
 
 @font-face {
     font-family: Politica-BoldItalic;
-    src: url("/assets/fonts/eot/style_154042.eot");
-    src: local("☺"), url("/assets/fonts/otf/style_154042.otf") format("opentype"),
-        url("/assets/fonts/svg/style_154042.svg#Politica-BoldItalic") format("svg"),
-        url("/assets/fonts/woff/style_154042.woff") format("woff");
+    src: url("../fonts/eot/style_154042.eot");
+    src: local("☺"), url("../fonts/otf/style_154042.otf") format("opentype"),
+        url("../fonts/svg/style_154042.svg#Politica-BoldItalic") format("svg"),
+        url("../fonts/woff/style_154042.woff") format("woff");
 }
 
 @font-face {
     font-family: 'Octicons Regular';
-    src: url("/assets/fonts/eot/octicons-regular-webfont.eot");
-    src: local("☺"), url("/assets/fonts/eot/octicons-regular-webfont.eot#iefix") format("embedded-opentype"),
-        url("/assets/fonts/otf/octicons-regular-webfont.otf") format("opentype"),
-        url("/assets/fonts/svg/octicons-regular-webfont.svg#newFontRegular") format("svg"),
-        url("/assets/fonts/woff/octicons-regular-webfont.woff") format("woff");
+    src: url("../fonts/eot/octicons-regular-webfont.eot");
+    src: local("☺"), url("../fonts/eot/octicons-regular-webfont.eot#iefix") format("embedded-opentype"),
+        url("../fonts/otf/octicons-regular-webfont.otf") format("opentype"),
+        url("../fonts/svg/octicons-regular-webfont.svg#newFontRegular") format("svg"),
+        url("../fonts/woff/octicons-regular-webfont.woff") format("woff");
 }
 
 a,
@@ -378,7 +378,7 @@ a:visited {
 }
 
 body {
-    background: url("/assets/images/layout/project-paper.png");
+    background: url("../images/layout/project-paper.png");
     font-family: 'Helvetica Neue', Helvetica, arial, freesans, clean, sans-serif;
     padding: 1rem;
 }
@@ -390,7 +390,7 @@ body {
 }
 
 .frame {
-    background: url("/assets/images/layout/header-field-emblem.png") no-repeat left top;
+    background: url("../images/layout/header-field-emblem.png") no-repeat left top;
     border: solid 1px #eee;
 }
 .hubot-avatar {
@@ -408,7 +408,7 @@ body {
 }
 
 .hubot-avatar:before {
-    background: url("/assets/images/layout/tape.png") no-repeat left top;
+    background: url("../images/layout/tape.png") no-repeat left top;
     content: '';
     display: block;
     height: 26px;
@@ -437,7 +437,7 @@ header.clearfix {
 }
 
 header.clearfix h1 {
-    background: url("/assets/images/layout/header-field-1.png") no-repeat left bottom;
+    background: url("../images/layout/header-field-1.png") no-repeat left bottom;
     color: #333;
     font-family: Politica;
     font-size: 72px;
@@ -468,7 +468,7 @@ header.clearfix h1 span b {
 }
 
 header.clearfix h2 {
-    background: url("/assets/images/layout/header-field-2.png") no-repeat left bottom;
+    background: url("../images/layout/header-field-2.png") no-repeat left bottom;
     color: #7880a7;
     float: left;
     font-size: 16px;
@@ -482,7 +482,7 @@ header.clearfix h2 {
 }
 
 header.clearfix p {
-    background: url("/assets/images/layout/header-field-3.png") no-repeat left bottom;
+    background: url("../images/layout/header-field-3.png") no-repeat left bottom;
     color: #bebebe;
     float: left;
     font-size: 16px;
@@ -509,7 +509,7 @@ header.clearfix p {
 
 
 .insides .button {
-    background: url("/assets/images/layout/checkbawx.png") no-repeat 12px 12px;
+    background: url("../images/layout/checkbawx.png") no-repeat 12px 12px;
     border: 1px solid #ddd;
     margin: 0;
     padding: 10px 12px 10px 30px;
@@ -545,14 +545,14 @@ header.clearfix p {
 }
 
 .schematics {
-    background: url("/assets/images/layout/schematic-shadow.png") no-repeat center bottom;
+    background: url("../images/layout/schematic-shadow.png") no-repeat center bottom;
     height: 444px;
     z-index: 5;
     transform: rotate(-1deg);
 }
 
 .schematic {
-    background: url("/assets/images/layout/old-mathematics.png");
+    background: url("../images/layout/old-mathematics.png");
     background-size: auto, 100px;
     height: 432px;
     position: relative;
@@ -617,7 +617,7 @@ header.clearfix p {
 }
 
 .letter {
-    background: url("/assets/images/layout/emblem.png") no-repeat 92% 92%, url("/assets/images/layout/signature.png") no-repeat 42px 98%, url("/assets/images/layout/lined-paper.png") no-repeat left top;
+    background: url("../images/layout/emblem.png") no-repeat 92% 92%, url("../images/layout/signature.png") no-repeat 42px 98%, url("../images/layout/lined-paper.png") no-repeat left top;
     line-height: 24px;
     padding: 48px 24px 106px 48px;
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.2);
@@ -627,7 +627,7 @@ header.clearfix p {
 
 .letter:before,
 .letter:after {
-    background: url("/assets/images/layout/tape.png") no-repeat left top;
+    background: url("../images/layout/tape.png") no-repeat left top;
     content: '';
     position: absolute;
     width: 99px;
@@ -655,7 +655,7 @@ header.clearfix p {
 }
 
 .screenshot:before {
-    background: url("/assets/images/layout/tape.png") no-repeat left top;
+    background: url("../images/layout/tape.png") no-repeat left top;
     content: '';
     display: block;
     height: 26px;
