@@ -7,4 +7,5 @@ docs
 examples
 script
 www
-dist
+_site
+sfab-hooks
