@@ -706,6 +706,9 @@ header.clearfix p {
     .mega-icon-invertocat {
         position: static;
     }
+    .docs header h1 {
+        font-size: 1.5rem;
+    }
 }
 
 .mega-icon-invertocat:before {
