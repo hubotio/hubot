@@ -23,6 +23,9 @@ This will create a directory called `myhubot` in the current working directory.
 
 ```sh
 npx hubot --create myhubot --adapter @hubot-friends/hubot-slack
+npx hubot --create myhubot --adapter @hubot-friends/hubot-discord
+npx hubot --create myhubot --adapter @hubot-friends/hubot-ms-teams
+npx hubot --create myhubot --adapter @hubot-friends/hubot-irc
 ```
 
 Review `scripts/example.mjs`. Create more scripts in the `scripts` folder.
