@@ -1007,16 +1007,18 @@ describe('Robot', () => {
   })
   describe('Robot HTTP Service', () => {
     it('should start a web service', async () => {
-      process.env.PORT = 3000
+      process.env.PORT = 0
       hook('hubot-mock-adapter', mockAdapter)
       const robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
       await robot.loadAdapter()
       await robot.run()
-      const res = await fetch(`http://127.0.0.1:${process.env.PORT}/hubot/version`)
+      const port = robot.server.address().port
+      const res = await fetch(`http://127.0.0.1:${port}/hubot/version`)
       assert.equal(res.status, 404)
       assert.match(await res.text(), /Cannot GET \/hubot\/version/ig)
       robot.shutdown()
       reset()
+      delete process.env.PORT
     })
   })
 })

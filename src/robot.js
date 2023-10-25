@@ -37,6 +37,7 @@ class Robot {
     this.brain = new Brain(this)
     this.alias = alias
     this.adapter = null
+    this.shouldEnableHttpd = httpd ?? true
     this.datastore = null
     this.Response = Response
     this.commands = []
@@ -55,18 +56,13 @@ class Robot {
     this.globalHttpOptions = {}
 
     this.parseVersion()
-    if (httpd) {
-      this.setupExpress()
-    } else {
-      this.setupNullRouter()
-    }
-
     this.adapterName = adapter ?? 'shell'
     this.errorHandlers = []
 
     this.on('error', (err, res) => {
       return this.invokeErrorHandlers(err, res)
     })
+    this.on('listening', this.herokuKeepalive.bind(this))
   }
 
   // Public: Adds a custom Listener with the provided matcher, options, and
@@ -407,8 +403,8 @@ class Robot {
 
   // Setup the Express server's defaults.
   //
-  // Returns nothing.
-  setupExpress () {
+  // Returns Server.
+  async setupExpress () {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
     const stat = process.env.EXPRESS_STATIC
@@ -444,27 +440,18 @@ class Robot {
     if (stat) {
       app.use(express.static(stat))
     }
-
-    try {
-      this.server = app.listen(port, address)
-      this.router = app
-    } catch (error) {
-      this.logger.error(`Error trying to start HTTP server: ${error}\n${error.stack}`)
-      throw error
-    }
-
-    let herokuUrl = process.env.HEROKU_URL
-
-    if (herokuUrl) {
-      if (!/\/$/.test(herokuUrl)) {
-        herokuUrl += '/'
-      }
-      this.pingIntervalId = setInterval(() => {
-        HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
-          this.logger.info('keep alive ping!')
+    const p = new Promise((resolve, reject) => {
+      try {
+        this.server = app.listen(port, address, () => {
+          this.router = app
+          this.emit('listening', this.server)
+          resolve(this.server)
         })
-      }, 5 * 60 * 1000)
-    }
+      } catch (err) {
+        reject(err)
+      }
+    })
+    return p
   }
 
   // Setup an empty router object
@@ -645,6 +632,11 @@ class Robot {
   //
   // Returns whatever the adapter returns.
   async run () {
+    if (this.shouldEnableHttpd) {
+      await this.setupExpress()
+    } else {
+      this.setupNullRouter()
+    }
     this.emit('running')
 
     return await this.adapter.run()
@@ -711,6 +703,20 @@ class Robot {
     const httpOptions = extend({}, this.globalHttpOptions, options)
 
     return HttpClient.create(url, httpOptions).header('User-Agent', `Hubot/${this.version}`)
+  }
+
+  herokuKeepalive (server) {
+    let herokuUrl = process.env.HEROKU_URL
+    if (herokuUrl) {
+      if (!/\/$/.test(herokuUrl)) {
+        herokuUrl += '/'
+      }
+      this.pingIntervalId = setInterval(() => {
+        HttpClient.create(`${herokuUrl}hubot/ping`).post()((_err, res, body) => {
+          this.logger.info('keep alive ping!')
+        })
+      }, 5 * 60 * 1000)
+    }
   }
 }
 
