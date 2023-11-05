@@ -63,6 +63,7 @@ class Shell extends Adapter {
         case '\\q':
         case 'exit':
           this.#rl.close()
+          process.exit(0)
           break
         case '\\?':
         case 'help':
@@ -92,8 +93,6 @@ class Shell extends Adapter {
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
       await this.receive(new TextMessage(user, input, 'messageId'))
       this.#rl.prompt()
-    }).on('close', () => {
-      process.exit(0)
     })
     try {
       this.#rl.prompt()
@@ -108,8 +107,6 @@ class Shell extends Adapter {
     if (this.#rl?.close) {
       this.#rl.close()
     }
-    this.cli.removeAllListeners()
-    this.cli.close()
   }
 }
 
