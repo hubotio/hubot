@@ -1,19 +1,26 @@
 'use strict'
 
 const fs = require('fs')
-const readline = require('readline')
-const Stream = require('stream')
-const cline = require('cline')
-
+const readline = require('node:readline')
 const Adapter = require('../adapter')
-
-const _require = require('../message')
-
-const TextMessage = _require.TextMessage
+const { TextMessage } = require('../message')
 
 const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.env.HUBOT_SHELL_HISTSIZE) : 1024
-
 const historyPath = '.hubot_history'
+
+const completer = line => {
+  const completions = '\\q exit \\? help \\c clear'.split(' ')
+  const hits = completions.filter((c) => c.startsWith(line))
+  // Show all completions if none found
+  return [hits.length ? hits : completions, line]
+}
+const showHelp = () => {
+  console.log('usage:')
+  console.log('\\q, exit - close shell and exit')
+  console.log('\\?, help - show this help')
+  console.log('\\c, clear - clear screen')
+}
+
 const bold = str => `\x1b[1m${str}\x1b[22m`
 
 class Shell extends Adapter {
@@ -37,32 +44,45 @@ class Shell extends Adapter {
   }
 
   async run () {
-    this.buildCli()
-    try {
-      const { readlineInterface, history } = await this.#loadHistory()
-      this.cli.history(history)
-      this.cli.interact(`${this.robot.name ?? this.robot.alias}> `)
-      this.#rl = readlineInterface
-      this.emit('connected', this)
-    } catch (error) {
-      console.log(error)
+    if (!fs.existsSync(historyPath)) {
+      fs.writeFileSync(historyPath, '')
     }
-  }
-
-  close () {
-    super.close()
-    // Getting an error message on GitHubt Actions: error: 'this[#rl].close is not a function'
-    if (this.#rl?.close) {
-      this.#rl.close()
+    const stats = fs.statSync(historyPath)
+    if (stats.size > historySize) {
+      fs.unlinkSync(historyPath)
     }
-    this.cli.removeAllListeners()
-    this.cli.close()
-  }
-
-  buildCli () {
-    this.cli = cline()
-
-    this.cli.command('*', async input => {
+    this.#rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      prompt: `${this.robot.name ?? this.robot.alias}> `,
+      completer
+    })
+    this.#rl.on('line', async (line) => {
+      const input = line.trim()
+      switch (input) {
+        case '\\q':
+        case 'exit':
+          this.#rl.close()
+          break
+        case '\\?':
+        case 'help':
+          showHelp()
+          break
+        case '\\c':
+        case 'clear':
+          this.#rl.write(null, { ctrl: true, name: 'l' })
+          this.#rl.prompt()
+          break
+      }
+      const history = fs.readFileSync(historyPath, 'utf-8').split('\n').reverse()
+      this.#rl.history = history
+      this.#rl.on('line', line => {
+        const input = line.trim()
+        if (input.length === 0) return
+        fs.appendFile(historyPath, `${input}\n`, err => {
+          if (err) console.error(err)
+        })
+      })
       let userId = process.env.HUBOT_SHELL_USER_ID || '1'
       if (userId.match(/A\d+z/)) {
         userId = parseInt(userId)
@@ -71,68 +91,25 @@ class Shell extends Adapter {
       const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
       await this.receive(new TextMessage(user, input, 'messageId'))
+      this.#rl.prompt()
+    }).on('close', () => {
+      process.exit(0)
     })
-
-    this.cli.command('history', () => {
-      Array.from(this.cli.history()).map(item => console.log(item))
-    })
-
-    this.cli.on('history', item => {
-      if (item.length > 0 && item !== 'exit' && item !== 'history') {
-        fs.appendFile(historyPath, `${item}\n`, error => {
-          if (error) {
-            this.robot.emit('error', error)
-          }
-        })
-      }
-    })
-
-    this.cli.on('close', () => {
-      let history, i, item, len
-
-      history = this.cli.history()
-
-      if (history.length <= historySize) {
-        return
-      }
-
-      const startIndex = history.length - historySize
-      history = history.reverse().splice(startIndex, historySize)
-      const fileOpts = {
-        mode: 0x180
-      }
-
-      const outstream = fs.createWriteStream(historyPath, fileOpts)
-      for (i = 0, len = history.length; i < len; i++) {
-        item = history[i]
-        outstream.write(item + '\n')
-      }
-      outstream.end()
-    })
+    try {
+      this.#rl.prompt()
+      this.emit('connected', this)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  async #loadHistory () {
-    if (!fs.existsSync(historyPath)) {
-      return new Error('No history available')
+  close () {
+    super.close()
+    if (this.#rl?.close) {
+      this.#rl.close()
     }
-    const instream = fs.createReadStream(historyPath)
-    const outstream = new Stream()
-    outstream.readable = true
-    outstream.writable = true
-    const history = []
-    const readlineInterface = readline.createInterface({ input: instream, output: outstream, terminal: false })
-    return new Promise((resolve, reject) => {
-      readlineInterface.on('line', line => {
-        line = line.trim()
-        if (line.length > 0) {
-          history.push(line)
-        }
-      })
-      readlineInterface.on('close', () => {
-        resolve({ readlineInterface, history })
-      })
-      readlineInterface.on('error', reject)
-    })
+    this.cli.removeAllListeners()
+    this.cli.close()
   }
 }
 
