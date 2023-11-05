@@ -3,7 +3,7 @@
 const fs = require('fs')
 const pathResolve = require('path').resolve
 
-const OptParse = require('optparse')
+const OptParse = require('../src/OptParse.js')
 
 const Hubot = require('..')
 const create = require('../src/GenHubot.js')
@@ -32,7 +32,7 @@ const options = {
   configCheck: false
 }
 
-const Parser = new OptParse.OptionParser(switches)
+const Parser = new OptParse(switches)
 Parser.banner = 'Usage hubot [options]'
 
 Parser.on('adapter', (opt, value) => {
@@ -80,7 +80,7 @@ Parser.on('version', (opt, value) => {
   options.version = true
 })
 
-Parser.on((opt, value) => {
+Parser.on(undefined, (opt, value) => {
   console.warn(`Unknown option: ${opt}`)
 })
 
