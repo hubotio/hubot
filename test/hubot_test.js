@@ -9,7 +9,7 @@ const { TextMessage, User } = require('../index.js')
 const path = require('node:path')
 
 describe('Running bin/hubot.js', () => {
-  it('should load adapter from HUBOT_FILE environment variable', async function () {
+  it('should load adapter from HUBOT_FILE environment variable', async () => {
     process.env.HUBOT_HTTPD = 'false'
     process.env.HUBOT_FILE = path.resolve(root, 'test', 'fixtures', 'MockAdapter.mjs')
     const hubot = require('../bin/hubot.js')
@@ -30,5 +30,33 @@ describe('Running bin/hubot.js', () => {
     } finally {
       hubot.shutdown()
     }
+  })
+  const { spawn } = require('child_process')
+
+  it('should output a help message when run with --help', (t, done) => {
+    const hubot = spawn('./bin/hubot', ['--help'])
+    const expected = `Usage: hubot [options]
+  -a, --adapter HUBOT_ADAPTER
+  -f, --file HUBOT_FILE
+  -c, --create HUBOT_CREATE
+  -d, --disable-httpd HUBOT_HTTPD
+  -h, --help
+  -l, --alias HUBOT_ALIAS
+  -n, --name HUBOT_NAME
+  -r, --require PATH
+  -t, --config-check
+  -v, --version
+`
+    let actual = ''
+    hubot.stdout.on('data', (data) => {
+      actual += data.toString()
+    })
+    hubot.stderr.on('data', (data) => {
+      actual += data.toString()
+    })
+    hubot.on('close', (code) => {
+      assert.deepEqual(actual, expected)
+      done()
+    })
   })
 })
