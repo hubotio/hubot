@@ -10,10 +10,8 @@ permalink: /adapters/development.html
 
 All adapters inherit from the Adapter class in the `src/adapter.js` file.
 
-If you're writing your adapter in ES2015, you must require the ES2015 entrypoint instead:
-
 ```javascript
-const Adapter = require('hubot/es2015').Adapter;
+const Adapter = require('hubot/index.js').Adapter;
 ```
 
 There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:
@@ -60,10 +58,7 @@ exports.use = (robot) => new Sample(robot)
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": ">=3.0"
-  },
-  "devDependencies": {
-    "coffeescript": ">=1.2.0"
+    "hubot": ">= 11"
   }
   ```
 
@@ -117,10 +112,7 @@ Another option is to load the file from local disk.
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": ">=9"
-  },
-  "devDependencies": {
-    "coffeescript": ">=2.7.0"
+    "hubot": ">= 11"
   }
   ```
 
