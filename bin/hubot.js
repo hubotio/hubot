@@ -33,7 +33,7 @@ const options = {
 }
 
 const Parser = new OptParse(switches)
-Parser.banner = 'Usage hubot [options]'
+Parser.banner = 'Usage: hubot [options]'
 
 Parser.on('adapter', (opt, value) => {
   options.adapter = value

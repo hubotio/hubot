@@ -34,6 +34,11 @@ class OptParse extends EventEmitter {
     }
     return options
   }
+
+  toString () {
+    return `${this.banner}
+${this.switches.map(([key, description]) => `  ${key}, ${description}`).join('\n')}`
+  }
 }
 
 module.exports = OptParse
