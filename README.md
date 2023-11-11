@@ -6,6 +6,8 @@
 
 # Hubot
 
+**Please note that in v11, CoffeeScript support was removed.**
+
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
 He's pretty cool. He's [extendable with scripts](https://hubotio.github.io/hubot/docs#scripts) and can work
 on [many different chat services](https://hubotio.github.io/hubot/adapters.html).
