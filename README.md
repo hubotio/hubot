@@ -6,7 +6,9 @@
 
 # Hubot
 
-**Please note that in v11, CoffeeScript support was removed.**
+**Note: v10.0.4 contains the removal of CoffeeScript**
+
+Semver is looking for **BREAKING CHANGE** singular, not **BREAKING CHANGES**. As a result, the removal of CoffeeScript was marked as the `v10.0.4` release.
 
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
 He's pretty cool. He's [extendable with scripts](https://hubotio.github.io/hubot/docs#scripts) and can work
