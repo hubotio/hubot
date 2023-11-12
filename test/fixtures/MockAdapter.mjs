@@ -1,6 +1,6 @@
 'use strict'
 
-import { Adapter } from '../../index.js'
+import { Adapter } from '../../es2015.js' // eslint-disable-line import/no-unresolved
 
 class MockAdapter extends Adapter {
   constructor (robot) {

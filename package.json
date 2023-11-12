@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "9.1.0",
+  "version": "0.0.0-development",
   "author": "hubot",
   "keywords": [
     "github",
@@ -15,6 +15,7 @@
     "url": "https://github.com/hubotio/hubot.git"
   },
   "dependencies": {
+    "coffeescript": "^2.7.0",
     "connect-multiparty": "^2.2.0",
     "express": "^4.18.2",
     "express-basic-auth": "^1.2.1",

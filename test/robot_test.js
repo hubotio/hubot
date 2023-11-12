@@ -1,7 +1,7 @@
 'use strict'
 
 /* eslint-disable no-unused-expressions */
-
+require('coffeescript/register.js')
 const { describe, it, beforeEach, afterEach } = require('node:test')
 const assert = require('assert/strict')
 
@@ -961,6 +961,29 @@ describe('Robot', () => {
     it('should respond to a message', async () => {
       const sent = async (envelop, strings) => {
         assert.deepEqual(strings, ['test response'])
+      }
+      robot.adapter.on('send', sent)
+      await robot.receive(new TextMessage('tester', 'hubot test'))
+    })
+  })
+  describe('Robot Coffeescript', () => {
+    let robot = null
+    beforeEach(async () => {
+      robot = new Robot('MockAdapter', false, 'TestHubot')
+      robot.alias = 'Hubot'
+      await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
+      await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
+      await robot.run()
+    })
+    afterEach(() => {
+      robot.shutdown()
+    })
+    it('should load a CoffeeScript adapter from a file', async () => {
+      assert.equal(robot.adapter.name, 'MockAdapter')
+    })
+    it('should load a coffeescript file and respond to a message', async () => {
+      const sent = async (envelop, strings) => {
+        assert.deepEqual(strings, ['test response from coffeescript'])
       }
       robot.adapter.on('send', sent)
       await robot.receive(new TextMessage('tester', 'hubot test'))

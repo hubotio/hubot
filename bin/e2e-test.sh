@@ -12,7 +12,7 @@ trap "{ CODE=$?; popd; rm -rf $TEMP_ROOT; exit $CODE; }" EXIT
 echo "$ create hubot in $TEMP_ROOT"
 echo "$ install Hubot from $HUBOT_FOLDER"
 npm init -y
-npm i $HUBOT_FOLDER
+npm i $HUBOT_FOLDER coffeescript
 
 ./node_modules/.bin/hubot --create myhubot
 cd myhubot

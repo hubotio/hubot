@@ -8,7 +8,7 @@ const assert = require('assert/strict')
 const { hook, reset } = require('./fixtures/RequireMocker.js')
 
 // Hubot classes
-const Hubot = require('../index.js')
+const Hubot = require('../es2015.js')
 const User = Hubot.User
 const Brain = Hubot.Brain
 const Robot = Hubot.Robot
@@ -23,7 +23,7 @@ const LeaveMessage = Hubot.LeaveMessage
 const TopicMessage = Hubot.TopicMessage
 const CatchAllMessage = Hubot.CatchAllMessage
 
-describe('hubot/index', () => {
+describe('hubot/es2015', () => {
   it('exports User class', () => {
     class MyUser extends User {}
     const user = new MyUser('id123', { foo: 'bar' })

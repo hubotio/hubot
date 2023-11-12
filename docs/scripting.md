@@ -839,7 +839,7 @@ Listener middleware inserts logic between the listener matching a message and th
 
 ## Listener Middleware Examples
 
-A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee) (Note: this is a coffee version, non-async/await, and will not work with the latest Hubot since CoffeeScript support was removed in version 11).
+A fully functioning example can be found in [hubot-rate-limit](https://github.com/michaelansel/hubot-rate-limit/blob/master/src/rate-limit.coffee) (Note, this is a coffee version, non-async/await).
 
 A simple example of middleware logging command executions:
 
@@ -1005,55 +1005,51 @@ You may also want to install:
 
 [Note: This section is still refering to Coffeescript, but we've update Hubot for Javascript. We'll have to replace this when we get a JavaScript example.]
 
-Here is a sample script that tests the first couple of commands.
+Here is a sample script that tests the first couple of commands in the [Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
 
-**test/example-test.mjs**
+**test/example-test.coffee**
 
-```javascript
-import { describe, it } from 'node:test'
-import assert from 'node:assert/strict'
-import Helper from 'hubot-test-helper'
+```coffeescript
+Helper = require('hubot-test-helper')
+chai = require 'chai'
 
-const helper = new Helper('../scripts/example.mjs')
+expect = chai.expect
 
-describe('example script', () => {
-  let room = null
-  beforeEach(() => {
-    room = helper.createRoom()
-  })
+helper = new Helper('../scripts/example.coffee')
 
-  afterEach(() => 
-    room.destroy()
-  ))
+describe 'example script', ->
+  beforeEach ->
+    @room = helper.createRoom()
 
-  it("doesn't need badgers", async () => {
-    await room.user.say('alice', 'did someone call for a badger?')
-    assert.deepEqual(room.messages, [
-      ['alice', 'did someone call for a badger?']
-      ['hubot', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
-    ])
-  })
-  it("won't open the pod bay doors"), async () => {
-    await room.user.say('bob', '@hubot open the pod bay doors')
-    assert.deepEqual(room.messages, [
-      ['bob', '@hubot open the pod bay doors']
-      ['hubot', '@bob I\'m afraid I can\'t let you do that.']
-    ])
-  })
-  it('will open the dutch doors'), async () => {
-    await room.user.say('bob', '@hubot open the dutch doors')
-    assert.deepEqual(room.messages, [
-      ['bob', '@hubot open the dutch doors']
-      ['hubot', '@bob Opening dutch doors']
-    ])
-  })
-}
+  afterEach ->
+    @room.destroy()
+
+  it 'doesn\'t need badgers', ->
+    @room.user.say('alice', 'did someone call for a badger?').then =>
+      expect(@room.messages).to.eql [
+        ['alice', 'did someone call for a badger?']
+        ['hubot', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
+      ]
+
+  it 'won\'t open the pod bay doors', ->
+    @room.user.say('bob', '@hubot open the pod bay doors').then =>
+      expect(@room.messages).to.eql [
+        ['bob', '@hubot open the pod bay doors']
+        ['hubot', '@bob I\'m afraid I can\'t let you do that.']
+      ]
+
+  it 'will open the dutch doors', ->
+    @room.user.say('bob', '@hubot open the dutch doors').then =>
+      expect(@room.messages).to.eql [
+        ['bob', '@hubot open the dutch doors']
+        ['hubot', '@bob Opening dutch doors']
+      ]
 ```
 
 **sample output**
 
 ```sh
-% node --test test/*.mjs
+% mocha --require coffeescript/register test/*.coffee
   example script
     ✓ doesn't need badgers
     ✓ won't open the pod bay doors
