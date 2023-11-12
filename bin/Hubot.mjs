@@ -101,7 +101,7 @@ async function loadScripts () {
   await robot.load(pathResolve('.', 'scripts'))
   await robot.load(pathResolve('.', 'src', 'scripts'))
 
-  loadExternalScripts()
+  await loadExternalScripts()
 
   const tasks = options.scripts.map((scriptPath) => {
     if (scriptPath[0] === '/') {
@@ -113,25 +113,19 @@ async function loadScripts () {
   await Promise.all(tasks)
 }
 
-function loadExternalScripts () {
+async function loadExternalScripts () {
   const externalScripts = pathResolve('.', 'external-scripts.json')
-
-  if (!fs.existsSync(externalScripts)) {
-    return
-  }
-
-  fs.readFile(externalScripts, function (error, data) {
-    if (error) {
-      throw error
-    }
-
+  try {
+    const data = await fs.promises.readFile(externalScripts)
     try {
       robot.loadExternalScripts(JSON.parse(data))
     } catch (error) {
       console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
       process.exit(1)
     }
-  })
+  } catch (e) {
+    robot.logger.info('No external-scripts.json found. Skipping.')
+  }
 }
 
 (async () => {

@@ -391,15 +391,18 @@ class Robot {
   // packages - An Array of packages containing hubot scripts to load.
   //
   // Returns nothing.
-  loadExternalScripts (packages) {
+  async loadExternalScripts (packages) {
     this.logger.debug('Loading external-scripts from npm packages')
 
     try {
       if (Array.isArray(packages)) {
-        return packages.forEach(pkg => require(pkg)(this))
+        for await (const pkg of packages) {
+          (await import(pkg)).default(this)
+        }
       }
-
-      Object.keys(packages).forEach(key => require(key)(this, packages[key]))
+      for await (const key of Object.keys(packages)) {
+        (await import(key)).default(this, packages[key])
+      }
     } catch (error) {
       this.logger.error(`Error loading scripts from npm package - ${error.stack}`)
       throw error
