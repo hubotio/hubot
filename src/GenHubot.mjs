@@ -14,13 +14,20 @@ function runCommands (hubotDirectory, options) {
   process.chdir(hubotDirectory)
 
   let output = spawnSync('npm', ['init', '-y'])
-  console.log('npm init', output.stderr.toString(), output.stdout.toString())
-  output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.hubotInstallationPath, options.adapter]).filter(Boolean))
+  console.log('npm init', output.stderr.toString())
+  if (options.hubotInstallationPath !== 'hubot') {
+    output = spawnSync('npm', ['pack', `${options.hubotInstallationPath}`])
+    console.log('npm pack', output.stderr.toString(), output.stdout.toString()) 
+    const customHubotPackage = JSON.parse(File.readFileSync(`${options.hubotInstallationPath}/package.json`, 'utf8'))
+    output = spawnSync('npm', ['i', `${customHubotPackage.name}-${customHubotPackage.version}.tgz`])
+    console.log(`npm i ${customHubotPackage.name}-${customHubotPackage.version}.tgz`, output.stderr.toString(), output.stdout.toString())
+  } else {
+    output = spawnSync('npm', ['i', 'hubot@latest'])
+  }
+  output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.adapter]).filter(Boolean))
   console.log('npm i', output.stderr.toString(), output.stdout.toString())
   spawnSync('mkdir', ['scripts'])
   spawnSync('touch', ['external-scripts.json'])
-  output = spawnSync('ls', ['-al', 'node_modules'])
-  console.log(output.stderr.toString(), output.stdout.toString())
 
   const externalScriptsPath = path.resolve('./', 'external-scripts.json')
   let escripts = File.readFileSync(externalScriptsPath, 'utf8')
