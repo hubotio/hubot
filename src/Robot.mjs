@@ -397,11 +397,11 @@ class Robot {
     try {
       if (Array.isArray(packages)) {
         for await (const pkg of packages) {
-          (await import(pkg))(this)
+          (await import(pkg)).default(this)
         }
       }
       for await (const key of Object.keys(packages)) {
-        (await import(key))(this, packages[key])
+        (await import(key)).default(this, packages[key])
       }
     } catch (error) {
       this.logger.error(`Error loading scripts from npm package - ${error.stack}`)
