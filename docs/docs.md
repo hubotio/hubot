@@ -25,7 +25,7 @@ Now open `package.json` in your code editor and add a `start` property to the `s
 }
 ```
 
-Start your Hubot instance by executing `npm start`. It will start with the built in [shell adapter](/adapters/shell.html), which starts a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop) where you can type commands.
+Start your Hubot instance by executing `npm start`. It will start with the built in [Shell adapter](/adapters/shell.html), which starts a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop) where you can type commands.
 
 Your terminal should look like:
 
@@ -39,7 +39,7 @@ Typing `help` will list some default commands that Hubot's default adapter, Shel
 Hubot> help
 usage:
 history 
-exit, \q - close shell and exit
+exit, \q - close Shell and exit
 help, \? - print this usage
 clear, \c - clear the terminal screen
 Hubot>

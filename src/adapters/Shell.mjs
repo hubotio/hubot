@@ -16,7 +16,7 @@ const completer = line => {
 }
 const showHelp = () => {
   console.log('usage:')
-  console.log('\\q, exit - close shell and exit')
+  console.log('\\q, exit - close Shell and exit')
   console.log('\\?, help - show this help')
   console.log('\\c, clear - clear screen')
 }

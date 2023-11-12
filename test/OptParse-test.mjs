@@ -5,7 +5,7 @@ import OptParse from '../src/OptParse.mjs'
 describe('CLI Argument Parsing', () => {
   it('should parse arguments into options', () => {
     const switches = [
-      ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
+      ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "Shell" (to load the default hubot Shell adapter)'],
       ['-f', '--file HUBOT_FILE', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
       ['-c', '--create HUBOT_CREATE', 'Create a deployable hubot'],
       ['-d', '--disable-httpd HUBOT_HTTPD', 'Disable the HTTP server'],

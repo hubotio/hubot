@@ -11,8 +11,8 @@ It can be useful for testing scripts before using them on a live hubot.
 
 ## Getting Started
 
-To use the shell adapter you can simply omit the `-a` option when running
-hubot as it will use the shell adapter by default.
+To use the Shell adapter you can simply omit the `-a` option when running
+hubot as it will use the Shell adapter by default.
 
     % bin/hubot
 

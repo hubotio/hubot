@@ -978,7 +978,7 @@ describe('Robot', () => {
       robot.shutdown()
       process.removeAllListeners()
     })
-    it('should load the builtin shell adapter by default', async () => {
+    it('should load the builtin Shell adapter by default', async () => {
       assert.equal(robot.adapter.name, 'Shell')
     })
   })

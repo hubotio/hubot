@@ -37,7 +37,7 @@ expect <<EOL
   }
   send "e2etest adapter\r"
   expect {
-    "shell" {}
+    "Shell" {}
     timeout {exit 1}
   }
 EOL
