@@ -7,6 +7,7 @@ const assert = require('assert/strict')
 const root = __dirname.replace(/test$/, '')
 const { TextMessage, User } = require('../index.js')
 const path = require('node:path')
+const { spawn } = require('child_process')
 
 describe('Running bin/hubot.js', () => {
   it('should load adapter from HUBOT_FILE environment variable', async () => {
@@ -31,10 +32,9 @@ describe('Running bin/hubot.js', () => {
       hubot.shutdown()
     }
   })
-  const { spawn } = require('child_process')
 
   it('should output a help message when run with --help', (t, done) => {
-    const hubot = spawn('./bin/hubot', ['--help'])
+    const hubot = process.platform === 'win32' ? spawn('node', ['./bin/hubot.js', '--help']) : spawn('./bin/hubot', ['--help'])
     const expected = `Usage: hubot [options]
   -a, --adapter HUBOT_ADAPTER
   -f, --file HUBOT_FILE
