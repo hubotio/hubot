@@ -329,20 +329,22 @@ class Robot {
   }
 
   async loadmjs (filePath) {
-    const script = await import(pathToFileURL(filePath))
+    const forImport = this.prepareForImport(filePath)
+    const script = await import(forImport)
     if (typeof script?.default === 'function') {
       script.default(this)
     } else {
-      this.logger.warning(`Expected ${filePath} to assign a function to export default, got ${typeof script}`)
+      this.logger.warning(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to export default, got ${typeof script}`)
     }
   }
 
   async loadjs (filePath) {
-    const script = (await import(filePath)).default
+    const forImport = this.prepareForImport(filePath)
+    const script = (await import(forImport)).default
     if (typeof script === 'function') {
       script(this)
     } else {
-      this.logger.warning(`Expected ${filePath} to assign a function to module.exports, got ${typeof script}`)
+      this.logger.warning(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to module.exports, got ${typeof script}`)
     }
   }
 
@@ -496,7 +498,7 @@ class Robot {
       } else if (['.js', '.cjs'].includes(ext)) {
         this.adapter = await this.requireAdapterFrom(path.resolve(adapterPath))
       } else if (['.mjs'].includes(ext)) {
-        this.adapter = await this.importAdapterFrom(pathToFileURL(path.resolve(adapterPath)).href)
+        this.adapter = await this.importAdapterFrom(path.resolve(adapterPath))
       } else {
         const adapterPathInCurrentWorkingDirectory = this.adapterName
         try {
@@ -520,7 +522,8 @@ class Robot {
   }
 
   async importAdapterFrom (adapterPath) {
-    return await (await import(adapterPath)).default.use(this)
+    const forImport = this.prepareForImport(adapterPath)
+    return await (await import(forImport)).default.use(this)
   }
 
   // Public: Help Commands for Running Scripts.
@@ -668,6 +671,10 @@ class Robot {
     }
     this.brain.close()
     this.events.removeAllListeners()
+  }
+
+  prepareForImport (filePath) {
+    return pathToFileURL(filePath)
   }
 
   // Public: The version of Hubot from npm
