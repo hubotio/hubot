@@ -328,6 +328,10 @@ class Robot {
     }
   }
 
+  async loadcoffee (filePath) {
+    return await this.loadjs(filePath)
+  }
+
   async loadjs (filePath) {
     const script = require(filePath)
     if (typeof script === 'function') {
@@ -348,7 +352,7 @@ class Robot {
     const full = path.join(filepath, path.basename(filename))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (['js', 'mjs'].indexOf(ext) === -1) {
+    if (['js', 'mjs', 'coffee'].indexOf(ext) === -1) {
       this.logger.debug(`Skipping unsupported file type ${full}`)
       return
     }
@@ -476,7 +480,7 @@ class Robot {
     try {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
         this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
-      } else if (['.js', '.cjs'].includes(ext)) {
+      } else if (['.js', '.cjs', '.coffee'].includes(ext)) {
         this.adapter = this.requireAdapterFrom(path.resolve(adapterPath))
       } else if (['.mjs'].includes(ext)) {
         this.adapter = await this.importAdapterFrom(pathToFileURL(path.resolve(adapterPath)).href)
