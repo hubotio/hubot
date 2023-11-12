@@ -13,8 +13,10 @@ function runCommands (hubotDirectory, options) {
   const envFilePath = path.resolve(process.cwd(), '.env')
   process.chdir(hubotDirectory)
 
-  spawnSync('npm', ['init', '-y'])
-  spawnSync('npm', ['i', options.hubotInstallationPath].concat(options.adapter, 'hubot-help', 'hubot-rules', 'hubot-diagnostics'))
+  let output = spawnSync('npm', ['init', '-y'])
+  console.log('npm init', output.stderr.toString(), output.stdout.toString())
+  output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.hubotInstallationPath, options.adapter]).filter(Boolean))
+  console.log('npm i', output.stderr.toString(), output.stdout.toString())
   spawnSync('mkdir', ['scripts'])
   spawnSync('touch', ['external-scripts.json'])
 
@@ -50,6 +52,7 @@ export default (robot) => {
   packageJson.scripts = {
     start: 'hubot'
   }
+  packageJson.description = 'A simple helpful robot for your Company'
   if (options.adapter) {
     packageJson.scripts.start += ` --adapter ${options.adapter}`
   }
