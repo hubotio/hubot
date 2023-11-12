@@ -1,11 +1,11 @@
-const { describe, it } = require('node:test')
-const assert = require('node:assert/strict')
-const OptParse = require('../src/OptParse.js')
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import OptParse from '../src/OptParse.mjs'
 
 describe('CLI Argument Parsing', () => {
   it('should parse arguments into options', () => {
     const switches = [
-      ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
+      ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "Shell" (to load the default hubot Shell adapter)'],
       ['-f', '--file HUBOT_FILE', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
       ['-c', '--create HUBOT_CREATE', 'Create a deployable hubot'],
       ['-d', '--disable-httpd HUBOT_HTTPD', 'Disable the HTTP server'],
@@ -38,8 +38,8 @@ describe('CLI Argument Parsing', () => {
     Parser.on('alias', (opt, value) => {
       options.alias = value
     })
-    Parser.parse(['-a', 'shell', '-d', '--alias', 'bot'])
-    assert.deepEqual(options.adapter, 'shell')
+    Parser.parse(['-a', 'Shell', '-d', '--alias', 'bot'])
+    assert.deepEqual(options.adapter, 'Shell')
     assert.deepEqual(options.enableHttpd, false)
     assert.deepEqual(options.alias, 'bot')
   })

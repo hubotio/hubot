@@ -1,9 +1,8 @@
 'use strict'
 
-const inspect = require('util').inspect
-
-const TextMessage = require('./message').TextMessage
-const Middleware = require('./middleware')
+import { inspect } from 'node:util'
+import { TextMessage } from './Message.mjs'
+import Middleware from './Middleware.mjs'
 
 class Listener {
   // Listeners receive every message from the chat source and decide if they
@@ -108,7 +107,7 @@ class TextListener extends Listener {
   }
 }
 
-module.exports = {
+export {
   Listener,
   TextListener
 }

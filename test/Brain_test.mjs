@@ -1,16 +1,9 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
-
-const { describe, it, beforeEach, afterEach } = require('node:test')
-const assert = require('assert/strict')
-
-// Hubot classes
-const User = require('../src/user.js')
-const Robot = require('../src/robot.js')
-const Brain = require('../src/brain.js')
-const { hook, reset } = require('./fixtures/RequireMocker.js')
-const mockAdapter = require('./fixtures/mock-adapter.js')
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
+import { User, Robot, Brain } from '../index.mjs'
+import mockAdapter from './fixtures/MockAdapter.mjs'
 
 describe('Brain', () => {
   let mockRobot = null
@@ -18,9 +11,8 @@ describe('Brain', () => {
   let user2 = null
   let user3 = null
   beforeEach(async () => {
-    hook('hubot-mock-adapter', mockAdapter)
-    mockRobot = new Robot('hubot-mock-adapter', false, 'TestHubot')
-    await mockRobot.loadAdapter('hubot-mock-adapter')
+    mockRobot = new Robot(mockAdapter, false, 'TestHubot')
+    await mockRobot.loadAdapter()
     await mockRobot.run()
     user1 = mockRobot.brain.userForId('1', { name: 'Guy One' })
     user2 = mockRobot.brain.userForId('2', { name: 'Guy One Two' })
@@ -28,7 +20,6 @@ describe('Brain', () => {
   })
   afterEach(() => {
     mockRobot.shutdown()
-    reset()
     process.removeAllListeners()
   })
   describe('Unit Tests', () => {

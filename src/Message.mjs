@@ -1,6 +1,6 @@
 'use strict'
 
-class Message {
+export class Message {
   // Represents an incoming message from the chat.
   //
   // user - A User instance that sent the message.
@@ -18,7 +18,7 @@ class Message {
   }
 }
 
-class TextMessage extends Message {
+export class TextMessage extends Message {
   // Represents an incoming message from the chat.
   //
   // user - A User instance that sent the message.
@@ -52,23 +52,23 @@ class TextMessage extends Message {
 // user - A User instance for the user who entered.
 // text - Always null.
 // id   - A String of the message ID.
-class EnterMessage extends Message {}
+export class EnterMessage extends Message {}
 
 // Represents an incoming user exit notification.
 //
 // user - A User instance for the user who left.
 // text - Always null.
 // id   - A String of the message ID.
-class LeaveMessage extends Message {}
+export class LeaveMessage extends Message {}
 
 // Represents an incoming topic change notification.
 //
 // user - A User instance for the user who changed the topic.
 // text - A String of the new topic
 // id   - A String of the message ID.
-class TopicMessage extends TextMessage {}
+export class TopicMessage extends TextMessage {}
 
-class CatchAllMessage extends Message {
+export class CatchAllMessage extends Message {
   // Represents a message that no matchers matched.
   //
   // message - The original message.
@@ -78,7 +78,7 @@ class CatchAllMessage extends Message {
   }
 }
 
-module.exports = {
+export default {
   Message,
   TextMessage,
   EnterMessage,

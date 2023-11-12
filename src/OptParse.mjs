@@ -1,4 +1,4 @@
-const EventEmitter = require('node:events')
+import EventEmitter from 'node:events'
 class OptParse extends EventEmitter {
   constructor (switches) {
     super()
@@ -41,4 +41,4 @@ ${this.switches.map(([key, description]) => `  ${key}, ${description}`).join('\n
   }
 }
 
-module.exports = OptParse
+export default OptParse

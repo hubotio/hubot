@@ -1,9 +1,9 @@
 'use strict'
 
-const fs = require('fs')
-const readline = require('node:readline')
-const Adapter = require('../adapter')
-const { TextMessage } = require('../message')
+import fs from 'node:fs'
+import readline from 'node:readline'
+import Adapter from '../Adapter.mjs'
+import { TextMessage } from '../Message.mjs'
 
 const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.env.HUBOT_SHELL_HISTSIZE) : 1024
 const historyPath = '.hubot_history'
@@ -16,7 +16,7 @@ const completer = line => {
 }
 const showHelp = () => {
   console.log('usage:')
-  console.log('\\q, exit - close shell and exit')
+  console.log('\\q, exit - close Shell and exit')
   console.log('\\?, help - show this help')
   console.log('\\c, clear - clear screen')
 }
@@ -112,4 +112,8 @@ class Shell extends Adapter {
 
 // Prevent output buffer "swallowing" every other character on OSX / Node version > 16.19.0.
 process.stdout._handle.setBlocking(false)
-exports.use = robot => new Shell(robot)
+export default {
+  use (robot) {
+    return new Shell(robot)
+  }
+}

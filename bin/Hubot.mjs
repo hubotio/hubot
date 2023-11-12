@@ -1,15 +1,13 @@
 'use strict'
 
-const fs = require('fs')
-const pathResolve = require('path').resolve
-
-const OptParse = require('../src/OptParse.js')
-
-const Hubot = require('..')
-const create = require('../src/GenHubot.js')
+import fs from 'node:fs'
+import { resolve as pathResolve } from 'node:path'
+import OptParse from '../src/OptParse.mjs'
+import Hubot from '../index.mjs'
+import create from '../src/GenHubot.mjs'
 
 const switches = [
-  ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
+  ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "Shell" (to load the default hubot Shell adapter)'],
   ['-f', '--file HUBOT_FILE', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
   ['-c', '--create HUBOT_CREATE', 'Create a deployable hubot'],
   ['-d', '--disable-httpd HUBOT_HTTPD', 'Disable the HTTP server'],
@@ -97,13 +95,13 @@ if (options.file) {
 }
 
 const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)
-module.exports = robot
+export default robot
 
 async function loadScripts () {
   await robot.load(pathResolve('.', 'scripts'))
   await robot.load(pathResolve('.', 'src', 'scripts'))
 
-  loadExternalScripts()
+  await loadExternalScripts()
 
   const tasks = options.scripts.map((scriptPath) => {
     if (scriptPath[0] === '/') {
@@ -115,25 +113,19 @@ async function loadScripts () {
   await Promise.all(tasks)
 }
 
-function loadExternalScripts () {
+async function loadExternalScripts () {
   const externalScripts = pathResolve('.', 'external-scripts.json')
-
-  if (!fs.existsSync(externalScripts)) {
-    return
-  }
-
-  fs.readFile(externalScripts, function (error, data) {
-    if (error) {
-      throw error
-    }
-
+  try {
+    const data = await fs.promises.readFile(externalScripts)
     try {
       robot.loadExternalScripts(JSON.parse(data))
     } catch (error) {
       console.error(`Error parsing JSON data from external-scripts.json: ${error}`)
       process.exit(1)
     }
-  })
+  } catch (e) {
+    robot.logger.info('No external-scripts.json found. Skipping.')
+  }
 }
 
 (async () => {

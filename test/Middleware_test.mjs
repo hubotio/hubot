@@ -1,17 +1,9 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
-
-const { describe, it, beforeEach, afterEach } = require('node:test')
-const assert = require('node:assert/strict')
-
-// Hubot classes
-const Robot = require('../src/robot')
-const TextMessage = require('../src/message').TextMessage
-const Response = require('../src/response')
-const Middleware = require('../src/middleware')
-
-const { hook, reset } = require('./fixtures/RequireMocker.js')
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
+import { Robot, TextMessage, Response, Middleware } from '../index.mjs'
+import mockAdapter from './fixtures/MockAdapter.mjs'
 
 describe('Middleware', () => {
   describe('Unit Tests', () => {
@@ -98,8 +90,7 @@ describe('Middleware', () => {
     let testListener = null
     let testMessage = null
     beforeEach(async () => {
-      hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+      robot = new Robot(mockAdapter, false, 'TestHubot')
       await robot.loadAdapter()
       await robot.run
 
@@ -122,7 +113,6 @@ describe('Middleware', () => {
     })
 
     afterEach(() => {
-      reset()
       robot.shutdown()
     })
 
@@ -170,5 +160,5 @@ describe('Middleware', () => {
 })
 
 function __guard__ (value, transform) {
-  (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
 }

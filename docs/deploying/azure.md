@@ -37,13 +37,12 @@ First, run the follow command to add `deploy.cmd` to your hubot directory. This 
 
 Then, edit this file and look for the sections that give you steps 1, 2 and 3. You're going to add a 4th step:
 
-    :: 4. Create Hubot file with a coffee extension
-    copy /Y "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot" "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot.coffee"
+    :: 4. Create Hubot file with a js extension
+    copy /Y "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot" "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\Hubot.mjs"
 
 Now, create a new file in the base directory of hubot called `server.js` and put these two lines into it:
 
-    require('coffeescript/register');
-    module.exports = require('hubot/bin/hubot.coffee');
+    module.exports = await import('hubot/bin/Hubot.mjs');
 
 Finally you will need to add the environment variables to the website to make sure it runs properly. You can either do it through the GUI (under configuration) or you can use the Azure PowerShell command line, as follows (example is showing slack as an adapter and mynewhubot as the website name).
 

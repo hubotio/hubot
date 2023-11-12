@@ -1,20 +1,22 @@
 'use strict'
-const EventEmitter = require('events').EventEmitter
-const fs = require('fs')
-const path = require('path')
-const pathToFileURL = require('url').pathToFileURL
 
-const pino = require('pino')
-const HttpClient = require('./httpclient')
+import EventEmitter from 'node:events'
+import fs from 'node:fs'
+import path from 'node:path'
+import { pathToFileURL, fileURLToPath } from 'node:url'
+import pino from 'pino'
+import HttpClient from './HttpClient.mjs'
+import Brain from './Brain.mjs'
+import Response from './Response.mjs'
+import { Listener, TextListener } from './Listener.mjs'
+import Message from './Message.mjs'
+import Middleware from './Middleware.mjs'
 
-const Brain = require('./brain')
-const Response = require('./response')
-const Listener = require('./listener')
-const Message = require('./message')
-const Middleware = require('./middleware')
-
-const HUBOT_DEFAULT_ADAPTERS = ['campfire', 'shell']
+const HUBOT_DEFAULT_ADAPTERS = ['Campfire', 'Shell']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 class Robot {
   // Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -37,6 +39,14 @@ class Robot {
     this.brain = new Brain(this)
     this.alias = alias
     this.adapter = null
+    this.adaptername = 'Shell'
+    if (adapter && typeof (adapter) === 'object') {
+      this.adapter = adapter
+      this.adapterName = adapter.name ?? adapter.constructor.name
+    } else {
+      this.adapterName = adapter ?? this.adaptername
+    }
+
     this.shouldEnableHttpd = httpd ?? true
     this.datastore = null
     this.Response = Response
@@ -56,7 +66,6 @@ class Robot {
     this.globalHttpOptions = {}
 
     this.parseVersion()
-    this.adapterName = adapter ?? 'shell'
     this.errorHandlers = []
 
     this.on('error', (err, res) => {
@@ -78,7 +87,7 @@ class Robot {
   //
   // Returns nothing.
   listen (matcher, options, callback) {
-    this.listeners.push(new Listener.Listener(this, matcher, options, callback))
+    this.listeners.push(new Listener(this, matcher, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages based on
@@ -91,7 +100,7 @@ class Robot {
   //
   // Returns nothing.
   hear (regex, options, callback) {
-    this.listeners.push(new Listener.TextListener(this, regex, options, callback))
+    this.listeners.push(new TextListener(this, regex, options, callback))
   }
 
   // Public: Adds a Listener that attempts to match incoming messages directed
@@ -328,12 +337,8 @@ class Robot {
     }
   }
 
-  async loadcoffee (filePath) {
-    return await this.loadjs(filePath)
-  }
-
   async loadjs (filePath) {
-    const script = require(filePath)
+    const script = (await import(filePath)).default
     if (typeof script === 'function') {
       script(this)
     } else {
@@ -352,7 +357,7 @@ class Robot {
     const full = path.join(filepath, path.basename(filename))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (['js', 'mjs', 'coffee'].indexOf(ext) === -1) {
+    if (['js', 'mjs'].indexOf(ext) === -1) {
       this.logger.debug(`Skipping unsupported file type ${full}`)
       return
     }
@@ -386,15 +391,19 @@ class Robot {
   // packages - An Array of packages containing hubot scripts to load.
   //
   // Returns nothing.
-  loadExternalScripts (packages) {
+  async loadExternalScripts (packages) {
     this.logger.debug('Loading external-scripts from npm packages')
 
     try {
       if (Array.isArray(packages)) {
-        return packages.forEach(pkg => require(pkg)(this))
+        for await (const pkg of packages) {
+          (await import(pkg)).default(this)
+        }
+        return
       }
-
-      Object.keys(packages).forEach(key => require(key)(this, packages[key]))
+      for await (const key of Object.keys(packages)) {
+        (await import(key)).default(this, packages[key])
+      }
     } catch (error) {
       this.logger.error(`Error loading scripts from npm package - ${error.stack}`)
       throw error
@@ -413,9 +422,9 @@ class Robot {
     const limit = process.env.EXPRESS_LIMIT || '100kb'
     const paramLimit = parseInt(process.env.EXPRESS_PARAMETER_LIMIT) || 1000
 
-    const express = require('express')
-    const basicAuth = require('express-basic-auth')
-    const multipart = require('connect-multiparty')
+    const express = (await import('express')).default
+    const basicAuth = (await import('express-basic-auth')).default
+    const multipart = (await import('connect-multiparty')).default
 
     const app = express()
 
@@ -475,19 +484,23 @@ class Robot {
   //
   // Returns nothing.
   async loadAdapter (adapterPath = null) {
+    if (this.adapter) {
+      this.adapter = await this.adapter.use(this)
+      return
+    }
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
-    const ext = path.extname(adapterPath ?? '') ?? '.js'
+    const ext = path.extname(adapterPath ?? '') ?? '.mjs'
     try {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
-        this.adapter = this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', this.adapterName)))
-      } else if (['.js', '.cjs', '.coffee'].includes(ext)) {
-        this.adapter = this.requireAdapterFrom(path.resolve(adapterPath))
+        this.adapter = await this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', `${this.adapterName}.mjs`)))
+      } else if (['.js', '.cjs'].includes(ext)) {
+        this.adapter = await this.requireAdapterFrom(path.resolve(adapterPath))
       } else if (['.mjs'].includes(ext)) {
         this.adapter = await this.importAdapterFrom(pathToFileURL(path.resolve(adapterPath)).href)
       } else {
         const adapterPathInCurrentWorkingDirectory = this.adapterName
         try {
-          this.adapter = this.requireAdapterFrom(adapterPathInCurrentWorkingDirectory)
+          this.adapter = await this.requireAdapterFrom(adapterPathInCurrentWorkingDirectory)
         } catch (err) {
           if (err.name === 'SyntaxError') {
             this.adapter = await this.importAdapterFrom(adapterPathInCurrentWorkingDirectory)
@@ -502,8 +515,8 @@ class Robot {
     }
   }
 
-  requireAdapterFrom (adapaterPath) {
-    return require(adapaterPath).use(this)
+  async requireAdapterFrom (adapaterPath) {
+    return await this.importAdapterFrom(adapaterPath)
   }
 
   async importAdapterFrom (adapterPath) {
@@ -519,12 +532,12 @@ class Robot {
 
   // Private: load help info from a loaded script.
   //
-  // path - A String path to the file on disk.
+  // filePath - A String path to the file on disk.
   //
   // Returns nothing.
-  parseHelp (path) {
+  parseHelp (filePath) {
     const scriptDocumentation = {}
-    const body = fs.readFileSync(require.resolve(path), 'utf-8')
+    const body = fs.readFileSync(path.resolve(filePath), 'utf-8')
 
     const useStrictHeaderRegex = /^["']use strict['"];?\s+/
     const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)
@@ -661,7 +674,7 @@ class Robot {
   //
   // Returns a String of the version number.
   parseVersion () {
-    const pkg = require(path.join(__dirname, '..', 'package.json'))
+    const pkg = fs.readFileSync(path.join(__dirname, '..', 'package.json'))
     this.version = pkg.version
 
     return this.version
@@ -720,8 +733,6 @@ class Robot {
   }
 }
 
-module.exports = Robot
-
 function isCatchAllMessage (message) {
   return message instanceof Message.CatchAllMessage
 }
@@ -748,9 +759,7 @@ function removeCommentPrefix (line) {
   return line.replace(/^[#/]+\s*/, '')
 }
 
-function extend (obj/* , ...sources */) {
-  const sources = [].slice.call(arguments, 1)
-
+function extend (obj, ...sources) {
   sources.forEach((source) => {
     if (typeof source !== 'object') {
       return
@@ -763,3 +772,5 @@ function extend (obj/* , ...sources */) {
 
   return obj
 }
+
+export default Robot

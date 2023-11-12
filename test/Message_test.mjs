@@ -1,14 +1,8 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
-
-const { describe, it } = require('node:test')
-const assert = require('node:assert/strict')
-
-// Hubot classes
-const User = require('../src/user')
-const Message = require('../src/message').Message
-const TextMessage = require('../src/message').TextMessage
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import { User, Message, TextMessage } from '../index.mjs'
 
 describe('Message', () => {
   const user = new User({

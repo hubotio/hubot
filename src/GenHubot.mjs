@@ -1,6 +1,6 @@
-const { spawnSync } = require('child_process')
-const File = require('fs')
-const path = require('path')
+import { spawnSync } from 'node:child_process'
+import File from 'node:fs'
+import path from 'node:path'
 
 function runCommands (hubotDirectory, options) {
   options.hubotInstallationPath = options?.hubotInstallationPath ?? 'hubot'
@@ -13,8 +13,19 @@ function runCommands (hubotDirectory, options) {
   const envFilePath = path.resolve(process.cwd(), '.env')
   process.chdir(hubotDirectory)
 
-  spawnSync('npm', ['init', '-y'])
-  spawnSync('npm', ['i', options.hubotInstallationPath].concat(options.adapter, 'hubot-help', 'hubot-rules', 'hubot-diagnostics'))
+  let output = spawnSync('npm', ['init', '-y'])
+  console.log('npm init', output.stderr.toString())
+  if (options.hubotInstallationPath !== 'hubot') {
+    output = spawnSync('npm', ['pack', `${options.hubotInstallationPath}`])
+    console.log('npm pack', output.stderr.toString(), output.stdout.toString())
+    const customHubotPackage = JSON.parse(File.readFileSync(`${options.hubotInstallationPath}/package.json`, 'utf8'))
+    output = spawnSync('npm', ['i', `${customHubotPackage.name}-${customHubotPackage.version}.tgz`])
+    console.log(`npm i ${customHubotPackage.name}-${customHubotPackage.version}.tgz`, output.stderr.toString(), output.stdout.toString())
+  } else {
+    output = spawnSync('npm', ['i', 'hubot@latest'])
+  }
+  output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.adapter]).filter(Boolean))
+  console.log('npm i', output.stderr.toString(), output.stdout.toString())
   spawnSync('mkdir', ['scripts'])
   spawnSync('touch', ['external-scripts.json'])
 
@@ -50,6 +61,7 @@ export default (robot) => {
   packageJson.scripts = {
     start: 'hubot'
   }
+  packageJson.description = 'A simple helpful robot for your Company'
   if (options.adapter) {
     packageJson.scripts.start += ` --adapter ${options.adapter}`
   }
@@ -79,7 +91,7 @@ export default (robot) => {
     console.log('.env file not found, continuing to the next operation.')
   }
 }
-module.exports = (hubotDirectory, options) => {
+export default (hubotDirectory, options) => {
   try {
     runCommands(hubotDirectory, options)
   } catch (error) {

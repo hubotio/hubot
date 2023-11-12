@@ -1,8 +1,7 @@
 'use strict'
 
-const EventEmitter = require('events').EventEmitter
-
-const User = require('./user')
+import EventEmitter from 'node:events'
+import User from './User.mjs'
 
 // If necessary, reconstructs a User object. Returns either:
 //
@@ -239,4 +238,4 @@ class Brain extends EventEmitter {
   }
 }
 
-module.exports = Brain
+export default Brain

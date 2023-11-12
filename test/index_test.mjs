@@ -1,29 +1,14 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import {
+  Adapter, User, Brain, Robot, Response, Listener, TextListener,
+  Message, TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage, loadBot
+} from '../index.mjs'
+import mockAdapter from './fixtures/MockAdapter.mjs'
 
-const { describe, it } = require('node:test')
-const assert = require('assert/strict')
-
-const { hook, reset } = require('./fixtures/RequireMocker.js')
-
-// Hubot classes
-const Hubot = require('../es2015.js')
-const User = Hubot.User
-const Brain = Hubot.Brain
-const Robot = Hubot.Robot
-const Adapter = Hubot.Adapter
-const Response = Hubot.Response
-const Listener = Hubot.Listener
-const TextListener = Hubot.TextListener
-const Message = Hubot.Message
-const TextMessage = Hubot.TextMessage
-const EnterMessage = Hubot.EnterMessage
-const LeaveMessage = Hubot.LeaveMessage
-const TopicMessage = Hubot.TopicMessage
-const CatchAllMessage = Hubot.CatchAllMessage
-
-describe('hubot/es2015', () => {
+describe('hubot/index', () => {
   it('exports User class', () => {
     class MyUser extends User {}
     const user = new MyUser('id123', { foo: 'bar' })
@@ -48,15 +33,12 @@ describe('hubot/es2015', () => {
   })
 
   it('exports Robot class', async () => {
-    hook('hubot-mock-adapter', require('./fixtures/mock-adapter.js'))
-
     class MyRobot extends Robot {}
-    const robot = new MyRobot('hubot-mock-adapter', false, 'TestHubot')
+    const robot = new MyRobot(mockAdapter, false, 'TestHubot')
     await robot.loadAdapter()
     assert.ok(robot instanceof Robot)
     assert.equal(robot.name, 'TestHubot')
     robot.shutdown()
-    reset()
   })
 
   it('exports Adapter class', () => {
@@ -179,8 +161,8 @@ describe('hubot/es2015', () => {
   })
 
   it('exports loadBot function', () => {
-    assert.ok(Hubot.loadBot && typeof Hubot.loadBot === 'function')
-    const robot = Hubot.loadBot('adapter', false, 'botName', 'botAlias')
+    assert.ok(loadBot && typeof loadBot === 'function')
+    const robot = loadBot('adapter', false, 'botName', 'botAlias')
     assert.equal(robot.name, 'botName')
     assert.equal(robot.alias, 'botAlias')
     robot.shutdown()

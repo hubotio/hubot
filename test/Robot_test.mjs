@@ -1,21 +1,10 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
-require('coffeescript/register.js')
-const { describe, it, beforeEach, afterEach } = require('node:test')
-const assert = require('assert/strict')
-
-// Hubot classes
-const Robot = require('../src/robot.js')
-const CatchAllMessage = require('../src/message.js').CatchAllMessage
-const EnterMessage = require('../src/message.js').EnterMessage
-const LeaveMessage = require('../src/message.js').LeaveMessage
-const TextMessage = require('../src/message.js').TextMessage
-const TopicMessage = require('../src/message.js').TopicMessage
-const User = require('../src/user.js')
-const path = require('path')
-const { hook, reset } = require('./fixtures/RequireMocker.js')
-const mockAdapter = require('./fixtures/mock-adapter.js')
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
+import path from 'node:path'
+import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User } from '../index.mjs'
+import mockAdapter from './fixtures/MockAdapter.mjs'
 describe('Robot', () => {
   describe('#http', () => {
     let robot = null
@@ -65,8 +54,10 @@ describe('Robot', () => {
 
   describe('#respondPattern', () => {
     let robot = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot', 't-bot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot', 't-bot')
+      await robot.loadAdapter()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -186,8 +177,10 @@ describe('Robot', () => {
   describe('#receive', () => {
     let robot = null
     let user = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
       user = new User('1', { name: 'node', room: '#test' })
     })
     afterEach(() => {
@@ -272,8 +265,10 @@ describe('Robot', () => {
   })
   describe('#loadFile', () => {
     let robot = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
@@ -334,14 +329,12 @@ describe('Robot', () => {
   describe('Sending API', () => {
     let robot = null
     beforeEach(async () => {
-      hook('hubot-mock-adapter', mockAdapter)
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+      robot = new Robot(mockAdapter, false, 'TestHubot')
       await robot.loadAdapter()
       await robot.run()
     })
     afterEach(() => {
       robot.shutdown()
-      reset()
     })
 
     it('#send: delegates to adapter "send" with proper context', async () => {
@@ -378,8 +371,10 @@ describe('Robot', () => {
   describe('Listener Registration', () => {
     let robot = null
     let user = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
       user = new User('1', { name: 'node', room: '#test' })
     })
     afterEach(() => {
@@ -535,8 +530,10 @@ describe('Robot', () => {
   describe('Message Processing', () => {
     let robot = null
     let user = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
       user = new User('1', { name: 'node', room: '#test' })
     })
     afterEach(() => {
@@ -647,8 +644,10 @@ describe('Robot', () => {
   describe('Listener Middleware', () => {
     let robot = null
     let user = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
       user = new User('1', { name: 'node', room: '#test' })
     })
     afterEach(() => {
@@ -726,8 +725,10 @@ describe('Robot', () => {
   describe('Receive Middleware', () => {
     let robot = null
     let user = null
-    beforeEach(() => {
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
       user = new User('1', { name: 'node', room: '#test' })
     })
     afterEach(() => {
@@ -841,8 +842,7 @@ describe('Robot', () => {
     let robot = null
     let user = null
     beforeEach(async () => {
-      hook('hubot-mock-adapter', mockAdapter)
-      robot = new Robot('hubot-mock-adapter', false, 'TestHubot')
+      robot = new Robot(mockAdapter, false, 'TestHubot')
       user = new User('1', { name: 'node', room: '#test' })
       robot.alias = 'Hubot'
       await robot.loadAdapter()
@@ -966,29 +966,6 @@ describe('Robot', () => {
       await robot.receive(new TextMessage('tester', 'hubot test'))
     })
   })
-  describe('Robot Coffeescript', () => {
-    let robot = null
-    beforeEach(async () => {
-      robot = new Robot('MockAdapter', false, 'TestHubot')
-      robot.alias = 'Hubot'
-      await robot.loadAdapter('./test/fixtures/MockAdapter.coffee')
-      await robot.loadFile(path.resolve('./test/fixtures/'), 'TestScript.coffee')
-      await robot.run()
-    })
-    afterEach(() => {
-      robot.shutdown()
-    })
-    it('should load a CoffeeScript adapter from a file', async () => {
-      assert.equal(robot.adapter.name, 'MockAdapter')
-    })
-    it('should load a coffeescript file and respond to a message', async () => {
-      const sent = async (envelop, strings) => {
-        assert.deepEqual(strings, ['test response from coffeescript'])
-      }
-      robot.adapter.on('send', sent)
-      await robot.receive(new TextMessage('tester', 'hubot test'))
-    })
-  })
   describe('Robot Defaults', () => {
     let robot = null
     beforeEach(async () => {
@@ -1001,15 +978,14 @@ describe('Robot', () => {
       robot.shutdown()
       process.removeAllListeners()
     })
-    it('should load the builtin shell adapter by default', async () => {
+    it('should load the builtin Shell adapter by default', async () => {
       assert.equal(robot.adapter.name, 'Shell')
     })
   })
   describe('Robot HTTP Service', () => {
     it('should start a web service', async () => {
       process.env.PORT = 0
-      hook('hubot-mock-adapter', mockAdapter)
-      const robot = new Robot('hubot-mock-adapter', true, 'TestHubot')
+      const robot = new Robot(mockAdapter, true, 'TestHubot')
       await robot.loadAdapter()
       await robot.run()
       const port = robot.server.address().port
@@ -1017,7 +993,6 @@ describe('Robot', () => {
       assert.equal(res.status, 404)
       assert.match(await res.text(), /Cannot GET \/hubot\/version/ig)
       robot.shutdown()
-      reset()
       delete process.env.PORT
     })
   })

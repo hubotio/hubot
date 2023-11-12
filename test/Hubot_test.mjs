@@ -1,19 +1,21 @@
 'use strict'
 
-/* eslint-disable no-unused-expressions */
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import path from 'node:path'
+import { spawn } from 'node:child_process'
+import { TextMessage, User } from '../index.mjs'
+import { fileURLToPath } from 'node:url'
 
-const { describe, it } = require('node:test')
-const assert = require('assert/strict')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const root = __dirname.replace(/test$/, '')
-const { TextMessage, User } = require('../index.js')
-const path = require('node:path')
-const { spawn } = require('child_process')
 
-describe('Running bin/hubot.js', () => {
+describe('Running bin/Hubot.mjs', () => {
   it('should load adapter from HUBOT_FILE environment variable', async () => {
     process.env.HUBOT_HTTPD = 'false'
     process.env.HUBOT_FILE = path.resolve(root, 'test', 'fixtures', 'MockAdapter.mjs')
-    const hubot = require('../bin/hubot.js')
+    const hubot = (await import('../bin/Hubot.mjs')).default
     await hubot.loadFile(path.resolve(root, 'test', 'fixtures'), 'TestScript.mjs')
     while (!hubot.adapter) {
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -34,7 +36,7 @@ describe('Running bin/hubot.js', () => {
   })
 
   it('should output a help message when run with --help', (t, done) => {
-    const hubot = process.platform === 'win32' ? spawn('node', ['./bin/hubot.js', '--help']) : spawn('./bin/hubot', ['--help'])
+    const hubot = process.platform === 'win32' ? spawn('node', ['./bin/Hubot.mjs', '--help']) : spawn('./bin/hubot', ['--help'])
     const expected = `Usage: hubot [options]
   -a, --adapter HUBOT_ADAPTER
   -f, --file HUBOT_FILE
