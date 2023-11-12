@@ -1,5 +1,3 @@
 #!/usr/bin/env node
 
-import('./Hubot.mjs').then(async ({ default: hubot }) => {
-  await hubot.run()
-})
+import('./Hubot.mjs').then(async ({ default: robot }) => {})

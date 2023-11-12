@@ -58,7 +58,7 @@ exports.use = (robot) => new Sample(robot)
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": ">= 11"
+    "hubot": ">=11"
   }
   ```
 
@@ -112,7 +112,7 @@ Another option is to load the file from local disk.
   "dependencies": {
   },
   "peerDependencies": {
-    "hubot": ">= 11"
+    "hubot": ">=11"
   }
   ```
 
