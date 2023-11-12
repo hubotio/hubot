@@ -399,6 +399,7 @@ class Robot {
         for await (const pkg of packages) {
           (await import(pkg)).default(this)
         }
+        return
       }
       for await (const key of Object.keys(packages)) {
         (await import(key)).default(this, packages[key])
