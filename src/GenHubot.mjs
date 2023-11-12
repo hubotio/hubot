@@ -17,7 +17,7 @@ function runCommands (hubotDirectory, options) {
   console.log('npm init', output.stderr.toString())
   if (options.hubotInstallationPath !== 'hubot') {
     output = spawnSync('npm', ['pack', `${options.hubotInstallationPath}`])
-    console.log('npm pack', output.stderr.toString(), output.stdout.toString()) 
+    console.log('npm pack', output.stderr.toString(), output.stdout.toString())
     const customHubotPackage = JSON.parse(File.readFileSync(`${options.hubotInstallationPath}/package.json`, 'utf8'))
     output = spawnSync('npm', ['i', `${customHubotPackage.name}-${customHubotPackage.version}.tgz`])
     console.log(`npm i ${customHubotPackage.name}-${customHubotPackage.version}.tgz`, output.stderr.toString(), output.stdout.toString())
