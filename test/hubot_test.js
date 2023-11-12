@@ -10,7 +10,7 @@ const path = require('node:path')
 const { spawn } = require('child_process')
 
 describe('Running bin/hubot.js', () => {
-  it('should load adapter from HUBOT_FILE environment variable', async function () {
+  it('should load adapter from HUBOT_FILE environment variable', async () => {
     process.env.HUBOT_HTTPD = 'false'
     process.env.HUBOT_FILE = path.resolve(root, 'test', 'fixtures', 'MockAdapter.mjs')
     const hubot = require('../bin/hubot.js')
