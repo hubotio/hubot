@@ -19,6 +19,8 @@ function runCommands (hubotDirectory, options) {
   console.log('npm i', output.stderr.toString(), output.stdout.toString())
   spawnSync('mkdir', ['scripts'])
   spawnSync('touch', ['external-scripts.json'])
+  output = spawnSync('ls', ['-al', 'node_modules'])
+  console.log(output.stderr.toString(), output.stdout.toString())
 
   const externalScriptsPath = path.resolve('./', 'external-scripts.json')
   let escripts = File.readFileSync(externalScriptsPath, 'utf8')
