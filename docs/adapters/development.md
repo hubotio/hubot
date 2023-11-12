@@ -8,10 +8,10 @@ permalink: /adapters/development.html
 
 ## Adapter Basics
 
-All adapters inherit from the Adapter class in the `src/adapter.js` file.
+All adapters inherit from the Adapter class in the `src/Adapter.mjs` file.
 
 ```javascript
-const Adapter = require('hubot/index.js').Adapter;
+const Adapter = require('hubot/index.mjs').Adapter;
 ```
 
 There are certain methods that you will want to override.  Here is a basic stub of what an extended Adapter class would look like:

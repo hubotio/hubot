@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require('./hubot.js')
+import('./Hubot.mjs').then(({ default: hubot }) => {
+  hubot.run();
+});

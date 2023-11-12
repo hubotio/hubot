@@ -1,16 +1,13 @@
 'use strict'
 
-const { describe, it, beforeEach } = require('node:test')
-const assert = require('assert/strict')
-
-const Robot = require('../src/robot')
-const { TextMessage } = require('../src/message.js')
-const User = require('../src/user.js')
+import { describe, it, beforeEach } from 'node:test'
+import assert from 'node:assert/strict'
+import { Robot, TextMessage, User } from '../index.mjs'
 
 describe('Shell Adapter', () => {
   let robot = null
   beforeEach(async () => {
-    robot = new Robot('shell', false, 'TestHubot')
+    robot = new Robot('Shell', false, 'TestHubot')
     await robot.loadAdapter()
   })
 

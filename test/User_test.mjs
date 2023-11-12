@@ -1,8 +1,8 @@
 'use strict'
 
-const { describe, it } = require('node:test')
-const assert = require('assert/strict')
-const User = require('../src/user')
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import { User } from '../index.mjs'
 
 describe('User', () =>
   describe('new', function () {

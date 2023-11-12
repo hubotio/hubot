@@ -1,16 +1,9 @@
 'use strict'
 
-const HTTPS = require('https')
-const EventEmitter = require('events').EventEmitter
-
-const Adapter = require('../adapter')
-
-const Message = require('../message')
-
-const TextMessage = Message.TextMessage
-const EnterMessage = Message.EnterMessage
-const LeaveMessage = Message.LeaveMessage
-const TopicMessage = Message.TopicMessage
+import HTTPS from 'node:https'
+import EventEmitter from 'node:events'
+import Adapter from '../Adapter.mjs'
+import { TextMessage, EnterMessage, LeaveMessage, TopicMessage } from '../Message.mjs'
 
 class Campfire extends Adapter {
   send (envelope/* , ...strings */) {
@@ -156,8 +149,6 @@ class Campfire extends Adapter {
     self.emit('connected')
   }
 }
-
-exports.use = robot => new Campfire(robot)
 
 class CampfireStreaming extends EventEmitter {
   constructor (options, robot) {
@@ -390,5 +381,11 @@ class CampfireStreaming extends EventEmitter {
     }
 
     return request.on('error', err => logger.error(`Campfire request error: ${err}`))
+  }
+}
+
+export default {
+  use (robot) {
+    return new Campfire(robot)
   }
 }

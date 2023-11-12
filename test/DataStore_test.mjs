@@ -1,10 +1,9 @@
 'use strict'
 
-const { describe, it, beforeEach, afterEach } = require('node:test')
-const assert = require('assert/strict')
-
-const Brain = require('../src/brain.js')
-const InMemoryDataStore = require('../src/datastores/memory.js')
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
+import InMemoryDataStore from '../src/datastores/Memory.mjs'
+import Brain from '../src/Brain.mjs'
 
 describe('Datastore', () => {
   let robot = null

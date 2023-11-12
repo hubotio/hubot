@@ -1,6 +1,6 @@
-const { spawnSync } = require('child_process')
-const File = require('fs')
-const path = require('path')
+import { spawnSync } from 'node:child_process'
+import File from 'node:fs'
+import path from 'node:path'
 
 function runCommands (hubotDirectory, options) {
   options.hubotInstallationPath = options?.hubotInstallationPath ?? 'hubot'
@@ -79,7 +79,7 @@ export default (robot) => {
     console.log('.env file not found, continuing to the next operation.')
   }
 }
-module.exports = (hubotDirectory, options) => {
+export default (hubotDirectory, options) => {
   try {
     runCommands(hubotDirectory, options)
   } catch (error) {

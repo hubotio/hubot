@@ -1,12 +1,10 @@
 'use strict'
 
-const fs = require('fs')
-const pathResolve = require('path').resolve
-
-const OptParse = require('../src/OptParse.js')
-
-const Hubot = require('..')
-const create = require('../src/GenHubot.js')
+import fs from 'node:fs'
+import { resolve as pathResolve } from 'node:path'
+import OptParse from '../src/OptParse.mjs'
+import Hubot from '../index.mjs'
+import create from '../src/GenHubot.mjs'
 
 const switches = [
   ['-a', '--adapter HUBOT_ADAPTER', 'The Adapter to use, e.g. "shell" (to load the default hubot shell adapter)'],
@@ -97,7 +95,7 @@ if (options.file) {
 }
 
 const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)
-module.exports = robot
+export default robot
 
 async function loadScripts () {
   await robot.load(pathResolve('.', 'scripts'))

@@ -33,10 +33,10 @@ Implement a phased approach to deprecate `robot.http` all together in favor of `
 2. Add a deprecation warning to `robot.http`
 3. Remove `robot.http` in a future release
 */
-const path = require('path')
-const http = require('http')
-const https = require('https')
-const qs = require('querystring')
+import path from 'node:path'
+import http from 'node:http'
+import https from 'node:https'
+import qs from 'node:querystring'
 
 const nonPassThroughOptions = [
   'headers', 'hostname', 'encoding', 'auth', 'port',
@@ -308,5 +308,8 @@ const reduce = function (a, b) {
   }
   return a
 }
-
-exports.create = (url, options) => new ScopedClient(url, options)
+export default {
+  create (url, options) {
+    return new ScopedClient(url, options)
+  }
+}

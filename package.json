@@ -1,6 +1,6 @@
 {
   "name": "hubot",
-  "version": "9.1.0",
+  "version": "0.0.0-development",
   "author": "hubot",
   "keywords": [
     "github",
@@ -27,7 +27,7 @@
     "node": ">= 18",
     "npm": ">= 9"
   },
-  "main": "./index",
+  "main": "./index.mjs",
   "bin": {
     "hubot": "./bin/hubot"
   },

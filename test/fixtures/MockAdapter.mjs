@@ -1,8 +1,8 @@
 'use strict'
 
-import { Adapter } from '../../index.js'
+import { Adapter } from '../../index.mjs'
 
-class MockAdapter extends Adapter {
+export class MockAdapter extends Adapter {
   constructor (robot) {
     super(robot)
     this.name = 'MockAdapter'
@@ -32,9 +32,6 @@ class MockAdapter extends Adapter {
   close () {
     this.emit('closed')
   }
-}
-export {
-  MockAdapter
 }
 export default {
   use (robot) {

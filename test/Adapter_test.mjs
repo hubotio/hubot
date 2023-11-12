@@ -1,9 +1,10 @@
 'use strict'
-const { describe, it, beforeEach, afterEach } = require('node:test')
-const assert = require('assert/strict')
-const Adapter = require('../src/adapter')
-const { TextMessage } = require('../src/message.js')
-const User = require('../src/user.js')
+
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
+import Adapter from '../src/Adapter.mjs'
+import { TextMessage } from '../src/Message.mjs'
+import User from '../src/User.mjs'
 
 describe('Adapter', () => {
   let robot = null

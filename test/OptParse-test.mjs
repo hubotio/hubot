@@ -1,6 +1,6 @@
-const { describe, it } = require('node:test')
-const assert = require('node:assert/strict')
-const OptParse = require('../src/OptParse.js')
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import OptParse from '../src/OptParse.mjs'
 
 describe('CLI Argument Parsing', () => {
   it('should parse arguments into options', () => {
@@ -38,8 +38,8 @@ describe('CLI Argument Parsing', () => {
     Parser.on('alias', (opt, value) => {
       options.alias = value
     })
-    Parser.parse(['-a', 'shell', '-d', '--alias', 'bot'])
-    assert.deepEqual(options.adapter, 'shell')
+    Parser.parse(['-a', 'Shell', '-d', '--alias', 'bot'])
+    assert.deepEqual(options.adapter, 'Shell')
     assert.deepEqual(options.enableHttpd, false)
     assert.deepEqual(options.alias, 'bot')
   })
