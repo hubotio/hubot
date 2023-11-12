@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import('./Hubot.mjs').then(({ default: hubot }) => {
-  hubot.run();
-});
+import('./Hubot.mjs').then(async ({ default: hubot }) => {
+  await hubot.run()
+})
