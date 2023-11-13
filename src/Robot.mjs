@@ -491,7 +491,7 @@ class Robot {
       return
     }
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
-    const ext = path.extname(adapterPath ?? '') ?? '.mjs'
+    const ext = path.extname(adapterPath ?? '')
     try {
       if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
         this.adapter = await this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', `${this.adapterName}.mjs`)))
@@ -500,16 +500,7 @@ class Robot {
       } else if (['.mjs'].includes(ext)) {
         this.adapter = await this.importAdapterFrom(path.resolve(adapterPath))
       } else {
-        const adapterPathInCurrentWorkingDirectory = this.adapterName
-        try {
-          this.adapter = await this.requireAdapterFrom(adapterPathInCurrentWorkingDirectory)
-        } catch (err) {
-          if (err.name === 'SyntaxError') {
-            this.adapter = await this.importAdapterFrom(adapterPathInCurrentWorkingDirectory)
-          } else {
-            throw err
-          }
-        }
+        this.adapter = await this.importFromRepo(this.adapterName)
       }
     } catch (error) {
       this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${error}`)
@@ -524,6 +515,10 @@ class Robot {
   async importAdapterFrom (adapterPath) {
     const forImport = this.prepareForImport(adapterPath)
     return await (await import(forImport)).default.use(this)
+  }
+
+  async importFromRepo (adapterPath) {
+    return await (await import(adapterPath)).default.use(this)
   }
 
   // Public: Help Commands for Running Scripts.
