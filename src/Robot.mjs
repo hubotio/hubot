@@ -544,7 +544,7 @@ class Robot {
     let currentSection = null
     let nextSection
 
-    this.logger.debug(`Parsing help for ${path}`)
+    this.logger.debug(`Parsing help for ${filePath}`)
 
     for (let i = 0, line; i < lines.length; i++) {
       line = lines[i]
@@ -568,7 +568,7 @@ class Robot {
     }
 
     if (currentSection === null) {
-      this.logger.info(`${path} is using deprecated documentation syntax`)
+      this.logger.info(`${filePath} is using deprecated documentation syntax`)
       scriptDocumentation.commands = []
       for (let i = 0, line, cleanedLine; i < lines.length; i++) {
         line = lines[i]
