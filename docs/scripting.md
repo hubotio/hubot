@@ -985,74 +985,24 @@ Response middleware callbacks receive 1 parameters, `context` and are Promises/a
 
 # Testing Hubot Scripts
 
-[hubot-test-helper](https://github.com/mtsmfm/hubot-test-helper) is a good framework for unit testing Hubot scripts. (Note that, in order to use hubot-test-helper, you'll need a recent Node.js version with support for Promises.)
+I use [Node's Test Runner](https://nodejs.org/dist/latest-v20.x/docs/api/test.html) for writing and running tests for Hubot.
 
-Install the package in your Hubot instance:
+[package.json](../package.json)
 
-`% npm install hubot-test-helper --save-dev`
-
-You'll also need to install:
-
-* a JavaScript testing framework such as *Mocha*
-* an assertion library such as *chai* or *expect.js*
-* Or just use [Node's Test Runner](https://nodejs.org/dist/latest-v20.x/docs/api/test.html)
-
-You may also want to install:
-
-* a mocking library such as *Sinon.js* (if your script performs webservice calls or
-  other asynchronous actions)
-* Or just use Node Test Runner's Mocking facility
-
-[Note: This section is still refering to Coffeescript, but we've update Hubot for Javascript. We'll have to replace this when we get a JavaScript example.]
-
-Here is a sample script that tests the first couple of commands in the [Hubot sample script](https://github.com/hubotio/generator-hubot/blob/master/generators/app/templates/scripts/example.coffee).  This script uses *Mocha*, *chai*, *coffeescript*, and of course *hubot-test-helper*:
-
-**test/example-test.coffee**
-
-```coffeescript
-Helper = require('hubot-test-helper')
-chai = require 'chai'
-
-expect = chai.expect
-
-helper = new Helper('../scripts/example.coffee')
-
-describe 'example script', ->
-  beforeEach ->
-    @room = helper.createRoom()
-
-  afterEach ->
-    @room.destroy()
-
-  it 'doesn\'t need badgers', ->
-    @room.user.say('alice', 'did someone call for a badger?').then =>
-      expect(@room.messages).to.eql [
-        ['alice', 'did someone call for a badger?']
-        ['hubot', 'Badgers? BADGERS? WE DON\'T NEED NO STINKIN BADGERS']
-      ]
-
-  it 'won\'t open the pod bay doors', ->
-    @room.user.say('bob', '@hubot open the pod bay doors').then =>
-      expect(@room.messages).to.eql [
-        ['bob', '@hubot open the pod bay doors']
-        ['hubot', '@bob I\'m afraid I can\'t let you do that.']
-      ]
-
-  it 'will open the dutch doors', ->
-    @room.user.say('bob', '@hubot open the dutch doors').then =>
-      expect(@room.messages).to.eql [
-        ['bob', '@hubot open the dutch doors']
-        ['hubot', '@bob Opening dutch doors']
-      ]
+```json
+"scripts": {
+  "test": "node --test",
+}
 ```
-
-**sample output**
 
 ```sh
-% mocha --require coffeescript/register test/*.coffee
-  example script
-    ✓ doesn't need badgers
-    ✓ won't open the pod bay doors
-    ✓ will open the dutch doors
-  3 passing (212ms)
+npm t
 ```
+
+Checkout [Xample.mjs](../test/XampleTest.mjs) for an example that tests the [Xample.mjs](../test/scripts/Xample.mjs) script.
+
+In order to isolate your script from Hubot, I've created a [Dummy Adapter](../test/doubles/DummyAdapter.mjs) that you can use when starting a Robot instance to interact with and excercise your code. For now, my suggestion is to copy the `DummyAdapter` into your code so that you can modifiy as your needs evolve.
+
+Please feel free to create Github issues if you have questions or comments. I'm happy to collaborate.
+
+If you created your bot with `npx hubot --create xample-bot`, then the `DummyAdapter` is already there. Along with an example test.
