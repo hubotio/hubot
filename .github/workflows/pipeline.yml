@@ -87,7 +87,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 18.x
+          - 20.8.1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
