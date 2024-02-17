@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 18.x
+          - 20.x
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 18.x
+          - 20.x
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 18.x
+          - 20.x
     steps:
       - name: Checkout
         uses: actions/checkout@v3
