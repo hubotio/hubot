@@ -13,13 +13,19 @@ import dummyRobot from './doubles/DummyAdapter.mjs'
 describe('Xample testing Hubot scripts', () => {
   let robot = null
   beforeEach(async () => {
-    robot = new Robot(dummyRobot, false, 'Dumbotheelephant')
+    robot = new Robot(dummyRobot, true, 'Dumbotheelephant')
     await robot.loadAdapter()
-    await robot.loadFile('./test/scripts', 'Xample.mjs')
     await robot.run()
+    await robot.loadFile('./test/scripts', 'Xample.mjs')
   })
   afterEach(() => {
     robot.shutdown()
+  })
+  it('should handle /helo request', async () => {
+    const expected = "HELO World! I'm Dumbotheelephant."
+    const response = await fetch(`http://localhost:${robot.server.address().port}/helo`)
+    const actual = await response.text()
+    assert.strictEqual(actual, expected)
   })
   it('should reply with expected message', async () => {
     const expected = 'HELO World! I\'m Dumbotheelephant.'

@@ -56,6 +56,9 @@ export default (robot) => {
   robot.respond(/helo room/, async res => {
     await res.send('Hello World!')
   })
+  robot.router.get('/helo', async (req, res) => {
+    res.send("HELO World! I'm Dumbotheelephant.")
+  })
 }`)
 
   File.writeFileSync('./tests/doubles/DummyAdapter.mjs', `
@@ -125,14 +128,21 @@ export default (robot) => {
   describe('Xample testing Hubot scripts', () => {
     let robot = null
     beforeEach(async () => {
-      robot = new Robot(dummyRobot, false, 'Dumbotheelephant')
+      robot = new Robot(dummyRobot, true, 'Dumbotheelephant')
       await robot.loadAdapter()
-      await robot.loadFile('./scripts', 'Xample.mjs')
       await robot.run()
+      await robot.loadFile('./scripts', 'Xample.mjs')
     })
     afterEach(() => {
       robot.shutdown()
     })
+    it('should handle /helo request', async () => {
+      const expected = "HELO World! I'm Dumbotheelephant."
+      const url = 'http://localhost:' + robot.server.address().port + '/helo'
+      const response = await fetch(url)
+      const actual = await response.text()
+      assert.strictEqual(actual, expected)
+      })
     it('should reply with expected message', async () => {
       const expected = "HELO World! I'm Dumbotheelephant."
       const user = robot.brain.userForId('test-user', { name: 'test user' })
