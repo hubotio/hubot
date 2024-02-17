@@ -15,4 +15,7 @@ export default (robot) => {
   robot.respond(/helo (.*)/gi, async res => {
     await res.send(`Hello World! I'm ${robot.name}.`)
   })
+  robot.router.get('/helo', async (req, res) => {
+    res.send(`HELO World! I'm ${robot.name}.`)
+  })
 }
