@@ -36,3 +36,15 @@ Review `scripts/example.mjs`. Create more scripts in the `scripts` folder.
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
+
+# Hubot History
+
+[Cartoon with Hubot](https://www.youtube.com/watch?v=vq2jYFZVMDA&t=129s)
+
+[The Most Important Startup's Hardest Worker Isn't a Person](https://www.wired.com/2015/10/the-most-important-startups-hardest-worker-isnt-a-person/)
+
+[The Story of Hubot](https://www.youtube.com/watch?v=Je4TjjtFDNU)
+
+[Hubot by Hubotics](https://www.theoldrobots.com/hubot.html)
+
+[Automating Inefficiencies](https://zachholman.com/2011/01/automating-inefficiencies/)
