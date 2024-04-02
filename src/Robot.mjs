@@ -229,7 +229,8 @@ class Robot {
     }
 
     this.listen(isCatchAllMessage, options, async msg => {
-      await callback(msg.message)
+      msg.message = msg.message.message
+      await callback(msg)
     })
   }
 
