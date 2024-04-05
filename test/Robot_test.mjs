@@ -3,7 +3,7 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
-import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User } from '../index.mjs'
+import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User, Response } from '../index.mjs'
 import mockAdapter from './fixtures/MockAdapter.mjs'
 describe('Robot', () => {
   describe('#http', () => {
@@ -204,11 +204,30 @@ describe('Robot', () => {
     it('sends a CatchAllMessage if no listener matches', async () => {
       const testMessage = new TextMessage(user, 'message123')
       robot.listeners = []
+      let actual = null
       robot.catchAll(async (message) => {
-        assert.ok(message instanceof CatchAllMessage)
-        assert.deepEqual(message.message, testMessage)
+        actual = message
       })
       await robot.receive(testMessage)
+      assert.ok(actual.message instanceof CatchAllMessage)
+      assert.deepEqual(actual.message.message, testMessage)
+    })
+
+    it('calls the catch-all listener with a Response object', async () => {
+      const testMessage = new TextMessage(user, 'message123')
+
+      const listenerCallback = async () => {
+        assert.fail('Should not have called listener')
+      }
+      robot.hear(/^no-matches$/, listenerCallback)
+      let actual = null
+      robot.catchAll(async response => {
+        response.reply('caught by catchAll')
+        actual = response
+      })
+
+      await robot.receive(testMessage)
+      assert.ok(actual instanceof Response)
     })
 
     it('does not trigger a CatchAllMessage if a listener matches', async () => {
@@ -572,7 +591,7 @@ describe('Robot', () => {
       robot.hear(/^no-matches$/, listenerCallback)
 
       robot.catchAll(async response => {
-        assert.deepEqual(response.message, testMessage)
+        assert.deepEqual(response.message.message, testMessage)
       })
 
       await robot.receive(testMessage)
