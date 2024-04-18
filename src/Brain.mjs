@@ -157,9 +157,9 @@ class Brain extends EventEmitter {
     this.emit('loaded', this.data)
   }
 
-  // Public: Get an Array of User objects stored in the brain.
+  // Public: Get an object of User objects stored in the brain.
   //
-  // Returns an Array of User objects.
+  // Returns an object of User objects.
   users () {
     return this.data.users
   }
