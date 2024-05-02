@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import path from 'node:path'
 import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User, Response } from '../index.mjs'
 import mockAdapter from './fixtures/MockAdapter.mjs'
+
 describe('Robot', () => {
   describe('#http', () => {
     let robot = null
@@ -280,6 +281,22 @@ describe('Robot', () => {
       })
       await robot.receive(testMessage)
       assert.ok(goodListenerCalled)
+    })
+  })
+  describe('#load', () => {
+    let robot = null
+    beforeEach(async () => {
+      robot = new Robot(mockAdapter, false, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
+    })
+    afterEach(() => {
+      robot.shutdown()
+      process.removeAllListeners()
+    })
+    it('should load scripts in the same order that they are in the folder', async () => {
+      await robot.load(path.resolve('./test/ordered-scripts'))
+      assert.deepEqual(robot.loadedScripts, ['01-First', '02-Second', '03-Third'])
     })
   })
   describe('#loadFile', () => {

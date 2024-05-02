@@ -12,6 +12,7 @@ import { Listener, TextListener } from './Listener.mjs'
 import Message from './Message.mjs'
 import Middleware from './Middleware.mjs'
 
+const File = fs.promises
 const HUBOT_DEFAULT_ADAPTERS = ['Campfire', 'Shell']
 const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
@@ -380,10 +381,18 @@ class Robot {
   // Returns nothing.
   async load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
-
-    if (fs.existsSync(path)) {
-      const tasks = fs.readdirSync(path).sort().map(file => this.loadFile(path, file))
-      await Promise.all(tasks)
+    try {
+      const folder = await File.readdir(path, { withFileTypes: true })
+      for await (const file of folder) {
+        if (file.isDirectory()) continue
+        try {
+          await this.loadFile(path, file.name)
+        } catch (e) {
+          this.logger.error(`Error loading file ${file.name} - ${e.stack}`)
+        }
+      }
+    } catch (e) {
+      this.logger.error(`Path ${path} does not exist`)
     }
   }
 
