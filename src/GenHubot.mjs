@@ -49,7 +49,7 @@ function runCommands (hubotDirectory, options) {
 //   This is a test script.
 //
 
-export default (robot) => {
+export default async (robot) => {
   robot.respond(/helo$/, async res => {
     await res.reply("HELO World! I'm Dumbotheelephant.")
   })
@@ -92,7 +92,7 @@ export default (robot) => {
       this.robot.emit('play', envelope, ...strings)
     }
   
-    run () {
+    async run () {
       // This is required to get the scripts loaded
       this.emit('connected')
     }
@@ -108,7 +108,7 @@ export default (robot) => {
     }
   }
   export default {
-    use (robot) {
+    async use (robot) {
       return new DummyAdapter(robot)
     }
   }
@@ -128,12 +128,14 @@ export default (robot) => {
   describe('Xample testing Hubot scripts', () => {
     let robot = null
     beforeEach(async () => {
+      process.env.EXPRESS_PORT = 0
       robot = new Robot(dummyRobot, true, 'Dumbotheelephant')
       await robot.loadAdapter()
       await robot.run()
       await robot.loadFile('./scripts', 'Xample.mjs')
     })
     afterEach(() => {
+      delete process.env.EXPRESS_PORT
       robot.shutdown()
     })
     it('should handle /helo request', async () => {

@@ -332,21 +332,25 @@ class Robot {
   async loadmjs (filePath) {
     const forImport = this.prepareForImport(filePath)
     const script = await import(forImport)
+    let result = null
     if (typeof script?.default === 'function') {
-      script.default(this)
+      result = await script.default(this)
     } else {
       this.logger.warning(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to export default, got ${typeof script}`)
     }
+    return result
   }
 
   async loadjs (filePath) {
     const forImport = this.prepareForImport(filePath)
     const script = (await import(forImport)).default
+    let result = null
     if (typeof script === 'function') {
-      script(this)
+      result = await script(this)
     } else {
       this.logger.warning(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to module.exports, got ${typeof script}`)
     }
+    return result
   }
 
   // Public: Loads a file in path.
@@ -362,16 +366,17 @@ class Robot {
     // see https://github.com/hubotio/hubot/issues/1355
     if (['js', 'mjs'].indexOf(ext) === -1) {
       this.logger.debug(`Skipping unsupported file type ${full}`)
-      return
+      return null
     }
-
+    let result = null
     try {
-      await this[`load${ext}`](full)
+      result = await this[`load${ext}`](full)
       this.parseHelp(full)
     } catch (error) {
       this.logger.error(`Unable to load ${full}: ${error.stack}`)
       throw error
     }
+    return result
   }
 
   // Public: Loads every script in the given path.
@@ -381,12 +386,14 @@ class Robot {
   // Returns nothing.
   async load (path) {
     this.logger.debug(`Loading scripts from ${path}`)
+    const results = []
     try {
       const folder = await File.readdir(path, { withFileTypes: true })
       for await (const file of folder) {
         if (file.isDirectory()) continue
         try {
-          await this.loadFile(path, file.name)
+          const result = await this.loadFile(path, file.name)
+          results.push(result)
         } catch (e) {
           this.logger.error(`Error loading file ${file.name} - ${e.stack}`)
         }
@@ -394,6 +401,7 @@ class Robot {
     } catch (e) {
       this.logger.error(`Path ${path} does not exist`)
     }
+    return results
   }
 
   // Public: Load scripts from packages specified in the
@@ -460,7 +468,7 @@ class Robot {
     if (stat) {
       app.use(express.static(stat))
     }
-    const p = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       try {
         this.server = app.listen(port, address, () => {
           this.router = app
@@ -471,7 +479,6 @@ class Robot {
         reject(err)
       }
     })
-    return p
   }
 
   // Setup an empty router object

@@ -13,12 +13,14 @@ import dummyRobot from './doubles/DummyAdapter.mjs'
 describe('Xample testing Hubot scripts', () => {
   let robot = null
   beforeEach(async () => {
+    process.env.EXPRESS_PORT = 0
     robot = new Robot(dummyRobot, true, 'Dumbotheelephant')
     await robot.loadAdapter()
     await robot.run()
     await robot.loadFile('./test/scripts', 'Xample.mjs')
   })
   afterEach(() => {
+    delete process.env.EXPRESS_PORT
     robot.shutdown()
   })
   it('should handle /helo request', async () => {

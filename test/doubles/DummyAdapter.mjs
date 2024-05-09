@@ -45,7 +45,7 @@ export class DummyAdapter extends Adapter {
   }
 }
 export default {
-  use (robot) {
+  async use (robot) {
     return new DummyAdapter(robot)
   }
 }
