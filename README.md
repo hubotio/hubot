@@ -48,3 +48,5 @@ See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 [Hubot by Hubotics](https://www.theoldrobots.com/hubot.html)
 
 [Automating Inefficiencies](https://zachholman.com/2011/01/automating-inefficiencies/)
+
+[Getting Started with Hubot](https://www.youtube.com/watch?v=A7fh6RIzGrw)
