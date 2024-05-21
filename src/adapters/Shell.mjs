@@ -75,20 +75,15 @@ class Shell extends Adapter {
           this.#rl.prompt()
           break
       }
+      if (input.length > 0) {
+        fs.appendFileSync(historyPath, `${input}\n`)
+      }
       const history = fs.readFileSync(historyPath, 'utf-8').split('\n').reverse()
       this.#rl.history = history
-      this.#rl.on('line', line => {
-        const input = line.trim()
-        if (input.length === 0) return
-        fs.appendFile(historyPath, `${input}\n`, err => {
-          if (err) console.error(err)
-        })
-      })
       let userId = process.env.HUBOT_SHELL_USER_ID || '1'
       if (userId.match(/A\d+z/)) {
         userId = parseInt(userId)
       }
-
       const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
       await this.receive(new TextMessage(user, input, 'messageId'))
