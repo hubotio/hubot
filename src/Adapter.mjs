@@ -79,7 +79,7 @@ class Adapter extends EventEmitter {
   // Returns an Array of User objects.
   // @deprecated Use @robot.brain
   users () {
-    this.robot.logger.warning('@users() is going to be deprecated in 11.0.0 use @robot.brain.users()')
+    this.robot.logger.warn('@users() is going to be deprecated in 11.0.0 use @robot.brain.users()')
     return this.robot.brain.users()
   }
 
@@ -88,7 +88,7 @@ class Adapter extends EventEmitter {
   // Returns a User instance of the specified user.
   // @deprecated Use @robot.brain
   userForId (id, options) {
-    this.robot.logger.warning('@userForId() is going to be deprecated in 11.0.0 use @robot.brain.userForId()')
+    this.robot.logger.warn('@userForId() is going to be deprecated in 11.0.0 use @robot.brain.userForId()')
     return this.robot.brain.userForId(id, options)
   }
 
@@ -97,7 +97,7 @@ class Adapter extends EventEmitter {
   // Returns a User instance for the user with the specified name.
   // @deprecated Use @robot.brain
   userForName (name) {
-    this.robot.logger.warning('@userForName() is going to be deprecated in 11.0.0 use @robot.brain.userForName()')
+    this.robot.logger.warn('@userForName() is going to be deprecated in 11.0.0 use @robot.brain.userForName()')
     return this.robot.brain.userForName(name)
   }
 
@@ -108,7 +108,7 @@ class Adapter extends EventEmitter {
   // Returns an Array of User instances matching the fuzzy name.
   // @deprecated Use @robot.brain
   usersForRawFuzzyName (fuzzyName) {
-    this.robot.logger.warning('@userForRawFuzzyName() is going to be deprecated in 11.0.0 use @robot.brain.userForRawFuzzyName()')
+    this.robot.logger.warn('@userForRawFuzzyName() is going to be deprecated in 11.0.0 use @robot.brain.userForRawFuzzyName()')
     return this.robot.brain.usersForRawFuzzyName(fuzzyName)
   }
 
@@ -119,7 +119,7 @@ class Adapter extends EventEmitter {
   // Returns an Array of User instances matching the fuzzy name.
   // @deprecated Use @robot.brain
   usersForFuzzyName (fuzzyName) {
-    this.robot.logger.warning('@userForFuzzyName() is going to be deprecated in 11.0.0 use @robot.brain.userForFuzzyName()')
+    this.robot.logger.warn('@userForFuzzyName() is going to be deprecated in 11.0.0 use @robot.brain.userForFuzzyName()')
     return this.robot.brain.usersForFuzzyName(fuzzyName)
   }
 
@@ -131,7 +131,7 @@ class Adapter extends EventEmitter {
   // Returns a ScopedClient instance.
   // @deprecated Use node.js fetch.
   http (url) {
-    this.robot.logger.warning('@http() is going to be deprecated in 11.0.0 use @robot.http()')
+    this.robot.logger.warn('@http() is going to be deprecated in 11.0.0 use @robot.http()')
     return this.robot.http(url)
   }
 }

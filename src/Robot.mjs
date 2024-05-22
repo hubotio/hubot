@@ -133,8 +133,8 @@ class Robot {
     const name = this.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 
     if (regexStartsWithAnchor) {
-      this.logger.warning('Anchors don’t work well with respond, perhaps you want to use \'hear\'')
-      this.logger.warning(`The regex in question was ${regex.toString()}`)
+      this.logger.warn('Anchors don’t work well with respond, perhaps you want to use \'hear\'')
+      this.logger.warn(`The regex in question was ${regex.toString()}`)
     }
 
     if (!this.alias) {
@@ -336,7 +336,7 @@ class Robot {
     if (typeof script?.default === 'function') {
       result = await script.default(this)
     } else {
-      this.logger.warning(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to export default, got ${typeof script}`)
+      this.logger.warn(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to export default, got ${typeof script}`)
     }
     return result
   }
@@ -348,7 +348,7 @@ class Robot {
     if (typeof script === 'function') {
       result = await script(this)
     } else {
-      this.logger.warning(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to module.exports, got ${typeof script}`)
+      this.logger.warn(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to module.exports, got ${typeof script}`)
     }
     return result
   }

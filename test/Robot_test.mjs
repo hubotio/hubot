@@ -330,7 +330,7 @@ describe('Robot', () => {
     describe('non-Function script', () => {
       it('logs a warning for a .js file that does not export the correct API', async () => {
         let wasCalled = false
-        robot.logger.warning = (...args) => {
+        robot.logger.warn = (...args) => {
           wasCalled = true
           assert.ok(args)
         }
@@ -340,7 +340,7 @@ describe('Robot', () => {
 
       it('logs a warning for a .mjs file that does not export the correct API', async () => {
         let wasCalled = false
-        robot.logger.warning = (...args) => {
+        robot.logger.warn = (...args) => {
           wasCalled = true
           assert.ok(args)
         }
