@@ -76,10 +76,8 @@ class Shell extends Adapter {
           break
       }
       if (input.length > 0) {
-        fs.appendFileSync(historyPath, `${input}\n`)
+        this.#rl.history.push(input)
       }
-      const history = fs.readFileSync(historyPath, 'utf-8').split('\n').reverse()
-      this.#rl.history = history
       let userId = process.env.HUBOT_SHELL_USER_ID || '1'
       if (userId.match(/A\d+z/)) {
         userId = parseInt(userId)
@@ -88,6 +86,9 @@ class Shell extends Adapter {
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
       await this.receive(new TextMessage(user, input, 'messageId'))
       this.#rl.prompt()
+    })
+    this.#rl.on('history', async (history) => {
+      await fs.promises.writeFile(historyPath, history.reverse().join('\n'))
     })
     try {
       this.#rl.prompt()
