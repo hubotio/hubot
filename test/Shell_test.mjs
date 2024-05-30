@@ -1,14 +1,53 @@
 'use strict'
 
-import { describe, it, beforeEach } from 'node:test'
+import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { Robot, TextMessage, User } from '../index.mjs'
+import stream from 'node:stream'
 
+describe('Shell Adapter Integration Test', () => {
+  let robot = null
+  beforeEach(async () => {
+    robot = new Robot('Shell', false, 'TestHubot')
+    robot.stdin = new stream.Readable()
+    robot.stdin._read = () => {}
+    await robot.loadAdapter()
+    await robot.run()
+  })
+  afterEach(() => {
+    robot.shutdown()
+  })
+  it('responds to a message that starts with the robot name', async () => {
+    let wasCalled = false
+    robot.respond(/helo/, async res => {
+      wasCalled = true
+      await res.reply('hello from the other side')
+    })
+    robot.stdin.push(robot.name + ' helo\n')
+    robot.stdin.push(null)
+    await new Promise(resolve => setTimeout(resolve, 60))
+    assert.deepEqual(wasCalled, true)
+  })
+  it('responds to a message without starting with the robot name', async () => {
+    let wasCalled = false
+    robot.respond(/helo/, async res => {
+      wasCalled = true
+      await res.reply('hello from the other side')
+    })
+    robot.stdin.push('helo\n')
+    robot.stdin.push(null)
+    await new Promise(resolve => setTimeout(resolve, 60))
+    assert.deepEqual(wasCalled, true)
+  })
+})
 describe('Shell Adapter', () => {
   let robot = null
   beforeEach(async () => {
     robot = new Robot('Shell', false, 'TestHubot')
     await robot.loadAdapter()
+  })
+  afterEach(() => {
+    robot.shutdown()
   })
 
   describe('Public API', () => {

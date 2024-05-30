@@ -51,9 +51,10 @@ class Shell extends Adapter {
     if (stats.size > historySize) {
       fs.unlinkSync(historyPath)
     }
+
     this.#rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
+      input: this.robot.stdin ?? process.stdin,
+      output: this.robot.stdout ?? process.stdout,
       prompt: `${this.robot.name ?? this.robot.alias}> `,
       completer
     })
@@ -84,7 +85,11 @@ class Shell extends Adapter {
       }
       const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
-      await this.receive(new TextMessage(user, input, 'messageId'))
+      const message = new TextMessage(user, input, 'messageId')
+      if (!message.text.startsWith(this.robot.name) && !message.text.startsWith(this.robot.alias)) {
+        message.text = `${this.robot.name} ${message.text}`
+      }
+      await this.receive(message)
       this.#rl.prompt()
     })
     this.#rl.on('history', async (history) => {
