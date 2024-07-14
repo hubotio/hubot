@@ -39,6 +39,8 @@ See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
 # Hubot History
 
+[Say hello to Hubot](https://github.blog/2011-10-25-say-hello-to-hubot/)
+
 [Cartoon with Hubot](https://www.youtube.com/watch?v=vq2jYFZVMDA&t=129s)
 
 [The Most Important Startup's Hardest Worker Isn't a Person](https://www.wired.com/2015/10/the-most-important-startups-hardest-worker-isnt-a-person/)
