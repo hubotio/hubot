@@ -92,13 +92,13 @@ class Shell extends Adapter {
       await this.receive(message)
       this.#rl.prompt()
     })
-    
+
     this.#rl.on('history', async (history) => {
       if (history.length === 0) return
       await fs.promises.appendFile(historyPath, `${history[0]}\n`)
     })
 
-    let existingHistory = (await fs.promises.readFile(historyPath, 'utf8')).split('\n')
+    const existingHistory = (await fs.promises.readFile(historyPath, 'utf8')).split('\n')
     existingHistory.forEach(line => this.#rl.history.push(line))
 
     try {
