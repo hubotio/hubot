@@ -99,7 +99,7 @@ class Shell extends Adapter {
     })
 
     const existingHistory = (await fs.promises.readFile(historyPath, 'utf8')).split('\n')
-    existingHistory.forEach(line => this.#rl.history.push(line))
+    existingHistory.reverse().forEach(line => this.#rl.history.push(line))
 
     try {
       this.#rl.prompt()
