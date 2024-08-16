@@ -2,7 +2,7 @@ name: Node.js (macOS) CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "macos-timeout" ]
   schedule:
     - cron:  '5 4 * * 0'
 
