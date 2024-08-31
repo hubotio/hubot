@@ -48,6 +48,7 @@ describe('Running bin/Hubot.mjs', () => {
   -r, --require PATH
   -t, --config-check
   -v, --version
+  -e, --execute
 `
     let actual = ''
     hubot.stdout.on('data', (data) => {
@@ -58,6 +59,25 @@ describe('Running bin/Hubot.mjs', () => {
     })
     hubot.on('close', (code) => {
       assert.deepEqual(actual, expected)
+      done()
+    })
+  })
+  it('should execute the command when run with --execute or -e', (t, done) => {
+    const expected = "HELO World! I'm Hubot."
+    const commandText = 'helo'
+    const env = Object.assign({}, process.env, { NOLOG: 'off' })
+    const hubot = process.platform === 'win32'
+      ? spawn('node', ['./bin/Hubot.mjs', '-d', '--execute', commandText, '-r', 'test/scripts'], { env })
+      : spawn('./bin/hubot', ['-d', '--execute', commandText, '-r', 'test/scripts'], { env })
+    let actual = ''
+    hubot.stdout.on('data', (data) => {
+      actual += data.toString()
+    })
+    hubot.stderr.on('data', (data) => {
+      actual += data.toString()
+    })
+    hubot.on('close', (code) => {
+      assert.ok(actual.includes(expected))
       done()
     })
   })

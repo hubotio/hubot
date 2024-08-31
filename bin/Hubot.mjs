@@ -16,7 +16,8 @@ const switches = [
   ['-n', '--name HUBOT_NAME', 'The name of the robot in chat'],
   ['-r', '--require PATH', 'Alternative scripts path'],
   ['-t', '--config-check', "Test hubot's config to make sure it won't fail at startup"],
-  ['-v', '--version', 'Displays the version of hubot installed']
+  ['-v', '--version', 'Displays the version of hubot installed'],
+  ['-e', '--execute', 'Runs the command as if it were a hubot command']
 ]
 
 const options = {
@@ -64,6 +65,10 @@ Parser.on('alias', function (opt, value) {
 
 Parser.on('name', (opt, value) => {
   options.name = value
+})
+
+Parser.on('execute', (opt, value) => {
+  options.execute = value
 })
 
 Parser.on('require', (opt, value) => {
@@ -141,7 +146,12 @@ async function loadExternalScripts () {
     process.exit(0)
   }
 
-  robot.adapter.once('connected', loadScripts)
-
+  robot.adapter.once('connected', async () => {
+    await loadScripts()
+    if (options.execute) {
+      await robot.receive(new Hubot.TextMessage(new Hubot.User('shell', { room: '#shell' }), `@${robot.name} ${options.execute.trim()}`))
+      robot.shutdown()
+    }
+  })
   await robot.run()
 })()
