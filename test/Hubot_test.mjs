@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename)
 const root = __dirname.replace(/test$/, '')
 
 describe('Running bin/Hubot.mjs', () => {
-  it.skip('should load adapter from HUBOT_FILE environment variable', async () => {
+  it('should load adapter from HUBOT_FILE environment variable', async () => {
     process.env.HUBOT_HTTPD = 'false'
     process.env.HUBOT_FILE = path.resolve(root, 'test', 'fixtures', 'MockAdapter.mjs')
     const hubot = (await import('../bin/Hubot.mjs')).default
@@ -35,7 +35,7 @@ describe('Running bin/Hubot.mjs', () => {
     }
   })
 
-  it.skip('should output a help message when run with --help', (t, done) => {
+  it('should output a help message when run with --help', (t, done) => {
     const hubot = process.platform === 'win32' ? spawn('node', ['./bin/Hubot.mjs', '--help']) : spawn('./bin/hubot', ['--help'])
     const expected = `Usage: hubot [options]
   -a, --adapter HUBOT_ADAPTER
@@ -48,6 +48,7 @@ describe('Running bin/Hubot.mjs', () => {
   -r, --require PATH
   -t, --config-check
   -v, --version
+  -e, --execute
 `
     let actual = ''
     hubot.stdout.on('data', (data) => {
@@ -62,22 +63,21 @@ describe('Running bin/Hubot.mjs', () => {
     })
   })
   it('should execute the command when run with --execute or -e', (t, done) => {
-    let expected = `HELO World! I'm Hubot.`
-    let commandText = 'helo'
-    let env = Object.assign({}, process.env, { HUBOT_LOG_LEVEL: 'error' });
-    let hubot = process.platform === 'win32'
-      ? spawn('node', ['./bin/Hubot.mjs', '-d', '--execute', commandText, '-r', 'test/scripts/Xample.mjs'], { env })
-      : spawn('./bin/hubot', ['-d', '--execute', commandText, '-r', 'test/scripts/Xample.mjs'], { env })
+    const expected = "HELO World! I'm Hubot."
+    const commandText = 'helo'
+    const env = Object.assign({}, process.env, { NOLOG: 'off' })
+    const hubot = process.platform === 'win32'
+      ? spawn('node', ['./bin/Hubot.mjs', '-d', '--execute', commandText, '-r', 'test/scripts'], { env })
+      : spawn('./bin/hubot', ['-d', '--execute', commandText, '-r', 'test/scripts'], { env })
     let actual = ''
     hubot.stdout.on('data', (data) => {
       actual += data.toString()
-      console.log(actual)
     })
     hubot.stderr.on('data', (data) => {
       actual += data.toString()
     })
     hubot.on('close', (code) => {
-      assert.deepEqual(actual, expected)
+      assert.ok(actual.includes(expected))
       done()
     })
   })

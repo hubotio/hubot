@@ -17,7 +17,7 @@ const switches = [
   ['-r', '--require PATH', 'Alternative scripts path'],
   ['-t', '--config-check', "Test hubot's config to make sure it won't fail at startup"],
   ['-v', '--version', 'Displays the version of hubot installed'],
-  ['-e', '--execute', 'Runs the command as if it were a hubot command'],
+  ['-e', '--execute', 'Runs the command as if it were a hubot command']
 ]
 
 const options = {
@@ -48,7 +48,6 @@ Parser.on('create', function (opt, value) {
 })
 
 Parser.on('disable-httpd', opt => {
-  console.log('disable-httpd', opt)
   options.enableHttpd = false
 })
 
@@ -147,11 +146,12 @@ async function loadExternalScripts () {
     process.exit(0)
   }
 
-  robot.adapter.once('connected', loadScripts)
-
+  robot.adapter.once('connected', async () => {
+    await loadScripts()
+    if (options.execute) {
+      await robot.receive(new Hubot.TextMessage(new Hubot.User('shell', { room: '#shell' }), `@${robot.name} ${options.execute.trim()}`))
+      robot.shutdown()
+    }
+  })
   await robot.run()
-
-  if (options.execute) {
-    await robot.receive(new Hubot.TextMessage(new Hubot.User('shell', { room: '#shell' }), options.execute))
-  }
 })()
