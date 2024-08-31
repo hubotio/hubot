@@ -19,17 +19,21 @@ class OptParse extends EventEmitter {
     for (let i = 0; i < args.length; i++) {
       const arg = args[i]
       if (arg.startsWith('-')) {
-        let key = arg.replace(/^-+/, '')
-        key = mappings[key] || key
-        key = key.replace(/-([a-z])/g, g => g[1].toUpperCase())
+        const cliArg = arg.replace(/^-+/, '')
+        let propertyName = mappings[cliArg]
+        if (!propertyName) {
+          propertyName = Object.values(mappings).find(value => value === cliArg)
+        }
+        const nameToEmit = propertyName
+        propertyName = propertyName.replace(/-([a-z])/g, g => g[1].toUpperCase())
         const nextArg = args[i + 1]
         if (nextArg && !nextArg.startsWith('-')) {
-          options[key] = nextArg
+          options[propertyName] = nextArg
           i++
         } else {
-          options[key] = true
+          options[propertyName] = true
         }
-        this.emit(key, key, nextArg)
+        this.emit(nameToEmit, propertyName, nextArg)
       }
     }
     return options
