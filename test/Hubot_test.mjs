@@ -62,3 +62,40 @@ describe('Running bin/Hubot.mjs', () => {
     })
   })
 })
+
+describe('Running hubot with args', () => {
+  it('should not start web service when --disable-httpd is passed', (t, done) => {
+    let hubot = process.platform === 'win32' ? spawn('node', ['./bin/Hubot.mjs', '--disable-httpd']) : spawn('./bin/hubot', ['--disable-httpd'])
+    let actual = {}
+    let logMessages = []
+    hubot.stdout.on('data', (data) => {
+      console.log(data.toString())
+      logMessages.push(data.toString())
+    })
+    hubot.stderr.on('data', (data) => {
+      console.log(data.toString())
+      logMessages.push(data.toString())
+    })
+    let interval = setInterval(async () => {
+      if (logMessages.some(m => m.includes('EADDRINUSE'))) {
+        clearInterval(interval)
+        assert.fail('Web service started when --disable-httpd was passed')
+        done()
+      }
+      if (logMessages.some(m => m.includes('No external-scripts.json found. Skipping'))) {
+        clearInterval(interval)
+        try {
+          let response = await fetch('http://localhost:8080')
+          actual = await response.text()
+        } catch (e) {
+          actual = e
+        } finally {
+          hubot.kill()
+        }
+        assert.ok(actual instanceof TypeError)
+        assert.deepEqual(actual.message, 'fetch failed')
+        done()
+      }
+    }, 60)
+  })
+})

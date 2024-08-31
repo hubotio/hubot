@@ -32,7 +32,7 @@ describe('CLI Argument Parsing', () => {
     Parser.on('adapter', (opt, value) => {
       options.adapter = value
     })
-    Parser.on('disableHttpd', (opt, value) => {
+    Parser.on('disable-httpd', (opt, value) => {
       options.enableHttpd = false
     })
     Parser.on('alias', (opt, value) => {
