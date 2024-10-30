@@ -6,7 +6,7 @@
 
 # Hubot
 
-**Note: v10.0.4 accidentaly contains the removal of CoffeeScript; v10.0.5 puts it back in**
+**Note: v10.0.4 accidentally contains the removal of CoffeeScript; v10.0.5 puts it back in**
 **Note: v11 removes CoffeeScript and converts this codebase to ESM**
 
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
