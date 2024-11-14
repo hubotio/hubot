@@ -2,7 +2,8 @@
 .github
 .hubot_history
 bin/e2e-test.sh
-test
+test/**/*
+!test/**/MockAdapter.mjs
 docs
 examples
 script
