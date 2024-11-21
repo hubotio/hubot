@@ -40,12 +40,12 @@ class Robot {
     this.brain = new Brain(this)
     this.alias = alias
     this.adapter = null
-    this.adaptername = 'Shell'
+    this.adapterName = 'Shell'
     if (adapter && typeof (adapter) === 'object') {
       this.adapter = adapter
       this.adapterName = adapter.name ?? adapter.constructor.name
     } else {
-      this.adapterName = adapter ?? this.adaptername
+      this.adapterName = adapter ?? this.adapterName
     }
 
     this.shouldEnableHttpd = httpd ?? true
