@@ -4,6 +4,7 @@ export class Message {
   // Represents an incoming message from the chat.
   //
   // user - A User instance that sent the message.
+  // done - A boolean indicating if the message has been handled.
   constructor (user, done) {
     this.user = user
     this.done = done || false
