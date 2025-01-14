@@ -152,6 +152,7 @@ async function loadExternalScripts () {
       await robot.receive(new Hubot.TextMessage(new Hubot.User('shell', { room: '#shell' }), `@${robot.name} ${options.execute.trim()}`))
       robot.shutdown()
     }
+    robot.emit('scripts have loaded', robot)
   })
   await robot.run()
 })()
