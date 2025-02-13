@@ -33,6 +33,22 @@ npx hubot --create myhubot --adapter @hubot-friends/hubot-irc
 
 Review `scripts/example.mjs`. Create more scripts in the `scripts` folder.
 
+## TypeScript Support
+
+Hubot now supports TypeScript scripts! You can write your scripts in TypeScript to get:
+- Better IDE support with type definitions
+- Early error detection through type checking
+- Modern JavaScript features
+
+To use TypeScript:
+1. Create `.ts` files in your scripts directory
+2. Run `npm run build` to compile TypeScript files
+3. Start Hubot as normal with `npm start`
+
+During development, use `npm run watch` for automatic compilation.
+
+See the [TypeScript documentation](https://hubotio.github.io/hubot/typescript.html) for more details.
+
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).

@@ -41,6 +41,8 @@ class Robot {
     this.alias = alias
     this.adapter = null
     this.adapterName = 'Shell'
+    this.scriptsPath = process.env.HUBOT_SCRIPTS_PATH || './scripts'
+    this.distPath = process.env.HUBOT_DIST_PATH || './dist'
     if (adapter && typeof (adapter) === 'object') {
       this.adapter = adapter
       this.adapterName = adapter.name ?? adapter.constructor.name
@@ -364,13 +366,20 @@ class Robot {
     const full = path.join(filepath, path.basename(filename))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (['js', 'mjs'].indexOf(ext) === -1) {
+    if (['js', 'mjs', 'ts'].indexOf(ext) === -1) {
       this.logger.debug(`Skipping unsupported file type ${full}`)
       return null
     }
     let result = null
     try {
-      result = await this[`load${ext}`](full)
+      if (ext === 'ts') {
+        // For TypeScript files, we'll import the compiled JS from dist
+        const relativePath = path.relative(this.scriptsPath, full)
+        const compiledPath = path.join(this.distPath, relativePath).replace('.ts', '.js')
+        result = await this.loadjs(compiledPath)
+      } else {
+        result = await this[`load${ext}`](full)
+      }
       this.parseHelp(full)
     } catch (error) {
       this.logger.error(`Unable to load ${full}: ${error.stack}`)

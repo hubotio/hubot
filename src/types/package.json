@@ -1,0 +1,8 @@
+{
+  "name": "@types/hubot",
+  "version": "0.0.0",
+  "types": "./hubot.d.ts",
+  "private": true,
+  "main": "",
+  "typings": "./hubot.d.ts"
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": true,
+    "declaration": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "typeRoots": ["./src/types"],
+    "baseUrl": ".",
+    "paths": {
+      "hubot": ["./src/types/hubot.d.ts"]
+    },
+    "types": []
+  },
+  "include": ["examples/scripts/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

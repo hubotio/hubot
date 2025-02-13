@@ -21,7 +21,11 @@
     "pino": "^8.11.0"
   },
   "devDependencies": {
-    "standard": "^17.1.0"
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.2",
+    "rimraf": "^6.0.1",
+    "standard": "^17.1.0",
+    "typescript": "^5.7.3"
   },
   "engines": {
     "node": ">= 18",
@@ -32,14 +36,16 @@
     "hubot": "./bin/hubot"
   },
   "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc",
+    "prestart": "npm run build",
     "start": "bin/hubot",
     "gen": "bin/hubot --create myhubot",
     "pretest": "standard",
     "test": "node --test",
     "test:smoke": "node src/**/*.js",
     "test:e2e": "bin/e2e-test.sh",
-    "build:local": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose --serve /hubot/ --watch-path ./docs --scripts ./sfab-hooks",
-    "build": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose --scripts ./sfab-hooks"
+    "watch": "tsc --watch"
   },
   "release": {
     "branches": [
