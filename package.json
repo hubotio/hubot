@@ -14,15 +14,6 @@
     "type": "git",
     "url": "https://github.com/hubotio/hubot.git"
   },
-  "dependencies": {
-    "connect-multiparty": "^2.2.0",
-    "express": "^4.19.2",
-    "express-basic-auth": "^1.2.1",
-    "pino": "^8.11.0"
-  },
-  "devDependencies": {
-    "standard": "^17.1.0"
-  },
   "engines": {
     "node": ">= 18",
     "npm": ">= 9"
@@ -47,5 +38,14 @@
       "next"
     ],
     "dryRun": false
+  },
+  "dependencies": {
+    "connect-multiparty": "^2.2.0",
+    "express": "^5.0.1",
+    "express-basic-auth": "^1.2.1",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2"
   }
 }
