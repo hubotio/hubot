@@ -664,9 +664,8 @@ class Robot {
     } else {
       this.setupNullRouter()
     }
+    await this.adapter.run()
     this.emit('running')
-
-    return await this.adapter.run()
   }
 
   // Public: Gracefully shutdown the robot process
