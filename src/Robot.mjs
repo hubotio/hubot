@@ -341,6 +341,10 @@ class Robot {
     return result
   }
 
+  async loadts (filePath) {
+    return this.loadmjs(filePath)
+  }
+
   async loadjs (filePath) {
     const forImport = this.prepareForImport(filePath)
     const script = (await import(forImport)).default
@@ -364,7 +368,7 @@ class Robot {
     const full = path.join(filepath, path.basename(filename))
 
     // see https://github.com/hubotio/hubot/issues/1355
-    if (['js', 'mjs'].indexOf(ext) === -1) {
+    if (['js', 'mjs', 'ts'].indexOf(ext) === -1) {
       this.logger.debug(`Skipping unsupported file type ${full}`)
       return null
     }
