@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x, latest]
+        node-version: [23.x, latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -25,5 +25,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm test
+    - run: npm test --experimental-strip-types
     - run: npm run test:e2e
