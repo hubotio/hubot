@@ -22,4 +22,4 @@ jobs:
     - name: Run Tests
       env:
         HUBOT_LOG_LEVEL: debug
-      run: npm test
+      run: npm test --experimental-strip-types
