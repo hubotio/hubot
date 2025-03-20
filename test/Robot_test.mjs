@@ -320,6 +320,11 @@ describe('Robot', () => {
       assert.deepEqual(robot.hasLoadedTestMjsScript, true)
     })
 
+    it('should load an .ts file', async () => {
+      await robot.loadFile(path.resolve('./test/fixtures'), 'TestScript.ts')
+      assert.deepEqual(robot.hasLoadedTestTsScript, true)
+    })
+
     describe('proper script', () => {
       it('should parse the script documentation', async () => {
         await robot.loadFile(path.resolve('./test/fixtures'), 'TestScript.js')
