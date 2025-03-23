@@ -134,6 +134,7 @@ async function loadExternalScripts () {
 }
 
 (async () => {
+  await robot.load(pathResolve('.', 'configuration'))
   await robot.loadAdapter(options.file)
   if (options.version) {
     console.log(robot.version)
