@@ -461,7 +461,6 @@ class Robot {
       authUser[user] = pass
       app.use(basicAuth({ users: authUser }))
     }
-    app.use(express.query())
 
     app.use(express.json({ limit }))
     app.use(express.urlencoded({ limit, parameterLimit: paramLimit, extended: true }))
