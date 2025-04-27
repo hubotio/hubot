@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [23.x]
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -22,4 +22,4 @@ jobs:
     - name: Run Tests
       env:
         HUBOT_LOG_LEVEL: debug
-      run: npm test
+      run: npm test --experimental-strip-types

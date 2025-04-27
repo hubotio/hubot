@@ -36,6 +36,16 @@ module.exports = async robot => {
 
 The `robot` parameter is an instance of your robot friend. At this point, we can start scripting up some awesomeness.
 
+## Adding Configuration
+
+The loading code loads files as the following and in this order:
+
+- ./configuration <- so you can add configuration options to the `robot` instance that the Adapters can then use.
+- Then it loads the adapter
+- ./scripts
+- ./src/scripts
+- Then the modules defined in `external-scripts.json`
+
 ## Hearing and responding
 
 Since this is a chat bot, the most common interactions are based on messages. Hubot can `hear` messages said in a room or `respond` to messages directly addressed at it. Both methods take a regular expression and a callback function as parameters. For example:
