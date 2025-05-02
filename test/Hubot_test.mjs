@@ -112,6 +112,7 @@ describe('Running hubot with args', () => {
         } finally {
           hubot.kill()
         }
+        console.log(actual)
         assert.ok(actual instanceof TypeError)
         assert.deepEqual(actual.message, 'fetch failed')
         done()

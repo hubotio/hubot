@@ -39,6 +39,17 @@ describe('Shell Adapter Integration Test', () => {
     await new Promise(resolve => setTimeout(resolve, 60))
     assert.deepEqual(wasCalled, true)
   })
+  it('shows prompt if nothing was entered', async () => {
+    let wasCalled = false
+    robot.respond(/\n/, async res => {
+      wasCalled = true
+      await res.reply('hello from the other side')
+    })
+    robot.stdin.push('\n')
+    robot.stdin.push(null)
+    await new Promise(resolve => setTimeout(resolve, 60))
+    assert.deepEqual(wasCalled, false)
+  })
 })
 describe('Shell Adapter', () => {
   let robot = null
