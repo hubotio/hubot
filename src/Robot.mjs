@@ -367,7 +367,7 @@ class Robot {
     const ext = path.extname(filename)?.replace('.', '')
     const full = path.join(filepath, path.basename(filename))
 
-    // see https://github.com/hubotio/hubot/issues/1355
+    // see https://github.com/hubot-friends/hubot/issues/1355
     if (['js', 'mjs', 'ts'].indexOf(ext) === -1) {
       this.logger.debug(`Skipping unsupported file type ${full}`)
       return null

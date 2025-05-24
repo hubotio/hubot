@@ -6,7 +6,7 @@ echo "$ pushd $TEMP_ROOT"
 pushd $TEMP_ROOT
 trap "{ CODE=$?; popd; rm -rf $TEMP_ROOT; exit $CODE; }" EXIT
 
-## https://github.com/hubotio/hubot/blob/main/docs/index.md
+## https://github.com/hubot-friends/hubot/blob/main/docs/index.md
 
 ## use this hubot version
 echo "Creating hubot in $TEMP_ROOT"

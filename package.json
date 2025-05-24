@@ -1,5 +1,5 @@
 {
-  "name": "hubot",
+  "name": "@hubot-friends/hubot",
   "version": "0.0.0-development",
   "author": "hubot",
   "keywords": [
@@ -12,7 +12,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hubotio/hubot.git"
+    "url": "https://github.com/hubot-friends/hubot.git"
   },
   "devDependencies": {
     "standard": "^17.1.0"

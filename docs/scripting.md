@@ -162,7 +162,7 @@ If Dave says "HAL: open the pod bay doors", then `res.match[0]` is "open the pod
 
 ## Making HTTP calls (please use `fetch` instead)
 
-Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](https://github.com/hubotio/hubot/blob/main/src/httpclient.js) available at `robot.http`. The simplest case looks like:
+Hubot can make HTTP calls on your behalf to integrate & consume third party APIs. This can be through an instance of [ScopedHttpClient](https://github.com/hubot-friends/hubot/blob/main/src/httpclient.js) available at `robot.http`. The simplest case looks like:
 
 
 ```javascript
@@ -277,7 +277,7 @@ For consuming a Web Service that responds with HTML, you'll need an HTML parser.
 
 ### Advanced HTTP and HTTPS settings
 
-As mentioned previously, Hubot uses [ScopedHttpClient](https://github.com/hubotio/hubot/blob/main/src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
+As mentioned previously, Hubot uses [ScopedHttpClient](https://github.com/hubot-friends/hubot/blob/main/src/httpclient.js) to provide a simple interface for making HTTP and HTTPS requests. Under the hood, it's using node's [http](http://nodejs.org/api/http.html) and [https](http://nodejs.org/api/https.html) modules, but tries to provide an easier Domain Specific Language (DSL) for common kinds of Web Service interactions.
 
 If you need to control options on `http` and `https` more directly, you pass a second parameter to `robot.http` that will be passed on to `ScopedHttpClient` which will be passed on to `http` and `https`:
 
@@ -641,7 +641,7 @@ Hubot scripts can be documented with comments at the top of their file, for exam
 //   <github username of the original script author>
 ```
 
-The most important and user facing of these is `Commands`. At load time, Hubot looks at the `Commands` section of each scripts, and build a list of all commands. The [hubot-help](https://github.com/hubotio/hubot-help) script lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
+The most important and user facing of these is `Commands`. At load time, Hubot looks at the `Commands` section of each scripts, and build a list of all commands. The [hubot-help](https://github.com/hubot-friends/hubot-help) script lets a user ask for help across all commands, or with a search. Therefore, documenting the commands make them a lot more discoverable by users.
 
 When documenting commands, here are some best practices:
 
@@ -789,7 +789,7 @@ If you are using git, the generated directory includes a .gitignore, so you can 
 
 You now have a hubot script repository that's ready to roll! Feel free to crack open `src/AwesomeScript.mjs` and start building up your script! When you've got it ready, you can publish it to [npmjs](http://npmjs.org) by [following their documentation](https://docs.npmjs.com/getting-started/publishing-npm-packages)!
 
-You'll probably want to write some unit tests for your new script. Review the [Hubot Repo](https://github.com/hubotio/hubot/tree/main/test for examples creating tests.
+You'll probably want to write some unit tests for your new script. Review the [Hubot Repo](https://github.com/hubot-friends/hubot/tree/main/test for examples creating tests.
 
 # <a name="listener-metadata">Listener Metadata</a>
 

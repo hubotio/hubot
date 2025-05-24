@@ -1,20 +1,17 @@
-![Pipeline Status](https://github.com/hubotio/hubot/actions/workflows/pipeline.yml/badge.svg)
+![Pipeline Status](https://github.com/hubot-friends/hubot/actions/workflows/pipeline.yml/badge.svg)
 
-![Build Status: MacOS](https://github.com/hubotio/hubot/actions/workflows/nodejs-macos.yml/badge.svg)
-![Build Status: Ubuntu](https://github.com/hubotio/hubot/actions/workflows/nodejs-ubuntu.yml/badge.svg)
-![Build Status: Window](https://github.com/hubotio/hubot/actions/workflows/nodejs-windows.yml/badge.svg)
+![Build Status: MacOS](https://github.com/hubot-friends/hubot/actions/workflows/nodejs-macos.yml/badge.svg)
+![Build Status: Ubuntu](https://github.com/hubot-friends/hubot/actions/workflows/nodejs-ubuntu.yml/badge.svg)
+![Build Status: Window](https://github.com/hubot-friends/hubot/actions/workflows/nodejs-windows.yml/badge.svg)
 
 # Hubot
 
-**Note: v10.0.4 accidentally contains the removal of CoffeeScript; v10.0.5 puts it back in**
-**Note: v11 removes CoffeeScript and converts this codebase to ESM**
-
 Hubot is a framework to build chat bots, modeled after GitHub's Campfire bot of the same name, hubot.
-He's pretty cool. He's [extendable with scripts](https://hubotio.github.io/hubot/docs#scripts) and can work
-on [many different chat services](https://hubotio.github.io/hubot/adapters.html).
+He's pretty cool. He's [extendable with scripts](https://hubot-friends.github.io/hubot/docs#scripts) and can work
+on [many different chat services](https://hubot-friends.github.io/hubot/adapters.html).
 
 This repository provides a library that's distributed by `npm` that you
-use for building your own bots.  See the [documentation](https://hubotio.github.io/hubot/docs.html)
+use for building your own bots.  See the [documentation](https://hubot-friends.github.io/hubot/docs.html)
 for details on getting up and running with your very own robot friend.
 
 In most cases, you'll probably never have to hack on this repo directly if you
