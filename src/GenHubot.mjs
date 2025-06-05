@@ -6,7 +6,7 @@ function runCommands (hubotDirectory, options) {
   options.hubotInstallationPath = options?.hubotInstallationPath ?? 'hubot'
   console.log('creating hubot directory', hubotDirectory)
   try {
-    spawnSync('mkdir', [hubotDirectory], { shell: true, stdio: 'inherit' })
+    File.mkdirSync(hubotDirectory, { recursive: true })
   } catch (error) {
     console.log(`${hubotDirectory} exists, continuing to the next operation.`)
   }
