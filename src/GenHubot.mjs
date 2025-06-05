@@ -14,18 +14,18 @@ function runCommands (hubotDirectory, options) {
   process.chdir(hubotDirectory)
 
   let output = spawnSync('npm', ['init', '-y'], { shell: true, stdio: 'inherit' })
-  console.log('npm init', output.stderr.toString())
+  console.log('npm init', output.stderr?.toString() ?? '')
   if (options.hubotInstallationPath !== 'hubot') {
     output = spawnSync('npm', ['pack', `${options.hubotInstallationPath}`], { shell: true, stdio: 'inherit' })
-    console.log('npm pack', output.stderr.toString(), output.stdout.toString())
+    console.log('npm pack', output.stderr?.toString() ?? '', output.stdout?.toString() ?? '')
     const customHubotPackage = JSON.parse(File.readFileSync(`${options.hubotInstallationPath}/package.json`, 'utf8'))
     output = spawnSync('npm', ['i', `${customHubotPackage.name}-${customHubotPackage.version}.tgz`], { shell: true, stdio: 'inherit' })
-    console.log(`npm i ${customHubotPackage.name}-${customHubotPackage.version}.tgz`, output.stderr.toString(), output.stdout.toString())
+    console.log(`npm i ${customHubotPackage.name}-${customHubotPackage.version}.tgz`, output.stderr?.toString() ?? '', output.stdout?.toString() ?? '')
   } else {
     output = spawnSync('npm', ['i', 'hubot@latest'], { shell: true, stdio: 'inherit' })
   }
   output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.adapter]).filter(Boolean))
-  console.log('npm i', output.stderr.toString(), output.stdout.toString())
+  console.log('npm i', output.stderr?.toString() ?? '', output.stdout?.toString() ?? '')
 
   File.mkdirSync(path.join('tests', 'doubles'), { recursive: true })
 
