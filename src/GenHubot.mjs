@@ -6,30 +6,34 @@ function runCommands (hubotDirectory, options) {
   options.hubotInstallationPath = options?.hubotInstallationPath ?? 'hubot'
   console.log('creating hubot directory', hubotDirectory)
   try {
-    spawnSync('mkdir', [hubotDirectory])
+    spawnSync('mkdir', [hubotDirectory], { shell: true, stdio: 'inherit' })
   } catch (error) {
     console.log(`${hubotDirectory} exists, continuing to the next operation.`)
   }
   const envFilePath = path.resolve(process.cwd(), '.env')
   process.chdir(hubotDirectory)
 
-  let output = spawnSync('npm', ['init', '-y'])
+  let output = spawnSync('npm', ['init', '-y'], { shell: true, stdio: 'inherit' })
   console.log('npm init', output.stderr.toString())
   if (options.hubotInstallationPath !== 'hubot') {
-    output = spawnSync('npm', ['pack', `${options.hubotInstallationPath}`])
+    output = spawnSync('npm', ['pack', `${options.hubotInstallationPath}`], { shell: true, stdio: 'inherit' })
     console.log('npm pack', output.stderr.toString(), output.stdout.toString())
     const customHubotPackage = JSON.parse(File.readFileSync(`${options.hubotInstallationPath}/package.json`, 'utf8'))
-    output = spawnSync('npm', ['i', `${customHubotPackage.name}-${customHubotPackage.version}.tgz`])
+    output = spawnSync('npm', ['i', `${customHubotPackage.name}-${customHubotPackage.version}.tgz`], { shell: true, stdio: 'inherit' })
     console.log(`npm i ${customHubotPackage.name}-${customHubotPackage.version}.tgz`, output.stderr.toString(), output.stdout.toString())
   } else {
-    output = spawnSync('npm', ['i', 'hubot@latest'])
+    output = spawnSync('npm', ['i', 'hubot@latest'], { shell: true, stdio: 'inherit' })
   }
   output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.adapter]).filter(Boolean))
   console.log('npm i', output.stderr.toString(), output.stdout.toString())
-  spawnSync('mkdir', ['scripts', 'tests', 'tests/doubles'])
-  spawnSync('touch', ['external-scripts.json'])
+
+  File.mkdirSync(path.join('tests', 'doubles'), { recursive: true })
 
   const externalScriptsPath = path.resolve('./', 'external-scripts.json')
+  if (!File.existsSync(externalScriptsPath)) {
+    File.writeFileSync(externalScriptsPath, '[]')
+  }
+
   let escripts = File.readFileSync(externalScriptsPath, 'utf8')
   if (escripts.length === 0) escripts = '[]'
   const externalScripts = JSON.parse(escripts)
@@ -38,6 +42,8 @@ function runCommands (hubotDirectory, options) {
   externalScripts.push('hubot-diagnostics')
 
   File.writeFileSync(externalScriptsPath, JSON.stringify(externalScripts, null, 2))
+
+  File.mkdirSync(path.join('scripts'), { recursive: true })
 
   File.writeFileSync('./scripts/Xample.mjs', `// Description:
 //   Test script
