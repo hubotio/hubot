@@ -8,8 +8,7 @@ permalink: /deploying/bluemix.html
 
 If you've been following along with [Getting Started](../index.html), it's time
 to deploy so you can use it beyond just your local machine.
-[IBM Bluemix](http://bluemix.net) is a way to deploy hubot as an alternative to
-[Heroku](heroku.html). It is built on the open-source project
+[IBM Bluemix](http://bluemix.net) is a way to deploy hubot. It is built on the open-source project
 [Cloud Foundry](https://www.cloudfoundry.org/), so we'll be using the `cf cli`
 throughout these examples.
 
