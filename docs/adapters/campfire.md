@@ -18,7 +18,7 @@ Hubot defaults to using its [Shell](./shell.html), so to use Campfire instead, y
 
     % bin/hubot -a campfire
 
-If you are deploying to Heroku or using foreman, you need to make sure the hubot is called with `-a Campfire` in the `Procfile`:
+If you are using foreman, you need to make sure the hubot is called with `-a Campfire` in the `Procfile`:
 
     web: bin/hubot -a campfire -n Hubot
 
@@ -46,14 +46,6 @@ hubot to join.
 This is simply the first part of the domain you visit for your Campfire
 account. For example if your Campfire was at `hubot.campfirenow.com` your
 subdomain is `hubot`. Make a note of the subdomain.
-
-### Configuring the variables on Heroku
-
-    % heroku config:set HUBOT_CAMPFIRE_TOKEN="..."
-
-    % heroku config:set HUBOT_CAMPFIRE_ROOMS="123,321"
-
-    % heroku config:set HUBOT_CAMPFIRE_ACCOUNT="..."
 
 ### Configuring the variables on UNIX
 

@@ -7,7 +7,7 @@ permalink: /deploying/azure.html
 # Deploying to Azure
 
 If you've been following along with [Getting Started](../index.html), it's time to deploy so you can use it beyond just your local machine.
-[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](heroku.html).
+[Azure](http://azure.microsoft.com/) is a way to deploy hubot.
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
 
@@ -56,7 +56,7 @@ Commit your changes in git and push to GitHub and Azure will automatically pick 
     % git commit -m "Add Azure settings for hubot"
     % git push
 
-Azure offers a marketplace where you can use the default heroku-redis-brain using Redis Cloud provided by Redis Labs. Alternatively, to add an [Azure blob storage brain](https://github.com/coryallegory/hubot-azure-brain), you will need to create an Azure storage account. Then you can do the following in your base hubot directory.
+Azure offers a marketplace where you can use the default hubot-redis-brain using Redis Cloud provided by Redis Labs. Alternatively, to add an [Azure blob storage brain](https://github.com/coryallegory/hubot-azure-brain), you will need to create an Azure storage account. Then you can do the following in your base hubot directory.
 
     % npm install hubot-azure-brain --save
 
@@ -85,7 +85,7 @@ An example of a startup script:
 ```
 let retrys=0
 while : ; do
-    STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" https://${WEBSITE_SITE_NAME}.azurewebsites.net/heroku/keepalive)
+    STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" https://${WEBSITE_SITE_NAME}.azurewebsites.net/hubot/keepalive)
     echo $STATUSCODE
     [[ $retrys -ne 5 ]] || break
     echo $retrys

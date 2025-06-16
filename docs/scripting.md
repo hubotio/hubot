@@ -554,12 +554,11 @@ export default async robot => {
 ```
 
 ```javascript
-// src/scripts/heroku.mjs
 export default async robot => {
   robot.on('commit', async (commit) => {
     await robot.send(commit.user, `Will now deploy ${commit.hash} from ${commit.repo}!`)
     // deploy code goes here
-  }
+  })
 }
 ```
 

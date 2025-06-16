@@ -97,11 +97,10 @@ Hubot uses the adapter pattern to support multiple chat-backends. Here is a [lis
 
 ## Deploying
 
-You can deploy hubot to Heroku, which is the officially supported method. Additionally you are able to deploy hubot to a UNIX-like system or Windows. Please note the support for deploying to Windows isn't officially supported.
+You are able to deploy hubot to a UNIX-like system or Windows. Please note the support for deploying to Windows isn't officially supported.
 
 * [Deploying Hubot onto Azure](./deploying/azure.html)
 * [Deploying Hubot onto Bluemix](./deploying/bluemix.html)
-* [Deploying Hubot onto Heroku](./deploying/heroku.html)
 * [Deploying Hubot onto Unix](./deploying/unix.html)
 * [Deploying Hubot onto Windows](./deploying/windows.html)
 
