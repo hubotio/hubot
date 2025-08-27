@@ -4,6 +4,30 @@ import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { Robot, TextMessage, User } from '../index.mjs'
 import stream from 'node:stream'
+import fs from 'node:fs'
+import { writeFile } from 'node:fs/promises'
+
+describe('Shell history file test', () => {
+  it('History file is > 1024 bytes when running does not throw an error', async () => {
+    const robot = new Robot('Shell', false, 'TestHubot')
+    robot.stdin = new stream.Readable()
+    robot.stdin._read = () => {}
+    const __dirname = new URL('.', import.meta.url).pathname
+    const historyPath = `${__dirname}/../.hubot_history`
+    await writeFile(historyPath, 'a'.repeat(1025))
+    await robot.loadAdapter()
+    await robot.run()
+    assert.ok(fs.existsSync(historyPath), 'History file should exist')
+    try {
+      const stats = fs.statSync(historyPath)
+      assert.ok(stats.size <= 1024, 'History file should be less than or equal to 1024 bytes after running the robot')
+    } catch (error) {
+      assert.fail('Should not throw an error when reading history file')
+    } finally {
+      robot.shutdown()
+    }
+  })
+})
 
 describe('Shell Adapter Integration Test', () => {
   let robot = null
@@ -51,6 +75,7 @@ describe('Shell Adapter Integration Test', () => {
     assert.deepEqual(wasCalled, false)
   })
 })
+
 describe('Shell Adapter', () => {
   let robot = null
   beforeEach(async () => {
