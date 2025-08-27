@@ -247,17 +247,21 @@ describe('Robot', () => {
 
     it('stops processing if a listener marks the message as done', async () => {
       const testMessage = new TextMessage(user, 'message123')
+      let spyCalled = false
 
       const matchingListener = async response => {
-        response.message.done = true
-        assert.deepEqual(response.message, testMessage)
+        response.message.finish()
+        assert.equal(response.message.text, testMessage.text)
+        assert.equal(response.message.user.id, testMessage.user.id)
       }
       const listenerSpy = async message => {
+        spyCalled = true
         assert.fail('Should not have triggered listener')
       }
       robot.listen(() => true, null, matchingListener)
       robot.listen(() => true, null, listenerSpy)
       await robot.receive(testMessage)
+      assert.equal(spyCalled, false)
     })
 
     it('gracefully handles listener uncaughtExceptions (move on to next listener)', async () => {

@@ -1,6 +1,7 @@
 'use strict'
 
 import fs from 'node:fs'
+import { stat, writeFile, unlink } from 'node:fs/promises'
 import readline from 'node:readline'
 import Adapter from '../Adapter.mjs'
 import { TextMessage } from '../Message.mjs'
@@ -44,12 +45,15 @@ class Shell extends Adapter {
   }
 
   async run () {
-    if (!fs.existsSync(historyPath)) {
-      fs.writeFileSync(historyPath, '')
-    }
-    const stats = fs.statSync(historyPath)
-    if (stats.size > historySize) {
-      fs.unlinkSync(historyPath)
+    try {
+      const stats = await stat(historyPath)
+      if (stats.size > historySize) {
+        await unlink(historyPath)
+        await writeFile(historyPath, '')
+      }
+    } catch (error) {
+      console.log(error)
+      await writeFile(historyPath, '')
     }
 
     this.#rl = readline.createInterface({
