@@ -54,7 +54,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: npm ci
-      - run: npm test --experimental-strip-types
+      - run: npm test -- --experimental-strip-types
   e2etest:
     name: E2E Test
     needs:
