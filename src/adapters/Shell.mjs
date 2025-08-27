@@ -44,12 +44,13 @@ class Shell extends Adapter {
   }
 
   async run () {
+    if (!fs.existsSync(historyPath)) {
+      fs.writeFileSync(historyPath, '')
+    }
+
     const stats = fs.statSync(historyPath)
     if (stats.size > historySize) {
       fs.unlinkSync(historyPath)
-    }
-    if (!fs.existsSync(historyPath)) {
-      fs.writeFileSync(historyPath, '')
     }
 
     this.#rl = readline.createInterface({
