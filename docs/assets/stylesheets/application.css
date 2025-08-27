@@ -136,17 +136,6 @@ samp {
     font-size: 1em;
 }
 
-pre {
-    white-space: pre;
-    white-space: pre-wrap;
-    word-wrap: normal;
-    padding: 16px;
-    overflow: auto;
-    line-height: 1.45;
-    background-color: #f7f7f7;
-    border-radius: 3px;
-}
-
 q {
     quotes: none;
 }
@@ -441,7 +430,6 @@ header.clearfix h1 {
     color: #333;
     font-family: Politica;
     font-size: 72px;
-    letter-spacing: -5px;
     margin: 0 12px;
     position: relative;
     text-transform: uppercase;
@@ -453,7 +441,7 @@ header.clearfix h1 span {
     font-family: 'HandOfSeanRegular';
     font-size: 14px;
     font-weight: normal;
-    left: 144px;
+    left: 156px;
     letter-spacing: -1px;
     position: absolute;
     top: 32px;
@@ -583,7 +571,7 @@ header.clearfix p {
 .about {
     color: #666;
     line-height: 24px;
-    padding: 1rem;
+    padding: 1rem 5rem;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -601,6 +589,7 @@ header.clearfix p {
 @media (max-width: 920px) {
     .about {
         flex-direction: column;
+        padding: 1rem 3rem;
     }
     .about aside,
     .about article {

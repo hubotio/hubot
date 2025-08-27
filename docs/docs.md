@@ -48,6 +48,7 @@ Hubot>
 Changing your Hubot instances name will reduce confusion down the road, so set the `--name` argument in the `hubot` command:
 
 ```json
+
 {
 ...
     "scripts": {

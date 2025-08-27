@@ -15,6 +15,8 @@
         <meta property="og:url" content="{{ permalink }}" />
         <meta property="og:site_name" content="Hubot" />
         <meta property="og:image" content="https://hubotio.github.io/hubot/assets/images/screenshots/dangerroom-full.png" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
         <script type="application/ld+json">
             {"image":"https://hubotio.github.io/hubot/assets/images/screenshots/dangerroom-full.png","headline":"Hubot","@type":"WebSite","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://hubotio.github.io/hubot/assets/images/screenshots/dangerroom-full.png"}},"url":"https://hubotio.github.io/hubot/","description":"Hubot is your friendly robot sidekick. Install him in your company to dramatically improve employee efficiency.","name":"Hubot","@context":"https://schema.org"}
         </script>
@@ -55,7 +57,7 @@
                     </ul>
                 </nav>
                 <main>
-                    {{> @partial-block }}
+{{> @partial-block }}
                 </main>
             </section>
         </div>
@@ -64,4 +66,5 @@
             <p class="right">Built with &lt;3 by friends of Hubot</p>
         </footer>
     </body>
+    <script>hljs.highlightAll()</script>
 </html>
