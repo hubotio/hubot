@@ -127,7 +127,10 @@ mark {
     font-style: italic;
     font-weight: bold;
 }
-
+code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
 pre,
 code,
 kbd,
@@ -699,7 +702,6 @@ header.clearfix p {
     display: flex;
     padding: 0 2rem;
 }
-
 .docs .container .main h2 {
     border-bottom: 1px solid #eee;
     padding-bottom: 0.8rem;
