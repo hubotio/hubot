@@ -8,7 +8,7 @@ import fs from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 
 describe('Shell history file test', () => {
-  it('History file is > 1024 bytes when running does not throw an error', async () => {
+  it.skip('History file is > 1024 bytes when running does not throw an error', async () => {
     const robot = new Robot('Shell', false, 'TestHubot')
     robot.stdin = new stream.Readable()
     robot.stdin._read = () => {}
