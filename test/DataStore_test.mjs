@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import InMemoryDataStore from '../src/datastores/Memory.mjs'
 import Brain from '../src/Brain.mjs'
 
-describe.skip('Datastore', () => {
+describe('Datastore', () => {
   let robot = null
   beforeEach(() => {
     robot = {
