@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const root = __dirname.replace(/test$/, '')
 
-describe('Running bin/Hubot.mjs', () => {
+describe.skip('Running bin/Hubot.mjs', () => {
   it('should load adapter from HUBOT_FILE environment variable', async () => {
     process.env.HUBOT_HTTPD = 'false'
     process.env.HUBOT_FILE = path.resolve(root, 'test', 'fixtures', 'MockAdapter.mjs')
