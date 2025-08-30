@@ -23,16 +23,36 @@ const showHelp = () => {
 }
 
 const bold = str => `\x1b[1m${str}\x1b[22m`
+const green = str => `\x1b[32m${str}\x1b[0m`
+const levelColors = {
+  error: '\x1b[31m',
+  warn: '\x1b[33m',
+  debug: '\x1b[35m',
+  info: '\x1b[34m',
+  trace: '\x1b[36m',
+  fatal: '\x1b[91m'
+}
+const reset = '\x1b[0m'
 
 class Shell extends Adapter {
   #rl = null
   constructor (robot) {
     super(robot)
     this.name = 'Shell'
+    const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+    levels.forEach(level => {
+      robot.logger[level] = async (...args) => {
+        const color = levelColors[level] || ''
+        const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
+        this.#rl.prompt()
+        await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
+      }
+    })
   }
 
   async send (envelope, ...strings) {
     Array.from(strings).forEach(str => console.log(bold(str)))
+    this.#rl.prompt()
   }
 
   async emote (envelope, ...strings) {
@@ -41,7 +61,7 @@ class Shell extends Adapter {
 
   async reply (envelope, ...strings) {
     strings = strings.map((s) => `${envelope.user.name}: ${s}`)
-    this.send(envelope, ...strings)
+    await this.send(envelope, ...strings)
   }
 
   async run () {
@@ -59,7 +79,7 @@ class Shell extends Adapter {
     this.#rl = readline.createInterface({
       input: this.robot.stdin ?? process.stdin,
       output: this.robot.stdout ?? process.stdout,
-      prompt: `${this.robot.name ?? this.robot.alias}> `,
+      prompt: green(`${this.robot.name ?? this.robot.alias}> `),
       completer
     })
     this.#rl.on('line', async (line) => {
@@ -73,6 +93,7 @@ class Shell extends Adapter {
         case '\\?':
         case 'help':
           showHelp()
+          this.#rl.prompt()
           break
         case '\\c':
         case 'clear':
