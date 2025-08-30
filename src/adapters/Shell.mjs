@@ -1,7 +1,6 @@
 'use strict'
 
-import fs from 'node:fs'
-import { stat, writeFile, unlink } from 'node:fs/promises'
+import { stat, writeFile, unlink, appendFile, readFile } from 'node:fs/promises'
 import readline from 'node:readline'
 import Adapter from '../Adapter.mjs'
 import { TextMessage } from '../Message.mjs'
@@ -23,15 +22,37 @@ const showHelp = () => {
 }
 
 const bold = str => `\x1b[1m${str}\x1b[22m`
+const green = str => `\x1b[32m${str}\x1b[0m`
+const levelColors = {
+  error: '\x1b[31m',
+  warn: '\x1b[33m',
+  debug: '\x1b[35m',
+  info: '\x1b[34m',
+  trace: '\x1b[36m',
+  fatal: '\x1b[91m'
+}
+const reset = '\x1b[0m'
 
 class Shell extends Adapter {
   #rl = null
   constructor (robot) {
     super(robot)
     this.name = 'Shell'
+    const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+    levels.forEach(level => {
+      robot.logger[level] = async (...args) => {
+        const color = levelColors[level] || ''
+        const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
+        await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
+      }
+    })
+    this.robot.on('scripts have loaded', () => {
+      this.#rl.prompt()
+    })
   }
 
   async send (envelope, ...strings) {
+    this.#rl.prompt()
     Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
@@ -41,7 +62,7 @@ class Shell extends Adapter {
 
   async reply (envelope, ...strings) {
     strings = strings.map((s) => `${envelope.user.name}: ${s}`)
-    this.send(envelope, ...strings)
+    await this.send(envelope, ...strings)
   }
 
   async run () {
@@ -59,7 +80,7 @@ class Shell extends Adapter {
     this.#rl = readline.createInterface({
       input: this.robot.stdin ?? process.stdin,
       output: this.robot.stdout ?? process.stdout,
-      prompt: `${this.robot.name ?? this.robot.alias}> `,
+      prompt: green(`${this.robot.name ?? this.robot.alias}> `),
       completer
     })
     this.#rl.on('line', async (line) => {
@@ -73,6 +94,7 @@ class Shell extends Adapter {
         case '\\?':
         case 'help':
           showHelp()
+          this.#rl.prompt()
           break
         case '\\c':
         case 'clear':
@@ -99,14 +121,13 @@ class Shell extends Adapter {
 
     this.#rl.on('history', async (history) => {
       if (history.length === 0) return
-      await fs.promises.appendFile(historyPath, `${history[0]}\n`)
+      await appendFile(historyPath, `${history[0]}\n`)
     })
 
-    const existingHistory = (await fs.promises.readFile(historyPath, 'utf8')).split('\n')
+    const existingHistory = (await readFile(historyPath, 'utf8')).split('\n')
     existingHistory.reverse().forEach(line => this.#rl.history.push(line))
 
     try {
-      this.#rl.prompt()
       this.emit('connected', this)
     } catch (error) {
       console.log(error)
