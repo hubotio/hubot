@@ -111,7 +111,7 @@ class Shell extends Adapter {
       }
       const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
       const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
-      const message = new TextMessage(user, input, 'messageId')
+      const message = new TextMessage(user, input, Date.now())
       if (!message.text.startsWith(this.robot.name) && !message.text.startsWith(this.robot.alias)) {
         message.text = `${this.robot.name} ${message.text}`
       }
