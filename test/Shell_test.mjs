@@ -80,7 +80,10 @@ describe('Shell Adapter', () => {
   let robot = null
   beforeEach(async () => {
     robot = new Robot('Shell', false, 'TestHubot')
+    robot.stdin = new stream.Readable()
+    robot.stdin._read = () => {}
     await robot.loadAdapter()
+    await robot.run()
   })
   afterEach(() => {
     robot.shutdown()

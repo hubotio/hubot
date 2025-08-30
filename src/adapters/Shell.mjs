@@ -1,7 +1,6 @@
 'use strict'
 
-import fs from 'node:fs'
-import { stat, writeFile, unlink } from 'node:fs/promises'
+import { stat, writeFile, unlink, appendFile, readFile } from 'node:fs/promises'
 import readline from 'node:readline'
 import Adapter from '../Adapter.mjs'
 import { TextMessage } from '../Message.mjs'
@@ -44,15 +43,17 @@ class Shell extends Adapter {
       robot.logger[level] = async (...args) => {
         const color = levelColors[level] || ''
         const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
-        this.#rl.prompt()
         await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
       }
+    })
+    this.robot.on('scripts have loaded', () => {
+      this.#rl.prompt()
     })
   }
 
   async send (envelope, ...strings) {
-    Array.from(strings).forEach(str => console.log(bold(str)))
     this.#rl.prompt()
+    Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
   async emote (envelope, ...strings) {
@@ -120,14 +121,13 @@ class Shell extends Adapter {
 
     this.#rl.on('history', async (history) => {
       if (history.length === 0) return
-      await fs.promises.appendFile(historyPath, `${history[0]}\n`)
+      await appendFile(historyPath, `${history[0]}\n`)
     })
 
-    const existingHistory = (await fs.promises.readFile(historyPath, 'utf8')).split('\n')
+    const existingHistory = (await readFile(historyPath, 'utf8')).split('\n')
     existingHistory.reverse().forEach(line => this.#rl.history.push(line))
 
     try {
-      this.#rl.prompt()
       this.emit('connected', this)
     } catch (error) {
       console.log(error)
