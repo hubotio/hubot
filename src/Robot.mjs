@@ -501,8 +501,9 @@ class Robot {
   //
   // Returns nothing.
   async loadAdapter (adapterPath = null) {
-    if (this.adapter) {
+    if (this.adapter && this.adapter.use) {
       this.adapter = await this.adapter.use(this)
+      this.adapterName = this.adapter.name ?? this.adapter.constructor.name
       return
     }
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
@@ -521,6 +522,8 @@ class Robot {
       this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${error}`)
       throw error
     }
+
+    this.adapterName = this.adapter.name ?? this.adapter.constructor.name
   }
 
   async requireAdapterFrom (adapaterPath) {
