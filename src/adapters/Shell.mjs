@@ -39,11 +39,26 @@ class Shell extends Adapter {
     super(robot)
     this.name = 'Shell'
     const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+    const logLevel = process.env.HUBOT_LOG_LEVEL || 'info'
+    const levelPriorities = levels.reduce((acc, current, idx) => {
+      acc[current] = idx
+      return acc
+    }, {})
+
+    const configuredPriority = levelPriorities[logLevel]
+
+    const noop = async () => {}
+
     levels.forEach(level => {
-      robot.logger[level] = async (...args) => {
-        const color = levelColors[level] || ''
-        const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
-        await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
+      const priority = levelPriorities[level]
+      if (priority >= configuredPriority) {
+        robot.logger[level] = async (...args) => {
+          const color = levelColors[level] || ''
+          const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
+          await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
+        }
+      } else {
+        robot.logger[level] = noop
       }
     })
     this.robot.on('scripts have loaded', () => {

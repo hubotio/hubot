@@ -161,3 +161,70 @@ describe('Shell Adapter', () => {
     })
   })
 })
+
+describe('Shell Adapter: Print human readable logging in the console when something is logged with robot.logger', async () => {
+  it('setting HUBOT_LOG_LEVEL to debug prints debug and info log messages to the console', async () => {
+    process.env.HUBOT_LOG_LEVEL = 'debug'
+    const robot = new Robot('Shell', false, 'TestHubot')
+    await robot.loadAdapter()
+    await robot.run()
+
+    const old = console.log
+    const expected = {
+      debug: false,
+      info: false
+    }
+    console.log = (...args) => {
+      old(...args)
+      switch (true) {
+        case args[0].includes('[debug]'):
+          expected.debug = true
+          break
+        case args[0].includes('[info]'):
+          expected.info = true
+          break
+      }
+    }
+    robot.logger.debug('should print debug message to console')
+    robot.logger.info('should print info message to console')
+    delete process.env.HUBOT_LOG_LEVEL
+    console.log = old
+    assert.deepEqual(expected, { debug: true, info: true })
+    robot.shutdown()
+  })
+
+  it('setting HUBOT_LOG_LEVEL to error only prints error log messages to the console', async () => {
+    process.env.HUBOT_LOG_LEVEL = 'error'
+    const robot = new Robot('Shell', false, 'TestHubot')
+    await robot.loadAdapter()
+    await robot.run()
+
+    const old = console.log
+    const expected = {
+      debug: false,
+      info: false,
+      error: false
+    }
+    console.log = (...args) => {
+      old(...args)
+      switch (true) {
+        case args[0].includes('[debug]'):
+          expected.debug = true
+          break
+        case args[0].includes('[info]'):
+          expected.info = true
+          break
+        case args[0].includes('[error]'):
+          expected.error = true
+          break
+      }
+    }
+    robot.logger.debug('should NOT print debug message to console')
+    robot.logger.info('should NOT print info message to console')
+    robot.logger.error('should print error message to console')
+    delete process.env.HUBOT_LOG_LEVEL
+    console.log = old
+    assert.deepEqual(expected, { debug: false, info: false, error: true })
+    robot.shutdown()
+  })
+})
