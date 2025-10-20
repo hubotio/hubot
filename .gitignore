@@ -6,3 +6,4 @@ npm-debug.log
 coverage/
 _site
 .env
+users.md

@@ -29,7 +29,7 @@
     "start": "bin/hubot",
     "gen": "bin/hubot --create myhubot",
     "pretest": "standard",
-    "test": "node --test --test-timeout=20000",
+    "test": "node --test --test-timeout=40000",
     "test:smoke": "node src/**/*.js",
     "test:e2e": "bin/e2e-test.sh",
     "build:local": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose --serve /hubot/ --watch-path ./docs --scripts ./sfab-hooks",

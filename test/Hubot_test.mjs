@@ -114,7 +114,7 @@ describe('Running hubot with args', () => {
         }
         console.log(actual)
         assert.ok(actual instanceof TypeError)
-        assert.deepEqual(actual.message, 'fetch failed')
+        assert.deepEqual(actual.message, 'fetch failed', 'this is an expected failure since the web service should not be running')
         done()
       }
     }, 60)
