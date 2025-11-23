@@ -188,21 +188,43 @@ class Brain extends EventEmitter {
     return user
   }
 
+  // Internal: Find users matching a predicate function.
+  //
+  // predicate - A function(user, searchTerm) that returns true if user matches.
+  // searchTerm - The value to search for (name, fuzzy name, etc).
+  // returnSingle - If true, return first match; if false, return array.
+  //
+  // Returns a User instance (if returnSingle) or array of User instances.
+  _findUsers (predicate, searchTerm, returnSingle = false) {
+    const users = this.data.users || {}
+    let result = null
+    const matches = []
+
+    for (const k in users) {
+      if (predicate(users[k], searchTerm)) {
+        if (returnSingle) {
+          result = users[k]
+          break
+        }
+        matches.push(users[k])
+      }
+    }
+
+    return returnSingle ? result : matches
+  }
+
   // Public: Get a User object given a name.
   //
   // Returns a User instance for the user with the specified name.
   userForName (name) {
-    let result = null
-    const lowerName = name.toLowerCase()
-
-    for (const k in this.data.users || {}) {
-      const userName = this.data.users[k].name
-      if (userName != null && userName.toString().toLowerCase() === lowerName) {
-        result = this.data.users[k]
-      }
-    }
-
-    return result
+    return this._findUsers(
+      (user, searchTerm) => {
+        const userName = user.name
+        return userName != null && userName.toString().toLowerCase() === searchTerm.toLowerCase()
+      },
+      name,
+      true
+    )
   }
 
   // Public: Get all users whose names match fuzzyName. Currently, match
@@ -211,17 +233,11 @@ class Brain extends EventEmitter {
   //
   // Returns an Array of User instances matching the fuzzy name.
   usersForRawFuzzyName (fuzzyName) {
-    const lowerFuzzyName = fuzzyName.toLowerCase()
-
-    const users = this.data.users || {}
-
-    return Object.keys(users).reduce((result, key) => {
-      const user = users[key]
-      if (user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) === 0) {
-        result.push(user)
-      }
-      return result
-    }, [])
+    return this._findUsers(
+      (user, searchTerm) => user.name.toLowerCase().lastIndexOf(searchTerm.toLowerCase(), 0) === 0,
+      fuzzyName,
+      false
+    )
   }
 
   // Public: If fuzzyName is an exact match for a user, returns an array with
@@ -231,10 +247,9 @@ class Brain extends EventEmitter {
   // Returns an Array of User instances matching the fuzzy name.
   usersForFuzzyName (fuzzyName) {
     const matchedUsers = this.usersForRawFuzzyName(fuzzyName)
-    const lowerFuzzyName = fuzzyName.toLowerCase()
-    const fuzzyMatchedUsers = matchedUsers.filter(user => user.name.toLowerCase() === lowerFuzzyName)
+    const exactMatches = matchedUsers.filter(user => user.name.toLowerCase() === fuzzyName.toLowerCase())
 
-    return fuzzyMatchedUsers.length > 0 ? fuzzyMatchedUsers : matchedUsers
+    return exactMatches.length > 0 ? exactMatches : matchedUsers
   }
 }
 

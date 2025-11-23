@@ -29,6 +29,18 @@ class Middleware {
     return shouldContinue
   }
 
+  // Public: Cheap Design helper: Execute middleware and return true only if
+  // middleware did not explicitly return false. Simplifies the common
+  // "execute and check" pattern across the codebase.
+  //
+  // context - context object to pass through the middleware stack
+  //
+  // Returns true if middleware allows continuation, false otherwise
+  async executeAndAllow (context) {
+    const result = await this.execute(context)
+    return result !== false
+  }
+
   // Public: Registers new middleware
   //
   // middleware - Middleware function to execute prior to the listener callback. Return false to prevent execution of the listener callback.

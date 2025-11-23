@@ -71,14 +71,14 @@ class Shell extends Adapter {
     Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
-  async emote (envelope, ...strings) {
-    Array.from(strings).map(str => this.send(envelope, `* ${str}`))
-  }
+  // Shell-specific formatters for message transformation
+  #emoteFormatter = (str, envelope) => `* ${str}`
 
-  async reply (envelope, ...strings) {
-    strings = strings.map((s) => `${envelope.user.name}: ${s}`)
-    await this.send(envelope, ...strings)
-  }
+  #replyFormatter = (str, envelope) => `${envelope.user.name}: ${str}`
+
+  emote = this._createSendDelegate(this.#emoteFormatter)
+
+  reply = this._createSendDelegate(this.#replyFormatter)
 
   async run () {
     try {
