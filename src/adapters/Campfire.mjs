@@ -6,6 +6,11 @@ import Adapter from '../Adapter.mjs'
 import { TextMessage, EnterMessage, LeaveMessage, TopicMessage } from '../Message.mjs'
 
 class Campfire extends Adapter {
+  // Campfire-specific formatters for message transformation
+  #emoteFormatter = (str, envelope) => `*${str}*`
+
+  #replyFormatter = (str, envelope) => `${envelope.user.name}: ${str}`
+
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
@@ -28,15 +33,9 @@ class Campfire extends Adapter {
     })
   }
 
-  emote (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-    this.send.apply(this, [envelope].concat(strings.map(str => `*${str}*`)))
-  }
+  emote = this._createSendDelegate(this.#emoteFormatter)
 
-  reply (envelope/* , ...strings */) {
-    const strings = [].slice.call(arguments, 1)
-    this.send.apply(this, [envelope].concat(strings.map(str => `${envelope.user.name}: ${str}`)))
-  }
+  reply = this._createSendDelegate(this.#replyFormatter)
 
   topic (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)

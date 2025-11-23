@@ -19,8 +19,20 @@ class Adapter extends EventEmitter {
   // Returns results from adapter.
   async send (envelope, ...strings) {}
 
+  // Internal: Generate a method that formats strings and delegates to send.
+  // This consolidates the common pattern of transforming strings before sending.
+  //
+  // formatter - A function(string, envelope) that transforms each string
+  // Returns an async function that calls send with formatted strings.
+  _createSendDelegate (formatter) {
+    return async (envelope, ...strings) => {
+      const formatted = strings.map(str => formatter(str, envelope))
+      return this.send(envelope, ...formatted)
+    }
+  }
+
   // Public: Raw method for sending emote data back to the chat source.
-  // Defaults as an alias for send
+  // Defaults as an alias for send. Override in adapter for custom behavior.
   //
   // envelope - A Object with message, room and user details.
   // strings  - One or more Strings for each message to send.

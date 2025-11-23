@@ -11,10 +11,10 @@ import Response from './Response.mjs'
 import { Listener, TextListener } from './Listener.mjs'
 import Message from './Message.mjs'
 import Middleware from './Middleware.mjs'
+import { parseHelp } from './HelpParser.mjs'
 
 const File = fs.promises
 const HUBOT_DEFAULT_ADAPTERS = ['Campfire', 'Shell']
-const HUBOT_DOCUMENTATION_SECTIONS = ['description', 'dependencies', 'configuration', 'commands', 'notes', 'author', 'authors', 'examples', 'tags', 'urls']
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -68,11 +68,35 @@ class Robot {
 
     this.parseVersion()
     this.errorHandlers = []
+    this.catchAllListenerExecuted = false
 
     this.on('error', (err, res) => {
       return this.invokeErrorHandlers(err, res)
     })
     this.on('listening', this.herokuKeepalive.bind(this))
+  }
+
+  // Internal: Listener registry mapping predefined message type keys to their matcher predicates.
+  // Used by _registerListener() to consolidate similar listener registration methods.
+  static LISTENER_REGISTRY = {
+    enter: msg => msg instanceof Message.EnterMessage,
+    leave: msg => msg instanceof Message.LeaveMessage,
+    topic: msg => msg instanceof Message.TopicMessage
+  }
+
+  // Internal: Register a listener using a predefined matcher predicate from LISTENER_REGISTRY.
+  //
+  // registryKey - A String key into LISTENER_REGISTRY (e.g., 'enter', 'leave', 'topic').
+  // options     - An Object of additional parameters keyed on extension name (optional).
+  // callback    - A Function that is called with a Response object.
+  //
+  // Returns nothing.
+  _registerListener (registryKey, options, callback) {
+    const predicate = Robot.LISTENER_REGISTRY[registryKey]
+    if (!predicate) {
+      throw new Error(`Unknown listener registry key: ${registryKey}`)
+    }
+    this.listen(predicate, options, callback)
   }
 
   // Public: Adds a custom Listener with the provided matcher, options, and
@@ -160,7 +184,7 @@ class Robot {
   //
   // Returns nothing.
   enter (options, callback) {
-    this.listen(msg => msg instanceof Message.EnterMessage, options, callback)
+    this._registerListener('enter', options, callback)
   }
 
   // Public: Adds a Listener that triggers when anyone leaves the room.
@@ -171,7 +195,7 @@ class Robot {
   //
   // Returns nothing.
   leave (options, callback) {
-    this.listen(msg => msg instanceof Message.LeaveMessage, options, callback)
+    this._registerListener('leave', options, callback)
   }
 
   // Public: Adds a Listener that triggers when anyone changes the topic.
@@ -182,7 +206,7 @@ class Robot {
   //
   // Returns nothing.
   topic (options, callback) {
-    this.listen(msg => msg instanceof Message.TopicMessage, options, callback)
+    this._registerListener('topic', options, callback)
   }
 
   // Public: Adds an error handler when an uncaught exception or user emitted
@@ -229,6 +253,10 @@ class Robot {
       options = {}
     }
 
+    // Cheap Design: Register catch-all as a normal listener.
+    // No special handling in processListeners—it competes with other listeners
+    // but is only matched when message type is CatchAllMessage (which only happens
+    // when no other listener matched). This eliminates the recursive fallback.
     this.listen(isCatchAllMessage, options, async msg => {
       await callback(msg)
     })
@@ -283,8 +311,10 @@ class Robot {
   // Returns array of results from listeners.
   async receive (message) {
     const context = { response: new Response(this, message) }
-    const shouldContinue = await this.middleware.receive.execute(context)
-    if (shouldContinue === false) return null
+    // Cheap Design: Use Middleware.executeAndAllow() to simplify the
+    // middleware invocation and conditional check into a single semantic call
+    const shouldContinue = await this.middleware.receive.executeAndAllow(context)
+    if (!shouldContinue) return null
     return await this.processListeners(context)
   }
 
@@ -316,45 +346,52 @@ class Robot {
       }
     }
 
+    // Cheap Design: Replace recursive receive() with simple message type conversion.
+    // Let the listener table handle catch-all uniformly by just changing the message type.
+    // No special fallback logic, no recursion—just data transformation followed by
+    // a second pass through the same listener loop. Catch-all listeners match via
+    // isCatchAllMessage predicate, so this naturally triggers them in the loop above.
     if (!isCatchAllMessage(context.response.message) && !anyListenersExecuted) {
-      this.logger.debug('No listeners executed; falling back to catch-all')
-      try {
-        const result = await this.receive(new Message.CatchAllMessage(context.response.message))
-        results.push(result)
-      } catch (err) {
-        this.emit('error', err, context)
-      }
+      this.logger.debug('No listeners executed; converting to catch-all message')
+      const catchAllMsg = new Message.CatchAllMessage(context.response.message)
+      context.response.message = catchAllMsg
+      // Re-process listeners with the converted message type
+      return await this.processListeners(context)
     }
 
     return results
   }
 
-  async loadmjs (filePath) {
+  // Private: Generic loader applying Cheap Design by consolidating
+  // duplicated extension-specific logic. Offloads variation to data (ext)
+  // while keeping a single control path.
+  async _loadScript (filePath, ext) {
     const forImport = this.prepareForImport(filePath)
-    const script = await import(forImport)
-    let result = null
-    if (typeof script?.default === 'function') {
-      result = await script.default(this)
-    } else {
-      this.logger.warn(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to export default, got ${typeof script}`)
+    let exported
+    try {
+      exported = await import(forImport)
+    } catch (err) {
+      this.logger.error(`Import failed for ${filePath}: ${err.stack}`)
+      throw err
     }
-    return result
+    const scriptFn = exported?.default
+    if (typeof scriptFn === 'function') {
+      return await scriptFn(this)
+    }
+    this.logger.warn(`Expected ${filePath} (${ext}) default export to be function, got ${typeof scriptFn}`)
+    return null
+  }
+
+  async loadmjs (filePath) {
+    return await this._loadScript(filePath, 'mjs')
   }
 
   async loadts (filePath) {
-    return this.loadmjs(filePath)
+    return await this._loadScript(filePath, 'ts')
   }
 
   async loadjs (filePath) {
-    const forImport = this.prepareForImport(filePath)
-    const script = (await import(forImport)).default
-    let result = null
-    if (typeof script === 'function') {
-      result = await script(this)
-    } else {
-      this.logger.warn(`Expected ${filePath} (after preparing for import ${forImport}) to assign a function to module.exports, got ${typeof script}`)
-    }
-    return result
+    return await this._loadScript(filePath, 'js')
   }
 
   // Public: Loads a file in path.
@@ -374,6 +411,7 @@ class Robot {
     }
     let result = null
     try {
+      // Cheap Design: remove branching differences, rely on consolidated loader
       result = await this[`load${ext}`](full)
       this.parseHelp(full)
     } catch (error) {
@@ -507,17 +545,11 @@ class Robot {
       return
     }
     this.logger.debug(`Loading adapter ${adapterPath ?? 'from npmjs:'} ${this.adapterName}`)
-    const ext = path.extname(adapterPath ?? '')
     try {
-      if (Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1) {
-        this.adapter = await this.requireAdapterFrom(path.resolve(path.join(__dirname, 'adapters', `${this.adapterName}.mjs`)))
-      } else if (['.js', '.cjs'].includes(ext)) {
-        this.adapter = await this.requireAdapterFrom(path.resolve(adapterPath))
-      } else if (['.mjs'].includes(ext)) {
-        this.adapter = await this.importAdapterFrom(path.resolve(adapterPath))
-      } else {
-        this.adapter = await this.importFromRepo(this.adapterName)
-      }
+      // Cheap Design: Resolve strategy table driven by adapter state/path,
+      // eliminating nested if/else branching. Each strategy is a simple resolver.
+      const resolver = this._selectAdapterResolver(adapterPath)
+      this.adapter = await resolver.call(this, adapterPath)
     } catch (error) {
       this.logger.error(`Cannot load adapter ${adapterPath ?? '[no path set]'} ${this.adapterName} - ${error}`)
       throw error
@@ -526,17 +558,52 @@ class Robot {
     this.adapterName = this.adapter.name ?? this.adapter.constructor.name
   }
 
-  async requireAdapterFrom (adapaterPath) {
-    return await this.importAdapterFrom(adapaterPath)
+  // Private: Select the appropriate adapter resolver based on path and adapter name.
+  // Returns a resolver function that loads and returns the adapter.
+  _selectAdapterResolver (adapterPath) {
+    const ext = path.extname(adapterPath ?? '')
+    const isBuiltin = Array.from(HUBOT_DEFAULT_ADAPTERS).indexOf(this.adapterName) > -1
+
+    // Resolver table: condition => resolver function
+    const resolvers = {
+      builtinAdapter: () => isBuiltin,
+      commonJsFile: () => ['.js', '.cjs'].includes(ext),
+      esModuleFile: () => ['.mjs'].includes(ext),
+      npmPackage: () => true // fallback
+    }
+
+    const resolverMap = {
+      builtinAdapter: this._loadBuiltinAdapter,
+      commonJsFile: this._loadLocalAdapter,
+      esModuleFile: this._loadLocalAdapter,
+      npmPackage: this._loadNpmAdapter
+    }
+
+    // Find the first matching condition and return its resolver
+    for (const [key, condition] of Object.entries(resolvers)) {
+      if (condition()) {
+        return resolverMap[key]
+      }
+    }
   }
 
-  async importAdapterFrom (adapterPath) {
-    const forImport = this.prepareForImport(adapterPath)
+  // Private: Load a built-in adapter from src/adapters/
+  async _loadBuiltinAdapter (adapterPath) {
+    const builtinPath = path.resolve(path.join(__dirname, 'adapters', `${this.adapterName}.mjs`))
+    const forImport = this.prepareForImport(builtinPath)
     return await (await import(forImport)).default.use(this)
   }
 
-  async importFromRepo (adapterPath) {
-    return await (await import(adapterPath)).default.use(this)
+  // Private: Load a local adapter from a file path.
+  async _loadLocalAdapter (adapterPath) {
+    const resolvedPath = path.resolve(adapterPath)
+    const forImport = this.prepareForImport(resolvedPath)
+    return await (await import(forImport)).default.use(this)
+  }
+
+  // Private: Load an npm package adapter.
+  async _loadNpmAdapter (adapterPath) {
+    return await (await import(this.adapterName)).default.use(this)
   }
 
   // Public: Help Commands for Running Scripts.
@@ -552,52 +619,22 @@ class Robot {
   //
   // Returns nothing.
   parseHelp (filePath) {
-    const scriptDocumentation = {}
-    const body = fs.readFileSync(path.resolve(filePath), 'utf-8')
-
-    const useStrictHeaderRegex = /^["']use strict['"];?\s+/
-    const lines = body.replace(useStrictHeaderRegex, '').split(/(?:\n|\r\n|\r)/)
-      .reduce(toHeaderCommentBlock, { lines: [], isHeader: true }).lines
-      .filter(Boolean) // remove empty lines
-    let currentSection = null
-    let nextSection
-
+    // Cheap Design: Extracted help parsing into a dedicated utility module.
+    // Robot no longer needs to understand comment extraction or documentation
+    // section parsing—it just delegates to HelpParser and collects commands.
     this.logger.debug(`Parsing help for ${filePath}`)
 
-    for (let i = 0, line; i < lines.length; i++) {
-      line = lines[i]
+    try {
+      const { commands, legacyMode } = parseHelp(filePath, this.name)
 
-      if (line.toLowerCase() === 'none') {
-        continue
+      if (legacyMode) {
+        this.logger.info(`${filePath} is using deprecated documentation syntax`)
       }
 
-      nextSection = line.toLowerCase().replace(':', '')
-      if (Array.from(HUBOT_DOCUMENTATION_SECTIONS).indexOf(nextSection) !== -1) {
-        currentSection = nextSection
-        scriptDocumentation[currentSection] = []
-      } else {
-        if (currentSection) {
-          scriptDocumentation[currentSection].push(line)
-          if (currentSection === 'commands') {
-            this.commands.push(line)
-          }
-        }
-      }
-    }
-
-    if (currentSection === null) {
-      this.logger.info(`${filePath} is using deprecated documentation syntax`)
-      scriptDocumentation.commands = []
-      for (let i = 0, line, cleanedLine; i < lines.length; i++) {
-        line = lines[i]
-        if (line.match('-')) {
-          continue
-        }
-
-        cleanedLine = line.slice(2, +line.length + 1 || 9e9).replace(/^hubot/i, this.name).trim()
-        scriptDocumentation.commands.push(cleanedLine)
-        this.commands.push(cleanedLine)
-      }
+      // Collect commands from this script
+      this.commands.push(...commands)
+    } catch (error) {
+      this.logger.error(`Failed to parse help for ${filePath}: ${error.stack}`)
     }
   }
 
@@ -754,28 +791,6 @@ class Robot {
 
 function isCatchAllMessage (message) {
   return message instanceof Message.CatchAllMessage
-}
-
-function toHeaderCommentBlock (block, currentLine) {
-  if (!block.isHeader) {
-    return block
-  }
-
-  if (isCommentLine(currentLine)) {
-    block.lines.push(removeCommentPrefix(currentLine))
-  } else {
-    block.isHeader = false
-  }
-
-  return block
-}
-
-function isCommentLine (line) {
-  return /^(#|\/\/)/.test(line)
-}
-
-function removeCommentPrefix (line) {
-  return line.replace(/^[#/]+\s*/, '')
 }
 
 function extend (obj, ...sources) {
