@@ -41,7 +41,7 @@ class Shell extends Adapter {
   constructor (robot) {
     super(robot)
     this.name = 'Shell'
-    this.#logLevel = process.env.HUBOT_LOG_LEVEL ?? this.#logLevel
+    this.#logLevel = process.env.HUBOT_LOG_LEVEL || this.#logLevel
     this.#levelPriorities = this.#levels.reduce((acc, current, idx) => {
       acc[current] = idx
       return acc
