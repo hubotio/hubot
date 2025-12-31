@@ -234,7 +234,7 @@ describe('Shell Adapter: Logger before adapter run', () => {
     const robot = new Robot('Shell', false, 'TestHubot')
     robot.stdin = new stream.Readable()
     robot.stdin._read = () => {}
-    
+
     const originalLog = console.log
     const logMessages = []
     console.log = (...args) => {
@@ -245,20 +245,20 @@ describe('Shell Adapter: Logger before adapter run', () => {
       await assert.doesNotReject(async () => {
         // Before loadAdapter - uses default pino logger
         robot.logger.info('log before adapter load')
-        
+
         await robot.loadAdapter()
-        
+
         // After loadAdapter but before run - still uses pino logger (logger override happens in run())
         await robot.logger.info('log after load before run')
-        
+
         await robot.run()
-        
+
         // After run - uses Shell adapter's custom logger with formatted output
         await robot.logger.info('log after run')
       })
-      
+
       // Verify that logging after run() uses the Shell adapter's custom formatted logger
-      assert.ok(logMessages.some(msg => typeof msg === 'string' && msg.includes('[info]') && msg.includes('log after run')), 
+      assert.ok(logMessages.some(msg => typeof msg === 'string' && msg.includes('[info]') && msg.includes('log after run')),
         'Should use Shell adapter formatted logger after run()')
     } finally {
       console.log = originalLog
