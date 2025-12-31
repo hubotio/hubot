@@ -48,12 +48,12 @@ class Shell extends Adapter {
     }, {})
 
     this.robot.on('scripts have loaded', () => {
-      this.#rl.prompt()
+      this.#rl?.prompt()
     })
   }
 
   async send (envelope, ...strings) {
-    this.#rl.prompt()
+    this.#rl?.prompt()
     Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
