@@ -35,39 +35,25 @@ const reset = '\x1b[0m'
 
 class Shell extends Adapter {
   #rl = null
+  #levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+  #logLevel = 'info'
+  #levelPriorities = {}
   constructor (robot) {
     super(robot)
     this.name = 'Shell'
-    const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
-    const logLevel = process.env.HUBOT_LOG_LEVEL || 'info'
-    const levelPriorities = levels.reduce((acc, current, idx) => {
+    this.#logLevel = process.env.HUBOT_LOG_LEVEL || this.#logLevel
+    this.#levelPriorities = this.#levels.reduce((acc, current, idx) => {
       acc[current] = idx
       return acc
     }, {})
 
-    const configuredPriority = levelPriorities[logLevel]
-
-    const noop = async () => {}
-
-    levels.forEach(level => {
-      const priority = levelPriorities[level]
-      if (priority >= configuredPriority) {
-        robot.logger[level] = async (...args) => {
-          const color = levelColors[level] || ''
-          const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
-          await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
-        }
-      } else {
-        robot.logger[level] = noop
-      }
-    })
     this.robot.on('scripts have loaded', () => {
-      this.#rl.prompt()
+      this.#rl?.prompt()
     })
   }
 
   async send (envelope, ...strings) {
-    this.#rl.prompt()
+    this.#rl?.prompt()
     Array.from(strings).forEach(str => console.log(bold(str)))
   }
 
@@ -141,6 +127,21 @@ class Shell extends Adapter {
 
     const existingHistory = (await readFile(historyPath, 'utf8')).split('\n')
     existingHistory.reverse().forEach(line => this.#rl.history.push(line))
+
+    const configuredPriority = this.#levelPriorities[this.#logLevel]
+    const noop = async () => {}
+    this.#levels.forEach(level => {
+      const priority = this.#levelPriorities[level]
+      if (priority >= configuredPriority) {
+        this.robot.logger[level] = async (...args) => {
+          const color = levelColors[level] || ''
+          const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
+          await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
+        }
+      } else {
+        this.robot.logger[level] = noop
+      }
+    })
 
     try {
       this.emit('connected', this)
