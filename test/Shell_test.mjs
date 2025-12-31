@@ -228,3 +228,22 @@ describe('Shell Adapter: Print human readable logging in the console when someth
     robot.shutdown()
   })
 })
+
+describe('Shell Adapter: Logger before adapter run', () => {
+  it('does not throw when logging before the adapter initializes readline', async () => {
+    const robot = new Robot('Shell', false, 'TestHubot')
+    const originalLog = console.log
+    console.log = () => {}
+
+    try {
+      await assert.doesNotReject(async () => {
+        robot.logger.info('log before adapter load')
+        await robot.loadAdapter()
+        await robot.logger.info('log after load before run')
+      })
+    } finally {
+      console.log = originalLog
+      robot.shutdown()
+    }
+  })
+})
