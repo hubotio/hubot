@@ -3,8 +3,11 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
+import http from 'node:http'
 import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User, Response } from '../index.mjs'
 import mockAdapter from './fixtures/MockAdapter.mjs'
+import { HttpServerPort } from '../src/ports/HttpServerPort.mjs'
+import { ExpressHttpServerPort } from '../src/ports/ExpressHttpServerPort.mjs'
 
 describe('Robot', () => {
   describe('#http', () => {
@@ -1037,6 +1040,21 @@ describe('Robot', () => {
       const res = await fetch(`http://127.0.0.1:${port}/hubot/version`)
       assert.equal(res.status, 404)
       assert.match(await res.text(), /Cannot GET \/hubot\/version/ig)
+      robot.shutdown()
+      delete process.env.PORT
+    })
+  })
+
+  describe('Non-express HTTP server', async () => {
+    it('should work with a non-express http server', async () => {
+
+      const robot = new Robot(mockAdapter, httpDServerFactory, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
+      const port = robot.server.address().port
+      const res = await fetch(`http://127.0.0.1:${port}/`)
+      assert.equal(res.status, 200)
+      assert.equal(await res.text(), 'Hello World\n')
       robot.shutdown()
       delete process.env.PORT
     })

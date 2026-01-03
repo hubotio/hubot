@@ -11,6 +11,7 @@ const switches = [
   ['-f', '--file HUBOT_FILE', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
   ['-c', '--create HUBOT_CREATE', 'Create a deployable hubot'],
   ['-d', '--disable-httpd HUBOT_HTTPD', 'Disable the HTTP server'],
+  ['-s', '--httpdserver HUBOT_HTTPD_SERVER', 'Specify a custom HTTP server module'],
   ['-h', '--help', 'Display the help information'],
   ['-l', '--alias HUBOT_ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name HUBOT_NAME', 'The name of the robot in chat'],
@@ -28,7 +29,8 @@ const options = {
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
   file: process.env.HUBOT_FILE,
-  configCheck: false
+  configCheck: false,
+  httpdServer: process.env.HUBOT_HTTPD_SERVER,
 }
 
 const Parser = new OptParse(switches)
@@ -49,6 +51,10 @@ Parser.on('create', function (opt, value) {
 
 Parser.on('disable-httpd', opt => {
   options.enableHttpd = false
+})
+
+Parser.on('httpdserver', (opt, value) => {
+  options.httpdServer = value
 })
 
 Parser.on('help', function (opt, value) {
@@ -97,6 +103,16 @@ if (options.create) {
 
 if (options.file) {
   options.adapter = options.file.split('/').pop().split('.')[0]
+}
+
+if (options.enableHttpd === true && !options.httpdServer) {
+  options.httpdServer = 'src/ports/ExpressHttpServerPort.mjs'
+}
+
+if (options.httpdServer) {
+  const httpdServerModulePath = pathResolve('.', options.httpdServer)
+  const httpdServerModule = await import(httpdServerModulePath)
+  options.enableHttpd = httpdServerModule.default
 }
 
 const robot = Hubot.loadBot(options.adapter, options.enableHttpd, options.name, options.alias)

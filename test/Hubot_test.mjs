@@ -42,6 +42,7 @@ describe('Running bin/Hubot.mjs', () => {
   -f, --file HUBOT_FILE
   -c, --create HUBOT_CREATE
   -d, --disable-httpd HUBOT_HTTPD
+  -s, --httpdserver HUBOT_HTTPD_SERVER
   -h, --help
   -l, --alias HUBOT_ALIAS
   -n, --name HUBOT_NAME
@@ -112,7 +113,6 @@ describe('Running hubot with args', () => {
         } finally {
           hubot.kill()
         }
-        console.log(actual)
         assert.ok(actual instanceof TypeError)
         assert.deepEqual(actual.message, 'fetch failed', 'this is an expected failure since the web service should not be running')
         done()

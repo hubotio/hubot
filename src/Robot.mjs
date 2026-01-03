@@ -11,6 +11,7 @@ import Response from './Response.mjs'
 import { Listener, TextListener } from './Listener.mjs'
 import Message from './Message.mjs'
 import Middleware from './Middleware.mjs'
+import { HttpServerPort } from './ports/HttpServerPort.mjs'
 
 const File = fs.promises
 const HUBOT_DEFAULT_ADAPTERS = ['Campfire', 'Shell']
@@ -24,7 +25,7 @@ class Robot {
   // dispatch them to matching listeners.
   //
   // adapter     - A String of the adapter name.
-  // httpd       - A Boolean whether to enable the HTTP daemon.
+  // httpd       - An async function that creates the HTTP daemon. Defaults to HttpServerPort, which doesn't do anything.
   // name        - A String of the robot name, defaults to Hubot.
   // alias       - A String of the alias of the robot name
   constructor (adapter, httpd, name, alias) {
@@ -48,7 +49,17 @@ class Robot {
       this.adapterName = adapter ?? this.adapterName
     }
 
-    this.shouldEnableHttpd = httpd ?? true
+    this.httpDServerFactory = async (options) => new HttpServerPort(options)
+    if (httpd && typeof httpd === 'function') {
+      this.httpDServerFactory = httpd
+    }
+
+    if (httpd === true) {
+      this.httpDServerFactory = Robot.setupExpress
+    }
+
+    this.server = null
+    this.router = null
     this.datastore = null
     this.Response = Response
     this.commands = []
@@ -436,7 +447,7 @@ class Robot {
   // Setup the Express server's defaults.
   //
   // Returns Server.
-  async setupExpress () {
+  static async setupExpress (robot) {
     const user = process.env.EXPRESS_USER
     const pass = process.env.EXPRESS_PASSWORD
     const stat = process.env.EXPRESS_STATIC
@@ -469,10 +480,10 @@ class Robot {
     }
     return new Promise((resolve, reject) => {
       try {
-        this.server = app.listen(port, address, () => {
-          this.router = app
-          this.emit('listening', this.server)
-          resolve(this.server)
+        robot.server = app.listen(port, address, () => {
+          robot.router = app
+          robot.emit('listening', robot.server)
+          resolve(robot.server)
         })
       } catch (err) {
         reject(err)
@@ -661,11 +672,7 @@ class Robot {
   //
   // Returns whatever the adapter returns.
   async run () {
-    if (this.shouldEnableHttpd) {
-      await this.setupExpress()
-    } else {
-      this.setupNullRouter()
-    }
+    await this.httpDServerFactory(this)
     await this.adapter.run()
     this.emit('running')
   }
