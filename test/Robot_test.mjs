@@ -3,8 +3,10 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
+import http from 'node:http'
 import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User, Response } from '../index.mjs'
 import mockAdapter from './fixtures/MockAdapter.mjs'
+import { HttpServerPort } from '../src/ports/HttpServerPort.mjs'
 
 describe('Robot', () => {
   describe('#http', () => {
@@ -1037,6 +1039,44 @@ describe('Robot', () => {
       const res = await fetch(`http://127.0.0.1:${port}/hubot/version`)
       assert.equal(res.status, 404)
       assert.match(await res.text(), /Cannot GET \/hubot\/version/ig)
+      robot.shutdown()
+      delete process.env.PORT
+    })
+  })
+
+  describe('Non-express HTTP server', async () => {
+    it('should work with a non-express http server', async () => {
+      class HttpServer extends HttpServerPort {
+        async start(port) {
+          return new Promise((resolve, reject) => {
+              try {
+                this.robot.server = http.createServer((req, res) => {
+                  res.writeHead(200, { 'Content-Type': 'text/plain' })
+                  res.end('Hello World\n')
+                })
+                this.robot.router = this
+                this.robot.server = this.robot.server.listen(port, '127.0.0.1', () => {
+                    this.robot.emit('listening', this.robot.server)
+                    resolve(this.robot.server)
+                })
+              } catch (err) {
+                  reject(err)
+              }
+          })
+        }
+      }
+      const httpDServerFactory = async (robot) => {
+        const server = new HttpServer(robot)
+        await server.start(process.env.PORT || 0)
+        return server
+      }
+      const robot = new Robot(mockAdapter, httpDServerFactory, 'TestHubot')
+      await robot.loadAdapter()
+      await robot.run()
+      const port = robot.server.address().port
+      const res = await fetch(`http://127.0.0.1:${port}/`)
+      assert.equal(res.status, 200)
+      assert.equal(await res.text(), 'Hello World\n')
       robot.shutdown()
       delete process.env.PORT
     })
