@@ -3,8 +3,8 @@ import express from 'express'
 import basicAuth from 'express-basic-auth'
 
 class ExpressHttpServerPort extends HttpServerPort {
-    constructor(robot) {
-        super(robot)
+    get address() {
+        return this.robot.server.address()
     }
     async start(port) {
         const user = process.env.EXPRESS_USER
@@ -16,7 +16,7 @@ class ExpressHttpServerPort extends HttpServerPort {
         const app = express()
 
         app.use((req, res, next) => {
-            res.setHeader('X-Powered-By', `hubot/${encodeURI(this.name)}`)
+            res.setHeader('X-Powered-By', `hubot/${encodeURI(this.robot.name)}`)
             return next()
         })
 
@@ -44,10 +44,25 @@ class ExpressHttpServerPort extends HttpServerPort {
             }
         })
     }
+
+    async stop() {
+        if (!this.robot || !this.robot.server) {
+            return
+        }
+        return new Promise((resolve, reject) => {
+            this.robot.server.close(err => {
+                if (err) {
+                    return reject(err)
+                }
+                resolve()
+            })
+        })
+    }
 }
 
 export default async (robot) => {
     const server = new ExpressHttpServerPort(robot)
     const port = process.env.EXPRESS_PORT || process.env.PORT || 8080
-    return await server.start(port)
+    await server.start(port)
+    return server
 }

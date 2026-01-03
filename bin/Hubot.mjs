@@ -11,7 +11,7 @@ const switches = [
   ['-f', '--file HUBOT_FILE', 'Path to adapter file, e.g. "./adapters/CustomAdapter.mjs"'],
   ['-c', '--create HUBOT_CREATE', 'Create a deployable hubot'],
   ['-d', '--disable-httpd HUBOT_HTTPD', 'Disable the HTTP server'],
-  ['-s', '--httpdserver HUBOT_HTTPD_SERVER', 'Specify a custom HTTP server module'],
+  ['-s', '--httpdserver HUBOT_HTTPD_SERVER', 'An async factory function that receives this robot (via options) and returns or creates an HttpServerPort instance. Defaults to a factory that instantiates HttpServerPort'],
   ['-h', '--help', 'Display the help information'],
   ['-l', '--alias HUBOT_ALIAS', "Enable replacing the robot's name with alias"],
   ['-n', '--name HUBOT_NAME', 'The name of the robot in chat'],

@@ -7,7 +7,6 @@ import http from 'node:http'
 import { Robot, CatchAllMessage, EnterMessage, LeaveMessage, TextMessage, TopicMessage, User, Response } from '../index.mjs'
 import mockAdapter from './fixtures/MockAdapter.mjs'
 import { HttpServerPort } from '../src/ports/HttpServerPort.mjs'
-import { ExpressHttpServerPort } from '../src/ports/ExpressHttpServerPort.mjs'
 
 describe('Robot', () => {
   describe('#http', () => {
@@ -1047,7 +1046,30 @@ describe('Robot', () => {
 
   describe('Non-express HTTP server', async () => {
     it('should work with a non-express http server', async () => {
-
+      class HttpServer extends HttpServerPort {
+        async start(port) {
+          return new Promise((resolve, reject) => {
+              try {
+                this.robot.server = http.createServer((req, res) => {
+                  res.writeHead(200, { 'Content-Type': 'text/plain' })
+                  res.end('Hello World\n')
+                })
+                this.robot.router = this
+                this.robot.server = this.robot.server.listen(port, '127.0.0.1', () => {
+                    this.robot.emit('listening', this.robot.server)
+                    resolve(this.robot.server)
+                })
+              } catch (err) {
+                  reject(err)
+              }
+          })
+        }
+      }
+      const httpDServerFactory = async (robot) => {
+        const server = new HttpServer(robot)
+        await server.start(process.env.PORT || 0)
+        return server
+      }
       const robot = new Robot(mockAdapter, httpDServerFactory, 'TestHubot')
       await robot.loadAdapter()
       await robot.run()

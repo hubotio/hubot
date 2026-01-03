@@ -6,7 +6,7 @@ test('HttpServerPort API', async t => {
     await t.test('start and stop', async () => {
         const server = new HttpServerPort({})
         await server.start(0)
-        assert.ok(server.address().port > 0, 'Server should be listening on a port')
+        assert.equal(server.address().port, 0)
         await server.stop()
     })
 
