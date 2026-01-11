@@ -8,7 +8,8 @@ describe('Message', () => {
   const user = new User({
     id: 1,
     name: 'hubottester',
-    room: '#mocha'
+    room: '#mocha',
+    displayName: 'Admin'
   })
 
   describe('Unit Tests', () => {
