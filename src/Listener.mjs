@@ -1,7 +1,6 @@
 'use strict'
 
 import { inspect } from 'node:util'
-import { TextMessage } from './Message.mjs'
 import Middleware from './Middleware.mjs'
 
 class Listener {
