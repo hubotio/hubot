@@ -1,7 +1,6 @@
 'use strict'
 
 import { inspect } from 'node:util'
-import { TextMessage } from './Message.mjs'
 import Middleware from './Middleware.mjs'
 
 class Listener {
@@ -97,7 +96,7 @@ class TextListener extends Listener {
   // callback - A Function that is triggered if the incoming message matches.
   constructor (robot, regex, options, callback) {
     function matcher (message) {
-      if (message instanceof TextMessage) {
+      if (typeof message.match === 'function') {
         return message.match(regex)
       }
     }

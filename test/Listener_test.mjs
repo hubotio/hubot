@@ -290,15 +290,31 @@ describe('Listener', () => {
         it('does not match EnterMessages', () => {
           const callback = async () => {}
           const testMessage = new EnterMessage(user)
-          testMessage.match = () => {
-            assert.fail('match should not be called')
-          }
           const testRegex = /test/
 
           const testListener = new TextListener(robot, testRegex, callback)
           const result = testListener.matcher(testMessage)
 
           assert.deepEqual(result, undefined)
+        })
+
+        it('matches non-TextMessage objects with a match function (duck-typing regression test)', () => {
+          const callback = async () => {}
+          const testRegex = /test/
+          // Simulate a message from a linked module that isn't an instanceof TextMessage
+          const nonTextMessage = {
+            user: 'testuser',
+            text: 'test message',
+            match (regex) {
+              assert.deepEqual(regex, testRegex)
+              return true
+            }
+          }
+
+          const testListener = new TextListener(robot, testRegex, callback)
+          const result = testListener.matcher(nonTextMessage)
+
+          assert.ok(result)
         })
       })
     )
