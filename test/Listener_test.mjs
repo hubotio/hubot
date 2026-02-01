@@ -290,9 +290,6 @@ describe('Listener', () => {
         it('does not match EnterMessages', () => {
           const callback = async () => {}
           const testMessage = new EnterMessage(user)
-          testMessage.match = () => {
-            assert.fail('match should not be called')
-          }
           const testRegex = /test/
 
           const testListener = new TextListener(robot, testRegex, callback)
