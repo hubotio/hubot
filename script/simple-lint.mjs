@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const projectRoot = path.resolve(new URL('.', import.meta.url).pathname, '..', '..')
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 const targets = [
   'src',
@@ -46,8 +47,9 @@ const walk = async (dir) => {
 
 const lintFile = async (filePath) => {
   const content = await fs.readFile(filePath, 'utf8')
-  const lines = content.split('\n')
-  const hasFinalNewline = content.endsWith('\n')
+  const normalizedContent = content.replace(/\r\n/g, '\n')
+  const lines = normalizedContent.split('\n')
+  const hasFinalNewline = normalizedContent.endsWith('\n')
 
   lines.forEach((line, index) => {
     const lineNumber = index + 1
