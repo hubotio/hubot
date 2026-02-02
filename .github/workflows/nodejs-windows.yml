@@ -1,4 +1,9 @@
 name: Node.js (Windows) CI
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+  id-token: write
 on:
   push:
     branches:
