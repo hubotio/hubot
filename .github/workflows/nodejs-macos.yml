@@ -1,4 +1,7 @@
 name: Node.js (macOS) CI
+permissions:
+  contents: read
+  issues: read
 
 on:
   push:

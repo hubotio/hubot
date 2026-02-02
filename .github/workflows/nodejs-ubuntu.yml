@@ -1,4 +1,7 @@
 name: Node.js (Ubuntu) CI
+permissions:
+  contents: read
+  issues: read
 
 on:
   push:
