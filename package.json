@@ -14,9 +14,6 @@
     "type": "git",
     "url": "https://github.com/hubotio/hubot.git"
   },
-  "devDependencies": {
-    "standard": "^17.1.0"
-  },
   "engines": {
     "node": ">= 18",
     "npm": ">= 9"
@@ -28,7 +25,7 @@
   "scripts": {
     "start": "bin/hubot",
     "gen": "bin/hubot --create myhubot",
-    "pretest": "standard",
+    "pretest": "node script/simple-lint.mjs",
     "test": "node --test --test-timeout=40000",
     "test:smoke": "node src/**/*.js",
     "test:e2e": "bin/e2e-test.sh",
@@ -43,7 +40,7 @@
     "dryRun": false
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "express-basic-auth": "^1.2.1",
     "pino": "^9.12.0"
   }
