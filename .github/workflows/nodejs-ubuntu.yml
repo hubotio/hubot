@@ -1,7 +1,6 @@
 name: Node.js (Ubuntu) CI
 permissions:
   contents: read
-  pull-requests: write
   issues: read
   id-token: write
 
