@@ -6,6 +6,11 @@ import Adapter from '../Adapter.mjs'
 import { TextMessage, EnterMessage, LeaveMessage, TopicMessage } from '../Message.mjs'
 
 class Campfire extends Adapter {
+  constructor(robot) {
+    super(robot)
+    this.timeouts = []
+  }
+
   send (envelope/* , ...strings */) {
     const strings = [].slice.call(arguments, 1)
 
@@ -68,7 +73,8 @@ class Campfire extends Adapter {
       strings.push(() => {
         // campfire won't send messages from just before a room unlock. 3000
         // is the 3-second poll.
-        setTimeout(() => this.bot.Room(envelope.room).unlock(), 3000)
+        const timeoutId = setTimeout(() => this.bot.Room(envelope.room).unlock(), 3000)
+        this.timeouts.push(timeoutId)
       })
 
       this.send.apply(this, [envelope].concat(strings))
@@ -84,7 +90,7 @@ class Campfire extends Adapter {
       account: process.env.HUBOT_CAMPFIRE_ACCOUNT
     }
 
-    const bot = new CampfireStreaming(options, this.robot)
+    const bot = new CampfireStreaming(options, this.robot, this)
 
     function withAuthor (callback) {
       return function (id, created, room, user, body) {
@@ -148,13 +154,23 @@ class Campfire extends Adapter {
 
     self.emit('connected')
   }
+
+  close() {
+    // Clear all pending timeouts
+    for (const timeoutId of this.timeouts) {
+      clearTimeout(timeoutId)
+    }
+    this.timeouts = []
+    super.close()
+  }
 }
 
 class CampfireStreaming extends EventEmitter {
-  constructor (options, robot) {
+  constructor (options, robot, adapter) {
     super()
 
     this.robot = robot
+    this.adapter = adapter
     if (options.token == null || options.rooms == null || options.account == null) {
       this.robot.logger.error('Not enough parameters provided. I need a token, rooms and account')
       process.exit(1)
@@ -288,7 +304,8 @@ class CampfireStreaming extends EventEmitter {
 
           response.on('end', function () {
             logger.error(`Streaming connection closed for room ${id}. :(`)
-            return setTimeout(() => self.emit('reconnect', id), 5000)
+            const timeoutId = setTimeout(() => self.emit('reconnect', id), 5000)
+            self.adapter.timeouts.push(timeoutId)
           })
 
           return response.on('error', err => logger.error(`Campfire listen response error: ${err}`))

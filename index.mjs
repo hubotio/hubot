@@ -9,6 +9,7 @@ import Middleware from './src/Middleware.mjs'
 import { Listener, TextListener } from './src/Listener.mjs'
 import { TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage, Message } from './src/Message.mjs'
 import { DataStore, DataStoreUnavailable } from './src/DataStore.mjs'
+import { CommandBus } from './src/CommandBus.mjs'
 
 const loadBot = (adapter, enableHttpd, name, alias) => new Robot(adapter, enableHttpd, name, alias)
 export {
@@ -28,6 +29,7 @@ export {
   DataStore,
   DataStoreUnavailable,
   Middleware,
+  CommandBus,
   loadBot
 }
 
@@ -48,5 +50,6 @@ export default {
   DataStore,
   DataStoreUnavailable,
   Middleware,
+  CommandBus,
   loadBot
 }

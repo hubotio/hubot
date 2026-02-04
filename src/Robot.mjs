@@ -11,6 +11,7 @@ import Response from './Response.mjs'
 import { Listener, TextListener } from './Listener.mjs'
 import Message from './Message.mjs'
 import Middleware from './Middleware.mjs'
+import { CommandBus } from './CommandBus.mjs'
 
 const File = fs.promises
 const HUBOT_DEFAULT_ADAPTERS = ['Campfire', 'Shell']
@@ -51,7 +52,8 @@ class Robot {
     this.shouldEnableHttpd = httpd ?? true
     this.datastore = null
     this.Response = Response
-    this.commands = []
+    this.commands = new CommandBus(this)
+    this.helpStrings = []
     this.listeners = []
     this.middleware = {
       listener: new Middleware(this),
@@ -73,6 +75,102 @@ class Robot {
       return this.invokeErrorHandlers(err, res)
     })
     this.on('listening', this.herokuKeepalive.bind(this))
+    
+    // Register built-in help command
+    this.registerHelpCommand()
+  }
+
+  // Private: Register the built-in help command
+  registerHelpCommand() {
+    this.commands.register({
+      id: 'help',
+      description: 'Show available commands or search for specific commands',
+      aliases: ['commands', 'list commands', 'show commands'],
+      args: {
+        query: { type: 'string', required: false }
+      },
+      confirm: 'never',
+      examples: [
+        'help',
+        'help tickets',
+        'help search "create ticket"'
+      ],
+      handler: async (ctx) => {
+        const { query } = ctx.args
+
+        // Search mode: use search() API
+        if (query && query.startsWith('search ')) {
+          const searchQuery = query.slice(7).trim()
+          const results = this.commands.search(searchQuery)
+          
+          if (results.length === 0) {
+            return `No commands found matching "${searchQuery}"`
+          }
+
+          let response = `Commands matching "${searchQuery}":\n\n`
+          results.slice(0, 5).forEach(result => {
+            const cmd = this.commands.getCommand(result.id)
+            response += `• ${cmd.id} - ${cmd.description} (matched: ${result.matchedOn}, score: ${result.score})\n`
+          })
+
+          if (results.length > 5) {
+            response += `\n...and ${results.length - 5} more`
+          }
+
+          return response
+        }
+
+        // Prefix filter mode
+        if (query) {
+          const commands = this.commands.listCommands({ prefix: query })
+          
+          if (commands.length === 0) {
+            return `No commands found starting with "${query}"`
+          }
+
+          let response = `Commands starting with "${query}":\n\n`
+          commands.forEach(cmd => {
+            response += `• ${cmd.id} - ${cmd.description}\n`
+            if (cmd.aliases.length > 0) {
+              response += `  Intent: ${cmd.aliases.join(', ')}\n`
+            }
+          })
+
+          return response
+        }
+
+        // List all commands
+        const commands = this.commands.listCommands()
+        
+        if (commands.length === 0) {
+          return 'No commands registered'
+        }
+
+        // Group by prefix
+        const grouped = commands.reduce((acc, cmd) => {
+          const prefix = cmd.id.split('.')[0]
+          if (!acc[prefix]) acc[prefix] = []
+          acc[prefix].push(cmd)
+          return acc
+        }, {})
+
+        let response = 'Available commands:\n\n'
+        Object.keys(grouped).sort().forEach(prefix => {
+          response += `${prefix}:\n`
+          grouped[prefix].forEach(cmd => {
+            response += `  • ${cmd.id} - ${cmd.description}\n`
+          })
+          response += '\n'
+        })
+
+        response += 'Usage:\n'
+        response += '  @' + this.name + ' help <prefix>      - Show commands with prefix\n'
+        response += '  @' + this.name + ' help search <query> - Search commands\n'
+        response += '  @' + this.name + ' <command> --help   - Show command details'
+
+        return response
+      }
+    })
   }
 
   // Public: Adds a custom Listener with the provided matcher, options, and
@@ -543,7 +641,7 @@ class Robot {
   //
   // Returns an Array of help commands for running scripts.
   helpCommands () {
-    return this.commands.sort()
+    return this.helpStrings.sort()
   }
 
   // Private: load help info from a loaded script.
@@ -579,7 +677,7 @@ class Robot {
         if (currentSection) {
           scriptDocumentation[currentSection].push(line)
           if (currentSection === 'commands') {
-            this.commands.push(line)
+            this.helpStrings.push(line)
           }
         }
       }
@@ -596,7 +694,7 @@ class Robot {
 
         cleanedLine = line.slice(2, +line.length + 1 || 9e9).replace(/^hubot/i, this.name).trim()
         scriptDocumentation.commands.push(cleanedLine)
-        this.commands.push(cleanedLine)
+        this.helpStrings.push(cleanedLine)
       }
     }
   }
@@ -661,6 +759,7 @@ class Robot {
   //
   // Returns whatever the adapter returns.
   async run () {
+    this.setupCommandListeners()
     if (this.shouldEnableHttpd) {
       await this.setupExpress()
     } else {
@@ -677,6 +776,7 @@ class Robot {
     if (this.pingIntervalId != null) {
       clearInterval(this.pingIntervalId)
     }
+    this.commands.clearPendingProposals()
     this.adapter?.close()
     if (this.server) {
       this.server.close()
@@ -750,6 +850,101 @@ class Robot {
       }, 5 * 60 * 1000)
     }
   }
+
+  // Private: Install narrow command listeners for confirmation and invocation
+  //
+  // Returns nothing.
+  setupCommandListeners () {
+    // Use receiveMiddleware to intercept addressed messages for commands
+    this.receiveMiddleware(async (context) => {
+      const message = context.response.message
+      
+      // Only process TextMessages addressed to the bot
+      if (message.constructor.name !== 'TextMessage') {
+        return true // continue to other listeners
+      }
+
+      const text = message.text || ''
+      
+      // Check if message is addressed to bot (has bot name or alias at start)
+      const robotPattern = new RegExp(`^[@]?${escapeRegExp(this.name)}[:,]?\\s+`, 'i')
+      const aliasPattern = this.alias ? new RegExp(`^[@]?${escapeRegExp(this.alias)}[:,]?\\s+`, 'i') : null
+      
+      const isAddressed = robotPattern.test(text) || (aliasPattern && aliasPattern.test(text))
+      
+      if (!isAddressed) {
+        return true // not addressed to bot, continue to other listeners
+      }
+
+      // Strip bot name/alias from message
+      let commandText = text.replace(robotPattern, '').trim()
+
+      const contextData = {
+        user: message.user,
+        room: message.room,
+        message: message,
+        res: context.response
+      }
+
+      // Check for pending confirmation first
+      const confirmationKey = this.commands._getConfirmationKey(message.user.id, message.room)
+      const hasPending = this.commands.pendingProposals.has(confirmationKey)
+      
+      if (hasPending && /^(yes|y|no|n|cancel)$/i.test(commandText)) {
+        const result = await this.commands.confirm(commandText, contextData)
+        
+        if (result) {
+          if (result.executed) {
+            context.response.reply(result.result || 'Command executed successfully')
+          } else if (result.cancelled) {
+            context.response.reply('Command cancelled')
+          }
+          message.done = true
+          return false // stop processing
+        }
+      }
+
+      // Try to parse as command invocation
+      const parsed = this.commands.parse(commandText)
+      
+      if (!parsed) {
+        return true // not a command, continue to other listeners
+      }
+
+      try {
+        const result = await this.commands.invoke(commandText, contextData)
+
+        if (result) {
+          if (result.needsConfirmation) {
+            const proposal = result.proposal
+            context.response.reply(`Preview: ${proposal.preview}\n\nRun it? (yes/no)`)
+          } else if (result.ok) {
+            context.response.reply(result.result || 'Command executed successfully')
+          } else {
+            // Validation error
+            let errorMsg = 'Invalid command:\n'
+            if (result.missing && result.missing.length > 0) {
+              errorMsg += `Missing required arguments: ${result.missing.join(', ')}\n`
+            }
+            if (result.errors && result.errors.length > 0) {
+              errorMsg += `Errors: ${result.errors.join(', ')}`
+            }
+            context.response.reply(errorMsg)
+          }
+          message.done = true
+          return false // stop processing
+        }
+      } catch (err) {
+        context.response.reply(`Error executing command: ${err.message}`)
+        message.done = true
+        return false
+      }
+
+      return true // continue to other listeners
+    })
+  }
+
+  
 }
 
 function isCatchAllMessage (message) {
@@ -790,6 +985,10 @@ function extend (obj, ...sources) {
   })
 
   return obj
+}
+
+function escapeRegExp (string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export default Robot
