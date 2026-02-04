@@ -503,16 +503,7 @@ export class CommandBus extends EventEmitter {
       }
 
       case 'boolean': {
-        if (typeof value === 'boolean') {
-          return value
-        }
-        if (value === 'true' || value === '1') {
-          return true
-        }
-        if (value === 'false' || value === '0') {
-          return false
-        }
-        return Boolean(value)
+        return coerceToBoolean(value)
       }
 
       case 'enum': {
@@ -817,4 +808,26 @@ export class CommandBus extends EventEmitter {
       // Silent fail for logging errors
     }
   }
+}
+
+function coerceToBoolean(value) {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (typeof value === 'number') {
+    return value !== 0
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+    if (['true', 't', 'yes', 'y', '1', 'on'].includes(normalized)) {
+      return true
+    }
+    if (['false', 'f', 'no', 'n', '0', 'off'].includes(normalized)) {
+      return false
+    }
+  }
+
+  return Boolean(value)
 }
