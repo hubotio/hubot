@@ -519,7 +519,10 @@ export class CommandBus extends EventEmitter {
       }
 
       case 'enum': {
-        if (!schema.values || !schema.values.includes(value)) {
+        if (!Array.isArray(schema.values) || schema.values.length === 0) {
+          throw new Error(`Argument ${name}: enum values must be a non-empty array`)
+        }
+        if (!schema.values.includes(value)) {
           throw new Error(`Argument ${name} must be one of: ${schema.values.join(', ')}`)
         }
         return value
@@ -724,7 +727,7 @@ export class CommandBus extends EventEmitter {
     }
 
     try {
-      const result = await command.handler({ args, ...context })
+      const result = await command.handler({ args, context })
 
       this.emit('commands:executed', { commandId, timestamp: Date.now() })
       this._log({ event: 'commands:executed', commandId, timestamp: Date.now() })
@@ -741,6 +744,16 @@ export class CommandBus extends EventEmitter {
     const parsed = this.parse(text)
     if (!parsed) {
       return null
+    }
+
+    const helpRequested = parsed.args && (parsed.args.help === true || parsed.args.h === true)
+    if (helpRequested) {
+      const helpText = this.getHelp(parsed.commandId)
+      return {
+        ok: true,
+        helpOnly: true,
+        result: helpText
+      }
     }
 
     const validation = await this.validate(parsed.commandId, parsed.args, context)
@@ -779,8 +792,11 @@ export class CommandBus extends EventEmitter {
 
     for (const [key, value] of Object.entries(args)) {
       const valueStr = typeof value === 'object' ? JSON.stringify(value) : String(value)
-      const needsQuotes = valueStr.includes(' ')
-      preview += ` --${key} ${needsQuotes ? `"${valueStr}"` : valueStr}`
+      const needsQuotes = valueStr.includes(' ') || valueStr.includes('"')
+      const escapedValue = needsQuotes
+        ? valueStr.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+        : valueStr
+      preview += ` --${key} ${needsQuotes ? `"${escapedValue}"` : escapedValue}`
     }
 
     return preview

@@ -1,6 +1,5 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
-import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 import { CommandBus } from '../src/CommandBus.mjs'
@@ -15,15 +14,6 @@ class FakeRobot {
         '3': { id: '3', name: 'charlie' }
       })
     }
-  }
-}
-
-// Fake message for testing
-class FakeMessage {
-  constructor(user, text, room) {
-    this.user = user
-    this.text = text
-    this.room = room
   }
 }
 
@@ -350,6 +340,20 @@ describe('CommandBus', () => {
       assert.strictEqual(result.ok, false)
       assert.ok(result.errors.some(e => e.includes('channel')))
     })
+
+    it('should allow custom room resolver override', async () => {
+      commandBus.registerTypeResolver('room', async (value) => {
+        if (!value.startsWith('room:')) {
+          throw new Error('room must start with room:')
+        }
+        return value
+      })
+
+      const result = await commandBus.validate('test.room', { channel: 'room:ops' }, {})
+
+      assert.strictEqual(result.ok, true)
+      assert.strictEqual(result.args.channel, 'room:ops')
+    })
   })
 
   describe('date resolver', () => {
@@ -555,6 +559,16 @@ describe('CommandBus', () => {
     })
   })
 
+  describe('_renderPreview()', () => {
+    it('should escape quotes inside quoted values', () => {
+      const preview = commandBus._renderPreview('test.preview', {
+        message: 'test "quoted" text'
+      })
+
+      assert.strictEqual(preview, 'test.preview --message "test \\\"quoted\\\" text"')
+    })
+  })
+
   describe('confirm policy', () => {
     it('should require confirmation when confirm=always', async () => {
       commandBus.register({
@@ -590,6 +604,34 @@ describe('CommandBus', () => {
 
       const needsConfirm = commandBus.needsConfirmation('test.effects')
       assert.strictEqual(needsConfirm, true)
+    })
+  })
+
+  describe('execute()', () => {
+    it('should pass args and context to handler', async () => {
+      let received
+
+      commandBus.register({
+        id: 'test.execute.ctx',
+        description: 'Execution context shape',
+        handler: async (ctx) => {
+          received = ctx
+          return 'ok'
+        }
+      })
+
+      const context = {
+        user: { id: 'user1', name: 'alice' },
+        room: 'room1',
+        message: { id: 'm1' },
+        res: { id: 'r1' }
+      }
+
+      const result = await commandBus.execute('test.execute.ctx', { foo: 'bar' }, context)
+
+      assert.strictEqual(result, 'ok')
+      assert.deepStrictEqual(received.args, { foo: 'bar' })
+      assert.deepStrictEqual(received.context, context)
     })
   })
 
@@ -764,6 +806,35 @@ describe('CommandBus', () => {
       assert.ok(result)
       assert.strictEqual(result.ok, false)
       assert.ok(result.missing.includes('name'))
+    })
+
+    it('should return help when --help flag is provided', async () => {
+      let executed = false
+
+      commandBus.register({
+        id: 'test.help.invoke',
+        description: 'Help flag test',
+        args: {
+          name: { type: 'string', required: true }
+        },
+        handler: async () => {
+          executed = true
+          return 'executed'
+        }
+      })
+
+      const context = {
+        user: { id: 'user1', name: 'alice' },
+        room: 'room1'
+      }
+
+      const result = await commandBus.invoke('test.help.invoke --help', context)
+
+      assert.ok(result)
+      assert.strictEqual(result.ok, true)
+      assert.strictEqual(result.helpOnly, true)
+      assert.ok(result.result.includes('Usage:'))
+      assert.strictEqual(executed, false)
     })
   })
 

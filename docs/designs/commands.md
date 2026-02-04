@@ -41,7 +41,7 @@ A command is registered as:
 - side effects - string[], optional
 - confirm policy - "never" | "if_ambiguous" | "always" (optional)
 - permissions - { rooms?: string[], roles?: string[]} (optional)
-- handler async function with context (required)
+- handler async function with `{ args, context }` (required)
 
 # 4. Canonical invocation parsing
 Parse messages like:
