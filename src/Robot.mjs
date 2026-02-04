@@ -866,18 +866,18 @@ class Robot {
 
       const text = message.text || ''
       
-      // Check if message is addressed to bot (has bot name or alias at start)
-      const robotPattern = new RegExp(`^[@]?${this.name}[:,]?\\s+`, 'i')
-      const aliasPattern = this.alias ? new RegExp(`^[@]?${this.alias}[:,]?\\s+`, 'i') : null
-      
-      const isAddressed = robotPattern.test(text) || (aliasPattern && aliasPattern.test(text))
+      const escapedName = this.name.replace(/[-[]{}()+?.,\^$|#\s]/g, '\\$&')
+      const escapedAlias = this.alias ? this.alias.replace(/[-[]{}()+?.,\^$|#\s]/g, '\\$&') : null
+      const nameOrAlias = escapedAlias ? `${escapedName}|${escapedAlias}` : escapedName
+      const robotPattern = new RegExp(`^[@]?(?:${nameOrAlias})[:,]?\\s+`, 'i')
+      const isAddressed = robotPattern.test(text)
       
       if (!isAddressed) {
         return true // not addressed to bot, continue to other listeners
       }
 
       // Strip bot name/alias from message
-      let commandText = text.replace(robotPattern, '').replace(aliasPattern || /(?!)/, '').trim()
+      let commandText = text.replace(robotPattern, '').trim()
 
       const contextData = {
         user: message.user,
