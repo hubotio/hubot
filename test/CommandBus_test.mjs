@@ -131,6 +131,14 @@ describe('CommandBus', () => {
       assert.strictEqual(result.args.priority, 'high')
     })
 
+    it('should parse backslash-escaped quotes inside quoted strings', () => {
+      const result = commandBus.parse('tickets.create --message "She said \\\"hello\\\""')
+
+      assert.ok(result)
+      assert.strictEqual(result.commandId, 'tickets.create')
+      assert.strictEqual(result.args.message, 'She said "hello"')
+    })
+
     it('should parse command with key:value arguments', () => {
       const result = commandBus.parse('tickets.create title:"VPN down" priority:high')
 

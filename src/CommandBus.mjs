@@ -296,9 +296,21 @@ export class CommandBus extends EventEmitter {
     let current = ''
     let inQuotes = false
     let quoteChar = null
+    let escapeNext = false
 
     for (let i = 0; i < text.length; i++) {
       const char = text[i]
+
+      if (escapeNext) {
+        current += char
+        escapeNext = false
+        continue
+      }
+
+      if (inQuotes && char === '\\') {
+        escapeNext = true
+        continue
+      }
 
       if ((char === '"' || char === '\'') && !inQuotes) {
         inQuotes = true
