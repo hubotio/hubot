@@ -867,8 +867,8 @@ class Robot {
       const text = message.text || ''
       
       // Check if message is addressed to bot (has bot name or alias at start)
-      const robotPattern = new RegExp(`^[@]?${this.name}[:,]?\\s+`, 'i')
-      const aliasPattern = this.alias ? new RegExp(`^[@]?${this.alias}[:,]?\\s+`, 'i') : null
+      const robotPattern = new RegExp(`^[@]?${escapeRegExp(this.name)}[:,]?\\s+`, 'i')
+      const aliasPattern = this.alias ? new RegExp(`^[@]?${escapeRegExp(this.alias)}[:,]?\\s+`, 'i') : null
       
       const isAddressed = robotPattern.test(text) || (aliasPattern && aliasPattern.test(text))
       
@@ -985,6 +985,10 @@ function extend (obj, ...sources) {
   })
 
   return obj
+}
+
+function escapeRegExp (string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export default Robot
