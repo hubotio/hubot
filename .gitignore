@@ -7,3 +7,4 @@ coverage/
 _site
 .env
 users.md
+.data
