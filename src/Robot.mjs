@@ -866,11 +866,11 @@ class Robot {
 
       const text = message.text || ''
       
-      const escapedName = this.name.replace(/[-[]{}()+?.,\^$|#\s]/g, '\\$&')
-      const escapedAlias = this.alias ? this.alias.replace(/[-[]{}()+?.,\^$|#\s]/g, '\\$&') : null
-      const nameOrAlias = escapedAlias ? `${escapedName}|${escapedAlias}` : escapedName
-      const robotPattern = new RegExp(`^[@]?(?:${nameOrAlias})[:,]?\\s+`, 'i')
-      const isAddressed = robotPattern.test(text)
+      // Check if message is addressed to bot (has bot name or alias at start)
+      const robotPattern = new RegExp(`^[@]?${escapeRegExp(this.name)}[:,]?\\s+`, 'i')
+      const aliasPattern = this.alias ? new RegExp(`^[@]?${escapeRegExp(this.alias)}[:,]?\\s+`, 'i') : null
+      
+      const isAddressed = robotPattern.test(text) || (aliasPattern && aliasPattern.test(text))
       
       if (!isAddressed) {
         return true // not addressed to bot, continue to other listeners
@@ -985,6 +985,10 @@ function extend (obj, ...sources) {
   })
 
   return obj
+}
+
+function escapeRegExp (string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export default Robot
