@@ -103,6 +103,10 @@ class Shell extends Adapter {
           this.#rl.prompt()
           break
       }
+      if (input.length === 0) {
+        this.#rl.prompt()
+        return
+      }
       if (input.length > 0) {
         this.#rl.history.push(input)
       }

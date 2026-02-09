@@ -75,6 +75,28 @@ describe('Shell Adapter Integration Test', () => {
     await new Promise(resolve => setTimeout(resolve, 60))
     assert.deepEqual(wasCalled, false)
   })
+  it('shows prompt if only spaces were entered', async () => {
+    let wasCalled = false
+    robot.respond(/.*/, async res => {
+      wasCalled = true
+      await res.reply('hello from the other side')
+    })
+    robot.stdin.push('   \n')
+    robot.stdin.push(null)
+    await new Promise(resolve => setTimeout(resolve, 60))
+    assert.deepEqual(wasCalled, false)
+  })
+  it('shows prompt if only tabs were entered', async () => {
+    let wasCalled = false
+    robot.respond(/.*/, async res => {
+      wasCalled = true
+      await res.reply('hello from the other side')
+    })
+    robot.stdin.push('\t\t\n')
+    robot.stdin.push(null)
+    await new Promise(resolve => setTimeout(resolve, 60))
+    assert.deepEqual(wasCalled, false)
+  })
 })
 
 describe('Shell Adapter', () => {
