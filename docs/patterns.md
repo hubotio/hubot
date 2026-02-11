@@ -29,11 +29,11 @@ Setting this up is very easy:
 //  Commands:
 //    None
 
-module.exports = (robot) => {
-  robot.hear(/^hubot:? (.+)/i, (res) => {
+export default async (robot) => {
+  robot.hear(/^hubot:? (.+)/i, async (res) => {
     let response = `Sorry, I'm a diva and only respond to ${robot.name}`
     response += robot.alias ? ` or ${robot.alias}` : ''
-    return res.reply(response)
+    return await res.reply(response)
   })
 }
 ```
@@ -63,9 +63,9 @@ Here is the setup:
 // Commands:
 //   None
 //
-module.exports = (robot) => {
-  robot.respond(/help\s*(.*)?$/i, (res) => {
-    return res.reply('That means nothing to me anymore. Perhaps you meant "docs" instead?')
+export default async (robot) => {
+  robot.respond(/help\s*(.*)?$/i, async (res) => {
+    return await res.reply('That means nothing to me anymore. Perhaps you meant "docs" instead?')
   })
 }
 
@@ -80,26 +80,30 @@ To do this, you can set up a lock in the Hubot [brain](scripting.html#persistenc
 Setting up the lock looks something like this:
 
 ```javascript
-module.exports = (robot) => {
-  robot.brain.on('loaded', ()=>{
+export default async (robot) => {
+  robot.brain.on('loaded', () => {
     // Clear the lock on startup in case Hubot has restarted and Hubot's brain has persistence (e.g. redis).
     // We don't want any orphaned locks preventing us from running commands.
     robot.brain.remove('yourLockName')
-  }
+  })
 
-  robot.respond(/longrunningthing/i, (msg) => {
+  robot.respond(/longrunningthing/i, async (msg) => {
     const lock = robot.brain.get('yourLockName')
     if (lock) {
-      return msg.send(`I'm sorry, ${msg.message.user.name}, I'm afraid I can't do that. I'm busy doing something for ${lock.user.name}.`)
+      return await msg.send(`I'm sorry, ${msg.message.user.name}, I'm afraid I can't do that. I'm busy doing something for ${lock.user.name}.`)
     }
 
     robot.brain.set('yourLockName', msg.message)  // includes user, room, etc about who locked
 
-    yourLongClobberingAsyncThing(err, res).then(
+    try {
+      await yourLongClobberingAsyncThing()
       // Clear the lock
       robot.brain.remove('yourLockName')
-      msg.reply('Finally Done')
-    )).catch(e => console.error(e))
+      await msg.reply('Finally Done')
+    } catch (e) {
+      console.error(e)
+    }
+  })
 }
 ```
 
@@ -114,8 +118,8 @@ Due to the way Node.js handles HTTP and HTTPS requests, you need to specify a di
 3. Add the following code, modified for your needs:
 
 ```javascript
-const proxy = require('proxy-agent')
-module.exports = (robot) => {
+import proxy from 'proxy-agent'
+export default async (robot) => {
   robot.globalHttpOptions.httpAgent  = proxy('http://my-proxy-server.internal', false)
   robot.globalHttpOptions.httpsAgent = proxy('http://my-proxy-server.internal', true)
 }
@@ -133,8 +137,8 @@ For example, the [factoid lookup command](https://github.com/github/hubot-script
 // use case: Hubot>fact1
 // This listener doesn't require you to type the bot's name first
 
-const {TextMessage} = require('../src/message')
-module.exports = (robot) => {
+import {TextMessage} from '../src/message.mjs'
+export default async (robot) => {
     // Dynamically populated list of factoids
     const facts = {
         fact1: 'stuff',
@@ -157,9 +161,9 @@ module.exports = (robot) => {
             }
         },
         // Callback
-        (res) => {
+        async (res) => {
             const fact = res.match
-            res.reply(`${fact} is ${facts[fact]}`)
+            await res.reply(`${fact} is ${facts[fact]}`)
         }
     )
 }
@@ -207,28 +211,28 @@ const POWER_USERS = [
     'Shell' // String that matches the user ID set by the adapter
 ]
   
-module.exports = (robot) => {
-  robot.listenerMiddleware((context, next, done) => {
+export default async (robot) => {
+  robot.listenerMiddleware(async (context) => {
       if (POWER_COMMANDS.indexOf(context.listener.options.id) > -1) {
           if (POWER_USERS.indexOf(context.response.message.user.name) > -1){
               // User is allowed access to this command
-              next()
+              return true
           } else {
               // Restricted command, but user isn't in whitelist
-              context.response.reply(`I'm sorry, @${context.response.message.user.name}, but you don't have access to do that.`)
-              done()
+              await context.response.reply(`I'm sorry, @${context.response.message.user.name}, but you don't have access to do that.`)
+              return false
           }
       } else {
           // This is not a restricted command; allow everyone
-          next()
+          return true
       }
   })
 
   robot.listen(message => {
       return true
   }, {id: 'deploy.web'},
-  res => {
-      res.reply('Deploying web...')
+  async res => {
+      await res.reply('Deploying web...')
   })
 }
 ```
