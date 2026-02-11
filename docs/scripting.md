@@ -842,7 +842,7 @@ Every middleware receives the same API signature of `context`. Different kinds o
 
 Asynchronous middleware should catch its own exceptions, emit an `error` event, and return `true` or `false`. Any uncaught exceptions will interrupt all execution of middleware.
 
-# <a name="listener-middleware">Listener Middleware</a>
+## Listener Middleware
 
 Listener middleware inserts logic between the listener matching a message and the listener executing. This allows you to create extensions that run for every matching script. Examples include centralized authorization policies, rate limiting, logging, and metrics. Middleware is implemented like other hubot scripts: instead of using the `hear` and `respond` methods, middleware is registered using `listenerMiddleware`.
 
@@ -965,20 +965,38 @@ Response middleware runs against every message hubot sends to a chat room. It's 
 
 ## Response Middleware Example
 
-This simple example changes the format of links sent to a chat room from markdown links (like [example](https://example.com)) to the format supported by [Slack](https://slack.com), <https://example.com|example>.
+Response middleware allows you to intercept and modify outgoing messages before they're sent to the chat room. The `context.strings` array contains the actual message text that will be sent.
+
+This example changes the format of links from markdown links (like [example](https://example.com)) to the format supported by [Slack](https://slack.com), <https://example.com|example>:
 
 ```javascript
 // .mjs
-export default async robot=> {
-  robot.responseMiddleware(async context=> {
-    if(!context.plaintext) return true
-    context.strings.forEach(string => {
-      string.replace(/\[([^\[\]]*?)\]\((https?:\/\/.*?)\)/, "<$2|$1>"
+export default async robot => {
+  robot.responseMiddleware(async context => {
+    // Only process plaintext messages (send, reply, etc.)
+    if (!context.plaintext) return true
+    
+    // Modify each string in the response
+    context.strings = context.strings.map(string => {
+      // Convert markdown links to Slack format
+      return string.replace(/\[([^\[\]]*?)\]\((https?:\/\/.*?)\)/, "<$2|$1>")
     })
+    
     return true
   })
 }
 ```
+
+## How to Use Response Middleware
+
+Response middleware is called every time a message is sent from a listener. Key points:
+
+- Access the outgoing message strings via `context.strings` - this is an array of strings being sent
+- Modify the strings by reassigning `context.strings` or mapping over the array
+- The `context.method` tells you how the message was sent (`send`, `reply`, `emote`, etc.)
+- Return `true` to allow the message to continue to the adapter, or `false` to stop it
+- Be careful not to create infinite loops by sending new messages from middleware, as they will also trigger middleware
+- Use `context.plaintext` to distinguish between regular messages and other message types
 
 ## Response Middleware API
 
