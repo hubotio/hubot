@@ -1,11 +1,13 @@
 ---
-permalink: /docs/deploying/azure/
+title: Deploying to Azure
+layout: layouts/docs.html
+permalink: /deploying/azure.html
 ---
 
 # Deploying to Azure
 
-If you've been following along with [Getting Started](../index.md), it's time to deploy so you can use it beyond just your local machine.
-[Azure](http://azure.microsoft.com/) is a way to deploy hubot as an alternative to [Heroku](heroku.md).
+If you've been following along with [Getting Started](../index.html), it's time to deploy so you can use it beyond just your local machine.
+[Azure](http://azure.microsoft.com/) is a way to deploy hubot.
 
 You will need to install the azure-cli via npm after you have follow the initial instructions for your hubot.
 
@@ -20,7 +22,7 @@ Inside your new hubot directory, make sure you've created a git repository, and 
 Then [create a GitHub repository](https://help.github.com/articles/create-a-repo/) for your hubot. This is where Azure will pull your code from instead of needing to deploy directly from your dev machine to Azure.
 
     % git remote add origin _your GitHub repo_
-    % git push -u origin master
+    % git push -u origin main
 
 Once you have your GitHub repo, create an Azure website linked to your repo. In Azure, create a website and select integrated source control. When it asks "where is your source control" select GitHub and link this website to your git repo that you created in the previous step. If you have downloaded the Azure PowerShell modules, you can also do this via PowerShell.
 
@@ -35,13 +37,12 @@ First, run the follow command to add `deploy.cmd` to your hubot directory. This 
 
 Then, edit this file and look for the sections that give you steps 1, 2 and 3. You're going to add a 4th step:
 
-    :: 4. Create Hubot file with a coffee extension
-    copy /Y "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot" "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot.coffee"
+    :: 4. Create Hubot file with a js extension
+    copy /Y "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\hubot" "%DEPLOYMENT_TARGET%\node_modules\hubot\bin\Hubot.mjs"
 
 Now, create a new file in the base directory of hubot called `server.js` and put these two lines into it:
 
-    require('coffeescript/register');
-    module.exports = require('hubot/bin/hubot.coffee');
+    module.exports = await import('hubot/bin/Hubot.mjs');
 
 Finally you will need to add the environment variables to the website to make sure it runs properly. You can either do it through the GUI (under configuration) or you can use the Azure PowerShell command line, as follows (example is showing slack as an adapter and mynewhubot as the website name).
 
@@ -55,7 +56,7 @@ Commit your changes in git and push to GitHub and Azure will automatically pick 
     % git commit -m "Add Azure settings for hubot"
     % git push
 
-Azure offers a marketplace where you can use the default heroku-redis-brain using Redis Cloud provided by Redis Labs. Alternatively, to add an [Azure blob storage brain](https://github.com/coryallegory/hubot-azure-brain), you will need to create an Azure storage account. Then you can do the following in your base hubot directory.
+Azure offers a marketplace where you can use the default hubot-redis-brain using Redis Cloud provided by Redis Labs. Alternatively, to add an [Azure blob storage brain](https://github.com/coryallegory/hubot-azure-brain), you will need to create an Azure storage account. Then you can do the following in your base hubot directory.
 
     % npm install hubot-azure-brain --save
 
@@ -69,7 +70,7 @@ Finally, add one more environment variables to your website. You can do this eit
     % $settings["HUBOT_BRAIN_AZURE_CONNSTRING"] = "your Azure blob storage connection string"
     % Set-AzureWebsite -AppSettings $settings mynewhubot
 
-Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](../scripting.md). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
+Now any scripts that require a brain will function. You should look up other scripts or write your own by looking at the [documentation](../scripting.html). All of the normal scripts for hubot are compatible with hosting hubot on Azure.
 
 ### Troubleshooting tips and tricks
 
@@ -84,7 +85,7 @@ An example of a startup script:
 ```
 let retrys=0
 while : ; do
-    STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" https://${WEBSITE_SITE_NAME}.azurewebsites.net/heroku/keepalive)
+    STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" https://${WEBSITE_SITE_NAME}.azurewebsites.net/hubot/keepalive)
     echo $STATUSCODE
     [[ $retrys -ne 5 ]] || break
     echo $retrys

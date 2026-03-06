@@ -14,43 +14,34 @@
     "type": "git",
     "url": "https://github.com/hubotio/hubot.git"
   },
-  "dependencies": {
-    "async": ">=0.1.0 <1.0.0",
-    "chalk": "^1.0.0",
-    "cline": "^0.8.2",
-    "coffeescript": "1.6.3",
-    "connect-multiparty": "^2.1.1",
-    "express": "^4.16.3",
-    "log": "1.4.0",
-    "optparse": "1.0.4",
-    "scoped-http-client": "0.11.0"
-  },
-  "devDependencies": {
-    "chai": "~2.1.0",
-    "coveralls": "^3.0.2",
-    "is-circular": "^1.0.2",
-    "mocha": "^5.2.0",
-    "mockery": "^1.4.0",
-    "nyc": "^13.0.0",
-    "semantic-release": "^15.9.3",
-    "sinon": "~1.17.0",
-    "sinon-chai": "^2.8.0",
-    "standard": "^10.0.2"
-  },
   "engines": {
-    "node": "> 4.0.0",
-    "npm": "> 2.0.0"
+    "node": ">= 18",
+    "npm": ">= 9"
   },
-  "main": "./index",
+  "main": "./index.mjs",
   "bin": {
     "hubot": "./bin/hubot"
   },
   "scripts": {
     "start": "bin/hubot",
-    "pretest": "standard",
-    "test": "nyc --reporter=html --reporter=text mocha",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "gen": "bin/hubot --create myhubot",
+    "pretest": "node script/simple-lint.mjs",
+    "test": "node --test --test-timeout=40000",
     "test:smoke": "node src/**/*.js",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "test:e2e": "bin/e2e-test.sh",
+    "build:local": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose --serve /hubot/ --watch-path ./docs --scripts ./sfab-hooks",
+    "build": "npx @hubot-friends/sfab --folder ./docs --destination ./_site --verbose --scripts ./sfab-hooks"
+  },
+  "release": {
+    "branches": [
+      "main",
+      "next"
+    ],
+    "dryRun": false
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-basic-auth": "^1.2.1",
+    "pino": "^10.3.1"
   }
 }

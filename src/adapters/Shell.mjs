@@ -1,0 +1,171 @@
+'use strict'
+
+import { stat, writeFile, unlink, appendFile, readFile } from 'node:fs/promises'
+import readline from 'node:readline'
+import Adapter from '../Adapter.mjs'
+import { TextMessage } from '../Message.mjs'
+
+const historySize = process.env.HUBOT_SHELL_HISTSIZE != null ? parseInt(process.env.HUBOT_SHELL_HISTSIZE) : 1024
+const historyPath = '.hubot_history'
+
+const completer = line => {
+  const completions = '\\q exit \\? help \\c clear'.split(' ')
+  const hits = completions.filter((c) => c.startsWith(line))
+  // Show all completions if none found
+  return [hits.length ? hits : completions, line]
+}
+const showHelp = () => {
+  console.log('usage:')
+  console.log('\\q, exit - close Shell and exit')
+  console.log('\\?, help - show this help')
+  console.log('\\c, clear - clear screen')
+}
+
+const bold = str => `\x1b[1m${str}\x1b[22m`
+const green = str => `\x1b[32m${str}\x1b[0m`
+const levelColors = {
+  error: '\x1b[31m',
+  warn: '\x1b[33m',
+  debug: '\x1b[35m',
+  info: '\x1b[34m',
+  trace: '\x1b[36m',
+  fatal: '\x1b[91m'
+}
+const reset = '\x1b[0m'
+
+class Shell extends Adapter {
+  #rl = null
+  #levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+  #logLevel = 'info'
+  #levelPriorities = {}
+  constructor (robot) {
+    super(robot)
+    this.name = 'Shell'
+    this.#logLevel = process.env.HUBOT_LOG_LEVEL || this.#logLevel
+    this.#levelPriorities = this.#levels.reduce((acc, current, idx) => {
+      acc[current] = idx
+      return acc
+    }, {})
+
+    this.robot.on('scripts have loaded', () => {
+      this.#rl?.prompt()
+    })
+  }
+
+  async send (envelope, ...strings) {
+    this.#rl?.prompt()
+    Array.from(strings).forEach(str => console.log(bold(str)))
+  }
+
+  async emote (envelope, ...strings) {
+    Array.from(strings).map(str => this.send(envelope, `* ${str}`))
+  }
+
+  async reply (envelope, ...strings) {
+    strings = strings.map((s) => `${envelope.user.name}: ${s}`)
+    await this.send(envelope, ...strings)
+  }
+
+  async run () {
+    try {
+      const stats = await stat(historyPath)
+      if (stats.size > historySize) {
+        await unlink(historyPath)
+        await writeFile(historyPath, '')
+      }
+    } catch (error) {
+      console.log(error)
+      await writeFile(historyPath, '')
+    }
+
+    this.#rl = readline.createInterface({
+      input: this.robot.stdin ?? process.stdin,
+      output: this.robot.stdout ?? process.stdout,
+      prompt: green(`${this.robot.name ?? this.robot.alias}> `),
+      completer
+    })
+    this.#rl.on('line', async (line) => {
+      const input = line.trim()
+      switch (input) {
+        case '\\q':
+        case 'exit':
+          this.#rl.close()
+          process.exit(0)
+          break
+        case '\\?':
+        case 'help':
+          showHelp()
+          this.#rl.prompt()
+          break
+        case '\\c':
+        case 'clear':
+          this.#rl.write(null, { ctrl: true, name: 'l' })
+          this.#rl.prompt()
+          break
+      }
+      if (input.length === 0) {
+        this.#rl.prompt()
+        return
+      }
+      if (input.length > 0) {
+        this.#rl.history.push(input)
+      }
+      let userId = process.env.HUBOT_SHELL_USER_ID || '1'
+      if (userId.match(/A\d+z/)) {
+        userId = parseInt(userId)
+      }
+      const userName = process.env.HUBOT_SHELL_USER_NAME || 'Shell'
+      const user = this.robot.brain.userForId(userId, { name: userName, room: 'Shell' })
+      const message = new TextMessage(user, input, Date.now())
+      if (!message.text.startsWith(this.robot.name) && !message.text.startsWith(this.robot.alias)) {
+        message.text = `${this.robot.name} ${message.text}`
+      }
+      await this.receive(message)
+      this.#rl.prompt()
+    })
+
+    this.#rl.on('history', async (history) => {
+      if (history.length === 0) return
+      await appendFile(historyPath, `${history[0]}\n`)
+    })
+
+    const existingHistory = (await readFile(historyPath, 'utf8')).split('\n')
+    existingHistory.reverse().forEach(line => this.#rl.history.push(line))
+
+    const configuredPriority = this.#levelPriorities[this.#logLevel]
+    const noop = async () => {}
+    this.#levels.forEach(level => {
+      const priority = this.#levelPriorities[level]
+      if (priority >= configuredPriority) {
+        this.robot.logger[level] = async (...args) => {
+          const color = levelColors[level] || ''
+          const msg = `${color}[${level}]${reset} ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}`
+          await this.send({ user: { name: 'Logger', room: 'Shell' } }, msg)
+        }
+      } else {
+        this.robot.logger[level] = noop
+      }
+    })
+
+    try {
+      this.emit('connected', this)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  close () {
+    super.close()
+    if (this.#rl?.close) {
+      this.#rl.close()
+    }
+  }
+}
+
+// Prevent output buffer "swallowing" every other character on OSX / Node version > 16.19.0.
+process.stdout._handle.setBlocking(false)
+export default {
+  use (robot) {
+    return new Shell(robot)
+  }
+}

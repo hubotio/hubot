@@ -2,14 +2,14 @@
 
 Contributions to this project are [released](https://help.github.com/articles/github-terms-of-service/#6-contributions-under-repository-license) to the public under the [project's open source license](LICENSE.md).
 
-Everyone is welcome to contribute to Hubot. Contributing doesn’t just mean submitting pull requests—there are many different ways for you to get involved, including answering questions in [chat](https://hubot-slackin.herokuapp.com/), reporting or triaging [issues](https://github.com/github/hubot/issues), and participating in the [Hubot Evolution](https://github.com/hubotio/evolution) process.
+Everyone is welcome to contribute to Hubot. Contributing doesn’t just mean submitting pull requests—there are many different ways for you to get involved, including answering questions, reporting or triaging [issues](https://github.com/github/hubot/issues), and participating in using Hubot.
 
 No matter how you want to get involved, we ask that you first learn what’s expected of anyone who participates in the project by reading the [Contributor Covenant Code of Conduct](http://contributor-covenant.org). By participating, you are expected to uphold this code.
 
 We love pull requests. Here's a quick guide:
 
 1. If you're adding a new feature or changing user-facing APIs, check out the [Hubot Evolution](https://github.com/hubotio/evolution) process.
-1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [master branch](https://github.com/github/hubot/commits/master)
+1. Check for [existing issues](https://github.com/github/hubot/issues) for duplicates and confirm that it hasn't been fixed already in the [main branch](https://github.com/github/hubot/commits/main)
 1. Fork the repo, and clone it locally
 1. `npm link` to make your cloned repo available to npm
 1. Follow [Getting Started](docs/index.md) to generate a testbot
@@ -55,7 +55,7 @@ The goal of this process is to keep the list of open issues and pull requests fo
 
 # Pull Request Reviews & releasing
 
-Releasing `hubot` is fully automated using [semantic-release](https://github.com/semantic-release/semantic-release). Once merged into the `master` branch, `semantic-release` will automatically release a new version based on the commit messages of the pull request. For it to work correctly, make sure that the correct commit message conventions have been used. The ones relevant are
+Releasing `hubot` is fully automated using [semantic-release](https://github.com/semantic-release/semantic-release). Once merged into the `main` branch, `semantic-release` will automatically release a new version based on the commit messages of the pull request. For it to work correctly, make sure that the correct commit message conventions have been used. The ones relevant are
 
 * `fix: …` will bump the fix version, e.g. 1.2.3 → 1.2.4
 * `feat: …` will bump the feature version, e.g. 1.2.3 → 1.3.0

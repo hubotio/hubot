@@ -1,29 +1,24 @@
 ---
-permalink: /docs/adapters/campfire/
+title: Campfire adapter
+layout: layouts/docs.html
+permalink: /adapters/campfire.html
 ---
 
 # Campfire adapter
 
-[Campfire](http://campfirenow.com/) is a web based chat application built by
-[37signals](http://37signals.com). The Campfire adapter is one of the original
-adapters in Hubot.
+[Campfire](http://campfirenow.com/) is a web based chat application built by [37signals](http://37signals.com). The Campfire adapter is one of the original adapters in Hubot.
 
 ## Getting Started
 
-You will need a Campfire account to start, which you can
-[sign up for free](https://signup.37signals.com/campfire/free/signup/new).
+You will need a Campfire account to start.
 
-Next, you will need to create a user on your Campfire account for your Hubot,
-then give it access so it can join to your rooms. You will need to create a room
-if you haven't already.
+Next, you will need to create a user on your Campfire account for your Hubot, then give it access so it can join to your rooms. You will need to create a room if you haven't already.
 
-Hubot defaults to using its [shell](./shell.md), so to use Campfire instead, you
-can run hubot with `-a campfire`:
+Hubot defaults to using its [Shell](./shell.html), so to use Campfire instead, you can run hubot with `-a Campfire`:
 
     % bin/hubot -a campfire
 
-If you are deploying to Heroku or using foreman, you need to make
-sure the hubot is called with `-a campfire` in the `Procfile`:
+If you are using foreman, you need to make sure the hubot is called with `-a Campfire` in the `Procfile`:
 
     web: bin/hubot -a campfire -n Hubot
 
@@ -51,14 +46,6 @@ hubot to join.
 This is simply the first part of the domain you visit for your Campfire
 account. For example if your Campfire was at `hubot.campfirenow.com` your
 subdomain is `hubot`. Make a note of the subdomain.
-
-### Configuring the variables on Heroku
-
-    % heroku config:set HUBOT_CAMPFIRE_TOKEN="..."
-
-    % heroku config:set HUBOT_CAMPFIRE_ROOMS="123,321"
-
-    % heroku config:set HUBOT_CAMPFIRE_ACCOUNT="..."
 
 ### Configuring the variables on UNIX
 
