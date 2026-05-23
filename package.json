@@ -42,6 +42,6 @@
   "dependencies": {
     "express": "^5.2.1",
     "express-basic-auth": "^1.2.1",
-    "pino": "^9.12.0"
+    "pino": "^10.3.1"
   }
 }
