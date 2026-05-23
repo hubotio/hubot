@@ -36,7 +36,6 @@ Implement a phased approach to deprecate `robot.http` all together in favor of `
 import path from 'node:path'
 import http from 'node:http'
 import https from 'node:https'
-import qs from 'node:querystring'
 
 const nonPassThroughOptions = [
   'headers', 'hostname', 'encoding', 'auth', 'port',
@@ -142,7 +141,7 @@ class ScopedClient {
 
   // Adds the query string to the path.
   fullPath (p) {
-    const search = qs.stringify(this.options.query)
+    const search = new URLSearchParams(this.options.query).toString()
     let full = this.join(p)
     if (search.length > 0) { full += `?${search}` }
     return full
