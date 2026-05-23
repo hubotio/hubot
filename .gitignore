@@ -8,3 +8,4 @@ _site
 .env
 users.md
 .data
+.claude
