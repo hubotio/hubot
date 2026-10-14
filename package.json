@@ -40,8 +40,8 @@
     "dryRun": false
   },
   "dependencies": {
-    "express": "^5.2.1",
+    "express": "^5.3.0",
     "express-basic-auth": "^1.2.1",
-    "pino": "^10.3.1"
+    "pino": "^10.4.0"
   }
 }
