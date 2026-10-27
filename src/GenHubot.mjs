@@ -24,7 +24,7 @@ function runCommands (hubotDirectory, options) {
   } else {
     output = spawnSync('npm', ['i', 'hubot@latest'], { shell: true, stdio: 'inherit' })
   }
-  output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.adapter]).filter(Boolean))
+  output = spawnSync('npm', ['i', 'hubot-help@latest', 'hubot-rules@latest', 'hubot-diagnostics@latest'].concat([options.adapter]).filter(Boolean), { shell: true, stdio: 'inherit' })
   console.log('npm i', output.stderr?.toString() ?? '', output.stdout?.toString() ?? '')
 
   File.mkdirSync(path.join('tests', 'doubles'), { recursive: true })
